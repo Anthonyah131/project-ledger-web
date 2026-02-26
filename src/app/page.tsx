@@ -144,7 +144,7 @@ function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-background">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/30">
             <FileText className="h-4 w-4" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
@@ -175,7 +175,7 @@ function Navbar() {
           </Link>
           <Link
             href="/register"
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-md shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/40"
           >
             Comenzar gratis
             <ChevronRight className="h-3.5 w-3.5" />
@@ -190,8 +190,8 @@ function Hero() {
   return (
     <section className="flex flex-col items-center px-6 pb-24 pt-40 text-center">
       {/* Badge */}
-      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-        <Zap className="h-3 w-3 text-foreground" />
+      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary">
+        <Zap className="h-3 w-3" />
         Ahora con asistencia de IA integrada
       </div>
 
@@ -199,8 +199,8 @@ function Hero() {
       <h1 className="mx-auto max-w-4xl text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
         Gestiona proyectos{" "}
         <span className="relative inline-block">
-          <span className="relative z-10">con precisión</span>
-          <span className="absolute inset-x-0 bottom-1 -z-0 h-3 bg-foreground/10 [transform:skewX(-3deg)]" />
+          <span className="relative z-10 text-primary">con precisión</span>
+          <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-primary/15 transform-[skewX(-3deg)]" />
         </span>{" "}
         y sin caos
       </h1>
@@ -216,14 +216,14 @@ function Hero() {
       <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
         <Link
           href="/register"
-          className="inline-flex h-12 items-center gap-2 rounded-xl bg-foreground px-8 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-foreground/90"
+          className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/50"
         >
           Empezar gratis — sin tarjeta
           <ChevronRight className="h-4 w-4" />
         </Link>
         <Link
           href="#how-it-works"
-          className="inline-flex h-12 items-center gap-2 rounded-xl border border-border px-8 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+          className="inline-flex h-12 items-center gap-2 rounded-xl border border-border px-8 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
         >
           Ver cómo funciona
         </Link>
@@ -232,13 +232,13 @@ function Hero() {
       {/* Social proof */}
       <p className="mt-8 text-xs text-muted-foreground">
         Usado por más de{" "}
-        <span className="font-semibold text-foreground">2,000+ equipos</span>{" "}
+        <span className="font-semibold text-primary">2,000+ equipos</span>{" "}
         en Latinoamérica
       </p>
 
       {/* Mock dashboard */}
       <div className="relative mt-20 w-full max-w-5xl">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/5">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/20">
           {/* Window chrome */}
           <div className="flex h-10 items-center gap-2 border-b border-border bg-muted px-4">
             <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
@@ -250,14 +250,14 @@ function Hero() {
           {/* Dashboard mock */}
           <div className="flex h-80 gap-0">
             {/* Sidebar mock */}
-            <div className="hidden w-52 flex-col gap-1.5 border-r border-border bg-muted/50 p-4 sm:flex">
+            <div className="hidden w-52 flex-col gap-1.5 border-r border-border bg-sidebar p-4 sm:flex">
               {["Dashboard", "Proyectos", "Presupuesto", "Historial", "Configuración"].map(
                 (item, i) => (
                   <div
                     key={item}
                     className={`h-8 rounded-md px-3 flex items-center text-xs font-medium ${
                       i === 0
-                        ? "bg-foreground text-background"
+                        ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
                         : "text-muted-foreground hover:bg-border"
                     }`}
                   >
@@ -272,16 +272,16 @@ function Hero() {
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Proyectos activos", val: "12" },
-                  { label: "Presupuesto total", val: "$48,200" },
-                  { label: "Tareas completadas", val: "87%" },
+                  { label: "Proyectos activos", val: "12", highlight: false },
+                  { label: "Presupuesto total", val: "$48,200", highlight: true },
+                  { label: "Tareas completadas", val: "87%", highlight: false },
                 ].map((s) => (
                   <div
                     key={s.label}
-                    className="rounded-lg border border-border bg-background p-3"
+                    className={`rounded-lg border p-3 ${s.highlight ? "border-primary/30 bg-primary/10" : "border-border bg-background"}`}
                   >
                     <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                    <p className="mt-1 text-lg font-bold text-foreground">{s.val}</p>
+                    <p className={`mt-1 text-lg font-bold ${s.highlight ? "text-primary" : "text-foreground"}`}>{s.val}</p>
                   </div>
                 ))}
               </div>
@@ -296,7 +296,7 @@ function Hero() {
                     (h, i) => (
                       <div
                         key={i}
-                        className="flex-1 rounded-t bg-foreground/10 transition-all"
+                        className={`flex-1 rounded-t transition-all ${i === 9 || i === 5 ? "bg-primary/70" : "bg-primary/20"}`}
                         style={{ height: `${h}%` }}
                       />
                     )
@@ -308,7 +308,7 @@ function Hero() {
         </div>
 
         {/* Glow effect */}
-        <div className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-foreground/5 blur-2xl" />
+        <div className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-primary/10 blur-2xl" />
       </div>
     </section>
   );
@@ -321,7 +321,7 @@ function Stats() {
         <div className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label}>
-              <p className="text-4xl font-bold tracking-tight text-foreground">
+              <p className="text-4xl font-bold tracking-tight text-primary">
                 {s.value}
               </p>
               <p className="mt-1.5 text-sm text-muted-foreground">{s.label}</p>
@@ -339,7 +339,7 @@ function Features() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             Características
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
@@ -356,12 +356,12 @@ function Features() {
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-border bg-card p-6 transition-shadow hover:shadow-md"
+              className="group rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
             >
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-foreground ring-1 ring-border group-hover:bg-foreground group-hover:text-background transition-colors">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/30">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="mb-2 font-semibold text-foreground">{title}</h3>
+              <h3 className="mb-2 font-semibold text-foreground group-hover:text-primary transition-colors">{title}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {description}
               </p>
@@ -379,7 +379,7 @@ function HowItWorks() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             Cómo funciona
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
@@ -394,8 +394,8 @@ function HowItWorks() {
 
           {steps.map(({ number, title, description }) => (
             <div key={number} className="relative flex flex-col items-center text-center">
-              <div className="relative z-10 mb-6 flex h-24 w-24 flex-col items-center justify-center rounded-2xl border border-border bg-background shadow-sm">
-                <span className="text-xs font-bold text-muted-foreground">{number}</span>
+              <div className="relative z-10 mb-6 flex h-24 w-24 flex-col items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 shadow-md shadow-primary/10">
+                <span className="text-2xl font-bold text-primary">{number}</span>
               </div>
               <h3 className="mb-2 text-lg font-semibold text-foreground">{title}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
@@ -413,7 +413,7 @@ function Pricing() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             Precios
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
@@ -429,31 +429,31 @@ function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative flex flex-col rounded-2xl border p-8 ${
+              className={`relative flex flex-col rounded-2xl border p-8 transition-all ${
                 plan.highlighted
-                  ? "border-foreground bg-foreground text-background shadow-xl"
-                  : "border-border bg-card"
+                  ? "border-primary bg-primary/10 shadow-xl shadow-primary/20"
+                  : "border-border bg-card hover:border-primary/30"
               }`}
             >
               {plan.highlighted && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-background px-3 py-1 text-xs font-semibold text-foreground">
+                  <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/40">
                     Más popular
                   </span>
                 </div>
               )}
 
               <div className="mb-6">
-                <p className={`text-sm font-semibold ${plan.highlighted ? "text-background/70" : "text-muted-foreground"}`}>
+                <p className={`text-sm font-semibold ${plan.highlighted ? "text-primary" : "text-muted-foreground"}`}>
                   {plan.name}
                 </p>
                 <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className={`text-sm ${plan.highlighted ? "text-background/60" : "text-muted-foreground"}`}>
+                  <span className={`text-4xl font-bold ${plan.highlighted ? "text-foreground" : "text-foreground"}`}>{plan.price}</span>
+                  <span className="text-sm text-muted-foreground">
                     {plan.period}
                   </span>
                 </div>
-                <p className={`mt-3 text-sm leading-relaxed ${plan.highlighted ? "text-background/70" : "text-muted-foreground"}`}>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {plan.description}
                 </p>
               </div>
@@ -461,7 +461,7 @@ function Pricing() {
               <ul className="mb-8 flex flex-1 flex-col gap-3">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-center gap-2.5 text-sm">
-                    <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.highlighted ? "text-background/80" : "text-foreground"}`} />
+                    <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.highlighted ? "text-primary" : "text-muted-foreground"}`} />
                     {f}
                   </li>
                 ))}
@@ -469,10 +469,10 @@ function Pricing() {
 
               <Link
                 href="/register"
-                className={`inline-flex h-11 items-center justify-center rounded-xl text-sm font-semibold transition-colors ${
+                className={`inline-flex h-11 items-center justify-center rounded-xl text-sm font-semibold transition-all ${
                   plan.highlighted
-                    ? "bg-background text-foreground hover:bg-background/90"
-                    : "bg-foreground text-background hover:bg-foreground/90"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 hover:bg-primary/90"
+                    : "border border-border bg-muted text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                 }`}
               >
                 {plan.cta}
@@ -488,28 +488,32 @@ function Pricing() {
 function CTA() {
   return (
     <section className="px-6 py-20">
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl bg-foreground px-8 py-16 text-center text-background">
-        <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-background/10">
+      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-primary/30 bg-primary/10 px-8 py-16 text-center">
+        {/* Background glow */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-0 h-48 w-96 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
+        </div>
+        <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/20 text-primary ring-1 ring-primary/30">
           <TrendingUp className="h-6 w-6" />
         </div>
-        <h2 className="text-balance text-4xl font-bold tracking-tight">
+        <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
           Empieza a gestionar mejor hoy
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-background/70">
+        <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
           Únete a miles de equipos que ya toman decisiones más inteligentes con
           Project Ledger.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/register"
-            className="inline-flex h-12 items-center gap-2 rounded-xl bg-background px-8 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-background/90"
+            className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/50"
           >
             Crear cuenta gratis
             <ChevronRight className="h-4 w-4" />
           </Link>
           <Link
             href="/login"
-            className="inline-flex h-12 items-center px-8 text-sm font-semibold text-background/80 transition-colors hover:text-background"
+            className="inline-flex h-12 items-center px-8 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
           >
             Ya tengo cuenta →
           </Link>
@@ -527,7 +531,7 @@ function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-background">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm shadow-primary/30">
                 <FileText className="h-3.5 w-3.5" />
               </div>
               <span className="text-sm font-semibold">Project Ledger</span>
