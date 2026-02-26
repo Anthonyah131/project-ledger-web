@@ -4,15 +4,10 @@
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    // App
-    NEXT_PUBLIC_APP_URL: string;
-    NEXT_PUBLIC_APP_NAME: string;
+    // Environment
+    NEXT_PUBLIC_ENV: "development" | "production";
 
     // Backend API
     NEXT_PUBLIC_API_URL: string;
-
-    // Auth
-    NEXTAUTH_URL: string;
-    NEXTAUTH_SECRET: string;
   }
 }
