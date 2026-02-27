@@ -52,3 +52,86 @@ export interface Expense {
   deletedAt: string | null;
   deletedByUserId: string | null;
 }
+
+// ─── API shapes ───────────────────────────────────────────────────────────────
+
+export interface ExpenseResponse {
+  id: string;
+  projectId: string;
+  categoryId: string;
+  categoryName: string;
+  paymentMethodId: string;
+  createdByUserId: string;
+  obligationId: string | null;
+  originalAmount: number;
+  originalCurrency: string;
+  exchangeRate: number;
+  convertedAmount: number;
+  title: string;
+  description: string | null;
+  expenseDate: string;           // "YYYY-MM-DD"
+  receiptNumber: string | null;
+  notes: string | null;
+  isTemplate: boolean;
+  altCurrency: string | null;
+  altExchangeRate: number | null;
+  altAmount: number | null;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  deletedByUserId: string | null;
+}
+
+export interface ExpensesPageResponse {
+  items: ExpenseResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+export interface CreateExpenseRequest {
+  categoryId: string;
+  paymentMethodId: string;
+  obligationId?: string | null;
+  originalAmount: number;
+  originalCurrency: string;
+  exchangeRate?: number;
+  convertedAmount?: number | null;
+  title: string;
+  description?: string | null;
+  expenseDate: string;           // "YYYY-MM-DD"
+  receiptNumber?: string | null;
+  notes?: string | null;
+  isTemplate?: boolean;
+  altCurrency?: string | null;
+  altExchangeRate?: number | null;
+  altAmount?: number | null;
+}
+
+export interface UpdateExpenseRequest {
+  categoryId: string;
+  paymentMethodId: string;
+  originalAmount: number;
+  originalCurrency: string;
+  exchangeRate?: number;
+  convertedAmount?: number | null;
+  title: string;
+  description?: string | null;
+  expenseDate: string;           // "YYYY-MM-DD"
+  receiptNumber?: string | null;
+  notes?: string | null;
+  altCurrency?: string | null;
+  altExchangeRate?: number | null;
+  altAmount?: number | null;
+}
+
+export interface CreateExpenseFromTemplateRequest {
+  originalAmount?: number;
+  expenseDate?: string;          // "YYYY-MM-DD"
+  obligationId?: string | null;
+  notes?: string | null;
+}

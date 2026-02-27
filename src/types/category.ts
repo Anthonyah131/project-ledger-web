@@ -17,3 +17,28 @@ export interface Category {
   deletedAt: string | null;
   deletedByUserId: string | null;
 }
+
+// ─── API shapes ───────────────────────────────────────────────────────────────
+
+export interface CategoryResponse {
+  id: string;
+  projectId: string;
+  name: string;
+  description: string | null;
+  isDefault: boolean;
+  budgetAmount: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  description?: string | null;
+  budgetAmount?: number | null;
+}
+
+export interface UpdateCategoryRequest {
+  name: string;
+  description?: string | null;
+  budgetAmount?: number | null;
+}

@@ -3,19 +3,14 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface ProjectsPaginationProps {
+interface PaginationProps {
   page: number
   pageSize: number
   total: number
   onPageChange: (page: number) => void
 }
 
-export function ProjectsPagination({
-  page,
-  pageSize,
-  total,
-  onPageChange,
-}: ProjectsPaginationProps) {
+export function Pagination({ page, pageSize, total, onPageChange }: PaginationProps) {
   const totalPages = Math.ceil(total / pageSize)
   if (totalPages <= 1) return null
 
@@ -49,7 +44,7 @@ export function ProjectsPagination({
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
           className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          aria-label="Pagina anterior"
+          aria-label="Página anterior"
         >
           <ChevronLeft className="size-3.5" />
         </button>
@@ -79,7 +74,7 @@ export function ProjectsPagination({
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
           className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          aria-label="Pagina siguiente"
+          aria-label="Página siguiente"
         >
           <ChevronRight className="size-3.5" />
         </button>

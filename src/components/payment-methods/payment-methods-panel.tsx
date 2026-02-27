@@ -2,45 +2,44 @@
 
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useProjects } from "@/hooks/projects/use-projects"
-import { ProjectsToolbar } from "./projects-toolbar"
-import { ShelfView } from "./shelf-view"
-import { ListView } from "./list-view"
+import { usePaymentMethods } from "@/hooks/payment-methods/use-payment-methods"
+import { PaymentMethodsToolbar } from "./payment-methods-toolbar"
+import { PaymentMethodsShelfView } from "./payment-methods-shelf-view"
+import { PaymentMethodsList } from "./payment-methods-list"
 import { Pagination } from "@/components/shared/pagination"
 import {
-  CreateProjectModal,
-  EditProjectModal,
-  DeleteProjectModal,
-} from "./project-modals"
-import {
   EmptyState,
-  ShelfSkeleton,
-  ListSkeleton,
-} from "./project-states"
+  PaymentMethodsShelfSkeleton,
+  PaymentMethodsSkeleton,
+} from "./payment-method-states"
+import {
+  CreatePaymentMethodModal,
+  EditPaymentMethodModal,
+  DeletePaymentMethodModal,
+} from "./payment-method-modals"
 
-export function ProjectsShelf() {
+export function PaymentMethodsPanel() {
   const {
-    projects,
+    paymentMethods,
     total,
-    globalIndex,
     loading,
     hasSearch,
     viewMode, setViewMode,
     page, setPage,
     pageSize,
     query, setQuery,
-    currency,
+    typeFilter,
     sort,
     createOpen, setCreateOpen,
-    editProject, setEditProject,
+    editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
     handleCreate,
     handleEdit,
     handleDelete,
     handlePageSizeChange,
-    handleCurrencyChange,
     handleSortChange,
-  } = useProjects()
+    handleTypeFilterChange,
+  } = usePaymentMethods()
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -48,10 +47,10 @@ export function ProjectsShelf() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-xl font-semibold text-foreground tracking-tight">
-            Proyectos
+            Métodos de pago
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} {total === 1 ? "proyecto" : "proyectos"}
+            {total} {total === 1 ? "método" : "métodos"}
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)} size="sm">
@@ -61,11 +60,11 @@ export function ProjectsShelf() {
       </div>
 
       {/* Toolbar */}
-      <ProjectsToolbar
+      <PaymentMethodsToolbar
         query={query}
         onQueryChange={setQuery}
-        currency={currency}
-        onCurrencyChange={handleCurrencyChange}
+        typeFilter={typeFilter}
+        onTypeFilterChange={handleTypeFilterChange}
         sort={sort}
         onSortChange={handleSortChange}
         viewMode={viewMode}
@@ -77,22 +76,20 @@ export function ProjectsShelf() {
       {/* Content */}
       <div className="mt-4 bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
-          viewMode === "shelf" ? <ShelfSkeleton /> : <ListSkeleton />
-        ) : projects.length === 0 ? (
+          viewMode === "shelf" ? <PaymentMethodsShelfSkeleton /> : <PaymentMethodsSkeleton />
+        ) : paymentMethods.length === 0 ? (
           <EmptyState hasSearch={hasSearch} onCreate={() => setCreateOpen(true)} />
         ) : viewMode === "shelf" ? (
-          <ShelfView
-            projects={projects}
-            onEdit={(p) => setEditProject(p)}
-            onDelete={(p) => setDeleteTarget(p)}
-            globalIndex={globalIndex}
+          <PaymentMethodsShelfView
+            paymentMethods={paymentMethods}
+            onEdit={(pm) => setEditTarget(pm)}
+            onDelete={(pm) => setDeleteTarget(pm)}
           />
         ) : (
-          <ListView
-            projects={projects}
-            onEdit={(p) => setEditProject(p)}
-            onDelete={(p) => setDeleteTarget(p)}
-            globalIndex={globalIndex}
+          <PaymentMethodsList
+            paymentMethods={paymentMethods}
+            onEdit={(pm) => setEditTarget(pm)}
+            onDelete={(pm) => setDeleteTarget(pm)}
           />
         )}
 
@@ -109,19 +106,19 @@ export function ProjectsShelf() {
       </div>
 
       {/* Modals */}
-      <CreateProjectModal
+      <CreatePaymentMethodModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreate={handleCreate}
       />
-      <EditProjectModal
-        project={editProject}
-        open={!!editProject}
-        onClose={() => setEditProject(null)}
+      <EditPaymentMethodModal
+        paymentMethod={editTarget}
+        open={!!editTarget}
+        onClose={() => setEditTarget(null)}
         onSave={handleEdit}
       />
-      <DeleteProjectModal
-        project={deleteTarget}
+      <DeletePaymentMethodModal
+        paymentMethod={deleteTarget}
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}

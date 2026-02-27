@@ -1,14 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import {
-  Pencil,
-  Trash2,
-  ArrowRight,
-  MoreHorizontal,
-} from "lucide-react"
+import { Pencil, Trash2, ArrowRight, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { ProjectResponse } from "@/types/project"
 import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
@@ -17,33 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { PaymentMethodResponse, PaymentMethodType } from "@/types/payment-method"
 
-interface ShelfViewProps {
-  projects: ProjectResponse[]
-  onEdit: (project: ProjectResponse) => void
-  onDelete: (project: ProjectResponse) => void
-  globalIndex: number
+const TYPE_LABEL: Record<PaymentMethodType, string> = {
+  bank: "Banco",
+  cash: "Efectivo",
+  card: "Tarjeta",
 }
 
-const ROLE_LABEL: Record<string, string> = {
-  owner: "Propietario",
-  editor: "Editor",
-  viewer: "Lector",
-}
-
-const ACCENT_COLORS = [
-  "bg-primary",
-  "bg-[oklch(0.60_0.16_155)]",
-  "bg-[oklch(0.58_0.16_30)]",
-  "bg-[oklch(0.55_0.14_280)]",
-  "bg-[oklch(0.58_0.14_200)]",
-  "bg-foreground/70",
-  "bg-[oklch(0.62_0.14_55)]",
-  "bg-[oklch(0.50_0.12_250)]",
-]
-
-function getAccent(index: number) {
-  return ACCENT_COLORS[index % ACCENT_COLORS.length]
+const ACCENT_BAR: Record<PaymentMethodType, string> = {
+  bank: "bg-[oklch(0.55_0.14_280)]",
+  card: "bg-primary",
+  cash: "bg-[oklch(0.60_0.16_155)]",
 }
 
 function formatDate(iso: string) {
@@ -53,56 +32,36 @@ function formatDate(iso: string) {
   })
 }
 
-function formatCurrency(code: string) {
-  const symbols: Record<string, string> = {
-    USD: "$",
-    EUR: "\u20AC",
-    CRC: "\u20A1",
-    MXN: "$",
-    GBP: "\u00A3",
-    JPY: "\u00A5",
-  }
-  return symbols[code] || code
+interface ShelfViewProps {
+  paymentMethods: PaymentMethodResponse[]
+  onEdit: (pm: PaymentMethodResponse) => void
+  onDelete: (pm: PaymentMethodResponse) => void
 }
 
-export function ShelfView({
-  projects,
-  onEdit,
-  onDelete,
-  globalIndex,
-}: ShelfViewProps) {
+export function PaymentMethodsShelfView({ paymentMethods, onEdit, onDelete }: ShelfViewProps) {
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border"
       role="list"
-      aria-label="Proyectos"
+      aria-label="Métodos de pago"
     >
-      {projects.map((project, i) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
-          accentIndex={globalIndex + i}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+      {paymentMethods.map((pm) => (
+        <PaymentMethodCard key={pm.id} pm={pm} onEdit={onEdit} onDelete={onDelete} />
       ))}
     </div>
   )
 }
 
-function ProjectCard({
-  project,
-  accentIndex,
+function PaymentMethodCard({
+  pm,
   onEdit,
   onDelete,
 }: {
-  project: ProjectResponse
-  accentIndex: number
-  onEdit: (project: ProjectResponse) => void
-  onDelete: (project: ProjectResponse) => void
+  pm: PaymentMethodResponse
+  onEdit: (pm: PaymentMethodResponse) => void
+  onDelete: (pm: PaymentMethodResponse) => void
 }) {
   const router = useRouter()
-  const accent = getAccent(accentIndex)
 
   return (
     <div
@@ -112,23 +71,23 @@ function ProjectCard({
         "transition-colors duration-150",
         "hover:bg-accent/30 cursor-pointer",
       )}
-      onClick={() => router.push(`/projects/${project.id}`)}
+      onClick={() => router.push(`/payment-methods/${pm.id}/expenses`)}
     >
       <div className="flex flex-1 gap-4 p-5">
         {/* Accent bar */}
-        <div className={cn("w-1 shrink-0 rounded-full self-stretch", accent)} />
+        <div className={cn("w-1 shrink-0 rounded-full self-stretch", ACCENT_BAR[pm.type])} />
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
           {/* Top: name + menu */}
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-foreground leading-snug truncate text-pretty">
-                {project.name}
+              <h3 className="text-sm font-semibold text-foreground leading-snug truncate">
+                {pm.name}
               </h3>
-              {project.description && (
+              {(pm.bankName || pm.description) && (
                 <p className="text-xs text-muted-foreground leading-relaxed mt-1 line-clamp-2">
-                  {project.description}
+                  {pm.bankName ?? pm.description}
                 </p>
               )}
             </div>
@@ -145,7 +104,7 @@ function ProjectCard({
                     "transition-all duration-150",
                     "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   )}
-                  aria-label="Acciones del proyecto"
+                  aria-label="Acciones del método de pago"
                 >
                   <MoreHorizontal className="size-4" />
                 </button>
@@ -154,27 +113,21 @@ function ProjectCard({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation()
-                    router.push(`/projects/${project.id}`)
+                    router.push(`/payment-methods/${pm.id}/expenses`)
                   }}
                 >
                   <ArrowRight className="size-4" />
-                  Abrir proyecto
+                  Ver gastos
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit(project)
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onEdit(pm) }}
                 >
                   <Pencil className="size-4" />
                   Editar
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(project)
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onDelete(pm) }}
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="size-4" />
@@ -186,19 +139,19 @@ function ProjectCard({
 
           {/* Bottom: metadata */}
           <div className="flex items-center gap-2 mt-auto">
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground/80">
-              <span className="text-muted-foreground">{formatCurrency(project.currencyCode)}</span>
-              {project.currencyCode}
-            </span>
-            <span className="text-border">{"/"}</span>
-            <Badge
-              variant={project.userRole === "owner" ? "default" : "secondary"}
-              className="text-[10px] px-1.5 py-0 h-4 font-medium"
-            >
-              {ROLE_LABEL[project.userRole]}
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+              {TYPE_LABEL[pm.type]}
             </Badge>
+            <span className="text-border">{"/"}</span>
+            <span className="text-xs font-medium text-foreground/80">{pm.currency}</span>
+            {pm.accountNumber && (
+              <>
+                <span className="text-border">{"/"}</span>
+                <span className="text-xs text-muted-foreground truncate">{pm.accountNumber}</span>
+              </>
+            )}
             <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
-              {formatDate(project.updatedAt)}
+              {formatDate(pm.updatedAt)}
             </span>
           </div>
         </div>

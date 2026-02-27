@@ -40,3 +40,46 @@ export interface ObligationWithBalance extends Obligation {
   remainingAmount: number;
   status: ObligationStatus;
 }
+
+// ─── API shapes ───────────────────────────────────────────────────────────────
+
+export interface ObligationResponse {
+  id: string;
+  projectId: string;
+  createdByUserId: string;
+  title: string;
+  description: string | null;
+  totalAmount: number;
+  currency: string;              // ISO 4217
+  dueDate: string | null;        // "YYYY-MM-DD"
+  paidAmount: number;
+  remainingAmount: number;
+  status: ObligationStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ObligationsPageResponse {
+  items: ObligationResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+export interface CreateObligationRequest {
+  title: string;
+  description?: string | null;
+  totalAmount: number;
+  currency: string;
+  dueDate?: string | null;       // "YYYY-MM-DD"
+}
+
+export interface UpdateObligationRequest {
+  title: string;
+  description?: string | null;
+  totalAmount: number;
+  dueDate?: string | null;       // "YYYY-MM-DD"
+}
