@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 // context/auth-context.tsx
 // Global authentication context.

@@ -1,26 +1,30 @@
-"use client";
+﻿"use client"
 
-// views/auth/register/register-view.tsx
+import Link from "next/link"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 
-import Link from "next/link";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useRegister } from "@/hooks/auth/use-register";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { useRegister } from "@/hooks/auth/use-register"
 
 export function RegisterView() {
   const {
     form,
-    error,
+    serverError,
     isLoading,
     showPassword,
-    handleChange,
-    handleSubmit,
+    onSubmit,
     togglePassword,
-  } = useRegister();
+  } = useRegister()
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,97 +37,116 @@ export function RegisterView() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Name */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Nombre completo</Label>
-          <Input
-            id="name"
+      <Form {...form}>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <FormField
+            control={form.control}
             name="name"
-            type="text"
-            placeholder="Juan Pérez"
-            autoComplete="name"
-            value={form.name}
-            onChange={handleChange}
-            disabled={isLoading}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre completo</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Juan Perez"
+                    autoComplete="name"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        {/* Email */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Correo electrónico</Label>
-          <Input
-            id="email"
+          <FormField
+            control={form.control}
             name="email"
-            type="email"
-            placeholder="tu@email.com"
-            autoComplete="email"
-            value={form.email}
-            onChange={handleChange}
-            disabled={isLoading}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Correo electronico</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="tu@email.com"
+                    autoComplete="email"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        {/* Password */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="password">Contraseña</Label>
-          <div className="relative">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Mínimo 8 caracteres"
-              autoComplete="new-password"
-              value={form.password}
-              onChange={handleChange}
-              disabled={isLoading}
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              tabIndex={-1}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-        </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contrasena</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Minimo 8 caracteres"
+                      autoComplete="new-password"
+                      disabled={isLoading}
+                      className="pr-10"
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Confirm password */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-          <Input
-            id="confirmPassword"
+          <FormField
+            control={form.control}
             name="confirmPassword"
-            type={showPassword ? "text" : "password"}
-            placeholder="Repite tu contraseña"
-            autoComplete="new-password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            disabled={isLoading}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirmar contrasena</FormLabel>
+                <FormControl>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Repite tu contrasena"
+                    autoComplete="new-password"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        {/* Error */}
-        {error && <p className="text-sm text-destructive">{error}</p>}
+          {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-        {/* Submit */}
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creando cuenta...
-            </>
-          ) : (
-            "Crear cuenta"
-          )}
-        </Button>
-      </form>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creando cuenta...
+              </>
+            ) : (
+              "Crear cuenta"
+            )}
+          </Button>
+        </form>
+      </Form>
 
       {/* Divider */}
       <div className="relative">
@@ -132,7 +155,7 @@ export function RegisterView() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            O regístrate con
+            O registrate con
           </span>
         </div>
       </div>
@@ -160,25 +183,25 @@ export function RegisterView() {
       <p className="text-center text-xs text-muted-foreground">
         Al registrarte, aceptas nuestros{" "}
         <Link href="#" className="underline underline-offset-4 hover:text-foreground">
-          Términos de Servicio
+          Terminos de Servicio
         </Link>{" "}
         y{" "}
         <Link href="#" className="underline underline-offset-4 hover:text-foreground">
-          Política de Privacidad
+          Politica de Privacidad
         </Link>
         .
       </p>
 
       {/* Footer link */}
       <p className="text-center text-sm text-muted-foreground">
-        ¿Ya tienes cuenta?{" "}
+        Ya tienes cuenta?{" "}
         <Link
           href="/login"
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
-          Iniciar sesión
+          Iniciar sesion
         </Link>
       </p>
     </div>
-  );
+  )
 }

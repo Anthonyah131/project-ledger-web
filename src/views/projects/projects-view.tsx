@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 // views/projects/projects-view.tsx
 // Thin view wrapper — mounts the ProjectsShelf orchestrator.

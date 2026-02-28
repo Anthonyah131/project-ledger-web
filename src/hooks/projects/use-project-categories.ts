@@ -3,9 +3,10 @@
 // hooks/projects/use-project-categories.ts
 // State management for categories within a project detail view.
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react"
+import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as categoryService from "@/services/category-service"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   CategoryResponse,
   CreateCategoryRequest,
@@ -18,7 +19,6 @@ export function useProjectCategories(projectId: string) {
 
   // Client-side search
   const [query, setQuery] = useState("")
-  const [debouncedQuery, setDebouncedQuery] = useState("")
 
   // Modals
   const [createOpen, setCreateOpen] = useState(false)
@@ -44,16 +44,9 @@ export function useProjectCategories(projectId: string) {
     fetchCategories()
   }, [fetchCategories])
 
-  // ── Debounce query ────────────────────────────────────────
+  // ── Debounced query ────────────────────────────────────────────
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setDebouncedQuery(query), 300)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [query])
+  const debouncedQuery = useDebouncedValue(query, 300)
 
   // ── Filtered ──────────────────────────────────────────────
 

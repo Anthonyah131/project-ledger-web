@@ -1,107 +1,121 @@
-"use client";
+﻿"use client"
 
-// views/auth/login/login-view.tsx
+import Link from "next/link"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 
-import Link from "next/link";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useLogin } from "@/hooks/auth/use-login";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { useLogin } from "@/hooks/auth/use-login"
 
 export function LoginView() {
   const {
     form,
-    error,
+    serverError,
     isLoading,
     showPassword,
-    handleChange,
-    handleSubmit,
+    onSubmit,
     togglePassword,
-  } = useLogin();
+  } = useLogin()
 
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Iniciar sesión</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Iniciar sesion</h1>
         <p className="text-sm text-muted-foreground">
           Ingresa tus credenciales para acceder a tu cuenta.
         </p>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Email */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Correo electrónico</Label>
-          <Input
-            id="email"
+      <Form {...form}>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <FormField
+            control={form.control}
             name="email"
-            type="email"
-            placeholder="tu@email.com"
-            autoComplete="email"
-            value={form.email}
-            onChange={handleChange}
-            disabled={isLoading}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Correo electronico</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="tu@email.com"
+                    autoComplete="email"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        {/* Password */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Contraseña</Label>
-            <Link
-              href="/forgot-password"
-              className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
-          <div className="relative">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              autoComplete="current-password"
-              value={form.password}
-              onChange={handleChange}
-              disabled={isLoading}
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              tabIndex={-1}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-        </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Contrasena</FormLabel>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                  >
+                    Olvidaste tu contrasena?
+                  </Link>
+                </div>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder=""
+                      autoComplete="current-password"
+                      disabled={isLoading}
+                      className="pr-10"
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Error */}
-        {error && <p className="text-sm text-destructive">{error}</p>}
+          {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-        {/* Submit */}
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Ingresando...
-            </>
-          ) : (
-            "Iniciar sesión"
-          )}
-        </Button>
-      </form>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Ingresando...
+              </>
+            ) : (
+              "Iniciar sesion"
+            )}
+          </Button>
+        </form>
+      </Form>
 
       {/* Divider */}
       <div className="relative">
@@ -110,7 +124,7 @@ export function LoginView() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            O continúa con
+            O continua con
           </span>
         </div>
       </div>
@@ -136,7 +150,7 @@ export function LoginView() {
 
       {/* Footer link */}
       <p className="text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta?{" "}
+        No tienes cuenta?{" "}
         <Link
           href="/register"
           className="font-medium text-foreground underline-offset-4 hover:underline"
@@ -145,5 +159,5 @@ export function LoginView() {
         </Link>
       </p>
     </div>
-  );
+  )
 }

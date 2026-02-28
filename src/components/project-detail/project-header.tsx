@@ -1,8 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ROLE_LABEL } from "@/lib/constants"
+import { formatDate } from "@/lib/format-utils"
 import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
@@ -19,23 +21,10 @@ interface ProjectHeaderProps {
   loading: boolean
   onEdit: () => void
   onDelete: () => void
+  onShare?: () => void
 }
 
-const ROLE_LABEL: Record<string, string> = {
-  owner: "Propietario",
-  editor: "Editor",
-  viewer: "Lector",
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
-}
-
-export function ProjectHeader({ project, loading, onEdit, onDelete }: ProjectHeaderProps) {
+export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: ProjectHeaderProps) {
   const router = useRouter()
 
   if (loading || !project) {
@@ -112,6 +101,12 @@ export function ProjectHeader({ project, loading, onEdit, onDelete }: ProjectHea
                   <Pencil className="size-4" />
                   Editar proyecto
                 </DropdownMenuItem>
+                {onShare && (
+                  <DropdownMenuItem onClick={onShare}>
+                    <Users className="size-4" />
+                    Gestionar accesos
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onDelete}

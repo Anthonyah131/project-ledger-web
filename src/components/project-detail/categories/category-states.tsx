@@ -1,8 +1,8 @@
 "use client"
 
-import { Tag, SearchX } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Tag } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/shared/empty-state"
 
 interface EmptyProps {
   hasSearch: boolean
@@ -11,26 +11,15 @@ interface EmptyProps {
 
 export function CategoriesEmptyState({ hasSearch, onCreate }: EmptyProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      {hasSearch ? (
-        <SearchX className="size-10 text-muted-foreground/50 mb-3" />
-      ) : (
-        <Tag className="size-10 text-muted-foreground/50 mb-3" />
-      )}
-      <p className="text-sm font-medium text-foreground mb-1">
-        {hasSearch ? "Sin resultados" : "Sin categorías adicionales"}
-      </p>
-      <p className="text-xs text-muted-foreground mb-4 max-w-xs">
-        {hasSearch
-          ? "No se encontraron categorías que coincidan con tu búsqueda."
-          : "Agrega categorías para organizar tus gastos."}
-      </p>
-      {!hasSearch && (
-        <Button size="sm" onClick={onCreate}>
-          Nueva categoría
-        </Button>
-      )}
-    </div>
+    <EmptyState
+      hasSearch={hasSearch}
+      onCreate={onCreate}
+      icon={Tag}
+      title="Sin categorías adicionales"
+      description="Agrega categorías para organizar tus gastos."
+      searchDescription="No se encontraron categorías que coincidan con tu búsqueda."
+      createLabel="Nueva categoría"
+    />
   )
 }
 

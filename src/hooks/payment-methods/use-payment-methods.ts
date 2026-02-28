@@ -1,10 +1,11 @@
-"use client";
+"use client"
 
 // hooks/payment-methods/use-payment-methods.ts
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as pmService from "@/services/payment-method-service";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type {
   PaymentMethodResponse,
   CreatePaymentMethodRequest,
@@ -44,7 +45,6 @@ export function usePaymentMethods() {
   // View / filter state
   const [viewMode, setViewMode] = useState<ViewMode>("shelf");
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [sort, setSort] = useState("updatedAt:desc");
   const [page, setPage] = useState(1);
@@ -73,17 +73,10 @@ export function usePaymentMethods() {
 
   useEffect(() => { fetchPaymentMethods(); }, [fetchPaymentMethods]);
 
-  // ── Debounce query ─────────────────────────────────────────────────────────
+  // ── Debounced query ──────────────────────────────────────────────────
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setDebouncedQuery(query);
-      setPage(1);
-    }, 350);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [query]);
+  const resetPage = useCallback(() => setPage(1), []);
+  const debouncedQuery = useDebouncedValue(query, 350, resetPage);
 
   // ── Filter + sort + paginate ───────────────────────────────────────────────
 

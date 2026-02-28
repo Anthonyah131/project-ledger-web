@@ -1,6 +1,7 @@
 "use client"
 
 import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useProjects } from "@/hooks/projects/use-projects"
 import { ProjectsToolbar } from "./projects-toolbar"
@@ -10,8 +11,8 @@ import { Pagination } from "@/components/shared/pagination"
 import {
   CreateProjectModal,
   EditProjectModal,
-  DeleteProjectModal,
 } from "./project-modals"
+import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import {
   EmptyState,
   ShelfSkeleton,
@@ -19,6 +20,7 @@ import {
 } from "./project-states"
 
 export function ProjectsShelf() {
+  const router = useRouter()
   const {
     projects,
     total,
@@ -85,6 +87,7 @@ export function ProjectsShelf() {
             projects={projects}
             onEdit={(p) => setEditProject(p)}
             onDelete={(p) => setDeleteTarget(p)}
+            onShare={(p) => router.push(`/projects/${p.id}/members`)}
             globalIndex={globalIndex}
           />
         ) : (
@@ -92,6 +95,7 @@ export function ProjectsShelf() {
             projects={projects}
             onEdit={(p) => setEditProject(p)}
             onDelete={(p) => setDeleteTarget(p)}
+            onShare={(p) => router.push(`/projects/${p.id}/members`)}
             globalIndex={globalIndex}
           />
         )}
@@ -120,11 +124,14 @@ export function ProjectsShelf() {
         onClose={() => setEditProject(null)}
         onSave={handleEdit}
       />
-      <DeleteProjectModal
-        project={deleteTarget}
+      <DeleteEntityModal
+        item={deleteTarget}
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
+        title="Eliminar proyecto"
+        description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
+        getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
       />
     </div>
   )

@@ -1,34 +1,10 @@
 "use client"
 
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { getAccentColorRaw } from "@/lib/constants"
+import { formatAmount } from "@/lib/format-utils"
 import type { CategoryResponse } from "@/types/category"
-
-const ACCENT_COLORS = [
-  "oklch(0.55 0.20 255)",
-  "oklch(0.55 0.20 290)",
-  "oklch(0.55 0.20 330)",
-  "oklch(0.60 0.18 20)",
-  "oklch(0.60 0.16 55)",
-  "oklch(0.55 0.18 145)",
-  "oklch(0.50 0.15 200)",
-  "oklch(0.55 0.18 175)",
-]
-
-function formatBudget(amount: number | null): string {
-  if (amount === null || amount === undefined) return "Sin límite"
-  return new Intl.NumberFormat("es", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
 
 interface CategoriesListProps {
   categories: CategoryResponse[]
@@ -56,7 +32,7 @@ export function CategoriesList({
 
       {/* Rows */}
       {categories.map((cat, idx) => {
-        const color = ACCENT_COLORS[idx % ACCENT_COLORS.length]
+        const color = getAccentColorRaw(idx)
         return (
           <div
             key={cat.id}
@@ -89,37 +65,17 @@ export function CategoriesList({
 
             {/* Budget */}
             <span className="text-sm tabular-nums w-32 text-right font-medium">
-              {formatBudget(cat.budgetAmount)}
+              {formatAmount(cat.budgetAmount)}
             </span>
 
             {/* Actions */}
             <div className="w-8 flex justify-end">
               {!cat.isDefault ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 text-muted-foreground/0 group-hover:text-muted-foreground transition-colors"
-                    >
-                      <MoreHorizontal className="size-4" />
-                      <span className="sr-only">Opciones</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit(cat)}>
-                      <Pencil className="size-4 mr-2" />
-                      Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => onDelete(cat)}
-                    >
-                      <Trash2 className="size-4 mr-2" />
-                      Eliminar
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <ItemActionMenu
+                  variant="ghost"
+                  onEdit={() => onEdit(cat)}
+                  onDelete={() => onDelete(cat)}
+                />
               ) : (
                 <span className="size-8" />
               )}

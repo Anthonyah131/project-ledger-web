@@ -1,4 +1,4 @@
-﻿"use client";
+﻿"use client"
 
 // views/dashboard/dashboard-view.tsx
 

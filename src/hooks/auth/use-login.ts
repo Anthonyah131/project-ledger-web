@@ -1,74 +1,56 @@
-"use client";
+﻿"use client"
 
-// hooks/auth/use-login.ts
-// Encapsulates all login page logic: form state, validation, submission, errors.
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { useAuth } from "@/context/auth-context";
-import { ApiClientError } from "@/lib/api-client";
-
-export interface LoginForm {
-  email: string;
-  password: string;
-}
+import { useAuth } from "@/context/auth-context"
+import { ApiClientError } from "@/lib/api-client"
+import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
 
 export function useLogin() {
-  const router = useRouter();
-  const { login, isActionLoading: isLoading } = useAuth();
+  const router = useRouter()
+  const { login, isActionLoading: isLoading } = useAuth()
 
-  const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
-  // ── Field change handler ──────────────────────────────────────────────────
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
-  }
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  })
 
-  // ── Toggle password visibility ────────────────────────────────────────────
   function togglePassword() {
-    setShowPassword((prev) => !prev);
+    setShowPassword((prev) => !prev)
   }
 
-  // ── Submit handler ────────────────────────────────────────────────────────
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    // Client-side validation
-    if (!form.email || !form.password) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
-
+  const onSubmit = form.handleSubmit(async (data) => {
+    setServerError("")
     try {
-      await login(form.email, form.password);
-      router.push("/dashboard");
+      await login(data.email, data.password)
+      router.push("/dashboard")
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 401) {
-          setError("Correo o contraseña incorrectos.");
+          setServerError("Correo o contraseña incorrectos.")
         } else if (err.status === 429) {
-          setError("Demasiados intentos. Espera un momento.");
+          setServerError("Demasiados intentos. Espera un momento.")
         } else {
-          setError(err.message || "Error al iniciar sesión.");
+          setServerError(err.message || "Error al iniciar sesión.")
         }
       } else {
-        setError("Error de conexión. Intenta de nuevo.");
+        setServerError("Error de conexión. Intenta de nuevo.")
       }
     }
-  }
+  })
 
   return {
     form,
-    error,
+    serverError,
     isLoading,
     showPassword,
-    handleChange,
-    handleSubmit,
+    onSubmit,
     togglePassword,
-  };
+  }
 }

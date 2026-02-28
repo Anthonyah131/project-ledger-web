@@ -1,36 +1,12 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Pencil, Trash2, ArrowRight, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import type { PaymentMethodResponse, PaymentMethodType } from "@/types/payment-method"
-
-const TYPE_LABEL: Record<PaymentMethodType, string> = {
-  bank: "Banco",
-  cash: "Efectivo",
-  card: "Tarjeta",
-}
-
-const ACCENT_BAR: Record<PaymentMethodType, string> = {
-  bank: "bg-[oklch(0.55_0.14_280)]",
-  card: "bg-primary",
-  cash: "bg-[oklch(0.60_0.16_155)]",
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es", {
-    day: "numeric",
-    month: "short",
-  })
-}
+import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
+import { formatDate } from "@/lib/format-utils"
+import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import type { PaymentMethodResponse } from "@/types/payment-method"
 
 interface ShelfViewProps {
   paymentMethods: PaymentMethodResponse[]
@@ -75,7 +51,7 @@ function PaymentMethodCard({
     >
       <div className="flex flex-1 gap-4 p-5">
         {/* Accent bar */}
-        <div className={cn("w-1 shrink-0 rounded-full self-stretch", ACCENT_BAR[pm.type])} />
+        <div className={cn("w-1 shrink-0 rounded-full self-stretch", PAYMENT_METHOD_ACCENT[pm.type])} />
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
@@ -93,54 +69,20 @@ function PaymentMethodCard({
             </div>
 
             {/* Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className={cn(
-                    "shrink-0 flex items-center justify-center size-7 rounded-md",
-                    "text-muted-foreground/0 group-hover:text-muted-foreground",
-                    "hover:bg-accent hover:text-foreground",
-                    "transition-all duration-150",
-                    "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                  )}
-                  aria-label="Acciones del método de pago"
-                >
-                  <MoreHorizontal className="size-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    router.push(`/payment-methods/${pm.id}/expenses`)
-                  }}
-                >
-                  <ArrowRight className="size-4" />
-                  Ver gastos
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={(e) => { e.stopPropagation(); onEdit(pm) }}
-                >
-                  <Pencil className="size-4" />
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => { e.stopPropagation(); onDelete(pm) }}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                  Eliminar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ItemActionMenu
+              ariaLabel="Acciones del método de pago"
+              onOpen={() => router.push(`/payment-methods/${pm.id}/expenses`)}
+              openLabel="Ver gastos"
+              onEdit={() => onEdit(pm)}
+              onDelete={() => onDelete(pm)}
+              stopPropagation
+            />
           </div>
 
           {/* Bottom: metadata */}
           <div className="flex items-center gap-2 mt-auto">
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
-              {TYPE_LABEL[pm.type]}
+              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
             </Badge>
             <span className="text-border">{"/"}</span>
             <span className="text-xs font-medium text-foreground/80">{pm.currency}</span>
@@ -151,7 +93,7 @@ function PaymentMethodCard({
               </>
             )}
             <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
-              {formatDate(pm.updatedAt)}
+              {formatDate(pm.updatedAt, { withYear: false })}
             </span>
           </div>
         </div>

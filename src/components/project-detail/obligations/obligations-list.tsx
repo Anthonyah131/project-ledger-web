@@ -1,66 +1,10 @@
 "use client"
 
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import type { ObligationResponse, ObligationStatus } from "@/types/obligation"
-
-const ACCENT_COLORS = [
-  "oklch(0.55 0.20 255)",
-  "oklch(0.55 0.20 290)",
-  "oklch(0.55 0.20 330)",
-  "oklch(0.60 0.18 20)",
-  "oklch(0.60 0.16 55)",
-  "oklch(0.55 0.18 145)",
-  "oklch(0.50 0.15 200)",
-  "oklch(0.55 0.18 175)",
-]
-
-const STATUS_COLORS: Record<ObligationStatus, { dot: string; bg: string; text: string; label: string }> = {
-  open: {
-    dot: "bg-primary",
-    bg: "bg-primary/10",
-    text: "text-primary",
-    label: "Abierta",
-  },
-  partially_paid: {
-    dot: "bg-[oklch(0.62_0.14_85)]",
-    bg: "bg-[oklch(0.62_0.14_85)]/10",
-    text: "text-[oklch(0.62_0.14_85)]",
-    label: "Pago parcial",
-  },
-  paid: {
-    dot: "bg-[oklch(0.60_0.16_155)]",
-    bg: "bg-[oklch(0.60_0.16_155)]/10",
-    text: "text-[oklch(0.60_0.16_155)]",
-    label: "Pagada",
-  },
-  overdue: {
-    dot: "bg-[oklch(0.58_0.16_30)]",
-    bg: "bg-[oklch(0.58_0.16_30)]/10",
-    text: "text-[oklch(0.58_0.16_30)]",
-    label: "Vencida",
-  },
-}
-
-function formatAmount(amount: number): string {
-  return new Intl.NumberFormat("es", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
-
-function formatDate(date: string | null): string {
-  if (!date) return "Sin vencimiento"
-  const d = new Date(`${date}T00:00:00`)
-  return d.toLocaleDateString("es", { day: "2-digit", month: "short", year: "numeric" })
-}
+import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { getAccentColorRaw, STATUS_COLORS } from "@/lib/constants"
+import { formatAmount, formatDate } from "@/lib/format-utils"
+import type { ObligationResponse } from "@/types/obligation"
 
 interface ObligationsListProps {
   obligations: ObligationResponse[]
@@ -97,7 +41,7 @@ export function ObligationsList({
 
       {/* Rows */}
       {obligations.map((obl, idx) => {
-        const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length]
+        const accent = getAccentColorRaw(idx)
         const sc = STATUS_COLORS[obl.status]
         const pct = obl.totalAmount > 0
           ? Math.min(100, Math.round((obl.paidAmount / obl.totalAmount) * 100))
@@ -124,12 +68,12 @@ export function ObligationsList({
 
             {/* Due date */}
             <span className="text-xs text-muted-foreground">
-              {formatDate(obl.dueDate)}
+              {formatDate(obl.dueDate, { fixTimezone: true, fallback: "Sin vencimiento" })}
             </span>
 
             {/* Total */}
             <span className="text-sm tabular-nums font-medium text-right">
-              {formatAmount(obl.totalAmount)}
+              {formatAmount(obl.totalAmount, "")}
             </span>
 
             {/* Progress */}
@@ -139,14 +83,12 @@ export function ObligationsList({
                   className="h-full rounded-full transition-all duration-300"
                   style={{
                     width: `${pct}%`,
-                    backgroundColor: sc.dot.startsWith("bg-primary")
-                      ? "var(--primary)"
-                      : sc.dot.replace("bg-", "").replace("[", "").replace("]", ""),
+                    backgroundColor: sc.color,
                   }}
                 />
               </div>
               <span className="text-[11px] text-muted-foreground">
-                {formatAmount(obl.paidAmount)} pagado
+                {formatAmount(obl.paidAmount, "")} pagado
               </span>
             </div>
 
@@ -162,31 +104,11 @@ export function ObligationsList({
 
             {/* Actions */}
             <div className="w-8 flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 text-muted-foreground/0 group-hover:text-muted-foreground transition-colors"
-                  >
-                    <MoreHorizontal className="size-4" />
-                    <span className="sr-only">Opciones</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEdit(obl)}>
-                    <Pencil className="size-4 mr-2" />
-                    Editar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onClick={() => onDelete(obl)}
-                  >
-                    <Trash2 className="size-4 mr-2" />
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ItemActionMenu
+                variant="ghost"
+                onEdit={() => onEdit(obl)}
+                onDelete={() => onDelete(obl)}
+              />
             </div>
           </div>
         )

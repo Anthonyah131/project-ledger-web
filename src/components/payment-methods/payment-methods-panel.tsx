@@ -15,8 +15,8 @@ import {
 import {
   CreatePaymentMethodModal,
   EditPaymentMethodModal,
-  DeletePaymentMethodModal,
 } from "./payment-method-modals"
+import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 
 export function PaymentMethodsPanel() {
   const {
@@ -117,11 +117,14 @@ export function PaymentMethodsPanel() {
         onClose={() => setEditTarget(null)}
         onSave={handleEdit}
       />
-      <DeletePaymentMethodModal
-        paymentMethod={deleteTarget}
+      <DeleteEntityModal
+        item={deleteTarget}
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
+        title="Eliminar metodo de pago"
+        description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
+        getMessage={(pm) => `¿Eliminar "${pm.name}"?`}
       />
     </div>
   )

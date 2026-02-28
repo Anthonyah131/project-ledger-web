@@ -1,8 +1,8 @@
 "use client"
 
-import { Receipt, SearchX } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Receipt } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/shared/empty-state"
 
 interface EmptyProps {
   hasFilter: boolean
@@ -11,26 +11,15 @@ interface EmptyProps {
 
 export function ObligationsEmptyState({ hasFilter, onCreate }: EmptyProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      {hasFilter ? (
-        <SearchX className="size-10 text-muted-foreground/50 mb-3" />
-      ) : (
-        <Receipt className="size-10 text-muted-foreground/50 mb-3" />
-      )}
-      <p className="text-sm font-medium text-foreground mb-1">
-        {hasFilter ? "Sin resultados" : "Sin obligaciones registradas"}
-      </p>
-      <p className="text-xs text-muted-foreground mb-4 max-w-xs">
-        {hasFilter
-          ? "No hay obligaciones que coincidan con el filtro seleccionado."
-          : "Registra obligaciones financieras para llevar control de pagos."}
-      </p>
-      {!hasFilter && (
-        <Button size="sm" onClick={onCreate}>
-          Nueva obligación
-        </Button>
-      )}
-    </div>
+    <EmptyState
+      hasSearch={hasFilter}
+      onCreate={onCreate}
+      icon={Receipt}
+      title="Sin obligaciones registradas"
+      description="Registra obligaciones financieras para llevar control de pagos."
+      searchDescription="No hay obligaciones que coincidan con el filtro seleccionado."
+      createLabel="Nueva obligación"
+    />
   )
 }
 

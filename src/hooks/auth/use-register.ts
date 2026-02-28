@@ -1,91 +1,56 @@
-"use client";
+﻿"use client"
 
-// hooks/auth/use-register.ts
-// Encapsulates all register page logic: form state, validation, submission, errors.
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { useAuth } from "@/context/auth-context";
-import { ApiClientError } from "@/lib/api-client";
-
-export interface RegisterForm {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { useAuth } from "@/context/auth-context"
+import { ApiClientError } from "@/lib/api-client"
+import { registerSchema, type RegisterFormValues } from "@/lib/validations/auth"
 
 export function useRegister() {
-  const router = useRouter();
-  const { register: registerUser, isActionLoading: isLoading } = useAuth();
+  const router = useRouter()
+  const { register: registerUser, isActionLoading: isLoading } = useAuth()
 
-  const [form, setForm] = useState<RegisterForm>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
-  // ── Field change handler ──────────────────────────────────────────────────
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
-  }
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
+  })
 
-  // ── Toggle password visibility ────────────────────────────────────────────
   function togglePassword() {
-    setShowPassword((prev) => !prev);
+    setShowPassword((prev) => !prev)
   }
 
-  // ── Submit handler ────────────────────────────────────────────────────────
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    // Client-side validations
-    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
-
-    if (form.password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
+  const onSubmit = form.handleSubmit(async (data) => {
+    setServerError("")
     try {
-      await registerUser(form.email, form.password, form.name);
-      router.push("/dashboard");
+      await registerUser(data.email, data.password, data.name)
+      router.push("/dashboard")
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 409) {
-          setError("Ya existe una cuenta con ese correo.");
+          setServerError("Ya existe una cuenta con ese correo.")
         } else if (err.status === 429) {
-          setError("Demasiados intentos. Espera un momento.");
+          setServerError("Demasiados intentos. Espera un momento.")
         } else {
-          setError(err.message || "No se pudo crear la cuenta.");
+          setServerError(err.message || "No se pudo crear la cuenta.")
         }
       } else {
-        setError("Error de conexión. Intenta de nuevo.");
+        setServerError("Error de conexión. Intenta de nuevo.")
       }
     }
-  }
+  })
 
   return {
     form,
-    error,
+    serverError,
     isLoading,
     showPassword,
-    handleChange,
-    handleSubmit,
+    onSubmit,
     togglePassword,
-  };
+  }
 }

@@ -1,8 +1,8 @@
 "use client"
 
-import { CreditCard, Plus, SearchX } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { CreditCard } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState as GenericEmptyState } from "@/components/shared/empty-state"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
@@ -13,31 +13,15 @@ interface EmptyStateProps {
 
 export function EmptyState({ hasSearch, onCreate }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-24 gap-4">
-      <div className="flex items-center justify-center size-12 rounded-xl bg-muted">
-        {hasSearch ? (
-          <SearchX className="size-5 text-muted-foreground" />
-        ) : (
-          <CreditCard className="size-5 text-muted-foreground" />
-        )}
-      </div>
-      <div className="text-center">
-        <h3 className="text-sm font-semibold text-foreground">
-          {hasSearch ? "Sin resultados" : "Sin métodos de pago"}
-        </h3>
-        <p className="text-xs text-muted-foreground mt-1.5 max-w-65 leading-relaxed">
-          {hasSearch
-            ? "No se encontraron métodos de pago con ese criterio."
-            : "Agrega una cuenta bancaria, tarjeta o efectivo para registrar gastos."}
-        </p>
-      </div>
-      {!hasSearch && (
-        <Button onClick={onCreate} size="sm" className="mt-1">
-          <Plus className="size-3.5" />
-          Agregar método
-        </Button>
-      )}
-    </div>
+    <GenericEmptyState
+      hasSearch={hasSearch}
+      onCreate={onCreate}
+      icon={CreditCard}
+      title="Sin métodos de pago"
+      description="Agrega una cuenta bancaria, tarjeta o efectivo para registrar gastos."
+      searchDescription="No se encontraron métodos de pago con ese criterio."
+      createLabel="Agregar método"
+    />
   )
 }
 

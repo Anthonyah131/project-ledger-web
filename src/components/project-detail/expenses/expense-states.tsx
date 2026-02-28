@@ -1,8 +1,8 @@
 "use client"
 
-import { FolderOpen, Plus, SearchX } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { FolderOpen } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/shared/empty-state"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
@@ -13,31 +13,15 @@ interface EmptyStateProps {
 
 export function ExpensesEmptyState({ hasSearch, onCreate }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-24 gap-4">
-      <div className="flex items-center justify-center size-12 rounded-xl bg-muted">
-        {hasSearch ? (
-          <SearchX className="size-5 text-muted-foreground" />
-        ) : (
-          <FolderOpen className="size-5 text-muted-foreground" />
-        )}
-      </div>
-      <div className="text-center">
-        <h3 className="text-sm font-semibold text-foreground">
-          {hasSearch ? "Sin resultados" : "Sin gastos registrados"}
-        </h3>
-        <p className="text-xs text-muted-foreground mt-1.5 max-w-65 leading-relaxed">
-          {hasSearch
-            ? "No se encontraron gastos con ese criterio."
-            : "Registra el primer gasto del proyecto."}
-        </p>
-      </div>
-      {!hasSearch && (
-        <Button onClick={onCreate} size="sm" className="mt-1">
-          <Plus className="size-3.5" />
-          Nuevo gasto
-        </Button>
-      )}
-    </div>
+    <EmptyState
+      hasSearch={hasSearch}
+      onCreate={onCreate}
+      icon={FolderOpen}
+      title="Sin gastos registrados"
+      description="Registra el primer gasto del proyecto."
+      searchDescription="No se encontraron gastos con ese criterio."
+      createLabel="Nuevo gasto"
+    />
   )
 }
 

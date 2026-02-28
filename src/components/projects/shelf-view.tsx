@@ -1,74 +1,26 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import {
-  Pencil,
-  Trash2,
-  ArrowRight,
-  MoreHorizontal,
-} from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { getAccentColor, ROLE_LABEL } from "@/lib/constants"
+import { formatDate, formatCurrencySymbol } from "@/lib/format-utils"
+import { ItemActionMenu } from "@/components/shared/item-action-menu"
 
 interface ShelfViewProps {
   projects: ProjectResponse[]
   onEdit: (project: ProjectResponse) => void
   onDelete: (project: ProjectResponse) => void
+  onShare: (project: ProjectResponse) => void
   globalIndex: number
-}
-
-const ROLE_LABEL: Record<string, string> = {
-  owner: "Propietario",
-  editor: "Editor",
-  viewer: "Lector",
-}
-
-const ACCENT_COLORS = [
-  "bg-primary",
-  "bg-[oklch(0.60_0.16_155)]",
-  "bg-[oklch(0.58_0.16_30)]",
-  "bg-[oklch(0.55_0.14_280)]",
-  "bg-[oklch(0.58_0.14_200)]",
-  "bg-foreground/70",
-  "bg-[oklch(0.62_0.14_55)]",
-  "bg-[oklch(0.50_0.12_250)]",
-]
-
-function getAccent(index: number) {
-  return ACCENT_COLORS[index % ACCENT_COLORS.length]
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es", {
-    day: "numeric",
-    month: "short",
-  })
-}
-
-function formatCurrency(code: string) {
-  const symbols: Record<string, string> = {
-    USD: "$",
-    EUR: "\u20AC",
-    CRC: "\u20A1",
-    MXN: "$",
-    GBP: "\u00A3",
-    JPY: "\u00A5",
-  }
-  return symbols[code] || code
 }
 
 export function ShelfView({
   projects,
   onEdit,
   onDelete,
+  onShare,
   globalIndex,
 }: ShelfViewProps) {
   return (
@@ -83,8 +35,7 @@ export function ShelfView({
           project={project}
           accentIndex={globalIndex + i}
           onEdit={onEdit}
-          onDelete={onDelete}
-        />
+          onDelete={onDelete}          onShare={onShare}        />
       ))}
     </div>
   )
@@ -95,14 +46,16 @@ function ProjectCard({
   accentIndex,
   onEdit,
   onDelete,
+  onShare,
 }: {
   project: ProjectResponse
   accentIndex: number
   onEdit: (project: ProjectResponse) => void
   onDelete: (project: ProjectResponse) => void
+  onShare: (project: ProjectResponse) => void
 }) {
   const router = useRouter()
-  const accent = getAccent(accentIndex)
+  const accent = getAccentColor(accentIndex)
 
   return (
     <div
@@ -134,60 +87,21 @@ function ProjectCard({
             </div>
 
             {/* Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className={cn(
-                    "shrink-0 flex items-center justify-center size-7 rounded-md",
-                    "text-muted-foreground/0 group-hover:text-muted-foreground",
-                    "hover:bg-accent hover:text-foreground",
-                    "transition-all duration-150",
-                    "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                  )}
-                  aria-label="Acciones del proyecto"
-                >
-                  <MoreHorizontal className="size-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    router.push(`/projects/${project.id}`)
-                  }}
-                >
-                  <ArrowRight className="size-4" />
-                  Abrir proyecto
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit(project)
-                  }}
-                >
-                  <Pencil className="size-4" />
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(project)
-                  }}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                  Eliminar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ItemActionMenu
+              ariaLabel="Acciones del proyecto"
+              onOpen={() => router.push(`/projects/${project.id}`)}
+              openLabel="Abrir proyecto"
+              onEdit={() => onEdit(project)}
+              onDelete={() => onDelete(project)}
+              onShare={project.userRole === "owner" ? () => onShare(project) : undefined}
+              stopPropagation
+            />
           </div>
 
           {/* Bottom: metadata */}
           <div className="flex items-center gap-2 mt-auto">
             <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground/80">
-              <span className="text-muted-foreground">{formatCurrency(project.currencyCode)}</span>
+              <span className="text-muted-foreground">{formatCurrencySymbol(project.currencyCode)}</span>
               {project.currencyCode}
             </span>
             <span className="text-border">{"/"}</span>
@@ -198,7 +112,7 @@ function ProjectCard({
               {ROLE_LABEL[project.userRole]}
             </Badge>
             <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
-              {formatDate(project.updatedAt)}
+              {formatDate(project.updatedAt, { withYear: false })}
             </span>
           </div>
         </div>

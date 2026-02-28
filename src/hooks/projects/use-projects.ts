@@ -1,11 +1,12 @@
-"use client";
+"use client"
 
 // hooks/projects/use-projects.ts
 // State management + API orchestration for the projects list view.
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as projectService from "@/services/project-service";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { ProjectResponse, CreateProjectRequest, UpdateProjectRequest, ViewMode } from "@/types/project";
 
 // ─── Client-side sort / filter helpers ──────────────────────────────────────
@@ -43,7 +44,7 @@ export function useProjects() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+
   const [currency, setCurrency] = useState("all");
   const [sort, setSort] = useState("updatedAt:desc");
 
@@ -72,19 +73,10 @@ export function useProjects() {
     fetchProjects();
   }, [fetchProjects]);
 
-  // ── Debounce query ────────────────────────────────────────────────
+  // ── Debounced query ────────────────────────────────────────────────────
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setDebouncedQuery(query);
-      setPage(1);
-    }, 350);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [query]);
+  const resetPage = useCallback(() => setPage(1), []);
+  const debouncedQuery = useDebouncedValue(query, 350, resetPage);
 
   // ── Derived (filter, sort, paginate) ──────────────────────────────
 

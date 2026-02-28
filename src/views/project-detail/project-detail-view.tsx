@@ -1,22 +1,18 @@
-"use client";
+"use client"
 
 // views/project-detail/project-detail-view.tsx
 // Orchestrator for the project-detail page — header + 3 tabs.
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
-// ── Hooks ────────────────────────────────────────────
-import { useProjectDetail } from "@/hooks/projects/use-project-detail";
-import { useProjectExpenses } from "@/hooks/projects/use-project-expenses";
-import { useProjectCategories } from "@/hooks/projects/use-project-categories";
-import { useProjectObligations } from "@/hooks/projects/use-project-obligations";
+// ── Hook ─────────────────────────────────────────────
+import { useProjectDetailView } from "@/hooks/projects/use-project-detail-view";
 
 // ── Header ───────────────────────────────────────────
 import { ProjectHeader } from "@/components/project-detail/project-header";
 import { EditProjectModal } from "@/components/projects/project-modals";
-import { DeleteProjectModal } from "@/components/projects/project-modals";
+import { DeleteEntityModal } from "@/components/shared/delete-entity-modal";
 
 // ── Expenses ─────────────────────────────────────────
 import { ExpensesToolbar } from "@/components/project-detail/expenses/expenses-toolbar";
@@ -28,7 +24,6 @@ import {
 import {
   CreateExpenseModal,
   EditExpenseModal,
-  DeleteExpenseModal,
 } from "@/components/project-detail/expenses/expense-modals";
 
 // ── Categories ───────────────────────────────────────
@@ -41,7 +36,6 @@ import {
 import {
   CreateCategoryModal,
   EditCategoryModal,
-  DeleteCategoryModal,
 } from "@/components/project-detail/categories/category-modals";
 
 // ── Obligations ──────────────────────────────────────
@@ -54,17 +48,10 @@ import {
 import {
   CreateObligationModal,
   EditObligationModal,
-  DeleteObligationModal,
 } from "@/components/project-detail/obligations/obligation-modals";
 
 // ── Shared ───────────────────────────────────────────
 import { Pagination } from "@/components/shared/pagination";
-
-// ── Payment methods (for expense selects) ────────────
-import * as paymentMethodService from "@/services/payment-method-service";
-import type { PaymentMethodResponse } from "@/types/payment-method";
-
-import type { ProjectResponse } from "@/types/project";
 
 interface Props {
   projectId: string;
@@ -72,57 +59,18 @@ interface Props {
 
 export function ProjectDetailView({ projectId }: Props) {
   const router = useRouter();
+  const {
+    detail,
+    editProjectOpen, deleteProjectOpen,
+    setEditProjectOpen, setDeleteProjectOpen,
+    handleProjectEdit, handleProjectDelete,
+    handleProjectEditSave, handleProjectDeleteConfirm,
+    exp, cat, obl,
+    paymentMethods,
+    handleExpenseCreate, handleExpenseEdit, handleExpenseDelete,
+    handleCategoryDelete,
+  } = useProjectDetailView(projectId);
 
-  // ─── Project ──────────────────────────────────────────────
-  const detail = useProjectDetail(projectId);
-  const [editProjectOpen, setEditProjectOpen] = useState(false);
-  const [deleteProjectOpen, setDeleteProjectOpen] = useState(false);
-
-  // ─── Expenses ─────────────────────────────────────────────
-  const exp = useProjectExpenses(projectId);
-
-  // ─── Categories ───────────────────────────────────────────
-  const cat = useProjectCategories(projectId);
-
-  // ─── Obligations ──────────────────────────────────────────
-  const obl = useProjectObligations(projectId);
-
-  // ─── Payment Methods (global, for expense selects) ───────
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>(
-    [],
-  );
-  useEffect(() => {
-    paymentMethodService
-      .getPaymentMethods()
-      .then(setPaymentMethods)
-      .catch(() => {});
-  }, []);
-
-  // ─── Project header actions ───────────────────────────────
-  const handleProjectEdit = useCallback(() => {
-    setEditProjectOpen(true);
-  }, []);
-
-  const handleProjectDelete = useCallback(() => {
-    setDeleteProjectOpen(true);
-  }, []);
-
-  const handleProjectEditSave = useCallback(
-    (_id: string, data: { name: string; description: string }) => {
-      detail.handleEdit(data);
-    },
-    [detail],
-  );
-
-  const handleProjectDeleteConfirm = useCallback(
-    async (_project: ProjectResponse) => {
-      const deleted = await detail.handleDelete();
-      if (deleted) router.push("/projects");
-    },
-    [detail, router],
-  );
-
-  // ─── UI ───────────────────────────────────────────────────
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
       {/* Header */}
@@ -131,6 +79,11 @@ export function ProjectDetailView({ projectId }: Props) {
         loading={detail.loading}
         onEdit={handleProjectEdit}
         onDelete={handleProjectDelete}
+        onShare={
+          detail.project?.userRole === "owner"
+            ? () => router.push(`/projects/${projectId}/members`)
+            : undefined
+        }
       />
 
       {/* Tabs */}
@@ -186,7 +139,7 @@ export function ProjectDetailView({ projectId }: Props) {
           <CreateExpenseModal
             open={exp.createOpen}
             onClose={() => exp.setCreateOpen(false)}
-            onCreate={exp.handleCreate}
+            onCreate={handleExpenseCreate}
             categories={cat.categories}
             paymentMethods={paymentMethods}
             obligations={obl.obligations}
@@ -196,16 +149,19 @@ export function ProjectDetailView({ projectId }: Props) {
             expense={exp.editTarget}
             open={!!exp.editTarget}
             onClose={() => exp.setEditTarget(null)}
-            onSave={exp.handleEdit}
+            onSave={handleExpenseEdit}
             categories={cat.categories}
             paymentMethods={paymentMethods}
             projectCurrency={detail.project?.currencyCode ?? ""}
           />
-          <DeleteExpenseModal
-            expense={exp.deleteTarget}
+          <DeleteEntityModal
+            item={exp.deleteTarget}
             open={!!exp.deleteTarget}
             onClose={() => exp.setDeleteTarget(null)}
-            onConfirm={exp.handleDelete}
+            onConfirm={handleExpenseDelete}
+            title="Eliminar gasto"
+            description="Esta accion no se puede deshacer."
+            getMessage={(e) => `¿Eliminar gasto "${e.title}"?`}
           />
         </TabsContent>
 
@@ -257,11 +213,14 @@ export function ProjectDetailView({ projectId }: Props) {
             onClose={() => obl.setEditTarget(null)}
             onSave={obl.handleEdit}
           />
-          <DeleteObligationModal
-            obligation={obl.deleteTarget}
+          <DeleteEntityModal
+            item={obl.deleteTarget}
             open={!!obl.deleteTarget}
             onClose={() => obl.setDeleteTarget(null)}
             onConfirm={obl.handleDelete}
+            title="Eliminar obligacion"
+            description="Esta accion no se puede deshacer."
+            getMessage={(o) => `¿Eliminar obligación "${o.title}"?`}
           />
         </TabsContent>
 
@@ -299,11 +258,14 @@ export function ProjectDetailView({ projectId }: Props) {
             onClose={() => cat.setEditTarget(null)}
             onSave={cat.handleEdit}
           />
-          <DeleteCategoryModal
-            category={cat.deleteTarget}
+          <DeleteEntityModal
+            item={cat.deleteTarget}
             open={!!cat.deleteTarget}
             onClose={() => cat.setDeleteTarget(null)}
-            onConfirm={cat.handleDelete}
+            onConfirm={handleCategoryDelete}
+            title="Eliminar categoria"
+            description="Esta accion no se puede deshacer."
+            getMessage={(c) => `¿Eliminar categoría "${c.name}"? Los gastos de esta categoría se moverán a la categoría General.`}
           />
         </TabsContent>
       </Tabs>
@@ -317,11 +279,14 @@ export function ProjectDetailView({ projectId }: Props) {
             onClose={() => setEditProjectOpen(false)}
             onSave={handleProjectEditSave}
           />
-          <DeleteProjectModal
-            project={detail.project}
+          <DeleteEntityModal
+            item={detail.project}
             open={deleteProjectOpen}
             onClose={() => setDeleteProjectOpen(false)}
             onConfirm={handleProjectDeleteConfirm}
+            title="Eliminar proyecto"
+            description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
+            getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
           />
         </>
       )}

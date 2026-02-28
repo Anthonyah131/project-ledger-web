@@ -1,37 +1,11 @@
 "use client"
 
-import { Pencil, Trash2, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import type { PaymentMethodResponse, PaymentMethodType } from "@/types/payment-method"
-
-const TYPE_LABEL: Record<PaymentMethodType, string> = {
-  bank: "Banco",
-  cash: "Efectivo",
-  card: "Tarjeta",
-}
-
-// Same accent palette as project list-view, mapped per type
-const ACCENT_DOT: Record<PaymentMethodType, string> = {
-  bank: "bg-[oklch(0.55_0.14_280)]",
-  card: "bg-primary",
-  cash: "bg-[oklch(0.60_0.16_155)]",
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
-}
+import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
+import { formatDate } from "@/lib/format-utils"
+import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import type { PaymentMethodResponse } from "@/types/payment-method"
 
 interface PaymentMethodsListProps {
   paymentMethods: PaymentMethodResponse[]
@@ -63,7 +37,7 @@ export function PaymentMethodsList({ paymentMethods, onEdit, onDelete }: Payment
           )}
         >
           {/* Accent dot */}
-          <div className={cn("size-2 rounded-full shrink-0 mr-3.5", ACCENT_DOT[pm.type])} />
+          <div className={cn("size-2 rounded-full shrink-0 mr-3.5", PAYMENT_METHOD_ACCENT[pm.type])} />
 
           {/* Name + subtitle */}
           <div className="flex-1 min-w-0 mr-4">
@@ -80,7 +54,7 @@ export function PaymentMethodsList({ paymentMethods, onEdit, onDelete }: Payment
           {/* Type badge */}
           <div className="w-20 flex justify-center sm:flex">
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
-              {TYPE_LABEL[pm.type]}
+              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
             </Badge>
           </div>
 
@@ -100,36 +74,11 @@ export function PaymentMethodsList({ paymentMethods, onEdit, onDelete }: Payment
           </span>
 
           {/* Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className={cn(
-                  "shrink-0 ml-2 flex items-center justify-center size-7 rounded-md",
-                  "text-muted-foreground/0 group-hover:text-muted-foreground",
-                  "hover:bg-accent hover:text-foreground",
-                  "transition-all duration-150",
-                  "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                )}
-                aria-label="Acciones del método de pago"
-              >
-                <MoreHorizontal className="size-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem onClick={() => onEdit(pm)}>
-                <Pencil className="size-4" />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => onDelete(pm)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="size-4" />
-                Eliminar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ItemActionMenu
+            ariaLabel="Acciones del método de pago"
+            onEdit={() => onEdit(pm)}
+            onDelete={() => onDelete(pm)}
+          />
         </div>
       ))}
     </div>

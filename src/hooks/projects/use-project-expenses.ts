@@ -3,9 +3,10 @@
 // hooks/projects/use-project-expenses.ts
 // State management for expenses within a project detail view.
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react"
+import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as expenseService from "@/services/expense-service"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   ExpenseResponse,
   CreateExpenseRequest,
@@ -24,7 +25,6 @@ export function useProjectExpenses(projectId: string) {
 
   // Client-side search
   const [query, setQuery] = useState("")
-  const [debouncedQuery, setDebouncedQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")
 
   // Modals
@@ -58,16 +58,9 @@ export function useProjectExpenses(projectId: string) {
     fetchExpenses()
   }, [fetchExpenses])
 
-  // ── Debounce query ────────────────────────────────────────
+  // ── Debounced query ────────────────────────────────────────────
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setDebouncedQuery(query), 300)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [query])
+  const debouncedQuery = useDebouncedValue(query, 300)
 
   // ── Filtered (client-side by title) ───────────────────────
 
@@ -104,15 +97,15 @@ export function useProjectExpenses(projectId: string) {
   const handleEdit = useCallback(
     async (expenseId: string, data: UpdateExpenseRequest) => {
       try {
-        const updated = await expenseService.updateExpense(projectId, expenseId, data)
-        setExpenses((prev) => prev.map((e) => (e.id === expenseId ? updated : e)))
+        await expenseService.updateExpense(projectId, expenseId, data)
         toast.success("Gasto actualizado")
+        fetchExpenses()
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Error al actualizar gasto"
         toast.error("Error al actualizar", { description: msg })
       }
     },
-    [projectId]
+    [projectId, fetchExpenses]
   )
 
   const handleDelete = useCallback(

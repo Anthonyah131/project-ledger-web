@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 // components/auth/auth-guard.tsx
 // Wrapper component that protects routes by verifying authentication and roles.
