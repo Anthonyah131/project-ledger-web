@@ -15,8 +15,9 @@ export interface AdminUserResponse {
   id: string;
   email: string;
   fullName: string;
-  planId: string;
-  plan: AdminUserPlanDto;
+  /** May be absent on some endpoint responses — prefer plan.id */
+  planId?: string;
+  plan: AdminUserPlanDto | null;
   isActive: boolean;
   isAdmin: boolean;
   avatarUrl: string | null;

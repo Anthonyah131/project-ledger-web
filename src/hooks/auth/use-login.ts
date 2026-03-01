@@ -28,8 +28,8 @@ export function useLogin() {
   const onSubmit = form.handleSubmit(async (data) => {
     setServerError("")
     try {
-      await login(data.email, data.password)
-      router.push("/dashboard")
+      const loggedInUser = await login(data.email, data.password)
+      router.push(loggedInUser.isAdmin ? "/admin/users" : "/dashboard")
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 401) {

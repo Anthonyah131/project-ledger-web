@@ -21,9 +21,14 @@ interface AuthGuardProps {
    * Non-admin authenticated users are redirected to /dashboard.
    */
   requireAdmin?: boolean;
+  /**
+   * When true, blocks admin-only users from accessing user routes.
+   * Admin users are redirected to /admin/users.
+   */
+  requireUser?: boolean;
 }
 
-export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
+export function AuthGuard({ children, requireAdmin = false, requireUser = false }: AuthGuardProps) {
   const router = useRouter();
   const { user, isLoading, isAuthenticated } = useAuth();
 
@@ -37,8 +42,13 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
 
     if (requireAdmin && !user?.isAdmin) {
       router.replace("/dashboard");
+      return;
     }
-  }, [isLoading, isAuthenticated, requireAdmin, user, router]);
+
+    if (requireUser && user?.isAdmin) {
+      router.replace("/admin/users");
+    }
+  }, [isLoading, isAuthenticated, requireAdmin, requireUser, user, router]);
 
   // ── While hydrating or pending redirect, show a neutral spinner ──────────
   if (isLoading || !isAuthenticated) {
@@ -54,6 +64,11 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
 
   // ── Admin check pending redirect ──────────────────────────────────────────
   if (requireAdmin && !user?.isAdmin) {
+    return null;
+  }
+
+  // ── User-only check pending redirect ────────────────────────────────────
+  if (requireUser && user?.isAdmin) {
     return null;
   }
 

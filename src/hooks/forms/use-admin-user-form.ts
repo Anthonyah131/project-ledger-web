@@ -23,7 +23,10 @@ export function useEditAdminUserForm({ user, onSave, onClose }: UseEditAdminUser
       ? {
           fullName: user.fullName,
           avatarUrl: user.avatarUrl ?? "",
-          planId: user.planId,
+          // plan.id is the authoritative source; planId (top-level) may not be
+          // returned by all admin endpoints depending on API version.
+          planId: user.plan?.id ?? user.planId ?? "",
+          isAdmin: user.isAdmin,
         }
       : undefined,
   })
@@ -35,6 +38,7 @@ export function useEditAdminUserForm({ user, onSave, onClose }: UseEditAdminUser
     }
     if (values.avatarUrl) payload.avatarUrl = values.avatarUrl
     if (values.planId) payload.planId = values.planId
+    if (values.isAdmin !== undefined) payload.isAdmin = values.isAdmin
     onSave(user.id, payload)
     handleClose()
   }

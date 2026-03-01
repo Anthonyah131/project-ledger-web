@@ -4,9 +4,11 @@
 // State management + API orchestration for the admin users list view.
 // Uses server-side pagination since the admin endpoint is paginated.
 
-import { useState, useCallback, useEffect, useMemo } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as adminUserService from "@/services/admin-user-service"
+import * as planService from "@/services/plan-service"
+import { toastApiError } from "@/lib/error-utils"
 import type { AdminUserResponse, AdminUserPlanDto, UpdateAdminUserRequest } from "@/types/admin-user"
 
 export function useAdminUsers() {
@@ -29,17 +31,17 @@ export function useAdminUsers() {
   const [editTarget, setEditTarget] = useState<AdminUserResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AdminUserResponse | null>(null)
 
-  // ── Derived: unique plans from loaded users ───────────────────────────────
+  // ── Plans (fetched once for the edit modal dropdown) ────────────────────────
 
-  const plans: AdminUserPlanDto[] = useMemo(() => {
-    const map = new Map<string, AdminUserPlanDto>()
-    for (const u of users) {
-      if (u.plan && !map.has(u.plan.id)) {
-        map.set(u.plan.id, u.plan)
-      }
-    }
-    return Array.from(map.values())
-  }, [users])
+  const [plans, setPlans] = useState<AdminUserPlanDto[]>([])
+
+  useEffect(() => {
+    planService.getPlans().then((list) =>
+      setPlans(list.map((p) => ({ id: p.id, name: p.name, slug: p.slug })))
+    ).catch(() => {
+      // non-critical: dropdown will be empty but won't break the page
+    })
+  }, [])
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
 
@@ -70,65 +72,56 @@ export function useAdminUsers() {
   }, [fetchUsers])
 
   // ── Actions ───────────────────────────────────────────────────────────────
+  // Each mutating action refetches the page after success so the table always
+  // shows fresh, complete data (including the embedded plan relation).
 
   const handleActivate = useCallback(async (user: AdminUserResponse) => {
     try {
-      const updated = await adminUserService.activateUser(user.id)
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...updated, plan: updated.plan ?? u.plan } : u)),
-      )
+      await adminUserService.activateUser(user.id)
       toast.success("Usuario activado", {
-        description: `"${updated.fullName}" fue activado correctamente.`,
+        description: `"${user.fullName}" fue activado correctamente.`,
       })
+      await fetchUsers()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al activar usuario"
-      toast.error("Error al activar", { description: msg })
+      toastApiError(err, "Error al activar usuario")
     }
-  }, [])
+  }, [fetchUsers])
 
   const handleDeactivate = useCallback(async (user: AdminUserResponse) => {
     try {
-      const updated = await adminUserService.deactivateUser(user.id)
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...updated, plan: updated.plan ?? u.plan } : u)),
-      )
+      await adminUserService.deactivateUser(user.id)
       toast.success("Usuario desactivado", {
-        description: `"${updated.fullName}" fue desactivado correctamente.`,
+        description: `"${user.fullName}" fue desactivado correctamente.`,
       })
+      await fetchUsers()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al desactivar usuario"
-      toast.error("Error al desactivar", { description: msg })
+      toastApiError(err, "Error al desactivar usuario")
     }
-  }, [])
+  }, [fetchUsers])
 
   const handleEdit = useCallback(async (id: string, data: UpdateAdminUserRequest) => {
     try {
       const updated = await adminUserService.updateUser(id, data)
-      setUsers((prev) =>
-        prev.map((u) => (u.id === id ? { ...updated, plan: updated.plan ?? u.plan } : u)),
-      )
       toast.success("Usuario actualizado", {
         description: `"${updated.fullName}" se guardó correctamente.`,
       })
+      await fetchUsers()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al actualizar usuario"
-      toast.error("Error al actualizar", { description: msg })
+      toastApiError(err, "Error al actualizar usuario")
     }
-  }, [])
+  }, [fetchUsers])
 
   const handleDelete = useCallback(async (user: AdminUserResponse) => {
     try {
       await adminUserService.deleteUser(user.id)
-      setUsers((prev) => prev.filter((u) => u.id !== user.id))
-      setTotal((prev) => prev - 1)
       toast.success("Usuario eliminado", {
         description: `"${user.fullName}" fue eliminado correctamente.`,
       })
+      await fetchUsers()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al eliminar usuario"
-      toast.error("Error al eliminar", { description: msg })
+      toastApiError(err, "Error al eliminar usuario")
     }
-  }, [])
+  }, [fetchUsers])
 
   const handleToggleAdmin = useCallback(async (user: AdminUserResponse) => {
     try {
@@ -136,18 +129,15 @@ export function useAdminUsers() {
         fullName: user.fullName,
         isAdmin: !user.isAdmin,
       })
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...updated, plan: updated.plan ?? u.plan } : u)),
-      )
       toast.success(
         updated.isAdmin ? "Admin otorgado" : "Admin removido",
         { description: `"${updated.fullName}" fue actualizado correctamente.` },
       )
+      await fetchUsers()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cambiar rol"
-      toast.error("Error al cambiar rol", { description: msg })
+      toastApiError(err, "Error al cambiar rol")
     }
-  }, [])
+  }, [fetchUsers])
 
   // ── Sort / filter handlers ────────────────────────────────────────────────
 

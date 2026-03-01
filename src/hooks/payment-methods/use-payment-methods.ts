@@ -5,6 +5,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as pmService from "@/services/payment-method-service";
+import { toastApiError } from "@/lib/error-utils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type {
   PaymentMethodResponse,
@@ -105,8 +106,7 @@ export function usePaymentMethods() {
       setPage(1);
       toast.success("Método de pago creado", { description: `"${created.name}" se agregó correctamente.` });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al crear método de pago";
-      toast.error("Error al crear", { description: msg });
+      toastApiError(err, "Error al crear método de pago");
     }
   }, []);
 
@@ -116,8 +116,7 @@ export function usePaymentMethods() {
       setPaymentMethods((prev) => prev.map((pm) => (pm.id === id ? updated : pm)));
       toast.success("Método de pago actualizado", { description: `"${updated.name}" se guardó correctamente.` });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al actualizar";
-      toast.error("Error al actualizar", { description: msg });
+      toastApiError(err, "Error al actualizar método de pago");
     }
   }, []);
 
@@ -127,8 +126,7 @@ export function usePaymentMethods() {
       setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
       toast.success("Método de pago eliminado", { description: `"${pm.name}" fue desactivado.` });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al eliminar";
-      toast.error("Error al eliminar", { description: msg });
+      toastApiError(err, "Error al eliminar método de pago");
     }
   }, []);
 

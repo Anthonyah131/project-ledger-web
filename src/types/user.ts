@@ -1,6 +1,8 @@
 // types/user.ts
 // User model type definitions
 
+import type { PlanSummaryDto } from "@/types/plan";
+
 export interface User {
   id: string;
   email: string;
@@ -24,4 +26,18 @@ export interface User {
 export interface MeResponse {
   userId: string;
   email: string;
+}
+
+/** Returned by GET /api/users/profile — full profile with embedded plan summary */
+export interface UserProfileResponse {
+  id: string;
+  email: string;
+  fullName: string;
+  avatarUrl: string | null;
+  isActive: boolean;
+  isAdmin: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+  /** Embedded plan summary; null if user has no plan assigned */
+  plan: PlanSummaryDto | null;
 }

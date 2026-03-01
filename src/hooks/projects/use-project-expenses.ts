@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as expenseService from "@/services/expense-service"
+import { toastApiError } from "@/lib/error-utils"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   ExpenseResponse,
@@ -87,8 +88,7 @@ export function useProjectExpenses(projectId: string) {
         toast.success("Gasto creado")
         fetchExpenses()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al crear gasto"
-        toast.error("Error al crear gasto", { description: msg })
+        toastApiError(err, "Error al crear gasto")
       }
     },
     [projectId, fetchExpenses]
@@ -101,8 +101,7 @@ export function useProjectExpenses(projectId: string) {
         toast.success("Gasto actualizado")
         fetchExpenses()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al actualizar gasto"
-        toast.error("Error al actualizar", { description: msg })
+        toastApiError(err, "Error al actualizar gasto")
       }
     },
     [projectId, fetchExpenses]
@@ -117,8 +116,7 @@ export function useProjectExpenses(projectId: string) {
         })
         fetchExpenses()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al eliminar gasto"
-        toast.error("Error al eliminar", { description: msg })
+        toastApiError(err, "Error al eliminar gasto")
       }
     },
     [projectId, fetchExpenses]

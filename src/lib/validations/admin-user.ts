@@ -10,6 +10,7 @@ export const editAdminUserSchema = z.object({
     .max(255, "Nombre no puede superar 255 caracteres"),
   avatarUrl: z.string().trim().optional(),
   planId: z.string().trim().optional(),
+  isAdmin: z.boolean().optional(),
 })
 
 export type EditAdminUserFormValues = z.infer<typeof editAdminUserSchema>

@@ -1,6 +1,50 @@
 // types/plan.ts
 // Subscription plan model type definitions
 
+// ─── Shared summary (embedded in user responses) ────────────────────────────
+
+export interface PlanSummaryDto {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+// ─── API response types (GET /api/plans) ────────────────────────────────────
+
+export interface PlanPermissionsDto {
+  canCreateProjects: boolean;
+  canEditProjects: boolean;
+  canDeleteProjects: boolean;
+  canShareProjects: boolean;
+  canExportData: boolean;
+  canUseAdvancedReports: boolean;
+  canUseOcr: boolean;
+  canUseApi: boolean;
+  canUseMultiCurrency: boolean;
+  canSetBudgets: boolean;
+}
+
+export interface PlanLimitsDto {
+  /** null = unlimited */
+  maxProjects: number | null;
+  maxExpensesPerMonth: number | null;
+  maxCategoriesPerProject: number | null;
+  maxPaymentMethods: number | null;
+  maxTeamMembersPerProject: number | null;
+}
+
+export interface PlanResponse {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  displayOrder: number;
+  permissions: PlanPermissionsDto;
+  limits: PlanLimitsDto | null;
+}
+
+// ─── Internal / legacy full plan model ──────────────────────────────────────
+
 export interface PlanLimits {
   /** Maximum number of projects; null = unlimited */
   maxProjects?: number | null;

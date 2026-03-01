@@ -1,6 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -90,6 +91,27 @@ export function EditUserModal({ user, open, onClose, onSave, plans }: EditUserMo
               </SelectContent>
             </Select>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="isAdmin"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center gap-3 space-y-0 rounded-md border border-border p-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="leading-none">
+              <FormLabel className="cursor-pointer">Administrador</FormLabel>
+              <p className="text-xs text-muted-foreground mt-1">
+                Otorga acceso completo al panel de administración.
+              </p>
+            </div>
           </FormItem>
         )}
       />

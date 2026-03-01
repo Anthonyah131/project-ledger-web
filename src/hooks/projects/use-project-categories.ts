@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as categoryService from "@/services/category-service"
+import { toastApiError } from "@/lib/error-utils"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   CategoryResponse,
@@ -69,8 +70,7 @@ export function useProjectCategories(projectId: string) {
           description: `"${created.name}" se agregó correctamente.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al crear categoría"
-        toast.error("Error al crear categoría", { description: msg })
+        toastApiError(err, "Error al crear categoría")
       }
     },
     [projectId]
@@ -85,8 +85,7 @@ export function useProjectCategories(projectId: string) {
           description: `"${updated.name}" se guardó correctamente.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al actualizar categoría"
-        toast.error("Error al actualizar", { description: msg })
+        toastApiError(err, "Error al actualizar categoría")
       }
     },
     [projectId]
@@ -101,8 +100,7 @@ export function useProjectCategories(projectId: string) {
           description: `"${category.name}" fue eliminada.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al eliminar categoría"
-        toast.error("Error al eliminar", { description: msg })
+        toastApiError(err, "Error al eliminar categoría")
       }
     },
     [projectId]

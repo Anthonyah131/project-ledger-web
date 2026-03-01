@@ -1,8 +1,9 @@
 "use client"
 
 // views/project-detail/project-detail-view.tsx
-// Orchestrator for the project-detail page — header + 3 tabs.
+// Orchestrator for the project-detail page — header + 4 tabs.
 
+import { useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 
@@ -50,8 +51,22 @@ import {
   EditObligationModal,
 } from "@/components/project-detail/obligations/obligation-modals";
 
+// ── Payment Methods (project-scoped) ─────────────────
+import {
+  LinkPaymentMethodModal,
+  ProjectPaymentMethodsList,
+} from "@/components/project-detail/payment-methods/project-payment-methods";
+import {
+  ProjectPaymentMethodsEmptyState,
+  ProjectPaymentMethodsSkeleton,
+} from "@/components/project-detail/payment-methods/project-payment-method-states";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+
 // ── Shared ───────────────────────────────────────────
 import { Pagination } from "@/components/shared/pagination";
+
+import type { PaymentMethodResponse } from "@/types/payment-method";
 
 interface Props {
   projectId: string;
@@ -65,11 +80,30 @@ export function ProjectDetailView({ projectId }: Props) {
     setEditProjectOpen, setDeleteProjectOpen,
     handleProjectEdit, handleProjectDelete,
     handleProjectEditSave, handleProjectDeleteConfirm,
-    exp, cat, obl,
-    paymentMethods,
+    exp, cat, obl, ppm,
     handleExpenseCreate, handleExpenseEdit, handleExpenseDelete,
     handleCategoryDelete,
   } = useProjectDetailView(projectId);
+
+  const isOwner = detail.project?.userRole === "owner";
+
+  // Convert linked project payment methods to PaymentMethodResponse shape
+  // so existing expense form components can consume them without changes.
+  const paymentMethods: PaymentMethodResponse[] = useMemo(
+    () =>
+      ppm.linkedMethods.map((m) => ({
+        id: m.paymentMethodId,
+        name: m.paymentMethodName,
+        type: m.type,
+        currency: m.currency,
+        bankName: m.bankName,
+        accountNumber: m.accountNumber,
+        description: null,
+        createdAt: m.linkedAt,
+        updatedAt: m.linkedAt,
+      })),
+    [ppm.linkedMethods],
+  );
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
@@ -80,7 +114,7 @@ export function ProjectDetailView({ projectId }: Props) {
         onEdit={handleProjectEdit}
         onDelete={handleProjectDelete}
         onShare={
-          detail.project?.userRole === "owner"
+          isOwner
             ? () => router.push(`/projects/${projectId}/members`)
             : undefined
         }
@@ -92,6 +126,7 @@ export function ProjectDetailView({ projectId }: Props) {
           <TabsTrigger value="expenses">Gastos</TabsTrigger>
           <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
+          <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
         </TabsList>
 
         {/* ───── Expenses tab ───── */}
@@ -266,6 +301,51 @@ export function ProjectDetailView({ projectId }: Props) {
             title="Eliminar categoria"
             description="Esta accion no se puede deshacer."
             getMessage={(c) => `¿Eliminar categoría "${c.name}"? Los gastos de esta categoría se moverán a la categoría General.`}
+          />
+        </TabsContent>
+
+        {/* ───── Payment Methods tab ───── */}
+        <TabsContent value="payment-methods" className="flex flex-col gap-4">
+          {isOwner && (
+            <div className="flex justify-end px-5 py-3 border-b border-border bg-card">
+              <Button onClick={ppm.openLinkDialog} size="sm">
+                <Plus className="size-3.5" />
+                Vincular método
+              </Button>
+            </div>
+          )}
+
+          {ppm.loading ? (
+            <ProjectPaymentMethodsSkeleton />
+          ) : ppm.linkedMethods.length === 0 ? (
+            <ProjectPaymentMethodsEmptyState
+              isOwner={!!isOwner}
+              onLink={ppm.openLinkDialog}
+            />
+          ) : (
+            <ProjectPaymentMethodsList
+              methods={ppm.linkedMethods}
+              isOwner={!!isOwner}
+              onUnlink={(pm) => ppm.setUnlinkTarget(pm)}
+            />
+          )}
+
+          <LinkPaymentMethodModal
+            open={ppm.linkOpen}
+            onClose={() => ppm.setLinkOpen(false)}
+            availableMethods={ppm.availableMethods}
+            linkedMethods={ppm.linkedMethods}
+            loading={ppm.availableLoading}
+            onLink={ppm.handleLink}
+          />
+          <DeleteEntityModal
+            item={ppm.unlinkTarget}
+            open={!!ppm.unlinkTarget}
+            onClose={() => ppm.setUnlinkTarget(null)}
+            onConfirm={ppm.handleUnlink}
+            title="Desvincular método de pago"
+            description="El método ya no podrá usarse para crear gastos en este proyecto."
+            getMessage={(pm) => `¿Desvincular "${pm.paymentMethodName}" del proyecto?`}
           />
         </TabsContent>
       </Tabs>

@@ -28,7 +28,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const baseNavMain = [
+const userNavMain = [
   { title: "Dashboard",        url: "/dashboard",        icon: IconDashboard },
   { title: "Proyectos",        url: "/projects",         icon: IconFolder },
   { title: "Gastos",           url: "/expenses",         icon: IconReceipt },
@@ -37,7 +37,9 @@ const baseNavMain = [
   { title: "Reportes",         url: "/reports",          icon: IconChartBar },
 ]
 
-const adminNavItem = { title: "Usuarios", url: "/admin/users", icon: IconUserShield }
+const adminNavMain = [
+  { title: "Usuarios", url: "/admin/users", icon: IconUserShield },
+]
 
 const navSecondary = [
   { title: "Configuración", url: "/settings", icon: IconSettings },
@@ -48,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
 
   const navMain = useMemo(
-    () => (user?.isAdmin ? [...baseNavMain, adminNavItem] : baseNavMain),
+    () => (user?.isAdmin ? adminNavMain : userNavMain),
     [user?.isAdmin],
   )
 

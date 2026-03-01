@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as projectService from "@/services/project-service";
+import { toastApiError } from "@/lib/error-utils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { ProjectResponse, CreateProjectRequest, UpdateProjectRequest, ViewMode } from "@/types/project";
 
@@ -106,8 +107,7 @@ export function useProjects() {
         setPage(1);
         toast.success("Proyecto creado", { description: `"${created.name}" se agregó correctamente.` });
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al crear proyecto";
-        toast.error("Error al crear proyecto", { description: msg });
+        toastApiError(err, "Error al crear proyecto");
       }
     },
     []
@@ -120,8 +120,7 @@ export function useProjects() {
         setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
         toast.success("Proyecto actualizado", { description: `"${updated.name}" se guardó correctamente.` });
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al actualizar proyecto";
-        toast.error("Error al actualizar", { description: msg });
+        toastApiError(err, "Error al actualizar proyecto");
       }
     },
     []
@@ -134,8 +133,7 @@ export function useProjects() {
         setProjects((prev) => prev.filter((p) => p.id !== project.id));
         toast.success("Proyecto eliminado", { description: `"${project.name}" fue desactivado.` });
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al eliminar proyecto";
-        toast.error("Error al eliminar", { description: msg });
+        toastApiError(err, "Error al eliminar proyecto");
       }
     },
     []

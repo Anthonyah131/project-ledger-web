@@ -3,14 +3,13 @@
 // hooks/projects/use-project-detail-view.ts
 // Orchestrates all state and side-effects for the project-detail page.
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useProjectDetail } from "./use-project-detail"
 import { useProjectExpenses } from "./use-project-expenses"
 import { useProjectCategories } from "./use-project-categories"
 import { useProjectObligations } from "./use-project-obligations"
-import * as paymentMethodService from "@/services/payment-method-service"
-import type { PaymentMethodResponse } from "@/types/payment-method"
+import { useProjectPaymentMethods } from "./use-project-payment-methods"
 import type { UpdateProjectRequest } from "@/types/project"
 import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
 
@@ -22,16 +21,7 @@ export function useProjectDetailView(projectId: string) {
   const exp = useProjectExpenses(projectId)
   const cat = useProjectCategories(projectId)
   const obl = useProjectObligations(projectId)
-
-  // ─── Payment methods (global, for expense selects) ────────
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>([])
-
-  useEffect(() => {
-    paymentMethodService
-      .getPaymentMethods()
-      .then(setPaymentMethods)
-      .catch(() => {})
-  }, [])
+  const ppm = useProjectPaymentMethods(projectId)
 
   // ─── Project modal state ──────────────────────────────────
   const [editProjectOpen, setEditProjectOpen] = useState(false)
@@ -110,7 +100,7 @@ export function useProjectDetailView(projectId: string) {
     exp,
     cat,
     obl,
-    paymentMethods,
+    ppm,
     // cross-tab sync handlers
     handleExpenseCreate,
     handleExpenseEdit,

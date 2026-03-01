@@ -144,6 +144,15 @@ export class ApiClientError extends Error {
       : `Request failed with status ${status}`);
     this.name = "ApiClientError";
   }
+
+  /**
+   * True when a 403 is caused by plan limits (PlanLimitExceededException).
+   * The backend message will contain "plan" (e.g. "Your plan does not allow …").
+   * Use this to show "upgrade" prompts instead of generic forbidden errors.
+   */
+  get isPlanError(): boolean {
+    return this.status === 403 && this.message.toLowerCase().includes("plan");
+  }
 }
 
 async function request<T>(

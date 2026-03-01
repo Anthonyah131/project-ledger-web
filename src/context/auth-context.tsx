@@ -38,9 +38,9 @@ interface AuthContextValue {
   isAuthenticated: boolean;
 
   /** Log in and persist session */
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   /** Register and persist session */
-  register: (email: string, password: string, fullName: string) => Promise<void>;
+  register: (email: string, password: string, fullName: string) => Promise<User>;
   /** Log out (revoke current device) */
   logout: () => Promise<void>;
   /** Log out from all devices */
@@ -97,11 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ── Actions ───────────────────────────────────────────────────────────────
 
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string): Promise<User> => {
       setIsActionLoading(true);
       try {
         const res = await authService.login({ email, password });
         persistSession(res);
+        return res.user;
       } finally {
         setIsActionLoading(false);
       }
@@ -110,11 +111,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const register = useCallback(
-    async (email: string, password: string, fullName: string) => {
+    async (email: string, password: string, fullName: string): Promise<User> => {
       setIsActionLoading(true);
       try {
         const res = await authService.register({ email, password, fullName });
         persistSession(res);
+        return res.user;
       } finally {
         setIsActionLoading(false);
       }

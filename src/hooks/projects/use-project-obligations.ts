@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as obligationService from "@/services/obligation-service"
+import { toastApiError } from "@/lib/error-utils"
 import type {
   ObligationResponse,
   ObligationStatus,
@@ -73,8 +74,7 @@ export function useProjectObligations(projectId: string) {
         toast.success("Obligación creada")
         fetchObligations()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al crear obligación"
-        toast.error("Error al crear obligación", { description: msg })
+        toastApiError(err, "Error al crear obligación")
       }
     },
     [projectId, fetchObligations]
@@ -93,8 +93,7 @@ export function useProjectObligations(projectId: string) {
         )
         toast.success("Obligación actualizada")
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al actualizar obligación"
-        toast.error("Error al actualizar", { description: msg })
+        toastApiError(err, "Error al actualizar obligación")
       }
     },
     [projectId]
@@ -109,8 +108,7 @@ export function useProjectObligations(projectId: string) {
         })
         fetchObligations()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al eliminar obligación"
-        toast.error("Error al eliminar", { description: msg })
+        toastApiError(err, "Error al eliminar obligación")
       }
     },
     [projectId, fetchObligations]

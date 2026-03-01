@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as projectService from "@/services/project-service"
+import { toastApiError } from "@/lib/error-utils"
 import type {
   ProjectMemberResponse,
   AddMemberRequest,
@@ -51,8 +52,7 @@ export function useProjectMembers(projectId: string) {
           description: `${created.userFullName} fue agregado como ${created.role}.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al agregar miembro"
-        toast.error("Error al agregar miembro", { description: msg })
+        toastApiError(err, "Error al agregar miembro")
       }
     },
     [projectId],
@@ -71,8 +71,7 @@ export function useProjectMembers(projectId: string) {
         )
         toast.success("Rol actualizado")
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al cambiar rol"
-        toast.error("Error al cambiar rol", { description: msg })
+        toastApiError(err, "Error al cambiar rol")
       }
     },
     [projectId],
@@ -89,8 +88,7 @@ export function useProjectMembers(projectId: string) {
           description: `${member.userFullName} fue removido del proyecto.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al remover miembro"
-        toast.error("Error al remover miembro", { description: msg })
+        toastApiError(err, "Error al remover miembro")
       }
     },
     [projectId],
