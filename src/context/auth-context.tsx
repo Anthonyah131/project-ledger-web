@@ -3,8 +3,8 @@
 // context/auth-context.tsx
 // Global authentication context.
 // Provides: user, tokens, login, register, logout, loading state.
-// Persists refresh token in localStorage; access token stays in memory.
-// On mount, if a refresh token exists, silently refreshes the session.
+// Both tokens persist in localStorage (survives browser restarts).
+// On mount, verifies existing session or refreshes if access token is missing.
 
 import {
   createContext,
@@ -18,11 +18,13 @@ import type { ReactNode } from "react";
 
 import {
   clearTokens,
+  getAccessToken,
   getRefreshToken,
   setAccessToken,
   setRefreshToken,
 } from "@/lib/api-client";
 import * as authService from "@/services/auth-service";
+import * as userService from "@/services/user-service";
 import type { User } from "@/types/user";
 
 // ─── Context shape ─────────────────────────────────────────────────────────────
@@ -57,14 +59,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   // ── Hydrate session on mount ──────────────────────────────────────────────
+  // Check if tokens exist. With access token in sessionStorage, it persists
+  // across page reloads but not browser restarts. This prevents unnecessary
+  // refresh token rotation on every page reload.
   useEffect(() => {
     async function hydrate() {
       const refresh = getRefreshToken();
+      const access = getAccessToken();
+      
       if (!refresh) {
         setIsLoading(false);
         return;
       }
 
+      // If we have both tokens in storage, try to verify the session
+      if (access) {
+        try {
+          // Verify session with existing access token
+          const res = await authService.getMe();
+          // Get full user profile
+          const profile = await userService.getUserProfile();
+          setUser(profile as unknown as User);
+          setIsLoading(false);
+          return;
+        } catch {
+          // Access token expired or invalid, fall through to refresh
+        }
+      }
+
+      // No access token or it's invalid — refresh the session
       try {
         const res = await authService.refreshTokens({ refreshToken: refresh });
         setAccessToken(res.accessToken);

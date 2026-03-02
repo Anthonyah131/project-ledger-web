@@ -11,16 +11,23 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5192/api";
 const IS_DEV = process.env.NEXT_PUBLIC_ENV === "development";
 
-// ─── Token storage (in-memory for access, localStorage for refresh) ────────
-
-let accessToken: string | null = null;
+// ─── Token storage ────────────────────────────────────────────────────────────
+// Both tokens stored in localStorage for persistence across browser sessions.
+// Trade-off: slightly less secure than sessionStorage, but much better UX.
+// Access token expires in 24h, refresh token in 7 days.
 
 export function setAccessToken(token: string | null) {
-  accessToken = token;
+  if (typeof window === "undefined") return;
+  if (token) {
+    localStorage.setItem("accessToken", token);
+  } else {
+    localStorage.removeItem("accessToken");
+  }
 }
 
 export function getAccessToken(): string | null {
-  return accessToken;
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("accessToken");
 }
 
 export function getRefreshToken(): string | null {
@@ -38,7 +45,7 @@ export function setRefreshToken(token: string | null) {
 }
 
 export function clearTokens() {
-  accessToken = null;
+  setAccessToken(null);
   setRefreshToken(null);
 }
 
@@ -168,8 +175,9 @@ async function request<T>(
     ...options.headers,
   };
 
-  if (!options.skipAuth && accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
+  const currentAccessToken = getAccessToken();
+  if (!options.skipAuth && currentAccessToken) {
+    headers["Authorization"] = `Bearer ${currentAccessToken}`;
   }
 
   logRequest(method, url, body);
@@ -193,7 +201,8 @@ async function request<T>(
     const refreshed = await attemptTokenRefresh();
     if (refreshed) {
       // Retry original request with new token
-      headers["Authorization"] = `Bearer ${accessToken}`;
+      const newAccessToken = getAccessToken();
+      headers["Authorization"] = `Bearer ${newAccessToken}`;
       try {
         res = await fetch(url, {
           method,

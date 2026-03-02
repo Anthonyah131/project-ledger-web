@@ -13,6 +13,7 @@ import type {
   RegisterRequest,
   ResetPasswordRequest,
   RevokeRequest,
+  VerifyOtpRequest,
 } from "@/types/token";
 
 // ─── Public endpoints (no token needed) ────────────────────────────────────────
@@ -31,6 +32,10 @@ export function refreshTokens(data: RefreshRequest) {
 
 export function forgotPassword(data: ForgotPasswordRequest) {
   return api.post<MessageResponse>("/auth/forgot-password", data, { skipAuth: true });
+}
+
+export function verifyOtp(data: VerifyOtpRequest) {
+  return api.post<MessageResponse>("/auth/verify-otp", data, { skipAuth: true });
 }
 
 export function resetPassword(data: ResetPasswordRequest) {

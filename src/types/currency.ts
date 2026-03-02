@@ -14,3 +14,14 @@ export interface Currency {
   isActive: boolean;
   createdAt: string;
 }
+
+// ─── API shapes ───────────────────────────────────────────────────────────────
+
+/** Returned by GET /api/currencies and GET /api/currencies/{code} */
+export interface CurrencyResponse {
+  code: string;
+  name: string;
+  symbol: string;
+  decimalPlaces: number;
+  isActive: boolean;
+}

@@ -43,6 +43,11 @@ export interface ForgotPasswordRequest {
   email: string;
 }
 
+export interface VerifyOtpRequest {
+  email: string;
+  otpCode: string;  // exactly 6 digits
+}
+
 export interface ResetPasswordRequest {
   email: string;
   otpCode: string;

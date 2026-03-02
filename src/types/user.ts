@@ -41,3 +41,17 @@ export interface UserProfileResponse {
   /** Embedded plan summary; null if user has no plan assigned */
   plan: PlanSummaryDto | null;
 }
+
+// ─── Profile write requests ──────────────────────────────────────────────────
+
+/** PUT /api/users/profile */
+export interface UpdateProfileRequest {
+  fullName: string;        // 1–255 characters
+  avatarUrl?: string;      // optional, must be a valid URL
+}
+
+/** PUT /api/users/password */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;     // minimum 8 characters
+}

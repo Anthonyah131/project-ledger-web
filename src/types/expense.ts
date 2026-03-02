@@ -131,6 +131,8 @@ export interface UpdateExpenseRequest {
 
 export interface CreateExpenseFromTemplateRequest {
   originalAmount?: number;
+  convertedAmount?: number;
+  altAmount?: number;
   expenseDate?: string;          // "YYYY-MM-DD"
   obligationId?: string | null;
   notes?: string | null;
