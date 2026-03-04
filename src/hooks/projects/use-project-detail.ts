@@ -29,7 +29,7 @@ export function useProjectDetail(projectId: string) {
     fetchProject()
   }, [fetchProject])
 
-  const handleEdit = useCallback(
+  const mutateUpdate = useCallback(
     async (data: UpdateProjectRequest) => {
       try {
         const updated = await projectService.updateProject(projectId, data)
@@ -45,7 +45,7 @@ export function useProjectDetail(projectId: string) {
     [projectId]
   )
 
-  const handleDelete = useCallback(async () => {
+  const mutateDelete = useCallback(async () => {
     try {
       await projectService.deleteProject(projectId)
       toast.success("Proyecto eliminado")
@@ -60,8 +60,8 @@ export function useProjectDetail(projectId: string) {
   return {
     project,
     loading,
-    handleEdit,
-    handleDelete,
+    mutateUpdate,
+    mutateDelete,
     refetch: fetchProject,
   }
 }

@@ -99,7 +99,7 @@ export function useProjects() {
 
   // ── CRUD ──────────────────────────────────────────────────────────
 
-  const handleCreate = useCallback(
+  const mutateCreate = useCallback(
     async (data: CreateProjectRequest) => {
       try {
         const created = await projectService.createProject(data);
@@ -113,7 +113,7 @@ export function useProjects() {
     []
   );
 
-  const handleEdit = useCallback(
+  const mutateUpdate = useCallback(
     async (id: string, data: UpdateProjectRequest) => {
       try {
         const updated = await projectService.updateProject(id, data);
@@ -126,7 +126,7 @@ export function useProjects() {
     []
   );
 
-  const handleDelete = useCallback(
+  const mutateDelete = useCallback(
     async (project: ProjectResponse) => {
       try {
         await projectService.deleteProject(project.id);
@@ -179,9 +179,9 @@ export function useProjects() {
     deleteTarget, setDeleteTarget,
 
     // Actions
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleCurrencyChange,
     handleSortChange,

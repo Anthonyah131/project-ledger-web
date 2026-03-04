@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +15,7 @@ interface ShelfViewProps {
   onDelete: (pm: PaymentMethodResponse) => void
 }
 
-export function PaymentMethodsShelfView({ paymentMethods, onEdit, onDelete }: ShelfViewProps) {
+function PaymentMethodsShelfViewComponent({ paymentMethods, onEdit, onDelete }: ShelfViewProps) {
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border"
@@ -27,6 +28,8 @@ export function PaymentMethodsShelfView({ paymentMethods, onEdit, onDelete }: Sh
     </div>
   )
 }
+
+export const PaymentMethodsShelfView = memo(PaymentMethodsShelfViewComponent)
 
 function PaymentMethodCard({
   pm,

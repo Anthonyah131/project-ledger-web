@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
@@ -16,7 +17,7 @@ interface ShelfViewProps {
   globalIndex: number
 }
 
-export function ShelfView({
+function ShelfViewComponent({
   projects,
   onEdit,
   onDelete,
@@ -40,6 +41,8 @@ export function ShelfView({
     </div>
   )
 }
+
+export const ShelfView = memo(ShelfViewComponent)
 
 function ProjectCard({
   project,

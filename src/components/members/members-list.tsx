@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { cn } from "@/lib/utils"
 import { ROLE_LABEL } from "@/lib/constants"
 import { formatDate } from "@/lib/format-utils"
@@ -21,7 +22,7 @@ interface MembersListProps {
   onRemove: (member: ProjectMemberResponse) => void
 }
 
-export function MembersList({ members, onChangeRole, onRemove }: MembersListProps) {
+function MembersListComponent({ members, onChangeRole, onRemove }: MembersListProps) {
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
       {/* Header */}
@@ -113,3 +114,5 @@ export function MembersList({ members, onChangeRole, onRemove }: MembersListProp
     </div>
   )
 }
+
+export const MembersList = memo(MembersListComponent)

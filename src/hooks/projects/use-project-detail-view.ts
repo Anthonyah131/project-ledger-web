@@ -9,9 +9,24 @@ import { useProjectDetail } from "./use-project-detail"
 import { useProjectExpenses } from "./use-project-expenses"
 import { useProjectCategories } from "./use-project-categories"
 import { useProjectObligations } from "./use-project-obligations"
+import { useProjectBudget } from "./use-project-budget"
 import { useProjectPaymentMethods } from "./use-project-payment-methods"
 import type { UpdateProjectRequest } from "@/types/project"
 import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
+import type {
+  CategoryResponse,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+} from "@/types/category"
+import type {
+  ObligationResponse,
+  CreateObligationRequest,
+  UpdateObligationRequest,
+} from "@/types/obligation"
+import type {
+  ProjectBudgetResponse,
+  SetProjectBudgetRequest,
+} from "@/types/project-budget"
 
 export function useProjectDetailView(projectId: string) {
   const router = useRouter()
@@ -21,68 +36,166 @@ export function useProjectDetailView(projectId: string) {
   const exp = useProjectExpenses(projectId)
   const cat = useProjectCategories(projectId)
   const obl = useProjectObligations(projectId)
+  const bud = useProjectBudget(projectId)
   const ppm = useProjectPaymentMethods(projectId)
+
+  const { mutateUpdate: mutateDetailUpdate, mutateDelete: mutateDetailDelete } = detail
+  const {
+    mutateCreate: mutateExpenseCreateRaw,
+    mutateUpdate: mutateExpenseUpdateRaw,
+    mutateDelete: mutateExpenseDeleteRaw,
+    refetch: refetchExpenses,
+  } = exp
+  const {
+    mutateCreate: mutateCategoryCreateRaw,
+    mutateUpdate: mutateCategoryUpdateRaw,
+    mutateDelete: mutateCategoryDeleteRaw,
+    refetch: refetchCategories,
+  } = cat
+  const {
+    mutateCreate: mutateObligationCreateRaw,
+    mutateUpdate: mutateObligationUpdateRaw,
+    mutateDelete: mutateObligationDeleteRaw,
+    refetch: refetchObligations,
+  } = obl
+  const {
+    budget: currentBudget,
+    mutateSet: mutateBudgetSetRaw,
+    mutateDelete: mutateBudgetDeleteRaw,
+    refetch: refetchBudget,
+  } = bud
 
   // ─── Project modal state ──────────────────────────────────
   const [editProjectOpen, setEditProjectOpen] = useState(false)
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
 
   // ─── Project header actions ───────────────────────────────
-  const handleProjectEdit = useCallback(() => {
+  const mutateProjectEditOpen = useCallback(() => {
     setEditProjectOpen(true)
   }, [])
 
-  const handleProjectDelete = useCallback(() => {
+  const mutateProjectDeleteOpen = useCallback(() => {
     setDeleteProjectOpen(true)
   }, [])
 
-  const handleProjectEditSave = useCallback(
-    (_id: string, data: UpdateProjectRequest) => {
-      detail.handleEdit(data)
+  const mutateProjectUpdate = useCallback(
+    async (_id: string, data: UpdateProjectRequest) => {
+      await mutateDetailUpdate(data)
     },
-    [detail],
+    [mutateDetailUpdate],
   )
 
-  const handleProjectDeleteConfirm = useCallback(
+  const mutateProjectDelete = useCallback(
     async () => {
-      const deleted = await detail.handleDelete()
+      const deleted = await mutateDetailDelete()
       if (deleted) router.push("/projects")
     },
-    [detail, router],
+    [mutateDetailDelete, router],
   )
 
-  // ─── Cross-tab sync: expense CRUD → refresh obligations ───
-  const handleExpenseCreate = useCallback(
+  // ─── Cross-tab sync: expense CRUD → refresh obligations + budget ───
+  const mutateExpenseCreate = useCallback(
     async (data: CreateExpenseRequest) => {
-      await exp.handleCreate(data)
-      if (data.obligationId) obl.refetch()
+      await mutateExpenseCreateRaw(data, { refetch: false })
+      await Promise.all([
+        refetchExpenses(),
+        data.obligationId ? refetchObligations() : Promise.resolve(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
     },
-    [exp, obl],
+    [mutateExpenseCreateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
   )
 
-  const handleExpenseEdit = useCallback(
+  const mutateExpenseUpdate = useCallback(
     async (expenseId: string, data: UpdateExpenseRequest) => {
-      await exp.handleEdit(expenseId, data)
-      obl.refetch()
+      await mutateExpenseUpdateRaw(expenseId, data, { refetch: false })
+      await Promise.all([
+        refetchExpenses(),
+        refetchObligations(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
     },
-    [exp, obl],
+    [mutateExpenseUpdateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
   )
 
-  const handleExpenseDelete = useCallback(
+  const mutateExpenseDelete = useCallback(
     async (expense: ExpenseResponse) => {
-      await exp.handleDelete(expense)
-      if (expense.obligationId) obl.refetch()
+      await mutateExpenseDeleteRaw(expense, { refetch: false })
+      await Promise.all([
+        refetchExpenses(),
+        expense.obligationId ? refetchObligations() : Promise.resolve(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
     },
-    [exp, obl],
+    [mutateExpenseDeleteRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
   )
 
-  // ─── Cross-tab sync: category delete → refresh expenses ───
-  const handleCategoryDelete = useCallback(
-    async (category: Parameters<typeof cat.handleDelete>[0]) => {
-      await cat.handleDelete(category)
-      exp.refetch()
+  // ─── Categories: mutate + orchestrated refresh ───
+  const mutateCategoryCreate = useCallback(
+    async (data: CreateCategoryRequest) => {
+      await mutateCategoryCreateRaw(data, { refetch: false })
+      await refetchCategories()
     },
-    [cat, exp],
+    [mutateCategoryCreateRaw, refetchCategories],
+  )
+
+  const mutateCategoryUpdate = useCallback(
+    async (categoryId: string, data: UpdateCategoryRequest) => {
+      await mutateCategoryUpdateRaw(categoryId, data, { refetch: false })
+      await refetchCategories()
+    },
+    [mutateCategoryUpdateRaw, refetchCategories],
+  )
+
+  // ─── Categories cross-tab sync: delete → refresh expenses ───
+  const mutateCategoryDelete = useCallback(
+    async (category: CategoryResponse) => {
+      await mutateCategoryDeleteRaw(category, { refetch: false })
+      await Promise.all([refetchCategories(), refetchExpenses()])
+    },
+    [mutateCategoryDeleteRaw, refetchCategories, refetchExpenses],
+  )
+
+  // ─── Obligations: mutate + orchestrated refresh ───
+  const mutateObligationCreate = useCallback(
+    async (data: CreateObligationRequest) => {
+      await mutateObligationCreateRaw(data, { refetch: false })
+      await refetchObligations()
+    },
+    [mutateObligationCreateRaw, refetchObligations],
+  )
+
+  const mutateObligationUpdate = useCallback(
+    async (obligationId: string, data: UpdateObligationRequest) => {
+      await mutateObligationUpdateRaw(obligationId, data, { refetch: false })
+      await refetchObligations()
+    },
+    [mutateObligationUpdateRaw, refetchObligations],
+  )
+
+  const mutateObligationDelete = useCallback(
+    async (obligation: ObligationResponse) => {
+      await mutateObligationDeleteRaw(obligation, { refetch: false })
+      await refetchObligations()
+    },
+    [mutateObligationDeleteRaw, refetchObligations],
+  )
+
+  // ─── Budget: mutate + orchestrated refresh ───
+  const mutateBudgetSet = useCallback(
+    async (data: SetProjectBudgetRequest) => {
+      await mutateBudgetSetRaw(data, { refetch: false })
+      await refetchBudget()
+    },
+    [mutateBudgetSetRaw, refetchBudget],
+  )
+
+  const mutateBudgetDelete = useCallback(
+    async (budget: ProjectBudgetResponse) => {
+      await mutateBudgetDeleteRaw(budget, { refetch: false })
+      await refetchBudget()
+    },
+    [mutateBudgetDeleteRaw, refetchBudget],
   )
 
   return {
@@ -92,19 +205,27 @@ export function useProjectDetailView(projectId: string) {
     deleteProjectOpen,
     setEditProjectOpen,
     setDeleteProjectOpen,
-    handleProjectEdit,
-    handleProjectDelete,
-    handleProjectEditSave,
-    handleProjectDeleteConfirm,
+    mutateProjectEditOpen,
+    mutateProjectDeleteOpen,
+    mutateProjectUpdate,
+    mutateProjectDelete,
     // sub-resources
     exp,
     cat,
     obl,
+    bud,
     ppm,
     // cross-tab sync handlers
-    handleExpenseCreate,
-    handleExpenseEdit,
-    handleExpenseDelete,
-    handleCategoryDelete,
+    mutateExpenseCreate,
+    mutateExpenseUpdate,
+    mutateExpenseDelete,
+    mutateCategoryCreate,
+    mutateCategoryUpdate,
+    mutateCategoryDelete,
+    mutateObligationCreate,
+    mutateObligationUpdate,
+    mutateObligationDelete,
+    mutateBudgetSet,
+    mutateBudgetDelete,
   }
 }

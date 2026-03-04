@@ -13,6 +13,7 @@ import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
 } from "@/types/category"
+import type { MutationOptions } from "@/types/common"
 
 export function useProjectCategories(projectId: string) {
   const [categories, setCategories] = useState<CategoryResponse[]>([])
@@ -61,11 +62,15 @@ export function useProjectCategories(projectId: string) {
 
   // ── CRUD ──────────────────────────────────────────────────
 
-  const handleCreate = useCallback(
-    async (data: CreateCategoryRequest) => {
+  const mutateCreate = useCallback(
+    async (data: CreateCategoryRequest, options?: MutationOptions) => {
       try {
         const created = await categoryService.createCategory(projectId, data)
-        setCategories((prev) => [...prev, created])
+        if (options?.refetch ?? true) {
+          await fetchCategories()
+        } else {
+          setCategories((prev) => [...prev, created])
+        }
         toast.success("Categoría creada", {
           description: `"${created.name}" se agregó correctamente.`,
         })
@@ -73,14 +78,22 @@ export function useProjectCategories(projectId: string) {
         toastApiError(err, "Error al crear categoría")
       }
     },
-    [projectId]
+    [projectId, fetchCategories]
   )
 
-  const handleEdit = useCallback(
-    async (categoryId: string, data: UpdateCategoryRequest) => {
+  const mutateUpdate = useCallback(
+    async (
+      categoryId: string,
+      data: UpdateCategoryRequest,
+      options?: MutationOptions
+    ) => {
       try {
         const updated = await categoryService.updateCategory(projectId, categoryId, data)
-        setCategories((prev) => prev.map((c) => (c.id === categoryId ? updated : c)))
+        if (options?.refetch ?? true) {
+          await fetchCategories()
+        } else {
+          setCategories((prev) => prev.map((c) => (c.id === categoryId ? updated : c)))
+        }
         toast.success("Categoría actualizada", {
           description: `"${updated.name}" se guardó correctamente.`,
         })
@@ -88,14 +101,18 @@ export function useProjectCategories(projectId: string) {
         toastApiError(err, "Error al actualizar categoría")
       }
     },
-    [projectId]
+    [projectId, fetchCategories]
   )
 
-  const handleDelete = useCallback(
-    async (category: CategoryResponse) => {
+  const mutateDelete = useCallback(
+    async (category: CategoryResponse, options?: MutationOptions) => {
       try {
         await categoryService.deleteCategory(projectId, category.id)
-        setCategories((prev) => prev.filter((c) => c.id !== category.id))
+        if (options?.refetch ?? true) {
+          await fetchCategories()
+        } else {
+          setCategories((prev) => prev.filter((c) => c.id !== category.id))
+        }
         toast.success("Categoría eliminada", {
           description: `"${category.name}" fue eliminada.`,
         })
@@ -103,7 +120,7 @@ export function useProjectCategories(projectId: string) {
         toastApiError(err, "Error al eliminar categoría")
       }
     },
-    [projectId]
+    [projectId, fetchCategories]
   )
 
   return {
@@ -115,9 +132,9 @@ export function useProjectCategories(projectId: string) {
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     refetch: fetchCategories,
   }
 }

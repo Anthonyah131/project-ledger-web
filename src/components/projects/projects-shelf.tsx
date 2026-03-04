@@ -1,6 +1,8 @@
 "use client"
 
+import { useCallback } from "react"
 import { Plus } from "lucide-react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useProjects } from "@/hooks/projects/use-projects"
@@ -8,16 +10,19 @@ import { ProjectsToolbar } from "./projects-toolbar"
 import { ShelfView } from "./shelf-view"
 import { ListView } from "./list-view"
 import { Pagination } from "@/components/shared/pagination"
-import {
-  CreateProjectModal,
-  EditProjectModal,
-} from "./project-modals"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import {
   EmptyState,
   ShelfSkeleton,
   ListSkeleton,
 } from "./project-states"
+
+const CreateProjectModal = dynamic(() =>
+  import("./create-project-modal").then((mod) => mod.CreateProjectModal)
+)
+const EditProjectModal = dynamic(() =>
+  import("./edit-project-modal").then((mod) => mod.EditProjectModal)
+)
 
 export function ProjectsShelf() {
   const router = useRouter()
@@ -36,13 +41,41 @@ export function ProjectsShelf() {
     createOpen, setCreateOpen,
     editProject, setEditProject,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleCurrencyChange,
     handleSortChange,
   } = useProjects()
+
+  const handleOpenCreate = useCallback(() => {
+    setCreateOpen(true)
+  }, [setCreateOpen])
+
+  const handleCloseCreate = useCallback(() => {
+    setCreateOpen(false)
+  }, [setCreateOpen])
+
+  const handleSelectEdit = useCallback((project: (typeof projects)[number]) => {
+    setEditProject(project)
+  }, [setEditProject])
+
+  const handleCloseEdit = useCallback(() => {
+    setEditProject(null)
+  }, [setEditProject])
+
+  const handleSelectDelete = useCallback((project: (typeof projects)[number]) => {
+    setDeleteTarget(project)
+  }, [setDeleteTarget])
+
+  const handleCloseDelete = useCallback(() => {
+    setDeleteTarget(null)
+  }, [setDeleteTarget])
+
+  const handleShare = useCallback((project: (typeof projects)[number]) => {
+    router.push(`/projects/${project.id}/members`)
+  }, [router])
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -56,7 +89,7 @@ export function ProjectsShelf() {
             {total} {total === 1 ? "proyecto" : "proyectos"}
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm">
+        <Button onClick={handleOpenCreate} size="sm">
           <Plus className="size-3.5" />
           Nuevo
         </Button>
@@ -81,21 +114,21 @@ export function ProjectsShelf() {
         {loading ? (
           viewMode === "shelf" ? <ShelfSkeleton /> : <ListSkeleton />
         ) : projects.length === 0 ? (
-          <EmptyState hasSearch={hasSearch} onCreate={() => setCreateOpen(true)} />
+          <EmptyState hasSearch={hasSearch} onCreate={handleOpenCreate} />
         ) : viewMode === "shelf" ? (
           <ShelfView
             projects={projects}
-            onEdit={(p) => setEditProject(p)}
-            onDelete={(p) => setDeleteTarget(p)}
-            onShare={(p) => router.push(`/projects/${p.id}/members`)}
+            onEdit={handleSelectEdit}
+            onDelete={handleSelectDelete}
+            onShare={handleShare}
             globalIndex={globalIndex}
           />
         ) : (
           <ListView
             projects={projects}
-            onEdit={(p) => setEditProject(p)}
-            onDelete={(p) => setDeleteTarget(p)}
-            onShare={(p) => router.push(`/projects/${p.id}/members`)}
+            onEdit={handleSelectEdit}
+            onDelete={handleSelectDelete}
+            onShare={handleShare}
             globalIndex={globalIndex}
           />
         )}
@@ -113,22 +146,26 @@ export function ProjectsShelf() {
       </div>
 
       {/* Modals */}
-      <CreateProjectModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreate={handleCreate}
-      />
-      <EditProjectModal
-        project={editProject}
-        open={!!editProject}
-        onClose={() => setEditProject(null)}
-        onSave={handleEdit}
-      />
+      {createOpen && (
+        <CreateProjectModal
+          open={createOpen}
+          onClose={handleCloseCreate}
+          onCreate={mutateCreate}
+        />
+      )}
+      {!!editProject && (
+        <EditProjectModal
+          project={editProject}
+          open={!!editProject}
+          onClose={handleCloseEdit}
+          onSave={mutateUpdate}
+        />
+      )}
       <DeleteEntityModal
         item={deleteTarget}
         open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
+        onClose={handleCloseDelete}
+        onConfirm={mutateDelete}
         title="Eliminar proyecto"
         description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
         getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}

@@ -10,6 +10,7 @@ import * as adminUserService from "@/services/admin-user-service"
 import * as planService from "@/services/plan-service"
 import { toastApiError } from "@/lib/error-utils"
 import type { AdminUserResponse, AdminUserPlanDto, UpdateAdminUserRequest } from "@/types/admin-user"
+import type { MutationOptions } from "@/types/common"
 
 export function useAdminUsers() {
   // Data state
@@ -75,55 +76,76 @@ export function useAdminUsers() {
   // Each mutating action refetches the page after success so the table always
   // shows fresh, complete data (including the embedded plan relation).
 
-  const handleActivate = useCallback(async (user: AdminUserResponse) => {
+  const mutateActivate = useCallback(async (user: AdminUserResponse, options?: MutationOptions) => {
     try {
       await adminUserService.activateUser(user.id)
       toast.success("Usuario activado", {
         description: `"${user.fullName}" fue activado correctamente.`,
       })
-      await fetchUsers()
+      if (options?.refetch ?? true) {
+        await fetchUsers()
+      } else {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === user.id ? { ...u, isActive: true } : u)),
+        )
+      }
     } catch (err) {
       toastApiError(err, "Error al activar usuario")
     }
   }, [fetchUsers])
 
-  const handleDeactivate = useCallback(async (user: AdminUserResponse) => {
+  const mutateDeactivate = useCallback(async (user: AdminUserResponse, options?: MutationOptions) => {
     try {
       await adminUserService.deactivateUser(user.id)
       toast.success("Usuario desactivado", {
         description: `"${user.fullName}" fue desactivado correctamente.`,
       })
-      await fetchUsers()
+      if (options?.refetch ?? true) {
+        await fetchUsers()
+      } else {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === user.id ? { ...u, isActive: false } : u)),
+        )
+      }
     } catch (err) {
       toastApiError(err, "Error al desactivar usuario")
     }
   }, [fetchUsers])
 
-  const handleEdit = useCallback(async (id: string, data: UpdateAdminUserRequest) => {
+  const mutateUpdate = useCallback(async (id: string, data: UpdateAdminUserRequest, options?: MutationOptions) => {
     try {
       const updated = await adminUserService.updateUser(id, data)
       toast.success("Usuario actualizado", {
         description: `"${updated.fullName}" se guardó correctamente.`,
       })
-      await fetchUsers()
+      if (options?.refetch ?? true) {
+        await fetchUsers()
+      } else {
+        setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)))
+      }
     } catch (err) {
       toastApiError(err, "Error al actualizar usuario")
     }
   }, [fetchUsers])
 
-  const handleDelete = useCallback(async (user: AdminUserResponse) => {
+  const mutateDelete = useCallback(async (user: AdminUserResponse, options?: MutationOptions) => {
     try {
       await adminUserService.deleteUser(user.id)
       toast.success("Usuario eliminado", {
         description: `"${user.fullName}" fue eliminado correctamente.`,
       })
-      await fetchUsers()
+      if (options?.refetch ?? true) {
+        await fetchUsers()
+      } else {
+        setUsers((prev) => prev.filter((u) => u.id !== user.id))
+        setTotal((prev) => Math.max(0, prev - 1))
+      }
     } catch (err) {
       toastApiError(err, "Error al eliminar usuario")
     }
   }, [fetchUsers])
 
-  const handleToggleAdmin = useCallback(async (user: AdminUserResponse) => {
+  const mutateToggleAdmin = useCallback(async (user: AdminUserResponse, options?: MutationOptions) => {
     try {
       const updated = await adminUserService.updateUser(user.id, {
         fullName: user.fullName,
@@ -133,7 +155,11 @@ export function useAdminUsers() {
         updated.isAdmin ? "Admin otorgado" : "Admin removido",
         { description: `"${updated.fullName}" fue actualizado correctamente.` },
       )
-      await fetchUsers()
+      if (options?.refetch ?? true) {
+        await fetchUsers()
+      } else {
+        setUsers((prev) => prev.map((u) => (u.id === user.id ? updated : u)))
+      }
     } catch (err) {
       toastApiError(err, "Error al cambiar rol")
     }
@@ -185,11 +211,11 @@ export function useAdminUsers() {
     plans,
 
     // Actions
-    handleActivate,
-    handleDeactivate,
-    handleEdit,
-    handleDelete,
-    handleToggleAdmin,
+    mutateActivate,
+    mutateDeactivate,
+    mutateUpdate,
+    mutateDelete,
+    mutateToggleAdmin,
     handleSortChange,
     handlePageSizeChange,
     handleIncludeDeletedChange,

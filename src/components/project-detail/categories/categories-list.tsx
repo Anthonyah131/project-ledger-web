@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { getAccentColorRaw } from "@/lib/constants"
@@ -12,7 +13,7 @@ interface CategoriesListProps {
   onDelete: (cat: CategoryResponse) => void
 }
 
-export function CategoriesList({
+function CategoriesListComponent({
   categories,
   onEdit,
   onDelete,
@@ -86,3 +87,5 @@ export function CategoriesList({
     </div>
   )
 }
+
+export const CategoriesList = memo(CategoriesListComponent)

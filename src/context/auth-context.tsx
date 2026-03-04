@@ -75,9 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // If we have both tokens in storage, try to verify the session
       if (access) {
         try {
-          // Verify session with existing access token
-          const res = await authService.getMe();
-          // Get full user profile
+          // Validate session by fetching the full user profile
           const profile = await userService.getUserProfile();
           setUser(profile as unknown as User);
           setIsLoading(false);

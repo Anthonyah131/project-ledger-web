@@ -3,14 +3,19 @@
 // views/members/members-view.tsx
 // Full-page view for managing project member access.
 
+import { useCallback } from "react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useProjectMembers } from "@/hooks/projects/use-project-members"
 import { MembersList } from "@/components/members/members-list"
 import { MembersSkeleton, MembersEmptyState } from "@/components/members/member-states"
-import { AddMemberModal } from "@/components/members/add-member-modal"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
+
+const AddMemberModal = dynamic(() =>
+  import("@/components/members/add-member-modal").then((mod) => mod.AddMemberModal)
+)
 
 interface Props {
   projectId: string
@@ -23,10 +28,30 @@ export function MembersView({ projectId }: Props) {
     loading,
     addOpen, setAddOpen,
     deleteTarget, setDeleteTarget,
-    handleAdd,
-    handleChangeRole,
-    handleRemove,
+    mutateAdd,
+    mutateChangeRole,
+    mutateRemove,
   } = useProjectMembers(projectId)
+
+  const handleBack = useCallback(() => {
+    router.push(`/projects/${projectId}`)
+  }, [router, projectId])
+
+  const handleOpenAdd = useCallback(() => {
+    setAddOpen(true)
+  }, [setAddOpen])
+
+  const handleCloseAdd = useCallback(() => {
+    setAddOpen(false)
+  }, [setAddOpen])
+
+  const handleSelectDelete = useCallback((member: (typeof members)[number]) => {
+    setDeleteTarget(member)
+  }, [setDeleteTarget])
+
+  const handleCloseDelete = useCallback(() => {
+    setDeleteTarget(null)
+  }, [setDeleteTarget])
 
   return (
     <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
@@ -34,7 +59,7 @@ export function MembersView({ projectId }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push(`/projects/${projectId}`)}
+            onClick={handleBack}
             className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             aria-label="Volver al proyecto"
           >
@@ -49,7 +74,7 @@ export function MembersView({ projectId }: Props) {
             </p>
           </div>
         </div>
-        <Button onClick={() => setAddOpen(true)} size="sm">
+        <Button onClick={handleOpenAdd} size="sm">
           <Plus className="size-3.5" />
           Agregar
         </Button>
@@ -63,22 +88,24 @@ export function MembersView({ projectId }: Props) {
       ) : (
         <MembersList
           members={members}
-          onChangeRole={handleChangeRole}
-          onRemove={(m) => setDeleteTarget(m)}
+          onChangeRole={mutateChangeRole}
+          onRemove={handleSelectDelete}
         />
       )}
 
       {/* Modals */}
-      <AddMemberModal
-        open={addOpen}
-        onClose={() => setAddOpen(false)}
-        onAdd={handleAdd}
-      />
+      {addOpen && (
+        <AddMemberModal
+          open={addOpen}
+          onClose={handleCloseAdd}
+          onAdd={mutateAdd}
+        />
+      )}
       <DeleteEntityModal
         item={deleteTarget}
         open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleRemove}
+        onClose={handleCloseDelete}
+        onConfirm={mutateRemove}
         title="Remover miembro"
         description="El usuario perderá acceso a este proyecto."
         getMessage={(m) => `¿Remover a "${m.userFullName}" del proyecto?`}

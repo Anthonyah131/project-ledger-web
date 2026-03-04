@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { getAccentColorRaw, STATUS_COLORS } from "@/lib/constants"
@@ -12,7 +13,7 @@ interface ObligationsListProps {
   onDelete: (obl: ObligationResponse) => void
 }
 
-export function ObligationsList({
+function ObligationsListComponent({
   obligations,
   onEdit,
   onDelete,
@@ -116,3 +117,5 @@ export function ObligationsList({
     </div>
   )
 }
+
+export const ObligationsList = memo(ObligationsListComponent)

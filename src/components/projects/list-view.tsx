@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
@@ -16,7 +17,7 @@ interface ListViewProps {
   globalIndex: number
 }
 
-export function ListView({ projects, onEdit, onDelete, onShare, globalIndex }: ListViewProps) {
+function ListViewComponent({ projects, onEdit, onDelete, onShare, globalIndex }: ListViewProps) {
   const router = useRouter()
 
   return (
@@ -91,3 +92,5 @@ export function ListView({ projects, onEdit, onDelete, onShare, globalIndex }: L
     </div>
   )
 }
+
+export const ListView = memo(ListViewComponent)

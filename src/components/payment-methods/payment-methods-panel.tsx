@@ -1,6 +1,8 @@
 "use client"
 
+import { useCallback } from "react"
 import { Plus } from "lucide-react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { usePaymentMethods } from "@/hooks/payment-methods/use-payment-methods"
 import { PaymentMethodsToolbar } from "./payment-methods-toolbar"
@@ -12,11 +14,14 @@ import {
   PaymentMethodsShelfSkeleton,
   PaymentMethodsSkeleton,
 } from "./payment-method-states"
-import {
-  CreatePaymentMethodModal,
-  EditPaymentMethodModal,
-} from "./payment-method-modals"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
+
+const CreatePaymentMethodModal = dynamic(() =>
+  import("./create-payment-method-modal").then((mod) => mod.CreatePaymentMethodModal)
+)
+const EditPaymentMethodModal = dynamic(() =>
+  import("./edit-payment-method-modal").then((mod) => mod.EditPaymentMethodModal)
+)
 
 export function PaymentMethodsPanel() {
   const {
@@ -33,13 +38,37 @@ export function PaymentMethodsPanel() {
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleSortChange,
     handleTypeFilterChange,
   } = usePaymentMethods()
+
+  const handleOpenCreate = useCallback(() => {
+    setCreateOpen(true)
+  }, [setCreateOpen])
+
+  const handleCloseCreate = useCallback(() => {
+    setCreateOpen(false)
+  }, [setCreateOpen])
+
+  const handleSelectEdit = useCallback((paymentMethod: (typeof paymentMethods)[number]) => {
+    setEditTarget(paymentMethod)
+  }, [setEditTarget])
+
+  const handleCloseEdit = useCallback(() => {
+    setEditTarget(null)
+  }, [setEditTarget])
+
+  const handleSelectDelete = useCallback((paymentMethod: (typeof paymentMethods)[number]) => {
+    setDeleteTarget(paymentMethod)
+  }, [setDeleteTarget])
+
+  const handleCloseDelete = useCallback(() => {
+    setDeleteTarget(null)
+  }, [setDeleteTarget])
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -53,7 +82,7 @@ export function PaymentMethodsPanel() {
             {total} {total === 1 ? "método" : "métodos"}
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm">
+        <Button onClick={handleOpenCreate} size="sm">
           <Plus className="size-3.5" />
           Nuevo
         </Button>
@@ -78,18 +107,18 @@ export function PaymentMethodsPanel() {
         {loading ? (
           viewMode === "shelf" ? <PaymentMethodsShelfSkeleton /> : <PaymentMethodsSkeleton />
         ) : paymentMethods.length === 0 ? (
-          <EmptyState hasSearch={hasSearch} onCreate={() => setCreateOpen(true)} />
+          <EmptyState hasSearch={hasSearch} onCreate={handleOpenCreate} />
         ) : viewMode === "shelf" ? (
           <PaymentMethodsShelfView
             paymentMethods={paymentMethods}
-            onEdit={(pm) => setEditTarget(pm)}
-            onDelete={(pm) => setDeleteTarget(pm)}
+            onEdit={handleSelectEdit}
+            onDelete={handleSelectDelete}
           />
         ) : (
           <PaymentMethodsList
             paymentMethods={paymentMethods}
-            onEdit={(pm) => setEditTarget(pm)}
-            onDelete={(pm) => setDeleteTarget(pm)}
+            onEdit={handleSelectEdit}
+            onDelete={handleSelectDelete}
           />
         )}
 
@@ -106,22 +135,26 @@ export function PaymentMethodsPanel() {
       </div>
 
       {/* Modals */}
-      <CreatePaymentMethodModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreate={handleCreate}
-      />
-      <EditPaymentMethodModal
-        paymentMethod={editTarget}
-        open={!!editTarget}
-        onClose={() => setEditTarget(null)}
-        onSave={handleEdit}
-      />
+      {createOpen && (
+        <CreatePaymentMethodModal
+          open={createOpen}
+          onClose={handleCloseCreate}
+          onCreate={mutateCreate}
+        />
+      )}
+      {!!editTarget && (
+        <EditPaymentMethodModal
+          paymentMethod={editTarget}
+          open={!!editTarget}
+          onClose={handleCloseEdit}
+          onSave={mutateUpdate}
+        />
+      )}
       <DeleteEntityModal
         item={deleteTarget}
         open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
+        onClose={handleCloseDelete}
+        onConfirm={mutateDelete}
         title="Eliminar metodo de pago"
         description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
         getMessage={(pm) => `¿Eliminar "${pm.name}"?`}

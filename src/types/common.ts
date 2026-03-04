@@ -16,3 +16,8 @@ export interface SoftDelete {
 
 /** Convenience mixin: timestamps + soft delete */
 export interface AuditableEntity extends Timestamps, SoftDelete {}
+
+/** Shared mutation options for hooks that support orchestrated refetching */
+export interface MutationOptions {
+  refetch?: boolean;
+}

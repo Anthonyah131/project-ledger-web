@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -33,7 +34,7 @@ function getInitials(name: string | null | undefined) {
     .toUpperCase()
 }
 
-export function AdminUsersList({
+function AdminUsersListComponent({
   users,
   onEdit,
   onDelete,
@@ -188,3 +189,5 @@ export function AdminUsersList({
     </div>
   )
 }
+
+export const AdminUsersList = memo(AdminUsersListComponent)

@@ -13,6 +13,7 @@ import type {
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method";
 import type { ViewMode } from "@/types/project";
+import type { MutationOptions } from "@/types/common";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -99,36 +100,49 @@ export function usePaymentMethods() {
 
   // ── CRUD ───────────────────────────────────────────────────────────────────
 
-  const handleCreate = useCallback(async (data: CreatePaymentMethodRequest) => {
+  const mutateCreate = useCallback(async (data: CreatePaymentMethodRequest, options?: MutationOptions) => {
     try {
       const created = await pmService.createPaymentMethod(data);
-      setPaymentMethods((prev) => [created, ...prev]);
-      setPage(1);
+      if (options?.refetch ?? true) {
+        await fetchPaymentMethods();
+        setPage(1);
+      } else {
+        setPaymentMethods((prev) => [created, ...prev]);
+        setPage(1);
+      }
       toast.success("Método de pago creado", { description: `"${created.name}" se agregó correctamente.` });
     } catch (err) {
       toastApiError(err, "Error al crear método de pago");
     }
-  }, []);
+  }, [fetchPaymentMethods]);
 
-  const handleEdit = useCallback(async (id: string, data: UpdatePaymentMethodRequest) => {
+  const mutateUpdate = useCallback(async (id: string, data: UpdatePaymentMethodRequest, options?: MutationOptions) => {
     try {
       const updated = await pmService.updatePaymentMethod(id, data);
-      setPaymentMethods((prev) => prev.map((pm) => (pm.id === id ? updated : pm)));
+      if (options?.refetch ?? true) {
+        await fetchPaymentMethods();
+      } else {
+        setPaymentMethods((prev) => prev.map((pm) => (pm.id === id ? updated : pm)));
+      }
       toast.success("Método de pago actualizado", { description: `"${updated.name}" se guardó correctamente.` });
     } catch (err) {
       toastApiError(err, "Error al actualizar método de pago");
     }
-  }, []);
+  }, [fetchPaymentMethods]);
 
-  const handleDelete = useCallback(async (pm: PaymentMethodResponse) => {
+  const mutateDelete = useCallback(async (pm: PaymentMethodResponse, options?: MutationOptions) => {
     try {
       await pmService.deletePaymentMethod(pm.id);
-      setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
+      if (options?.refetch ?? true) {
+        await fetchPaymentMethods();
+      } else {
+        setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
+      }
       toast.success("Método de pago eliminado", { description: `"${pm.name}" fue desactivado.` });
     } catch (err) {
       toastApiError(err, "Error al eliminar método de pago");
     }
-  }, []);
+  }, [fetchPaymentMethods]);
 
   const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setPage(1); }, []);
   const handleSortChange = useCallback((s: string) => { setSort(s); setPage(1); }, []);
@@ -150,9 +164,9 @@ export function usePaymentMethods() {
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleSortChange,
     handleTypeFilterChange,

@@ -13,6 +13,7 @@ import type {
   CreateObligationRequest,
   UpdateObligationRequest,
 } from "@/types/obligation"
+import type { MutationOptions } from "@/types/common"
 
 export function useProjectObligations(projectId: string) {
   const [obligations, setObligations] = useState<ObligationResponse[]>([])
@@ -67,12 +68,14 @@ export function useProjectObligations(projectId: string) {
 
   // ── CRUD ──────────────────────────────────────────────────
 
-  const handleCreate = useCallback(
-    async (data: CreateObligationRequest) => {
+  const mutateCreate = useCallback(
+    async (data: CreateObligationRequest, options?: MutationOptions) => {
       try {
         await obligationService.createObligation(projectId, data)
         toast.success("Obligación creada")
-        fetchObligations()
+        if (options?.refetch ?? true) {
+          await fetchObligations()
+        }
       } catch (err) {
         toastApiError(err, "Error al crear obligación")
       }
@@ -80,33 +83,45 @@ export function useProjectObligations(projectId: string) {
     [projectId, fetchObligations]
   )
 
-  const handleEdit = useCallback(
-    async (obligationId: string, data: UpdateObligationRequest) => {
+  const mutateUpdate = useCallback(
+    async (
+      obligationId: string,
+      data: UpdateObligationRequest,
+      options?: MutationOptions
+    ) => {
       try {
         const updated = await obligationService.updateObligation(
           projectId,
           obligationId,
           data
         )
-        setObligations((prev) =>
-          prev.map((o) => (o.id === obligationId ? updated : o))
-        )
+        if (options?.refetch ?? true) {
+          await fetchObligations()
+        } else {
+          setObligations((prev) =>
+            prev.map((o) => (o.id === obligationId ? updated : o))
+          )
+        }
         toast.success("Obligación actualizada")
       } catch (err) {
         toastApiError(err, "Error al actualizar obligación")
       }
     },
-    [projectId]
+    [projectId, fetchObligations]
   )
 
-  const handleDelete = useCallback(
-    async (obligation: ObligationResponse) => {
+  const mutateDelete = useCallback(
+    async (obligation: ObligationResponse, options?: MutationOptions) => {
       try {
         await obligationService.deleteObligation(projectId, obligation.id)
         toast.success("Obligación eliminada", {
           description: `"${obligation.title}" fue eliminada.`,
         })
-        fetchObligations()
+        if (options?.refetch ?? true) {
+          await fetchObligations()
+        } else {
+          setObligations((prev) => prev.filter((o) => o.id !== obligation.id))
+        }
       } catch (err) {
         toastApiError(err, "Error al eliminar obligación")
       }
@@ -146,9 +161,9 @@ export function useProjectObligations(projectId: string) {
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleSortChange,
     handleStatusFilterChange,

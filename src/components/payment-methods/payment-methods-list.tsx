@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
@@ -13,7 +14,7 @@ interface PaymentMethodsListProps {
   onDelete: (pm: PaymentMethodResponse) => void
 }
 
-export function PaymentMethodsList({ paymentMethods, onEdit, onDelete }: PaymentMethodsListProps) {
+function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: PaymentMethodsListProps) {
   return (
     <div role="list" aria-label="Métodos de pago">
       {/* Header */}
@@ -84,3 +85,5 @@ export function PaymentMethodsList({ paymentMethods, onEdit, onDelete }: Payment
     </div>
   )
 }
+
+export const PaymentMethodsList = memo(PaymentMethodsListComponent)

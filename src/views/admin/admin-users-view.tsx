@@ -1,13 +1,18 @@
 "use client"
 
+import { useCallback } from "react"
+import dynamic from "next/dynamic"
 import { useAdminUsers } from "@/hooks/admin/use-admin-users"
 import { AdminUsersList } from "@/components/admin/users-list"
 import { AdminUsersToolbar } from "@/components/admin/users-toolbar"
 import { AdminUsersSkeleton, AdminUsersEmptyState } from "@/components/admin/user-states"
-import { EditUserModal } from "@/components/admin/edit-user-modal"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { Pagination } from "@/components/shared/pagination"
 import type { AdminUserResponse } from "@/types/admin-user"
+
+const EditUserModal = dynamic(() =>
+  import("@/components/admin/edit-user-modal").then((mod) => mod.EditUserModal)
+)
 
 export function AdminUsersView() {
   const {
@@ -25,15 +30,31 @@ export function AdminUsersView() {
     deleteTarget,
     setDeleteTarget,
     plans,
-    handleActivate,
-    handleDeactivate,
-    handleEdit,
-    handleDelete,
-    handleToggleAdmin,
+    mutateActivate,
+    mutateDeactivate,
+    mutateUpdate,
+    mutateDelete,
+    mutateToggleAdmin,
     handleSortChange,
     handlePageSizeChange,
     handleIncludeDeletedChange,
   } = useAdminUsers()
+
+  const handleEdit = useCallback((user: AdminUserResponse) => {
+    setEditTarget(user)
+  }, [setEditTarget])
+
+  const handleDelete = useCallback((user: AdminUserResponse) => {
+    setDeleteTarget(user)
+  }, [setDeleteTarget])
+
+  const handleCloseEdit = useCallback(() => {
+    setEditTarget(null)
+  }, [setEditTarget])
+
+  const handleCloseDelete = useCallback(() => {
+    setDeleteTarget(null)
+  }, [setDeleteTarget])
 
   const sort = `${sortBy}:${sortDirection}`
 
@@ -70,11 +91,11 @@ export function AdminUsersView() {
         ) : (
           <AdminUsersList
             users={users}
-            onEdit={(u) => setEditTarget(u)}
-            onDelete={(u) => setDeleteTarget(u)}
-            onActivate={handleActivate}
-            onDeactivate={handleDeactivate}
-            onToggleAdmin={handleToggleAdmin}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onActivate={mutateActivate}
+            onDeactivate={mutateDeactivate}
+            onToggleAdmin={mutateToggleAdmin}
           />
         )}
 
@@ -91,20 +112,22 @@ export function AdminUsersView() {
       </div>
 
       {/* Edit modal */}
-      <EditUserModal
-        user={editTarget}
-        open={!!editTarget}
-        onClose={() => setEditTarget(null)}
-        onSave={handleEdit}
-        plans={plans}
-      />
+      {!!editTarget && (
+        <EditUserModal
+          user={editTarget}
+          open={!!editTarget}
+          onClose={handleCloseEdit}
+          onSave={mutateUpdate}
+          plans={plans}
+        />
+      )}
 
       {/* Delete modal */}
       <DeleteEntityModal<AdminUserResponse>
         item={deleteTarget}
         open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
+        onClose={handleCloseDelete}
+        onConfirm={mutateDelete}
         title="Eliminar usuario"
         description="Esta acción no se puede deshacer. El usuario será desactivado permanentemente."
         getMessage={(u) => `¿Eliminar a "${u.fullName}" (${u.email})?`}

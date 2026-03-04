@@ -1,5 +1,6 @@
 "use client"
 
+import { memo, useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate, formatAmount } from "@/lib/format-utils"
@@ -15,7 +16,12 @@ interface ExpensesListProps {
   onDelete: (expense: ExpenseResponse) => void
 }
 
-export function ExpensesList({ expenses, projectCurrency, paymentMethods, onEdit, onDelete }: ExpensesListProps) {
+function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete }: ExpensesListProps) {
+  const paymentMethodNameById = useMemo(
+    () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
+    [paymentMethods]
+  )
+
   return (
     <div role="list" aria-label="Lista de gastos">
       {/* Header */}
@@ -32,7 +38,7 @@ export function ExpensesList({ expenses, projectCurrency, paymentMethods, onEdit
       {expenses.map((expense, i) => {
         const showOriginal = expense.originalCurrency !== projectCurrency
         const hasAlt = !!expense.altCurrency && expense.altAmount != null
-        const pmName = paymentMethods.find((pm) => pm.id === expense.paymentMethodId)?.name ?? "—"
+        const pmName = paymentMethodNameById.get(expense.paymentMethodId) ?? "—"
 
         return (
           <div
@@ -112,3 +118,5 @@ export function ExpensesList({ expenses, projectCurrency, paymentMethods, onEdit
     </div>
   )
 }
+
+export const ExpensesList = memo(ExpensesListComponent)

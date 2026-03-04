@@ -12,6 +12,7 @@ import type {
   AddMemberRequest,
   ProjectMemberRole,
 } from "@/types/project-member"
+import type { MutationOptions } from "@/types/common"
 
 export function useProjectMembers(projectId: string) {
   const [members, setMembers] = useState<ProjectMemberResponse[]>([])
@@ -43,11 +44,15 @@ export function useProjectMembers(projectId: string) {
 
   // ── Add member ────────────────────────────────────────────
 
-  const handleAdd = useCallback(
-    async (data: AddMemberRequest) => {
+  const mutateAdd = useCallback(
+    async (data: AddMemberRequest, options?: MutationOptions) => {
       try {
         const created = await projectService.addMember(projectId, data)
-        setMembers((prev) => [...prev, created])
+        if (options?.refetch ?? true) {
+          await fetchMembers()
+        } else {
+          setMembers((prev) => [...prev, created])
+        }
         toast.success("Miembro agregado", {
           description: `${created.userFullName} fue agregado como ${created.role}.`,
         })
@@ -55,35 +60,47 @@ export function useProjectMembers(projectId: string) {
         toastApiError(err, "Error al agregar miembro")
       }
     },
-    [projectId],
+    [projectId, fetchMembers],
   )
 
   // ── Change role ───────────────────────────────────────────
 
-  const handleChangeRole = useCallback(
-    async (memberId: string, role: "editor" | "viewer") => {
+  const mutateChangeRole = useCallback(
+    async (
+      memberId: string,
+      role: "editor" | "viewer",
+      options?: MutationOptions
+    ) => {
       try {
         await projectService.changeMemberRole(projectId, memberId, { role })
-        setMembers((prev) =>
-          prev.map((m) =>
-            m.id === memberId ? { ...m, role: role as ProjectMemberRole } : m,
-          ),
-        )
+        if (options?.refetch ?? true) {
+          await fetchMembers()
+        } else {
+          setMembers((prev) =>
+            prev.map((m) =>
+              m.id === memberId ? { ...m, role: role as ProjectMemberRole } : m,
+            ),
+          )
+        }
         toast.success("Rol actualizado")
       } catch (err) {
         toastApiError(err, "Error al cambiar rol")
       }
     },
-    [projectId],
+    [projectId, fetchMembers],
   )
 
   // ── Remove member ─────────────────────────────────────────
 
-  const handleRemove = useCallback(
-    async (member: ProjectMemberResponse) => {
+  const mutateRemove = useCallback(
+    async (member: ProjectMemberResponse, options?: MutationOptions) => {
       try {
         await projectService.removeMember(projectId, member.id)
-        setMembers((prev) => prev.filter((m) => m.id !== member.id))
+        if (options?.refetch ?? true) {
+          await fetchMembers()
+        } else {
+          setMembers((prev) => prev.filter((m) => m.id !== member.id))
+        }
         toast.success("Miembro removido", {
           description: `${member.userFullName} fue removido del proyecto.`,
         })
@@ -91,7 +108,7 @@ export function useProjectMembers(projectId: string) {
         toastApiError(err, "Error al remover miembro")
       }
     },
-    [projectId],
+    [projectId, fetchMembers],
   )
 
   return {
@@ -100,9 +117,9 @@ export function useProjectMembers(projectId: string) {
     addOpen, setAddOpen,
     deleteTarget, setDeleteTarget,
     roleTarget, setRoleTarget,
-    handleAdd,
-    handleChangeRole,
-    handleRemove,
+    mutateAdd,
+    mutateChangeRole,
+    mutateRemove,
     refetch: fetchMembers,
   }
 }

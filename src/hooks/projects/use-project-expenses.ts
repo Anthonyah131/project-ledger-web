@@ -13,6 +13,7 @@ import type {
   CreateExpenseRequest,
   UpdateExpenseRequest,
 } from "@/types/expense"
+import type { MutationOptions } from "@/types/common"
 
 export function useProjectExpenses(projectId: string) {
   const [expenses, setExpenses] = useState<ExpenseResponse[]>([])
@@ -81,12 +82,14 @@ export function useProjectExpenses(projectId: string) {
 
   // ── CRUD ──────────────────────────────────────────────────
 
-  const handleCreate = useCallback(
-    async (data: CreateExpenseRequest) => {
+  const mutateCreate = useCallback(
+    async (data: CreateExpenseRequest, options?: MutationOptions) => {
       try {
         await expenseService.createExpense(projectId, data)
         toast.success("Gasto creado")
-        fetchExpenses()
+        if (options?.refetch ?? true) {
+          await fetchExpenses()
+        }
       } catch (err) {
         toastApiError(err, "Error al crear gasto")
       }
@@ -94,12 +97,18 @@ export function useProjectExpenses(projectId: string) {
     [projectId, fetchExpenses]
   )
 
-  const handleEdit = useCallback(
-    async (expenseId: string, data: UpdateExpenseRequest) => {
+  const mutateUpdate = useCallback(
+    async (
+      expenseId: string,
+      data: UpdateExpenseRequest,
+      options?: MutationOptions
+    ) => {
       try {
         await expenseService.updateExpense(projectId, expenseId, data)
         toast.success("Gasto actualizado")
-        fetchExpenses()
+        if (options?.refetch ?? true) {
+          await fetchExpenses()
+        }
       } catch (err) {
         toastApiError(err, "Error al actualizar gasto")
       }
@@ -107,14 +116,16 @@ export function useProjectExpenses(projectId: string) {
     [projectId, fetchExpenses]
   )
 
-  const handleDelete = useCallback(
-    async (expense: ExpenseResponse) => {
+  const mutateDelete = useCallback(
+    async (expense: ExpenseResponse, options?: MutationOptions) => {
       try {
         await expenseService.deleteExpense(projectId, expense.id)
         toast.success("Gasto eliminado", {
           description: `"${expense.title}" fue eliminado.`,
         })
-        fetchExpenses()
+        if (options?.refetch ?? true) {
+          await fetchExpenses()
+        }
       } catch (err) {
         toastApiError(err, "Error al eliminar gasto")
       }
@@ -147,9 +158,9 @@ export function useProjectExpenses(projectId: string) {
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    mutateCreate,
+    mutateUpdate,
+    mutateDelete,
     handlePageSizeChange,
     handleSortChange,
     refetch: fetchExpenses,
