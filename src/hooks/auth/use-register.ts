@@ -25,11 +25,19 @@ export function useRegister() {
     setShowPassword((prev) => !prev)
   }
 
+  function resolveRedirect(defaultRoute: string) {
+    if (typeof window === "undefined") return defaultRoute
+    const redirectTo = new URLSearchParams(window.location.search).get("redirectTo")
+    if (!redirectTo) return defaultRoute
+    if (!redirectTo.startsWith("/") || redirectTo.startsWith("//")) return defaultRoute
+    return redirectTo
+  }
+
   const onSubmit = form.handleSubmit(async (data) => {
     setServerError("")
     try {
       await registerUser(data.email, data.password, data.name)
-      router.push("/dashboard")
+      router.push(resolveRedirect("/dashboard"))
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 409) {

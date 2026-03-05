@@ -15,7 +15,7 @@ import type { UserProfileResponse } from "@/types/user";
  * No authentication required.
  */
 export function getPlans() {
-  return api.get<PlanResponse[]>("/plans");
+  return api.get<PlanResponse[]>("/plans", { skipAuth: true });
 }
 
 /**
@@ -24,7 +24,7 @@ export function getPlans() {
  * No authentication required.
  */
 export function getPlan(idOrSlug: string) {
-  return api.get<PlanResponse>(`/plans/${idOrSlug}`);
+  return api.get<PlanResponse>(`/plans/${idOrSlug}`, { skipAuth: true });
 }
 
 // ─── Authenticated endpoints ─────────────────────────────────────────────────

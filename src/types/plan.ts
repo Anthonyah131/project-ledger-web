@@ -39,6 +39,9 @@ export interface PlanResponse {
   slug: string;
   description: string | null;
   displayOrder: number;
+  monthlyPrice: number;
+  currency: string;
+  stripePaymentLinkUrl: string | null;
   permissions: PlanPermissionsDto;
   limits: PlanLimitsDto | null;
 }

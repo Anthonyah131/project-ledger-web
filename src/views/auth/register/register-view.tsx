@@ -1,6 +1,8 @@
 ﻿"use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import type { MouseEvent } from "react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -17,6 +19,7 @@ import {
 import { useRegister } from "@/hooks/auth/use-register"
 
 export function RegisterView() {
+  const router = useRouter()
   const {
     form,
     serverError,
@@ -25,6 +28,18 @@ export function RegisterView() {
     onSubmit,
     togglePassword,
   } = useRegister()
+
+  function handleLoginNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+
+    let href = "/login"
+    const redirectTo = new URLSearchParams(window.location.search).get("redirectTo")
+    if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+      href = `/login?redirectTo=${encodeURIComponent(redirectTo)}`
+    }
+
+    router.push(href)
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -197,6 +212,7 @@ export function RegisterView() {
         Ya tienes cuenta?{" "}
         <Link
           href="/login"
+          onClick={handleLoginNavigation}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Iniciar sesion

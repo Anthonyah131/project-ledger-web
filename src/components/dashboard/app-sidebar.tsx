@@ -33,6 +33,7 @@ const userNavMain = [
   { title: "Proyectos",        url: "/projects",         icon: IconFolder },
   { title: "Gastos",           url: "/expenses",         icon: IconReceipt },
   { title: "Obligaciones",     url: "/obligations",      icon: IconShieldDollar },
+  { title: "Facturación",      url: "/billing",          icon: IconCreditCard },
   { title: "Métodos de pago",  url: "/payment-methods",  icon: IconCreditCard },
   { title: "Reportes",         url: "/reports",          icon: IconChartBar },
 ]

@@ -13,7 +13,7 @@ import type { CurrencyResponse } from "@/types/currency";
  * No authentication required.
  */
 export function getCurrencies() {
-  return api.get<CurrencyResponse[]>("/currencies");
+  return api.get<CurrencyResponse[]>("/currencies", { skipAuth: true });
 }
 
 // ─── Get single currency by code ────────────────────────────────────────────
@@ -24,5 +24,5 @@ export function getCurrencies() {
  * No authentication required.
  */
 export function getCurrency(code: string) {
-  return api.get<CurrencyResponse>(`/currencies/${code}`);
+  return api.get<CurrencyResponse>(`/currencies/${code}`, { skipAuth: true });
 }

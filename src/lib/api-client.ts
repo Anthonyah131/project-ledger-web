@@ -87,7 +87,7 @@ function logError(method: string, url: string, error: unknown) {
     "color: #22c55e; font-weight: bold",
     "color: #a1a1aa",
   );
-  console.error(error);
+  console.warn(error);
   console.groupEnd();
 }
 
@@ -162,6 +162,12 @@ export class ApiClientError extends Error {
   }
 }
 
+function getNetworkError() {
+  return new ApiClientError(0, {
+    message: "No se pudo conectar con el servidor. Verifica que el backend esté levantado y la URL de API sea correcta.",
+  });
+}
+
 async function request<T>(
   method: string,
   path: string,
@@ -193,7 +199,7 @@ async function request<T>(
     });
   } catch (error) {
     logError(method, url, error);
-    throw error;
+    throw getNetworkError();
   }
 
   // ── Handle 401 — attempt token refresh once then retry ───────────────────
@@ -212,7 +218,7 @@ async function request<T>(
         });
       } catch (error) {
         logError(method, url, error);
-        throw error;
+        throw getNetworkError();
       }
     }
   }

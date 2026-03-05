@@ -25,11 +25,20 @@ export function useLogin() {
     setShowPassword((prev) => !prev)
   }
 
+  function resolveRedirect(defaultRoute: string) {
+    if (typeof window === "undefined") return defaultRoute
+    const redirectTo = new URLSearchParams(window.location.search).get("redirectTo")
+    if (!redirectTo) return defaultRoute
+    if (!redirectTo.startsWith("/") || redirectTo.startsWith("//")) return defaultRoute
+    return redirectTo
+  }
+
   const onSubmit = form.handleSubmit(async (data) => {
     setServerError("")
     try {
       const loggedInUser = await login(data.email, data.password)
-      router.push(loggedInUser.isAdmin ? "/admin/users" : "/dashboard")
+      const fallback = loggedInUser.isAdmin ? "/admin/users" : "/dashboard"
+      router.push(resolveRedirect(fallback))
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 401) {

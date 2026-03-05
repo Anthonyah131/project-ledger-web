@@ -38,6 +38,8 @@ export interface UserProfileResponse {
   isAdmin: boolean;
   lastLoginAt: string | null;
   createdAt: string;
+  /** FK → plans — can exist even when there is no users_plan/subscription row */
+  planId?: string | null;
   /** Embedded plan summary; null if user has no plan assigned */
   plan: PlanSummaryDto | null;
 }

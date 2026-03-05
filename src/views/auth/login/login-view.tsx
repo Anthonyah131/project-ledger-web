@@ -1,6 +1,8 @@
 ﻿"use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import type { MouseEvent } from "react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -17,6 +19,7 @@ import {
 import { useLogin } from "@/hooks/auth/use-login"
 
 export function LoginView() {
+  const router = useRouter()
   const {
     form,
     serverError,
@@ -25,6 +28,18 @@ export function LoginView() {
     onSubmit,
     togglePassword,
   } = useLogin()
+
+  function handleRegisterNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+
+    let href = "/register"
+    const redirectTo = new URLSearchParams(window.location.search).get("redirectTo")
+    if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+      href = `/register?redirectTo=${encodeURIComponent(redirectTo)}`
+    }
+
+    router.push(href)
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -153,6 +168,7 @@ export function LoginView() {
         No tienes cuenta?{" "}
         <Link
           href="/register"
+          onClick={handleRegisterNavigation}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Crear una cuenta
