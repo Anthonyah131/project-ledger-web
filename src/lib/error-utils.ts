@@ -29,6 +29,8 @@ export function toastApiError(err: unknown, label: string): string {
     toast.warning("Límite de plan alcanzado", {
       description: msg,
     });
+  } else if (err instanceof ApiClientError && err.isBusinessError) {
+    toast.warning(label, { description: msg });
   } else {
     toast.error(label, { description: msg });
   }

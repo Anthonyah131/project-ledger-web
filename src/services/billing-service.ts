@@ -4,6 +4,8 @@
 import { api } from "@/lib/api-client";
 import type {
   BillingSubscriptionResponse,
+  CancelSubscriptionRequest,
+  ChangePlanRequest,
   CreateCheckoutSessionRequest,
   CreateCheckoutSessionResponse,
 } from "@/types/subscription";
@@ -23,6 +25,22 @@ export function getMySubscription() {
  */
 export function createCheckoutSession(data: CreateCheckoutSessionRequest) {
   return api.post<CreateCheckoutSessionResponse>("/billing/stripe/create-checkout-session", data);
+}
+
+/**
+ * POST /api/billing/subscription/change-plan
+ * Changes current subscription to another plan (upgrade/downgrade).
+ */
+export function changePlan(data: ChangePlanRequest) {
+  return api.post<BillingSubscriptionResponse>("/billing/subscription/change-plan", data);
+}
+
+/**
+ * POST /api/billing/subscription/cancel
+ * Cancels current subscription immediately or at period end.
+ */
+export function cancelSubscription(data: CancelSubscriptionRequest) {
+  return api.post<BillingSubscriptionResponse>("/billing/subscription/cancel", data);
 }
 
 /**

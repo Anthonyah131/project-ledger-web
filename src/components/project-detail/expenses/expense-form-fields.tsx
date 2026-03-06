@@ -1,6 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
 import type { UseFormReturn } from "react-hook-form"
+import { useWatch } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -46,6 +48,21 @@ export function ExpenseFormFields({
   watchAltCurrency,
   showPlaceholders = false,
 }: ExpenseFormFieldsProps) {
+  // Enforce originalCurrency from the selected payment method.
+  const watchPaymentMethodId = useWatch({ control: form.control, name: "paymentMethodId" })
+  const selectedPaymentMethod = paymentMethods.find((p) => p.id === watchPaymentMethodId)
+
+  useEffect(() => {
+    if (
+      selectedPaymentMethod?.currency &&
+      form.getValues("originalCurrency") !== selectedPaymentMethod.currency
+    ) {
+      form.setValue("originalCurrency", selectedPaymentMethod.currency, {
+        shouldValidate: true,
+      })
+    }
+  }, [form, selectedPaymentMethod?.currency])
+
   return (
     <>
       {/* Title */}
@@ -94,20 +111,17 @@ export function ExpenseFormFields({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Moneda *</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ISO_CURRENCIES.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <Input
+                  {...field}
+                  readOnly
+                  className="bg-muted/40"
+                  placeholder="Selecciona un metodo"
+                />
+              </FormControl>
+              <p className="text-xs text-muted-foreground">
+                Se define automaticamente por el metodo de pago seleccionado.
+              </p>
               <FormMessage />
             </FormItem>
           )}

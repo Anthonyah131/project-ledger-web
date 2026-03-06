@@ -160,6 +160,14 @@ export class ApiClientError extends Error {
   get isPlanError(): boolean {
     return this.status === 403 && this.message.toLowerCase().includes("plan");
   }
+
+  /**
+   * True when a 400 carries a business-rule message (e.g. obligation overpayment).
+   * These should be shown as informational warnings, not generic error toasts.
+   */
+  get isBusinessError(): boolean {
+    return this.status === 400;
+  }
 }
 
 function getNetworkError() {

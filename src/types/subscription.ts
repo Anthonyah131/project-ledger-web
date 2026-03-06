@@ -17,11 +17,14 @@ export interface BillingSubscriptionResponse {
   planId: string | null;
   planName: string | null;
   planSlug: string | null;
-  stripeSubscriptionId: string | null;
+  stripeSubscriptionId: string;
   stripeCustomerId: string | null;
   stripePriceId: string | null;
   status: BillingSubscriptionStatus;
   cancelAtPeriodEnd: boolean;
+  autoRenews: boolean;
+  willDowngradeToFree: boolean;
+  downgradeToFreeAt: string | null;
   currentPeriodStart: string | null;
   currentPeriodEnd: string | null;
   canceledAt: string | null;
@@ -37,4 +40,15 @@ export interface CreateCheckoutSessionRequest {
 export interface CreateCheckoutSessionResponse {
   checkoutUrl: string;
   sessionId: string;
+}
+
+/** POST /api/billing/subscription/change-plan */
+export interface ChangePlanRequest {
+  planId: string;
+  prorate?: boolean;
+}
+
+/** POST /api/billing/subscription/cancel */
+export interface CancelSubscriptionRequest {
+  cancelAtPeriodEnd: boolean;
 }

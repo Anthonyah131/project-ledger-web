@@ -340,6 +340,7 @@ export function ProjectDetailView({ projectId }: Props) {
               onSave={mutateExpenseUpdate}
               categories={cat.categories}
               paymentMethods={paymentMethods}
+              obligations={obl.obligations}
               projectCurrency={detail.project?.currencyCode ?? ""}
             />
           )}

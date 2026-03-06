@@ -13,6 +13,8 @@ export interface Expense {
   createdByUserId: string;
   /** FK → obligations — null = regular expense; set = payment toward a debt */
   obligationId: string | null;
+  /** Optional equivalent applied in obligation currency for cross-currency payments */
+  obligationEquivalentAmount: number | null;
 
   // ─── Currency & amounts ────────────────────────────────────
   /** Amount in the original currency (> 0) */
@@ -63,6 +65,7 @@ export interface ExpenseResponse {
   paymentMethodId: string;
   createdByUserId: string;
   obligationId: string | null;
+  obligationEquivalentAmount: number | null;
   originalAmount: number;
   originalCurrency: string;
   exchangeRate: number;
@@ -97,6 +100,7 @@ export interface CreateExpenseRequest {
   categoryId: string;
   paymentMethodId: string;
   obligationId?: string | null;
+  obligationEquivalentAmount?: number | null;
   originalAmount: number;
   originalCurrency: string;
   exchangeRate?: number;
@@ -115,6 +119,7 @@ export interface CreateExpenseRequest {
 export interface UpdateExpenseRequest {
   categoryId: string;
   paymentMethodId: string;
+  obligationEquivalentAmount?: number | null;
   originalAmount: number;
   originalCurrency: string;
   exchangeRate?: number;

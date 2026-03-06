@@ -1,0 +1,100 @@
+"use client"
+
+// hooks/reports/use-expense-report.ts
+// State management + API orchestration for the project expense report view.
+
+import { useState, useCallback } from "react"
+import { toast } from "sonner"
+import * as reportService from "@/services/report-service"
+import { toastApiError } from "@/lib/error-utils"
+import type { ProjectExpenseReportResponse, ReportFormat } from "@/types/report"
+
+export interface ExpenseReportFilters {
+  projectId: string
+  from: string
+  to: string
+  format: ReportFormat
+}
+
+export function useExpenseReport() {
+  const [report, setReport] = useState<ProjectExpenseReportResponse | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  const [filters, setFilters] = useState<ExpenseReportFilters>({
+    projectId: "",
+    from: "",
+    to: "",
+    format: "json",
+  })
+
+  const updateFilter = useCallback(
+    <K extends keyof ExpenseReportFilters>(key: K, value: ExpenseReportFilters[K]) => {
+      setFilters((prev) => ({ ...prev, [key]: value }))
+    },
+    [],
+  )
+
+  // Fetch JSON report
+  const fetchReport = useCallback(async () => {
+    if (!filters.projectId) {
+      toast.warning("Selecciona un proyecto para generar el reporte.")
+      return
+    }
+
+    setLoading(true)
+    setReport(null)
+
+    try {
+      const data = await reportService.getExpenseReport(filters.projectId, {
+        from: filters.from || undefined,
+        to: filters.to || undefined,
+        format: "json",
+      })
+      if (data) setReport(data)
+    } catch (err) {
+      toastApiError(err, "Error al generar reporte")
+    } finally {
+      setLoading(false)
+    }
+  }, [filters.projectId, filters.from, filters.to])
+
+  // Export as Excel or PDF
+  const exportReport = useCallback(
+    async (format: "excel" | "pdf") => {
+      if (!filters.projectId) {
+        toast.warning("Selecciona un proyecto para exportar.")
+        return
+      }
+
+      setExporting(true)
+
+      try {
+        await reportService.getExpenseReport(filters.projectId, {
+          from: filters.from || undefined,
+          to: filters.to || undefined,
+          format,
+        })
+        toast.success(
+          format === "excel" ? "Archivo Excel descargado" : "Archivo PDF descargado",
+        )
+      } catch (err) {
+        toastApiError(err, `Error al exportar como ${format.toUpperCase()}`)
+      } finally {
+        setExporting(false)
+      }
+    },
+    [filters.projectId, filters.from, filters.to],
+  )
+
+  return {
+    report,
+    loading,
+    exporting,
+    filters,
+    updateFilter,
+    setFilters,
+    fetchReport,
+    exportReport,
+  }
+}

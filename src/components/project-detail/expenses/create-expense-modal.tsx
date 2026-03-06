@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { FormModal } from "@/components/shared/form-modal"
 import { ExpenseFormFields } from "./expense-form-fields"
 import type { CreateExpenseRequest } from "@/types/expense"
@@ -21,6 +22,8 @@ import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ObligationResponse } from "@/types/obligation"
 import { useCreateExpenseForm } from "@/hooks/forms/use-expense-form"
+import { useWatch } from "react-hook-form"
+import { useEffect } from "react"
 
 interface CreateExpenseModalProps {
   open: boolean
@@ -51,6 +54,28 @@ export function CreateExpenseModal({
     watchAltCurrency,
   } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods })
 
+  const watchObligationId = useWatch({ control: form.control, name: "obligationId" })
+  const selectedObligation = obligations.find((o) => o.id === watchObligationId)
+  const showEquivalentAmount = !!selectedObligation && selectedObligation.currency !== watchCurrency
+
+  function handleSubmitWithEquivalentGuard(e?: React.BaseSyntheticEvent) {
+    if (showEquivalentAmount && !form.getValues("obligationEquivalentAmount")) {
+      e?.preventDefault()
+      form.setError("obligationEquivalentAmount", {
+        type: "manual",
+        message: `Campo requerido para pagos en ${selectedObligation!.currency}`,
+      })
+      return
+    }
+    onSubmit(e)
+  }
+
+  useEffect(() => {
+    if (!showEquivalentAmount) {
+      form.setValue("obligationEquivalentAmount", "")
+    }
+  }, [form, showEquivalentAmount])
+
   return (
     <FormModal
       open={open}
@@ -58,7 +83,7 @@ export function CreateExpenseModal({
       title="Nuevo gasto"
       description="Registra un nuevo gasto en el proyecto."
       form={form}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmitWithEquivalentGuard}
       submitLabel="Crear gasto"
       contentClassName="sm:max-w-md max-h-[85vh] overflow-y-auto"
     >
@@ -96,6 +121,36 @@ export function CreateExpenseModal({
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {showEquivalentAmount && (
+        <FormField
+          control={form.control}
+          name="obligationEquivalentAmount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Equivalente en {selectedObligation!.currency}{" "}
+                <span className="font-normal text-xs text-muted-foreground">(opcional)</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder={`¿Cuánto ${selectedObligation!.currency} cubre este pago?`}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
+              </FormControl>
+              <p className="text-xs text-muted-foreground">
+                Saldo pendiente: {selectedObligation!.currency}{" "}
+                {selectedObligation!.remainingAmount.toLocaleString()}
+              </p>
               <FormMessage />
             </FormItem>
           )}

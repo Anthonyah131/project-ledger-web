@@ -40,7 +40,7 @@ export function useCreateExpenseForm({
     defaultValues: {
       title: "",
       originalAmount: "",
-      originalCurrency: "CRC",
+      originalCurrency: paymentMethods[0]?.currency ?? "CRC",
       expenseDate: "",
       categoryId: defaultCategoryId,
       paymentMethodId: defaultPaymentMethodId,
@@ -48,6 +48,7 @@ export function useCreateExpenseForm({
       description: "",
       notes: "",
       obligationId: "",
+      obligationEquivalentAmount: "",
       altCurrency: "",
       altExchangeRate: "",
       altAmount: "",
@@ -74,7 +75,9 @@ export function useCreateExpenseForm({
     }
     if (values.description) data.description = values.description
     if (values.notes) data.notes = values.notes
-    if (values.obligationId) data.obligationId = values.obligationId
+    if (values.obligationId && values.obligationId !== "none") {
+      data.obligationId = values.obligationId
+    }
     if (values.altCurrency) {
       data.altCurrency = values.altCurrency
       if (values.altExchangeRate) data.altExchangeRate = Number(values.altExchangeRate)
@@ -83,6 +86,13 @@ export function useCreateExpenseForm({
       data.altCurrency = null
       data.altExchangeRate = null
       data.altAmount = null
+    }
+    if (
+      values.obligationId &&
+      values.obligationId !== "none" &&
+      values.obligationEquivalentAmount
+    ) {
+      data.obligationEquivalentAmount = Number(values.obligationEquivalentAmount)
     }
     onCreate(data)
     handleClose()
@@ -126,6 +136,10 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
           exchangeRate: String(expense.exchangeRate),
           description: expense.description ?? "",
           notes: expense.notes ?? "",
+          obligationEquivalentAmount:
+            expense.obligationEquivalentAmount != null
+              ? String(expense.obligationEquivalentAmount)
+              : "",
           altCurrency: expense.altCurrency ?? "",
           altExchangeRate: expense.altExchangeRate != null ? String(expense.altExchangeRate) : "",
           altAmount: expense.altAmount != null ? String(expense.altAmount) : "",
@@ -154,6 +168,9 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
     }
     if (values.description) data.description = values.description
     if (values.notes) data.notes = values.notes
+    if (expense.obligationId && values.obligationEquivalentAmount) {
+      data.obligationEquivalentAmount = Number(values.obligationEquivalentAmount)
+    }
     if (values.altCurrency) {
       data.altCurrency = values.altCurrency
       if (values.altExchangeRate) data.altExchangeRate = Number(values.altExchangeRate)

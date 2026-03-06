@@ -22,7 +22,7 @@ import { useAuth } from "@/context/auth-context";
 import * as billingService from "@/services/billing-service";
 import * as planService from "@/services/plan-service";
 import type { PlanResponse } from "@/types/plan";
-import type { BillingSubscriptionResponse } from "@/types/subscription";
+import type { BillingSubscriptionResponse, BillingSubscriptionStatus } from "@/types/subscription";
 
 function getBillingErrorMessage(err: unknown): string {
   if (err instanceof ApiClientError) {
@@ -48,6 +48,18 @@ function getBadgeToneClass(tone: "success" | "warning" | "danger" | "muted"): st
   }
 }
 
+const MANAGEABLE_SUBSCRIPTION_STATUSES: readonly BillingSubscriptionStatus[] = [
+  "active",
+  "trialing",
+  "past_due",
+  "incomplete",
+];
+
+function isManageableSubscription(subscription: BillingSubscriptionResponse | null): boolean {
+  if (!subscription?.stripeSubscriptionId) return false;
+  return MANAGEABLE_SUBSCRIPTION_STATUSES.includes(subscription.status);
+}
+
 export function BillingView() {
   const { user } = useAuth();
   const [plans, setPlans] = useState<PlanResponse[]>([]);
@@ -57,7 +69,10 @@ export function BillingView() {
   const [error, setError] = useState<string | null>(null);
   const [autoCheckoutDone, setAutoCheckoutDone] = useState(false);
   const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
-  const [checkoutInProgressPlanId, setCheckoutInProgressPlanId] = useState<string | null>(null);
+  const [actionInProgressPlanId, setActionInProgressPlanId] = useState<string | null>(null);
+  const [actionInProgressType, setActionInProgressType] = useState<
+    "checkout" | "change-plan" | "cancel" | null
+  >(null);
 
   const loadBillingData = useCallback(async () => {
     setLoading(true);
@@ -113,10 +128,12 @@ export function BillingView() {
   }, [subscription, subscriptionMissing, freePlan, user?.planId, plans]);
 
   const effectiveCurrentPlanId = subscription?.planId ?? fallbackCurrentPlan?.id ?? null;
+  const hasManageableSubscription = useMemo(() => isManageableSubscription(subscription), [subscription]);
 
   const startCheckout = useCallback(async (planId: string) => {
     setError(null);
-    setCheckoutInProgressPlanId(planId);
+    setActionInProgressPlanId(planId);
+    setActionInProgressType("checkout");
 
     try {
       const session = await billingService.createCheckoutSession({ planId });
@@ -124,14 +141,66 @@ export function BillingView() {
     } catch (err) {
       setError(getBillingErrorMessage(err));
     } finally {
-      setCheckoutInProgressPlanId(null);
+      setActionInProgressPlanId(null);
+      setActionInProgressType(null);
     }
   }, []);
 
-  const handleCheckout = useCallback((plan: PlanResponse) => {
-    if (plan.monthlyPrice <= 0) return;
-    void startCheckout(plan.id);
-  }, [startCheckout]);
+  const changePlan = useCallback(async (planId: string) => {
+    setError(null);
+    setActionInProgressPlanId(planId);
+    setActionInProgressType("change-plan");
+
+    try {
+      const updatedSubscription = await billingService.changePlan({
+        planId,
+        prorate: true,
+      });
+      setSubscription(updatedSubscription);
+      setSubscriptionMissing(false);
+    } catch (err) {
+      setError(getBillingErrorMessage(err));
+    } finally {
+      setActionInProgressPlanId(null);
+      setActionInProgressType(null);
+    }
+  }, []);
+
+  const cancelAtPeriodEnd = useCallback(async (targetPlanId: string) => {
+    setError(null);
+    setActionInProgressPlanId(targetPlanId);
+    setActionInProgressType("cancel");
+
+    try {
+      const updatedSubscription = await billingService.cancelSubscription({
+        cancelAtPeriodEnd: true,
+      });
+      setSubscription(updatedSubscription);
+      setSubscriptionMissing(false);
+    } catch (err) {
+      setError(getBillingErrorMessage(err));
+    } finally {
+      setActionInProgressPlanId(null);
+      setActionInProgressType(null);
+    }
+  }, []);
+
+  const handlePlanAction = useCallback((plan: PlanResponse) => {
+    const isPaidPlan = plan.monthlyPrice > 0;
+
+    if (isPaidPlan) {
+      if (hasManageableSubscription) {
+        void changePlan(plan.id);
+      } else {
+        void startCheckout(plan.id);
+      }
+      return;
+    }
+
+    if (hasManageableSubscription) {
+      void cancelAtPeriodEnd(plan.id);
+    }
+  }, [cancelAtPeriodEnd, changePlan, hasManageableSubscription, startCheckout]);
 
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get("checkoutPlanId");
@@ -152,15 +221,15 @@ export function BillingView() {
     if (isCurrentPlan) return;
 
     setAutoCheckoutDone(true);
-    void startCheckout(targetPlan.id);
-  }, [loading, autoCheckoutDone, checkoutPlanId, plans, effectiveCurrentPlanId, startCheckout]);
+    handlePlanAction(targetPlan);
+  }, [loading, autoCheckoutDone, checkoutPlanId, plans, effectiveCurrentPlanId, handlePlanAction]);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Facturación</h1>
-          <p className="text-sm text-muted-foreground">Gestiona tu plan y el estado de tu suscripción.</p>
+          <p className="text-sm text-muted-foreground">Gestiona tu plan, upgrades/downgrades y estado real de tu suscripción.</p>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={loadBillingData} disabled={loading}>
           <RefreshCw className="size-4" />
@@ -195,17 +264,36 @@ export function BillingView() {
                   <Badge variant="outline" className={getBadgeToneClass(currentStatusMeta.tone)}>
                     {currentStatusMeta.label}
                   </Badge>
+                  <Badge variant="outline">
+                    {subscription.autoRenews ? "Renovación automática activa" : "Renovación automática desactivada"}
+                  </Badge>
                   {subscription.cancelAtPeriodEnd && (
                     <Badge variant="outline">Cancelación al final del período</Badge>
+                  )}
+                  {subscription.willDowngradeToFree && (
+                    <Badge variant="outline">Bajará a Free al cierre del ciclo</Badge>
                   )}
                 </div>
 
                 <p className="text-sm text-muted-foreground">{currentStatusMeta.description}</p>
 
+                {subscription.willDowngradeToFree && subscription.downgradeToFreeAt && (
+                  <p className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-700 dark:text-yellow-300">
+                    Tu plan actual se mantendrá hasta el {formatDate(subscription.downgradeToFreeAt, { withYear: true })}.
+                    Luego pasarás automáticamente a Free.
+                  </p>
+                )}
+
                 <div className="grid gap-3 text-sm md:grid-cols-2">
                   <div className="rounded-lg border bg-card p-3">
                     <p className="text-xs text-muted-foreground">Plan</p>
                     <p className="mt-1 font-medium">{subscription.planName}</p>
+                  </div>
+                  <div className="rounded-lg border bg-card p-3">
+                    <p className="text-xs text-muted-foreground">Renovación</p>
+                    <p className="mt-1 font-medium">
+                      {subscription.autoRenews ? "Se intentará cobrar automáticamente" : "Sin renovación automática"}
+                    </p>
                   </div>
                   <div className="rounded-lg border bg-card p-3">
                     <p className="text-xs text-muted-foreground">Actualizado</p>
@@ -225,6 +313,14 @@ export function BillingView() {
                       {subscription.currentPeriodEnd
                         ? formatDate(subscription.currentPeriodEnd, { withYear: true })
                         : "Sin dato"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border bg-card p-3">
+                    <p className="text-xs text-muted-foreground">Baja a Free</p>
+                    <p className="mt-1 font-medium">
+                      {subscription.willDowngradeToFree && subscription.downgradeToFreeAt
+                        ? formatDate(subscription.downgradeToFreeAt, { withYear: true })
+                        : "No programada"}
                     </p>
                   </div>
                 </div>
@@ -276,18 +372,31 @@ export function BillingView() {
             : plan.slug.toLowerCase() === "free";
           const isPaidPlan = plan.monthlyPrice > 0;
 
-          let ctaLabel = "No requiere pago";
-          let ctaDisabled = true;
-
-          if (isCurrentPlan) {
-            ctaLabel = "Plan actual";
-            ctaDisabled = true;
-          } else if (isPaidPlan) {
-            ctaLabel = "Suscribirse";
-            ctaDisabled = false;
+          let actionType: "none" | "checkout" | "change-plan" | "cancel" = "none";
+          if (!isCurrentPlan) {
+            if (isPaidPlan) {
+              actionType = hasManageableSubscription ? "change-plan" : "checkout";
+            } else if (hasManageableSubscription) {
+              actionType = "cancel";
+            }
           }
 
-          const isCheckoutLoading = checkoutInProgressPlanId === plan.id;
+          const ctaLabelByAction: Record<typeof actionType, string> = {
+            none: "No requiere pago",
+            checkout: "Suscribirse",
+            "change-plan": "Cambiar a este plan",
+            cancel: "Cambiar a Free",
+          };
+
+          const ctaLabel = isCurrentPlan ? "Plan actual" : ctaLabelByAction[actionType];
+          const ctaDisabled = isCurrentPlan || actionType === "none";
+
+          const isActionLoading = actionInProgressPlanId === plan.id;
+          const loadingLabelByAction: Record<Exclude<typeof actionType, "none">, string> = {
+            checkout: "Redirigiendo...",
+            "change-plan": "Actualizando plan...",
+            cancel: "Programando cancelación...",
+          };
 
           return (
             <Card key={plan.id} className={isCurrentPlan ? "border-primary/50" : undefined}>
@@ -319,18 +428,18 @@ export function BillingView() {
                   type="button"
                   className="w-full"
                   variant={isCurrentPlan ? "outline" : "default"}
-                  disabled={ctaDisabled || checkoutInProgressPlanId !== null}
-                  onClick={() => handleCheckout(plan)}
+                  disabled={ctaDisabled || actionInProgressPlanId !== null}
+                  onClick={() => handlePlanAction(plan)}
                 >
-                  {isCheckoutLoading ? (
+                  {isActionLoading && actionInProgressType ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      Redirigiendo...
+                      {loadingLabelByAction[actionInProgressType]}
                     </>
                   ) : (
                     <>
                       {ctaLabel}
-                      {!ctaDisabled && <ExternalLink className="size-4" />}
+                      {actionType === "checkout" && <ExternalLink className="size-4" />}
                     </>
                   )}
                 </Button>
