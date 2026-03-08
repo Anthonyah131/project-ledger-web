@@ -27,6 +27,7 @@ interface EditExpenseModalProps {
   paymentMethods: PaymentMethodResponse[]
   obligations: ObligationResponse[]
   projectCurrency: string
+  alternativeCurrencyCodes?: string[]
 }
 
 export function EditExpenseModal({
@@ -38,6 +39,7 @@ export function EditExpenseModal({
   paymentMethods,
   obligations,
   projectCurrency,
+  alternativeCurrencyCodes,
 }: EditExpenseModalProps) {
   const {
     form,
@@ -46,7 +48,6 @@ export function EditExpenseModal({
     watchCurrency,
     watchAmount,
     watchExchangeRate,
-    watchAltCurrency,
   } = useUpdateExpenseForm({ expense, onSave, onClose })
 
   const selectedObligation = obligations.find((o) => o.id === expense?.obligationId)
@@ -83,7 +84,7 @@ export function EditExpenseModal({
       form={form}
       onSubmit={handleSubmitWithEquivalentGuard}
       submitLabel="Guardar cambios"
-      contentClassName="sm:max-w-md max-h-[85vh] overflow-y-auto"
+      contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       <ExpenseFormFields
         form={form}
@@ -93,7 +94,7 @@ export function EditExpenseModal({
         watchCurrency={watchCurrency}
         watchAmount={watchAmount}
         watchExchangeRate={watchExchangeRate}
-        watchAltCurrency={watchAltCurrency}
+        alternativeCurrencyCodes={alternativeCurrencyCodes}
       />
 
       {showEquivalentAmount && (

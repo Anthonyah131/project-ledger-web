@@ -11,8 +11,11 @@ import { useProjectCategories } from "./use-project-categories"
 import { useProjectObligations } from "./use-project-obligations"
 import { useProjectBudget } from "./use-project-budget"
 import { useProjectPaymentMethods } from "./use-project-payment-methods"
+import { useProjectIncomes } from "./use-project-incomes"
+import { useProjectAlternativeCurrencies } from "./use-project-alternative-currencies"
 import type { UpdateProjectRequest } from "@/types/project"
 import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
+import type { CreateIncomeRequest, IncomeResponse, UpdateIncomeRequest } from "@/types/income"
 import type {
   CategoryResponse,
   CreateCategoryRequest,
@@ -27,6 +30,7 @@ import type {
   ProjectBudgetResponse,
   SetProjectBudgetRequest,
 } from "@/types/project-budget"
+import type { AddAlternativeCurrencyRequest, ProjectAlternativeCurrencyResponse } from "@/types/project-alternative-currency"
 
 export function useProjectDetailView(projectId: string) {
   const router = useRouter()
@@ -38,6 +42,8 @@ export function useProjectDetailView(projectId: string) {
   const obl = useProjectObligations(projectId)
   const bud = useProjectBudget(projectId)
   const ppm = useProjectPaymentMethods(projectId)
+  const inc = useProjectIncomes(projectId)
+  const pac = useProjectAlternativeCurrencies(projectId)
 
   const { mutateUpdate: mutateDetailUpdate, mutateDelete: mutateDetailDelete } = detail
   const {
@@ -64,6 +70,17 @@ export function useProjectDetailView(projectId: string) {
     mutateDelete: mutateBudgetDeleteRaw,
     refetch: refetchBudget,
   } = bud
+  const {
+    mutateCreate: mutateIncomeCreateRaw,
+    mutateUpdate: mutateIncomeUpdateRaw,
+    mutateDelete: mutateIncomeDeleteRaw,
+    refetch: refetchIncomes,
+  } = inc
+  const {
+    mutateAdd: mutateAlternativeCurrencyAddRaw,
+    mutateDelete: mutateAlternativeCurrencyDeleteRaw,
+    refetch: refetchAlternativeCurrencies,
+  } = pac
 
   // ─── Project modal state ──────────────────────────────────
   const [editProjectOpen, setEditProjectOpen] = useState(false)
@@ -128,6 +145,57 @@ export function useProjectDetailView(projectId: string) {
       ])
     },
     [mutateExpenseDeleteRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+  )
+
+  // ─── Income CRUD → refresh budget (if configured) ───
+  const mutateIncomeCreate = useCallback(
+    async (data: CreateIncomeRequest) => {
+      await mutateIncomeCreateRaw(data, { refetch: false })
+      await Promise.all([
+        refetchIncomes(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
+    },
+    [mutateIncomeCreateRaw, refetchIncomes, currentBudget, refetchBudget],
+  )
+
+  const mutateIncomeUpdate = useCallback(
+    async (incomeId: string, data: UpdateIncomeRequest) => {
+      await mutateIncomeUpdateRaw(incomeId, data, { refetch: false })
+      await Promise.all([
+        refetchIncomes(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
+    },
+    [mutateIncomeUpdateRaw, refetchIncomes, currentBudget, refetchBudget],
+  )
+
+  const mutateIncomeDelete = useCallback(
+    async (income: IncomeResponse) => {
+      await mutateIncomeDeleteRaw(income, { refetch: false })
+      await Promise.all([
+        refetchIncomes(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
+    },
+    [mutateIncomeDeleteRaw, refetchIncomes, currentBudget, refetchBudget],
+  )
+
+  // ─── Alternative currencies ───
+  const mutateAlternativeCurrencyAdd = useCallback(
+    async (data: AddAlternativeCurrencyRequest) => {
+      await mutateAlternativeCurrencyAddRaw(data)
+      await refetchAlternativeCurrencies()
+    },
+    [mutateAlternativeCurrencyAddRaw, refetchAlternativeCurrencies],
+  )
+
+  const mutateAlternativeCurrencyDelete = useCallback(
+    async (currency: ProjectAlternativeCurrencyResponse) => {
+      await mutateAlternativeCurrencyDeleteRaw(currency)
+      await refetchAlternativeCurrencies()
+    },
+    [mutateAlternativeCurrencyDeleteRaw, refetchAlternativeCurrencies],
   )
 
   // ─── Categories: mutate + orchestrated refresh ───
@@ -211,6 +279,8 @@ export function useProjectDetailView(projectId: string) {
     mutateProjectDelete,
     // sub-resources
     exp,
+    inc,
+    pac,
     cat,
     obl,
     bud,
@@ -219,6 +289,11 @@ export function useProjectDetailView(projectId: string) {
     mutateExpenseCreate,
     mutateExpenseUpdate,
     mutateExpenseDelete,
+    mutateIncomeCreate,
+    mutateIncomeUpdate,
+    mutateIncomeDelete,
+    mutateAlternativeCurrencyAdd,
+    mutateAlternativeCurrencyDelete,
     mutateCategoryCreate,
     mutateCategoryUpdate,
     mutateCategoryDelete,

@@ -23,6 +23,17 @@ import {
   ExpensesSkeleton,
 } from "@/components/project-detail/expenses/expense-states";
 
+// ── Incomes ──────────────────────────────────────────
+import { IncomesToolbar } from "@/components/project-detail/incomes/incomes-toolbar";
+import { IncomesList } from "@/components/project-detail/incomes/incomes-list";
+import {
+  IncomesEmptyState,
+  IncomesSkeleton,
+} from "@/components/project-detail/incomes/income-states";
+
+// ── Alternative currencies ─────────────────────────
+import { AlternativeCurrenciesPanel } from "@/components/project-detail/alternative-currencies/alternative-currencies-panel";
+
 // ── Categories ───────────────────────────────────────
 import { CategoriesToolbar } from "@/components/project-detail/categories/categories-toolbar";
 import { CategoriesList } from "@/components/project-detail/categories/categories-list";
@@ -60,6 +71,7 @@ import { Pagination } from "@/components/shared/pagination";
 
 import type { PaymentMethodResponse } from "@/types/payment-method";
 import type { ExpenseResponse } from "@/types/expense";
+import type { IncomeResponse } from "@/types/income";
 import type { CategoryResponse } from "@/types/category";
 import type { ObligationResponse } from "@/types/obligation";
 import type { ProjectBudgetResponse, SetProjectBudgetRequest } from "@/types/project-budget";
@@ -73,6 +85,12 @@ const CreateExpenseModal = dynamic(() =>
 );
 const EditExpenseModal = dynamic(() =>
   import("@/components/project-detail/expenses/edit-expense-modal").then((mod) => mod.EditExpenseModal)
+);
+const CreateIncomeModal = dynamic(() =>
+  import("@/components/project-detail/incomes/create-income-modal").then((mod) => mod.CreateIncomeModal)
+);
+const EditIncomeModal = dynamic(() =>
+  import("@/components/project-detail/incomes/edit-income-modal").then((mod) => mod.EditIncomeModal)
 );
 const CreateCategoryModal = dynamic(() =>
   import("@/components/project-detail/categories/create-category-modal").then((mod) => mod.CreateCategoryModal)
@@ -102,8 +120,10 @@ export function ProjectDetailView({ projectId }: Props) {
     setEditProjectOpen, setDeleteProjectOpen,
     mutateProjectEditOpen, mutateProjectDeleteOpen,
     mutateProjectUpdate, mutateProjectDelete,
-    exp, cat, obl, bud, ppm,
+    exp, inc, pac, cat, obl, bud, ppm,
     mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
+    mutateIncomeCreate, mutateIncomeUpdate, mutateIncomeDelete,
+    mutateAlternativeCurrencyAdd, mutateAlternativeCurrencyDelete,
     mutateCategoryCreate, mutateCategoryUpdate,
     mutateCategoryDelete,
     mutateObligationCreate, mutateObligationUpdate, mutateObligationDelete,
@@ -111,6 +131,7 @@ export function ProjectDetailView({ projectId }: Props) {
   } = useProjectDetailView(projectId);
 
   const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget } = exp;
+  const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget } = inc;
   const { setCreateOpen: setObligationCreateOpen, setEditTarget: setObligationEditTarget, setDeleteTarget: setObligationDeleteTarget } = obl;
   const { setCreateOpen: setCategoryCreateOpen, setEditTarget: setCategoryEditTarget, setDeleteTarget: setCategoryDeleteTarget } = cat;
   const { setUpsertOpen: setBudgetUpsertOpen, setDeleteTarget: setBudgetDeleteTarget } = bud;
@@ -118,6 +139,8 @@ export function ProjectDetailView({ projectId }: Props) {
 
   const isOwner = detail.project?.userRole === "owner";
   const canManageBudget = detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
+  const canManageAlternativeCurrencies =
+    detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canDeleteBudget = detail.project?.userRole === "owner";
 
   const handleShareMembers = useCallback(() => {
@@ -147,6 +170,30 @@ export function ProjectDetailView({ projectId }: Props) {
   const handleExpenseDeleteClose = useCallback(() => {
     setExpenseDeleteTarget(null);
   }, [setExpenseDeleteTarget]);
+
+  const handleIncomeCreateOpen = useCallback(() => {
+    setIncomeCreateOpen(true);
+  }, [setIncomeCreateOpen]);
+
+  const handleIncomeCreateClose = useCallback(() => {
+    setIncomeCreateOpen(false);
+  }, [setIncomeCreateOpen]);
+
+  const handleIncomeEditSelect = useCallback((income: IncomeResponse) => {
+    setIncomeEditTarget(income);
+  }, [setIncomeEditTarget]);
+
+  const handleIncomeEditClose = useCallback(() => {
+    setIncomeEditTarget(null);
+  }, [setIncomeEditTarget]);
+
+  const handleIncomeDeleteSelect = useCallback((income: IncomeResponse) => {
+    setIncomeDeleteTarget(income);
+  }, [setIncomeDeleteTarget]);
+
+  const handleIncomeDeleteClose = useCallback(() => {
+    setIncomeDeleteTarget(null);
+  }, [setIncomeDeleteTarget]);
 
   const handleObligationCreateOpen = useCallback(() => {
     setObligationCreateOpen(true);
@@ -254,6 +301,11 @@ export function ProjectDetailView({ projectId }: Props) {
     [ppm.linkedMethods],
   );
 
+  const alternativeCurrencyCodes = useMemo(
+    () => pac.currencies.map((currency) => currency.currencyCode),
+    [pac.currencies],
+  );
+
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
       {/* Header */}
@@ -273,6 +325,8 @@ export function ProjectDetailView({ projectId }: Props) {
       <Tabs defaultValue="expenses">
         <TabsList variant="line">
           <TabsTrigger value="expenses">Gastos</TabsTrigger>
+          <TabsTrigger value="incomes">Ingresos</TabsTrigger>
+          <TabsTrigger value="alternative-currencies">Monedas</TabsTrigger>
           <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="budget">Presupuesto</TabsTrigger>
@@ -330,6 +384,7 @@ export function ProjectDetailView({ projectId }: Props) {
               paymentMethods={paymentMethods}
               obligations={obl.obligations}
               projectCurrency={detail.project?.currencyCode ?? ""}
+              alternativeCurrencyCodes={alternativeCurrencyCodes}
             />
           )}
           {!!exp.editTarget && (
@@ -342,6 +397,7 @@ export function ProjectDetailView({ projectId }: Props) {
               paymentMethods={paymentMethods}
               obligations={obl.obligations}
               projectCurrency={detail.project?.currencyCode ?? ""}
+              alternativeCurrencyCodes={alternativeCurrencyCodes}
             />
           )}
           <DeleteEntityModal
@@ -352,6 +408,93 @@ export function ProjectDetailView({ projectId }: Props) {
             title="Eliminar gasto"
             description="Esta accion no se puede deshacer."
             getMessage={(e) => `¿Eliminar gasto "${e.title}"?`}
+          />
+        </TabsContent>
+
+        {/* ───── Incomes tab ───── */}
+        <TabsContent value="incomes" className="flex flex-col gap-4">
+          <IncomesToolbar
+            query={inc.query}
+            onQueryChange={inc.setQuery}
+            sort={inc.sort}
+            onSortChange={inc.handleSortChange}
+            pageSize={inc.pageSize}
+            onPageSizeChange={inc.handlePageSizeChange}
+            categories={cat.categories}
+            categoryId={inc.selectedCategoryId}
+            onCategoryChange={inc.setSelectedCategoryId}
+            onCreate={handleIncomeCreateOpen}
+          />
+
+          {inc.loading ? (
+            <IncomesSkeleton />
+          ) : inc.incomes.length === 0 ? (
+            <IncomesEmptyState hasSearch={inc.hasSearch} onCreate={handleIncomeCreateOpen} />
+          ) : (
+            <>
+              <IncomesList
+                incomes={inc.incomes}
+                projectCurrency={detail.project?.currencyCode ?? ""}
+                paymentMethods={paymentMethods}
+                onEdit={handleIncomeEditSelect}
+                onDelete={handleIncomeDeleteSelect}
+              />
+              {!inc.hasSearch && (
+                <Pagination
+                  page={inc.page}
+                  pageSize={inc.pageSize}
+                  total={inc.total}
+                  onPageChange={inc.setPage}
+                />
+              )}
+            </>
+          )}
+
+          {inc.createOpen && (
+            <CreateIncomeModal
+              open={inc.createOpen}
+              onClose={handleIncomeCreateClose}
+              onCreate={mutateIncomeCreate}
+              categories={cat.categories}
+              paymentMethods={paymentMethods}
+              projectCurrency={detail.project?.currencyCode ?? ""}
+              alternativeCurrencyCodes={alternativeCurrencyCodes}
+            />
+          )}
+          {!!inc.editTarget && (
+            <EditIncomeModal
+              income={inc.editTarget}
+              open={!!inc.editTarget}
+              onClose={handleIncomeEditClose}
+              onSave={mutateIncomeUpdate}
+              categories={cat.categories}
+              paymentMethods={paymentMethods}
+              projectCurrency={detail.project?.currencyCode ?? ""}
+              alternativeCurrencyCodes={alternativeCurrencyCodes}
+            />
+          )}
+          <DeleteEntityModal
+            item={inc.deleteTarget}
+            open={!!inc.deleteTarget}
+            onClose={handleIncomeDeleteClose}
+            onConfirm={mutateIncomeDelete}
+            title="Eliminar ingreso"
+            description="Esta accion no se puede deshacer."
+            getMessage={(income) => `¿Eliminar ingreso "${income.title}"?`}
+          />
+        </TabsContent>
+
+        {/* ───── Alternative currencies tab ───── */}
+        <TabsContent value="alternative-currencies" className="flex flex-col gap-4">
+          <AlternativeCurrenciesPanel
+            projectCurrency={detail.project?.currencyCode ?? ""}
+            currencies={pac.currencies}
+            allCurrencies={pac.allCurrencies}
+            loading={pac.loading}
+            catalogLoading={pac.catalogLoading}
+            canManage={!!canManageAlternativeCurrencies}
+            onAdd={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
+            onDelete={mutateAlternativeCurrencyDelete}
           />
         </TabsContent>
 

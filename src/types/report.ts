@@ -1,6 +1,8 @@
 // types/report.ts
 // Report model type definitions — API response shapes for project reports
 
+import type { CurrencyExchangeResponse } from "@/types/expense";
+
 // ─── Summary report ──────────────────────────────────────────────────────────
 
 export interface CategoryBreakdown {
@@ -45,6 +47,9 @@ export interface ProjectReportResponse {
   generatedAt?: string | null;
   totalSpent: number;
   expenseCount: number;
+  totalIncome: number;
+  incomeCount: number;
+  netBalance: number;
   /** totalSpent / expenseCount */
   averageExpenseAmount?: number | null;
   /** Set when project has a budget configured */
@@ -68,6 +73,9 @@ export interface MonthSummary {
   monthLabel?: string | null;
   totalSpent: number;
   expenseCount: number;
+  totalIncome: number;
+  incomeCount: number;
+  netBalance: number;
 }
 
 /** GET /api/projects/{projectId}/reports/month-comparison */
@@ -154,6 +162,7 @@ export interface ExpenseReportExpenseItem {
   description: string | null;
   receiptNumber: string | null;
   notes: string | null;
+  currencyExchanges?: CurrencyExchangeResponse[] | null;
   /** True when this expense is linked to an obligation payment */
   isObligationPayment?: boolean;
 }
@@ -165,6 +174,9 @@ export interface ExpenseReportSection {
   monthLabel: string;
   sectionTotal: number;
   sectionCount: number;
+  sectionIncomeTotal?: number | null;
+  sectionIncomeCount?: number | null;
+  sectionNetBalance?: number | null;
   /** Percentage of the report total this month represents */
   percentageOfTotal?: number | null;
   /** Average amount per expense in this month */
@@ -229,6 +241,9 @@ export interface ProjectExpenseReportResponse {
   generatedAt: string;
   totalSpent: number;
   totalExpenseCount: number;
+  totalIncome?: number | null;
+  totalIncomeCount?: number | null;
+  netBalance?: number | null;
   /** Average amount per individual expense */
   averageExpenseAmount?: number | null;
   /** Average spend per month over the period */
@@ -276,6 +291,23 @@ export interface PaymentMethodReportExpense {
   projectCurrency: string;
   expenseDate: string;
   categoryName: string;
+  currencyExchanges?: CurrencyExchangeResponse[] | null;
+}
+
+export interface PaymentMethodReportIncome {
+  incomeId: string;
+  projectId: string;
+  projectName: string;
+  title: string;
+  incomeDate: string;
+  categoryId?: string | null;
+  categoryName: string;
+  originalAmount: number;
+  originalCurrency: string;
+  convertedAmount: number;
+  projectCurrency: string;
+  description?: string | null;
+  currencyExchanges?: CurrencyExchangeResponse[] | null;
 }
 
 /** Top category usage breakdown per payment method */
@@ -304,8 +336,12 @@ export interface PaymentMethodReportMethod {
   bankName: string | null;
   totalSpent: number;
   expenseCount: number;
+  totalIncome?: number | null;
+  incomeCount?: number | null;
+  netFlow?: number | null;
   percentage: number;
   averageExpenseAmount: number;
+  averageIncomeAmount?: number | null;
   firstUseDate: string | null;
   lastUseDate: string | null;
   /** Calendar days since lastUseDate; 0 when used today */
@@ -319,10 +355,13 @@ export interface PaymentMethodReportMethod {
   projects: PaymentMethodReportProject[];
   /** Capped list — see expensesShown / totalExpensesInPeriod for full count */
   expenses: PaymentMethodReportExpense[];
+  incomes?: PaymentMethodReportIncome[];
   /** Total number of expenses in the period (even if expenses[] is capped) */
   totalExpensesInPeriod?: number | null;
   /** How many items are actually in the expenses[] array */
   expensesShown?: number | null;
+  totalIncomesInPeriod?: number | null;
+  incomesShown?: number | null;
 }
 
 export interface PaymentMethodReportMonthByMethod {
@@ -330,6 +369,9 @@ export interface PaymentMethodReportMonthByMethod {
   name: string;
   totalSpent: number;
   expenseCount: number;
+  totalIncome?: number | null;
+  incomeCount?: number | null;
+  netFlow?: number | null;
   /** This method's share of total spend in this month */
   percentage?: number | null;
 }
@@ -340,6 +382,9 @@ export interface PaymentMethodReportMonthlyTrend {
   monthLabel: string;
   totalSpent: number;
   expenseCount: number;
+  totalIncome?: number | null;
+  incomeCount?: number | null;
+  netBalance?: number | null;
   byMethod: PaymentMethodReportMonthByMethod[];
 }
 
@@ -356,8 +401,12 @@ export interface PaymentMethodReportResponse {
   generatedAt: string;
   grandTotalSpent: number;
   grandTotalExpenseCount: number;
+  grandTotalIncome?: number | null;
+  grandTotalIncomeCount?: number | null;
+  grandNetFlow?: number | null;
   /** grandTotalSpent / grandTotalExpenseCount */
   grandAverageExpenseAmount?: number | null;
+  grandAverageIncomeAmount?: number | null;
   /** Average spend per month over the period */
   averageMonthlySpend?: number | null;
   /** Month with the highest totalSpent */

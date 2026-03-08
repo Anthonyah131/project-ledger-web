@@ -3,52 +3,50 @@
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  createExpenseSchema,
-  updateExpenseSchema,
-  type CreateExpenseFormValues,
-  type UpdateExpenseFormValues,
-} from "@/lib/validations/expense"
+  createIncomeSchema,
+  updateIncomeSchema,
+  type CreateIncomeFormValues,
+  type UpdateIncomeFormValues,
+} from "@/lib/validations/income"
 import type {
-  ExpenseResponse,
-  CreateExpenseRequest,
-  UpdateExpenseRequest,
-} from "@/types/expense"
+  IncomeResponse,
+  CreateIncomeRequest,
+  UpdateIncomeRequest,
+} from "@/types/income"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
-// ─── Create ───────────────────────────────────────────────────────────────────
-
-interface UseCreateExpenseFormOptions {
-  onCreate: (data: CreateExpenseRequest) => void
+interface UseCreateIncomeFormOptions {
+  onCreate: (data: CreateIncomeRequest) => void
   onClose: () => void
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
 }
 
-export function useCreateExpenseForm({
+export function useCreateIncomeForm({
   onCreate,
   onClose,
   categories,
   paymentMethods,
-}: UseCreateExpenseFormOptions) {
+}: UseCreateIncomeFormOptions) {
   const defaultCategoryId =
     categories.find((c) => c.isDefault)?.id || categories[0]?.id || ""
   const defaultPaymentMethodId = paymentMethods[0]?.id || ""
 
-  const form = useForm<CreateExpenseFormValues>({
-    resolver: zodResolver(createExpenseSchema),
+  const form = useForm<CreateIncomeFormValues>({
+    resolver: zodResolver(createIncomeSchema),
     defaultValues: {
       title: "",
       originalAmount: "",
       originalCurrency: paymentMethods[0]?.currency ?? "CRC",
-      expenseDate: "",
+      incomeDate: "",
       categoryId: defaultCategoryId,
       paymentMethodId: defaultPaymentMethodId,
       exchangeRate: "1",
+      convertedAmount: "",
       description: "",
       notes: "",
-      obligationId: "",
-      obligationEquivalentAmount: "",
+      receiptNumber: "",
       currencyExchanges: [],
     },
   })
@@ -57,19 +55,21 @@ export function useCreateExpenseForm({
   const watchAmount = useWatch({ control: form.control, name: "originalAmount" })
   const watchExchangeRate = useWatch({ control: form.control, name: "exchangeRate" })
 
-  function onSubmit(values: CreateExpenseFormValues) {
+  function onSubmit(values: CreateIncomeFormValues) {
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
-    const data: CreateExpenseRequest = {
+
+    const data: CreateIncomeRequest = {
       title: values.title,
       originalAmount: amount,
       originalCurrency: values.originalCurrency,
-      expenseDate: values.expenseDate,
+      incomeDate: values.incomeDate,
       categoryId: values.categoryId,
       paymentMethodId: values.paymentMethodId,
       exchangeRate: effectiveRate,
       convertedAmount: parseFloat((amount * effectiveRate).toFixed(2)),
     }
+
     const currencyExchanges = values.currencyExchanges
       .map((item) => ({
         currencyCode: item.currencyCode.trim(),
@@ -87,17 +87,9 @@ export function useCreateExpenseForm({
 
     if (values.description) data.description = values.description
     if (values.notes) data.notes = values.notes
-    if (values.obligationId && values.obligationId !== "none") {
-      data.obligationId = values.obligationId
-    }
+    if (values.receiptNumber) data.receiptNumber = values.receiptNumber
     if (currencyExchanges.length > 0) data.currencyExchanges = currencyExchanges
-    if (
-      values.obligationId &&
-      values.obligationId !== "none" &&
-      values.obligationEquivalentAmount
-    ) {
-      data.obligationEquivalentAmount = Number(values.obligationEquivalentAmount)
-    }
+
     onCreate(data)
     handleClose()
   }
@@ -117,36 +109,32 @@ export function useCreateExpenseForm({
   }
 }
 
-// ─── Update ───────────────────────────────────────────────────────────────────
-
-interface UseUpdateExpenseFormOptions {
-  expense: ExpenseResponse | null
-  onSave: (id: string, data: UpdateExpenseRequest) => void
+interface UseUpdateIncomeFormOptions {
+  income: IncomeResponse | null
+  onSave: (id: string, data: UpdateIncomeRequest) => void
   onClose: () => void
 }
 
-export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpenseFormOptions) {
-  const form = useForm<UpdateExpenseFormValues>({
-    resolver: zodResolver(updateExpenseSchema),
+export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncomeFormOptions) {
+  const form = useForm<UpdateIncomeFormValues>({
+    resolver: zodResolver(updateIncomeSchema),
     defaultValues: {
       currencyExchanges: [],
     },
-    values: expense
+    values: income
       ? {
-          title: expense.title,
-          originalAmount: String(expense.originalAmount),
-          originalCurrency: expense.originalCurrency,
-          expenseDate: expense.expenseDate,
-          categoryId: expense.categoryId,
-          paymentMethodId: expense.paymentMethodId,
-          exchangeRate: String(expense.exchangeRate),
-          description: expense.description ?? "",
-          notes: expense.notes ?? "",
-          obligationEquivalentAmount:
-            expense.obligationEquivalentAmount != null
-              ? String(expense.obligationEquivalentAmount)
-              : "",
-          currencyExchanges: (expense.currencyExchanges ?? []).map((item) => ({
+          title: income.title,
+          originalAmount: String(income.originalAmount),
+          originalCurrency: income.originalCurrency,
+          incomeDate: income.incomeDate,
+          categoryId: income.categoryId,
+          paymentMethodId: income.paymentMethodId,
+          exchangeRate: String(income.exchangeRate),
+          convertedAmount: String(income.convertedAmount),
+          description: income.description ?? "",
+          notes: income.notes ?? "",
+          receiptNumber: income.receiptNumber ?? "",
+          currencyExchanges: (income.currencyExchanges ?? []).map((item) => ({
             currencyCode: item.currencyCode,
             exchangeRate: String(item.exchangeRate),
             convertedAmount: String(item.convertedAmount),
@@ -159,20 +147,23 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
   const watchAmount = useWatch({ control: form.control, name: "originalAmount" })
   const watchExchangeRate = useWatch({ control: form.control, name: "exchangeRate" })
 
-  function onSubmit(values: UpdateExpenseFormValues) {
-    if (!expense) return
+  function onSubmit(values: UpdateIncomeFormValues) {
+    if (!income) return
+
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
-    const data: UpdateExpenseRequest = {
+
+    const data: UpdateIncomeRequest = {
       title: values.title,
       originalAmount: amount,
       originalCurrency: values.originalCurrency,
-      expenseDate: values.expenseDate,
+      incomeDate: values.incomeDate,
       categoryId: values.categoryId,
       paymentMethodId: values.paymentMethodId,
       exchangeRate: effectiveRate,
       convertedAmount: parseFloat((amount * effectiveRate).toFixed(2)),
     }
+
     const currencyExchanges = values.currencyExchanges
       .map((item) => ({
         currencyCode: item.currencyCode.trim(),
@@ -190,11 +181,10 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
 
     if (values.description) data.description = values.description
     if (values.notes) data.notes = values.notes
-    if (expense.obligationId && values.obligationEquivalentAmount) {
-      data.obligationEquivalentAmount = Number(values.obligationEquivalentAmount)
-    }
+    if (values.receiptNumber) data.receiptNumber = values.receiptNumber
     data.currencyExchanges = currencyExchanges
-    onSave(expense.id, data)
+
+    onSave(income.id, data)
     handleClose()
   }
 

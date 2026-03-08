@@ -1,6 +1,8 @@
 // types/payment-method.ts
 // Payment method model type definitions
 
+import type { CurrencyExchangeResponse } from "@/types/expense";
+
 export type PaymentMethodType = 'bank' | 'cash' | 'card';
 
 // ─── API shapes ────────────────────────────────────────────────────────────────
@@ -52,9 +54,7 @@ export interface PaymentMethodExpenseItem {
   receiptNumber: string | null;
   notes: string | null;
   isTemplate: boolean;
-  altCurrency: string | null;
-  altExchangeRate: number | null;
-  altAmount: number | null;
+  currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;

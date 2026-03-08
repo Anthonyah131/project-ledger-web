@@ -17,6 +17,12 @@ const optionalNumericString = z
     { message: "Debe ser un número positivo" },
   )
 
+const currencyExchangeSchema = z.object({
+  currencyCode: z.string().trim().min(1, "Moneda es requerida"),
+  exchangeRate: requiredPositiveNumeric,
+  convertedAmount: requiredPositiveNumeric,
+})
+
 // ─── Create ───────────────────────────────────────────────────────────────────
 
 export const createExpenseSchema = z.object({
@@ -31,9 +37,7 @@ export const createExpenseSchema = z.object({
   notes: z.string().trim(),
   obligationId: z.string(),
   obligationEquivalentAmount: optionalNumericString,
-  altCurrency: z.string(),
-  altExchangeRate: optionalNumericString,
-  altAmount: optionalNumericString,
+  currencyExchanges: z.array(currencyExchangeSchema),
 })
 
 export type CreateExpenseFormValues = z.infer<typeof createExpenseSchema>
@@ -51,9 +55,7 @@ export const updateExpenseSchema = z.object({
   description: z.string().trim(),
   notes: z.string().trim(),
   obligationEquivalentAmount: optionalNumericString,
-  altCurrency: z.string(),
-  altExchangeRate: optionalNumericString,
-  altAmount: optionalNumericString,
+  currencyExchanges: z.array(currencyExchangeSchema),
 })
 
 export type UpdateExpenseFormValues = z.infer<typeof updateExpenseSchema>

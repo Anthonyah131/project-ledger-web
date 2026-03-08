@@ -15,6 +15,7 @@ export interface GetExpensesParams {
   page?: number
   pageSize?: number
   sortBy?: string
+  /** Mapped to backend query param `isDescending` */
   sortDirection?: "asc" | "desc"
   includeDeleted?: boolean
 }
@@ -26,7 +27,9 @@ export function getExpenses(projectId: string, params: GetExpensesParams = {}) {
   if (params.page !== undefined) query.set("page", String(params.page))
   if (params.pageSize !== undefined) query.set("pageSize", String(params.pageSize))
   if (params.sortBy) query.set("sortBy", params.sortBy)
-  if (params.sortDirection) query.set("sortDirection", params.sortDirection)
+  if (params.sortDirection) {
+    query.set("isDescending", String(params.sortDirection === "desc"))
+  }
   if (params.includeDeleted !== undefined)
     query.set("includeDeleted", String(params.includeDeleted))
 

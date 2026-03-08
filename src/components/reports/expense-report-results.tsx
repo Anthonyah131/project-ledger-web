@@ -30,18 +30,34 @@ export function ExpenseReportResults({ report }: Props) {
     report.paymentMethodAnalysis && report.paymentMethodAnalysis.length > 0
   const hasObligations = report.obligationSummary && report.obligationSummary.length > 0
   const hasInsights = report.insights && report.insights.length > 0
+  const totalIncome = report.totalIncome ?? 0
+  const totalIncomeCount = report.totalIncomeCount ?? 0
+  const netBalance = report.netBalance ?? totalIncome - report.totalSpent
+  const netLabel = netBalance >= 0 ? "Balance neto" : "Balance neto (negativo)"
 
   return (
     <div className="flex flex-col gap-6">
       {/* ── Summary cards ─────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         <SummaryCard
           label="Total gastado"
           value={`${report.currencyCode} ${formatAmount(report.totalSpent)}`}
         />
         <SummaryCard
+          label="Total ingresos"
+          value={`${report.currencyCode} ${formatAmount(totalIncome)}`}
+        />
+        <SummaryCard
+          label={netLabel}
+          value={`${report.currencyCode} ${formatAmount(netBalance)}`}
+        />
+        <SummaryCard
           label="Gastos registrados"
           value={String(report.totalExpenseCount)}
+        />
+        <SummaryCard
+          label="Ingresos registrados"
+          value={String(totalIncomeCount)}
         />
         <SummaryCard
           label="Periodo"
@@ -144,16 +160,36 @@ export function ExpenseReportResults({ report }: Props) {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap justify-end">
                     <span>{section.sectionCount} gastos</span>
+                    {section.sectionIncomeCount != null && (
+                      <span>{section.sectionIncomeCount} ingresos</span>
+                    )}
                     {section.percentageOfTotal != null && (
                       <span className="tabular-nums text-muted-foreground/70">
                         {section.percentageOfTotal.toFixed(1)}%
                       </span>
                     )}
                     <Badge variant="secondary" className="font-mono">
-                      {report.currencyCode} {formatAmount(section.sectionTotal)}
+                      Gastos: {report.currencyCode} {formatAmount(section.sectionTotal)}
                     </Badge>
+                    {section.sectionIncomeTotal != null && (
+                      <Badge variant="outline" className="font-mono border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+                        Ingresos: {report.currencyCode} {formatAmount(section.sectionIncomeTotal)}
+                      </Badge>
+                    )}
+                    {section.sectionNetBalance != null && (
+                      <Badge
+                        variant="outline"
+                        className={`font-mono ${
+                          section.sectionNetBalance >= 0
+                            ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                            : "border-rose-500/30 text-rose-600 dark:text-rose-400"
+                        }`}
+                      >
+                        Neto: {report.currencyCode} {formatAmount(section.sectionNetBalance)}
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
@@ -204,6 +240,17 @@ export function ExpenseReportResults({ report }: Props) {
                                     <span className="text-[10px] text-muted-foreground font-normal">
                                       {exp.originalCurrency}{" "}
                                       {formatAmount(exp.originalAmount, "—")}
+                                    </span>
+                                  )}
+                                  {exp.currencyExchanges && exp.currencyExchanges.length > 0 && (
+                                    <span className="text-[10px] text-muted-foreground font-normal text-right">
+                                      {exp.currencyExchanges
+                                        .slice(0, 2)
+                                        .map(
+                                          (item) =>
+                                            `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
+                                        )
+                                        .join(" · ")}
                                     </span>
                                   )}
                                 </div>

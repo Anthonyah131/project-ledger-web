@@ -40,13 +40,9 @@ export interface Expense {
   /** True for reusable expense templates (may NOT have an obligationId) */
   isTemplate: boolean;
 
-  // ─── Alternative currency (optional display) ──────────────
-  /** Secondary display currency; null when not used */
-  altCurrency: string | null;
-  /** Units of altCurrency per 1 unit of project currency (> 0 when set) */
-  altExchangeRate: number | null;
-  /** convertedAmount × altExchangeRate (> 0 when set) */
-  altAmount: number | null;
+  // ─── Alternative currencies (0..N per transaction) ───────
+  /** Converted amounts to project alternative currencies */
+  currencyExchanges: CurrencyExchangeResponse[];
 
   createdAt: string;
   updatedAt: string;
@@ -76,9 +72,7 @@ export interface ExpenseResponse {
   receiptNumber: string | null;
   notes: string | null;
   isTemplate: boolean;
-  altCurrency: string | null;
-  altExchangeRate: number | null;
-  altAmount: number | null;
+  currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
@@ -111,9 +105,8 @@ export interface CreateExpenseRequest {
   receiptNumber?: string | null;
   notes?: string | null;
   isTemplate?: boolean;
-  altCurrency?: string | null;
-  altExchangeRate?: number | null;
-  altAmount?: number | null;
+  /** Optional replacement list of transaction conversions */
+  currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
 
 export interface UpdateExpenseRequest {
@@ -129,16 +122,27 @@ export interface UpdateExpenseRequest {
   expenseDate: string;           // "YYYY-MM-DD"
   receiptNumber?: string | null;
   notes?: string | null;
-  altCurrency?: string | null;
-  altExchangeRate?: number | null;
-  altAmount?: number | null;
+  /** null = no change, [] = remove all, list = replace all */
+  currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
 
 export interface CreateExpenseFromTemplateRequest {
   originalAmount?: number;
   convertedAmount?: number;
-  altAmount?: number;
   expenseDate?: string;          // "YYYY-MM-DD"
   obligationId?: string | null;
   notes?: string | null;
+}
+
+export interface CurrencyExchangeRequest {
+  currencyCode: string;
+  exchangeRate: number;
+  convertedAmount: number;
+}
+
+export interface CurrencyExchangeResponse {
+  id: string;
+  currencyCode: string;
+  exchangeRate: number;
+  convertedAmount: number;
 }

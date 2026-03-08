@@ -12,7 +12,11 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatAmount, formatDate } from "@/lib/format-utils"
-import type { PaymentMethodReportResponse, PaymentMethodReportExpense } from "@/types/report"
+import type {
+  PaymentMethodReportResponse,
+  PaymentMethodReportExpense,
+  PaymentMethodReportIncome,
+} from "@/types/report"
 
 interface Props {
   report: PaymentMethodReportResponse
@@ -24,20 +28,48 @@ function resolveExpenseAmount(exp: PaymentMethodReportExpense): number | undefin
   return exp.convertedAmount ?? (exp as unknown as { amount?: number }).amount
 }
 
+function resolveIncomeAmount(inc: PaymentMethodReportIncome): number | undefined {
+  return inc.originalAmount ?? inc.convertedAmount
+}
+
 export function PaymentMethodReportResults({ report }: Props) {
   const hasInsights = report.insights && report.insights.length > 0
+  const grandTotalIncome = report.grandTotalIncome ?? 0
+  const grandIncomeCount = report.grandTotalIncomeCount ?? 0
+  const grandNetFlow = report.grandNetFlow ?? grandTotalIncome - report.grandTotalSpent
+  const maxMonthlyFlow =
+    report.monthlyTrend.length > 0
+      ? Math.max(
+          ...report.monthlyTrend.map((row) =>
+            Math.abs(row.netBalance ?? (row.totalIncome ?? 0) - row.totalSpent)
+          ),
+          1
+        )
+      : 1
 
   return (
     <div className="flex flex-col gap-6">
       {/* ── Summary cards ─────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         <SummaryCard
           label="Total gastado"
           value={formatAmount(report.grandTotalSpent)}
         />
         <SummaryCard
+          label="Total ingresos"
+          value={formatAmount(grandTotalIncome)}
+        />
+        <SummaryCard
+          label="Flujo neto"
+          value={formatAmount(grandNetFlow)}
+        />
+        <SummaryCard
           label="Gastos totales"
           value={String(report.grandTotalExpenseCount)}
+        />
+        <SummaryCard
+          label="Ingresos totales"
+          value={String(grandIncomeCount)}
         />
         <SummaryCard
           label="Métodos de pago"
@@ -55,14 +87,22 @@ export function PaymentMethodReportResults({ report }: Props) {
 
       {/* ── Insight cards (when backend provides them) ─────────── */}
       {(report.grandAverageExpenseAmount != null ||
+        report.grandAverageIncomeAmount != null ||
         report.averageMonthlySpend != null ||
         report.peakMonth != null ||
         report.highestSpendMethod != null) && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {report.grandAverageExpenseAmount != null && (
             <SummaryCard
               label="Promedio por gasto"
               value={formatAmount(report.grandAverageExpenseAmount)}
+              muted
+            />
+          )}
+          {report.grandAverageIncomeAmount != null && (
+            <SummaryCard
+              label="Promedio por ingreso"
+              value={formatAmount(report.grandAverageIncomeAmount)}
               muted
             />
           )}
@@ -120,7 +160,7 @@ export function PaymentMethodReportResults({ report }: Props) {
           <CardHeader>
             <CardTitle>Métodos de pago</CardTitle>
             <CardDescription>
-              Desglose de gasto por cada método
+              Desglose de gastos, ingresos y flujo neto por cada método
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -145,21 +185,34 @@ export function PaymentMethodReportResults({ report }: Props) {
                       </Badge>
                     )}
                   </div>
-                  <span className="text-sm font-semibold tabular-nums">
-                    {pm.currency} {formatAmount(pm.totalSpent)}
-                  </span>
+                  <div className="flex flex-col items-end text-xs tabular-nums">
+                    <span>Gastos: {pm.currency} {formatAmount(pm.totalSpent)}</span>
+                    <span>Ingresos: {pm.currency} {formatAmount(pm.totalIncome ?? 0)}</span>
+                    <span className="font-semibold">
+                      Neto: {pm.currency} {formatAmount(pm.netFlow ?? (pm.totalIncome ?? 0) - pm.totalSpent)}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Method stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3 text-xs">
                   <StatItem label="Gastos" value={String(pm.expenseCount)} />
+                  <StatItem label="Ingresos" value={String(pm.incomeCount ?? 0)} />
                   <StatItem
                     label="% del total"
                     value={`${pm.percentage.toFixed(1)}%`}
                   />
                   <StatItem
-                    label="Promedio"
+                    label="Prom. gasto"
                     value={`${pm.currency} ${formatAmount(pm.averageExpenseAmount)}`}
+                  />
+                  <StatItem
+                    label="Prom. ingreso"
+                    value={`${pm.currency} ${formatAmount(pm.averageIncomeAmount ?? null, "—")}`}
+                  />
+                  <StatItem
+                    label="Flujo neto"
+                    value={`${pm.currency} ${formatAmount(pm.netFlow ?? (pm.totalIncome ?? 0) - pm.totalSpent)}`}
                   />
                   <StatItem
                     label="Banco"
@@ -315,6 +368,93 @@ export function PaymentMethodReportResults({ report }: Props) {
                                         = {projCurrency} {formatAmount(exp.convertedAmount)}
                                       </span>
                                     )}
+                                    {exp.currencyExchanges && exp.currencyExchanges.length > 0 && (
+                                      <span className="text-[10px] text-muted-foreground font-normal text-right">
+                                        {exp.currencyExchanges
+                                          .slice(0, 2)
+                                          .map(
+                                            (item) =>
+                                              `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
+                                          )
+                                          .join(" · ")}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent incomes */}
+                {pm.incomes && pm.incomes.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-border/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Ingresos
+                      </span>
+                      {pm.totalIncomesInPeriod != null &&
+                        pm.incomesShown != null &&
+                        pm.totalIncomesInPeriod > pm.incomesShown && (
+                          <span className="text-xs text-muted-foreground">
+                            Mostrando {pm.incomesShown} de {pm.totalIncomesInPeriod}
+                          </span>
+                        )}
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b text-muted-foreground">
+                            <th className="text-left py-1.5 pr-3 font-medium">Fecha</th>
+                            <th className="text-left py-1.5 pr-3 font-medium">Título</th>
+                            <th className="text-left py-1.5 pr-3 font-medium">Proyecto</th>
+                            <th className="text-left py-1.5 pr-3 font-medium">Categoría</th>
+                            <th className="text-right py-1.5 font-medium">Monto</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {pm.incomes.map((inc) => {
+                            const primaryAmount = resolveIncomeAmount(inc)
+                            const primaryCurrency = inc.originalCurrency ?? pm.currency
+                            const showConverted =
+                              inc.convertedAmount != null && inc.projectCurrency !== primaryCurrency
+
+                            return (
+                              <tr
+                                key={inc.incomeId}
+                                className="border-b border-border/50 last:border-0"
+                              >
+                                <td className="py-1.5 pr-3 tabular-nums text-muted-foreground">
+                                  {formatDate(inc.incomeDate, { fixTimezone: true })}
+                                </td>
+                                <td className="py-1.5 pr-3 font-medium text-foreground">
+                                  {inc.title}
+                                </td>
+                                <td className="py-1.5 pr-3">{inc.projectName}</td>
+                                <td className="py-1.5 pr-3">{inc.categoryName}</td>
+                                <td className="py-1.5 text-right tabular-nums font-medium">
+                                  <div className="flex flex-col items-end gap-0.5">
+                                    <span>{primaryCurrency} {formatAmount(primaryAmount, "—")}</span>
+                                    {showConverted && (
+                                      <span className="text-[10px] text-muted-foreground font-normal">
+                                        = {inc.projectCurrency} {formatAmount(inc.convertedAmount)}
+                                      </span>
+                                    )}
+                                    {inc.currencyExchanges && inc.currencyExchanges.length > 0 && (
+                                      <span className="text-[10px] text-muted-foreground font-normal text-right">
+                                        {inc.currencyExchanges
+                                          .slice(0, 2)
+                                          .map(
+                                            (item) =>
+                                              `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
+                                          )
+                                          .join(" · ")}
+                                      </span>
+                                    )}
                                   </div>
                                 </td>
                               </tr>
@@ -337,17 +477,15 @@ export function PaymentMethodReportResults({ report }: Props) {
           <CardHeader>
             <CardTitle>Tendencia mensual</CardTitle>
             <CardDescription>
-              Evolución del gasto por mes
+              Evolución mensual de gastos, ingresos y flujo neto
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
               {report.monthlyTrend.map((mt) => {
-                const maxSpent = Math.max(
-                  ...report.monthlyTrend.map((t) => t.totalSpent),
-                  1,
-                )
-                const pct = (mt.totalSpent / maxSpent) * 100
+                const income = mt.totalIncome ?? 0
+                const net = mt.netBalance ?? income - mt.totalSpent
+                const pct = (Math.abs(net) / maxMonthlyFlow) * 100
 
                 return (
                   <div
@@ -359,16 +497,20 @@ export function PaymentMethodReportResults({ report }: Props) {
                     </span>
                     <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-primary transition-all"
+                        className={`h-full rounded-full transition-all ${
+                          net >= 0 ? "bg-emerald-500" : "bg-rose-500"
+                        }`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="text-xs text-muted-foreground w-10 text-center tabular-nums">
-                      {mt.expenseCount}
+                    <span className="text-xs text-muted-foreground w-12 text-center tabular-nums">
+                      {mt.expenseCount}/{mt.incomeCount ?? 0}
                     </span>
-                    <span className="text-sm tabular-nums font-medium w-28 text-right">
-                      {formatAmount(mt.totalSpent)}
-                    </span>
+                    <div className="text-xs tabular-nums w-64 text-right flex flex-col">
+                      <span>G: {formatAmount(mt.totalSpent)}</span>
+                      <span>I: {formatAmount(income)}</span>
+                      <span className="font-semibold">N: {formatAmount(net)}</span>
+                    </div>
                   </div>
                 )
               })}

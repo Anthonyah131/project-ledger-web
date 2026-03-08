@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import type { UseFormReturn } from "react-hook-form"
 import { useFieldArray, useWatch } from "react-hook-form"
+import type { UseFormReturn } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import { getExchangeRate } from "@/services/exchange-rate-service"
 
-interface ExpenseFormFieldsProps {
+interface IncomeFormFieldsProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>
   categories: CategoryResponse[]
@@ -36,11 +36,10 @@ interface ExpenseFormFieldsProps {
   watchAmount: string
   watchExchangeRate: string
   alternativeCurrencyCodes?: string[]
-  /** Whether to show placeholders (used in Create mode). */
   showPlaceholders?: boolean
 }
 
-export function ExpenseFormFields({
+export function IncomeFormFields({
   form,
   categories,
   paymentMethods,
@@ -50,8 +49,7 @@ export function ExpenseFormFields({
   watchExchangeRate,
   alternativeCurrencyCodes,
   showPlaceholders = false,
-}: ExpenseFormFieldsProps) {
-  // Enforce originalCurrency from the selected payment method.
+}: IncomeFormFieldsProps) {
   const watchPaymentMethodId = useWatch({ control: form.control, name: "paymentMethodId" })
   const selectedPaymentMethod = paymentMethods.find((p) => p.id === watchPaymentMethodId)
 
@@ -70,6 +68,7 @@ export function ExpenseFormFields({
     control: form.control,
     name: "currencyExchanges",
   })
+
   const watchCurrencyExchanges =
     (useWatch({ control: form.control, name: "currencyExchanges" }) as
       | Array<{ currencyCode?: string }>
@@ -169,7 +168,6 @@ export function ExpenseFormFields({
 
   return (
     <>
-      {/* Title */}
       <FormField
         control={form.control}
         name="title"
@@ -179,7 +177,7 @@ export function ExpenseFormFields({
             <FormControl>
               <Input
                 autoFocus
-                placeholder={showPlaceholders ? "Ej: Almuerzo equipo" : undefined}
+                placeholder={showPlaceholders ? "Ej: Pago cliente ACME" : undefined}
                 {...field}
               />
             </FormControl>
@@ -188,7 +186,6 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Amount + Currency */}
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={form.control}
@@ -197,13 +194,7 @@ export function ExpenseFormFields({
             <FormItem>
               <FormLabel>Monto *</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder={showPlaceholders ? "0.00" : undefined}
-                  {...field}
-                />
+                <Input type="number" step="0.01" min="0" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -232,13 +223,12 @@ export function ExpenseFormFields({
         />
       </div>
 
-      {/* Date */}
       <FormField
         control={form.control}
-        name="expenseDate"
+        name="incomeDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Fecha del gasto *</FormLabel>
+            <FormLabel>Fecha del ingreso *</FormLabel>
             <FormControl>
               <Input type="date" {...field} />
             </FormControl>
@@ -247,7 +237,6 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Category + Payment Method */}
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={form.control}
@@ -299,7 +288,6 @@ export function ExpenseFormFields({
         />
       </div>
 
-      {/* Exchange Rate */}
       <FormField
         control={form.control}
         name="exchangeRate"
@@ -330,7 +318,20 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Description */}
+      <FormField
+        control={form.control}
+        name="receiptNumber"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Numero de recibo</FormLabel>
+            <FormControl>
+              <Input placeholder={showPlaceholders ? "REC-001" : undefined} {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="description"
@@ -345,7 +346,6 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Notes */}
       <FormField
         control={form.control}
         name="notes"
@@ -360,7 +360,6 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Currency exchanges section */}
       <div className="rounded-xl border border-border/70 bg-muted/20 p-4 flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -379,9 +378,7 @@ export function ExpenseFormFields({
 
         <div className="flex flex-col gap-4">
           {fields.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              Sin conversiones configuradas.
-            </p>
+            <p className="text-xs text-muted-foreground">Sin conversiones configuradas.</p>
           )}
 
           {fields.map((field, index) => {
@@ -513,7 +510,6 @@ export function ExpenseFormFields({
               </div>
             )
           })}
-
         </div>
       </div>
     </>

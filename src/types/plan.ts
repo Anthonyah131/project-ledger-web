@@ -31,6 +31,8 @@ export interface PlanLimitsDto {
   maxCategoriesPerProject: number | null;
   maxPaymentMethods: number | null;
   maxTeamMembersPerProject: number | null;
+  maxAlternativeCurrenciesPerProject: number | null;
+  maxIncomesPerMonth: number | null;
 }
 
 export interface PlanResponse {
@@ -59,6 +61,10 @@ export interface PlanLimits {
   maxPaymentMethods?: number | null;
   /** Maximum team members per project; null = unlimited */
   maxTeamMembersPerProject?: number | null;
+  /** Maximum alternative display currencies per project; null = unlimited */
+  maxAlternativeCurrenciesPerProject?: number | null;
+  /** Maximum incomes recorded per month; null = unlimited */
+  maxIncomesPerMonth?: number | null;
   /** Convenience flag — true means all limits are removed */
   unlimited?: boolean;
 }

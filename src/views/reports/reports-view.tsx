@@ -108,7 +108,8 @@ export function ReportsView() {
           {expReport.loading ? (
             <ReportSkeleton />
           ) : expReport.report ? (
-            expReport.report.totalExpenseCount === 0 ? (
+            expReport.report.totalExpenseCount === 0 &&
+            (expReport.report.totalIncomeCount ?? 0) === 0 ? (
               <ReportNoData />
             ) : (
               <ExpenseReportResults report={expReport.report} />
@@ -155,7 +156,8 @@ export function ReportsView() {
           {pmReport.loading ? (
             <ReportSkeleton />
           ) : pmReport.report ? (
-            pmReport.report.grandTotalExpenseCount === 0 ? (
+            pmReport.report.grandTotalExpenseCount === 0 &&
+            (pmReport.report.grandTotalIncomeCount ?? 0) === 0 ? (
               <ReportNoData />
             ) : (
               <PaymentMethodReportResults report={pmReport.report} />

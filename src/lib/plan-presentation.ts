@@ -10,6 +10,8 @@ interface PlanLimitSnapshot {
   maxCategories: NumericLimit;
   maxPaymentMethods: NumericLimit;
   maxTeamMembers: NumericLimit;
+  maxAlternativeCurrencies: NumericLimit;
+  maxIncomes: NumericLimit;
 }
 
 interface PlanCapabilitySnapshot {
@@ -37,6 +39,8 @@ const PLAN_LIMIT_FALLBACKS: Record<string, PlanLimitSnapshot> = {
     maxCategories: 5,
     maxPaymentMethods: 2,
     maxTeamMembers: 0,
+    maxAlternativeCurrencies: 3,
+    maxIncomes: 10,
   },
   basic: {
     maxProjects: 10,
@@ -44,6 +48,8 @@ const PLAN_LIMIT_FALLBACKS: Record<string, PlanLimitSnapshot> = {
     maxCategories: 20,
     maxPaymentMethods: 10,
     maxTeamMembers: 5,
+    maxAlternativeCurrencies: 10,
+    maxIncomes: 100,
   },
 };
 
@@ -99,6 +105,12 @@ function resolvePlanLimits(plan: PlanResponse, slug: string): PlanLimitSnapshot 
     maxCategories: pick(typed?.maxCategoriesPerProject, raw?.maxCategoriesPerProject, raw?.max_categories_per_project),
     maxPaymentMethods: pick(typed?.maxPaymentMethods, raw?.max_payment_methods),
     maxTeamMembers: pick(typed?.maxTeamMembersPerProject, raw?.maxTeamMembersPerProject, raw?.max_team_members_per_project),
+    maxAlternativeCurrencies: pick(
+      typed?.maxAlternativeCurrenciesPerProject,
+      raw?.maxAlternativeCurrenciesPerProject,
+      raw?.max_alternative_currencies_per_project,
+    ),
+    maxIncomes: pick(typed?.maxIncomesPerMonth, raw?.maxIncomesPerMonth, raw?.max_incomes_per_month),
   };
 
   return {
@@ -107,6 +119,11 @@ function resolvePlanLimits(plan: PlanResponse, slug: string): PlanLimitSnapshot 
     maxCategories: fromApi.maxCategories !== undefined ? fromApi.maxCategories : fallback?.maxCategories,
     maxPaymentMethods: fromApi.maxPaymentMethods !== undefined ? fromApi.maxPaymentMethods : fallback?.maxPaymentMethods,
     maxTeamMembers: fromApi.maxTeamMembers !== undefined ? fromApi.maxTeamMembers : fallback?.maxTeamMembers,
+    maxAlternativeCurrencies:
+      fromApi.maxAlternativeCurrencies !== undefined
+        ? fromApi.maxAlternativeCurrencies
+        : fallback?.maxAlternativeCurrencies,
+    maxIncomes: fromApi.maxIncomes !== undefined ? fromApi.maxIncomes : fallback?.maxIncomes,
   };
 }
 
@@ -124,8 +141,12 @@ export function getPlanDescription(plan: PlanResponse): string {
     return "Plan básico para freelancers y equipos pequeños. Incluye exportación y colaboración.";
   }
 
-  if (slug === "premium") {
+  if (slug === "premium" || slug === "pro") {
     return "Plan premium sin límites. Todas las funcionalidades: OCR, API, reportes avanzados y colaboración ilimitada.";
+  }
+
+  if (slug === "enterprise") {
+    return "Plan enterprise para equipos grandes: límites ilimitados y capacidades avanzadas de colaboración y control.";
   }
 
   return "Plan de suscripción para gestionar tus finanzas de forma organizada.";
@@ -133,7 +154,7 @@ export function getPlanDescription(plan: PlanResponse): string {
 
 function buildLimitFeatures(plan: PlanResponse): string[] {
   const slug = plan.slug.toLowerCase();
-  const isPremium = slug === "premium";
+  const isPremium = slug === "premium" || slug === "pro" || slug === "enterprise";
 
   const {
     maxProjects,
@@ -141,6 +162,8 @@ function buildLimitFeatures(plan: PlanResponse): string[] {
     maxCategories,
     maxPaymentMethods,
     maxTeamMembers,
+    maxAlternativeCurrencies,
+    maxIncomes,
   } = resolvePlanLimits(plan, slug);
 
   const limitFeatures: string[] = [];
@@ -177,6 +200,20 @@ function buildLimitFeatures(plan: PlanResponse): string[] {
     } else {
       limitFeatures.push("Sin miembros por proyecto (uso personal)");
     }
+  }
+
+  if (maxAlternativeCurrencies === null && isPremium) {
+    limitFeatures.push("Monedas alternativas por proyecto ilimitadas");
+  } else if (typeof maxAlternativeCurrencies === "number") {
+    limitFeatures.push(
+      `Hasta ${formatCount(maxAlternativeCurrencies, "moneda alternativa", "monedas alternativas")} por proyecto`
+    );
+  }
+
+  if (maxIncomes === null && isPremium) {
+    limitFeatures.push("Ingresos mensuales ilimitados");
+  } else if (typeof maxIncomes === "number") {
+    limitFeatures.push(`Hasta ${formatCount(maxIncomes, "ingreso", "ingresos")} registrados por mes`);
   }
 
   return limitFeatures;

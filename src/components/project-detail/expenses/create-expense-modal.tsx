@@ -33,6 +33,7 @@ interface CreateExpenseModalProps {
   paymentMethods: PaymentMethodResponse[]
   obligations: ObligationResponse[]
   projectCurrency: string
+  alternativeCurrencyCodes?: string[]
 }
 
 export function CreateExpenseModal({
@@ -43,6 +44,7 @@ export function CreateExpenseModal({
   paymentMethods,
   obligations,
   projectCurrency,
+  alternativeCurrencyCodes,
 }: CreateExpenseModalProps) {
   const {
     form,
@@ -51,7 +53,6 @@ export function CreateExpenseModal({
     watchCurrency,
     watchAmount,
     watchExchangeRate,
-    watchAltCurrency,
   } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods })
 
   const watchObligationId = useWatch({ control: form.control, name: "obligationId" })
@@ -85,7 +86,7 @@ export function CreateExpenseModal({
       form={form}
       onSubmit={handleSubmitWithEquivalentGuard}
       submitLabel="Crear gasto"
-      contentClassName="sm:max-w-md max-h-[85vh] overflow-y-auto"
+      contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       <ExpenseFormFields
         form={form}
@@ -95,7 +96,7 @@ export function CreateExpenseModal({
         watchCurrency={watchCurrency}
         watchAmount={watchAmount}
         watchExchangeRate={watchExchangeRate}
-        watchAltCurrency={watchAltCurrency}
+        alternativeCurrencyCodes={alternativeCurrencyCodes}
         showPlaceholders
       />
 

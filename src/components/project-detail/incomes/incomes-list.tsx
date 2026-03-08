@@ -5,26 +5,31 @@ import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate, formatAmount } from "@/lib/format-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
-import type { ExpenseResponse } from "@/types/expense"
+import type { IncomeResponse } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
-interface ExpensesListProps {
-  expenses: ExpenseResponse[]
+interface IncomesListProps {
+  incomes: IncomeResponse[]
   projectCurrency: string
   paymentMethods: PaymentMethodResponse[]
-  onEdit: (expense: ExpenseResponse) => void
-  onDelete: (expense: ExpenseResponse) => void
+  onEdit: (income: IncomeResponse) => void
+  onDelete: (income: IncomeResponse) => void
 }
 
-function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete }: ExpensesListProps) {
+function IncomesListComponent({
+  incomes,
+  projectCurrency,
+  paymentMethods,
+  onEdit,
+  onDelete,
+}: IncomesListProps) {
   const paymentMethodNameById = useMemo(
     () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
     [paymentMethods]
   )
 
   return (
-    <div role="list" aria-label="Lista de gastos">
-      {/* Header */}
+    <div role="list" aria-label="Lista de ingresos">
       <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
         <span className="flex-1">Titulo</span>
         <span className="w-28 text-right hidden sm:block">Fecha</span>
@@ -35,71 +40,59 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
         <span className="w-8" />
       </div>
 
-      {expenses.map((expense, i) => {
-        const showOriginal = expense.originalCurrency !== projectCurrency
-        const exchanges = expense.currencyExchanges ?? []
-        const pmName = paymentMethodNameById.get(expense.paymentMethodId) ?? "—"
+      {incomes.map((income, i) => {
+        const showOriginal = income.originalCurrency !== projectCurrency
+        const exchanges = income.currencyExchanges ?? []
+        const pmName = paymentMethodNameById.get(income.paymentMethodId) ?? "—"
 
         return (
           <div
-            key={expense.id}
+            key={income.id}
             role="listitem"
             className={cn(
               "group flex items-center px-5 py-3.5",
               "border-b border-border last:border-b-0",
-              "hover:bg-accent/30 transition-colors duration-150",
+              "hover:bg-accent/30 transition-colors duration-150"
             )}
           >
-            {/* Accent dot */}
             <div className={cn("size-2 rounded-full shrink-0 mr-3.5", getAccentColor(i))} />
 
-            {/* Title */}
             <div className="flex-1 min-w-0 mr-4">
               <p className="text-sm font-medium text-foreground truncate leading-snug">
-                {expense.title}
+                {income.title}
               </p>
-              {expense.description && (
+              {income.description && (
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
-                  {expense.description}
+                  {income.description}
                 </p>
               )}
             </div>
 
-            {/* Date */}
             <span className="w-28 text-right text-xs text-muted-foreground tabular-nums hidden sm:block">
-              {formatDate(expense.expenseDate, { fixTimezone: true })}
+              {formatDate(income.incomeDate, { fixTimezone: true })}
             </span>
 
-            {/* Amount — primary: convertedAmount in project currency */}
             <div className="w-44 text-right hidden md:block">
               <p className="text-sm font-semibold text-foreground tabular-nums">
-                {projectCurrency}{" "}
-                {formatAmount(expense.convertedAmount)}
+                {projectCurrency} {formatAmount(income.convertedAmount)}
               </p>
               {showOriginal && (
                 <p className="text-xs text-muted-foreground tabular-nums mt-0.5">
-                  {expense.originalCurrency}{" "}
-                  {formatAmount(expense.originalAmount)}
+                  {income.originalCurrency} {formatAmount(income.originalAmount)}
                 </p>
               )}
             </div>
 
-            {/* Currency exchanges */}
             <div className="w-44 text-right hidden xl:block">
               {exchanges.length > 0 ? (
                 <div className="flex flex-col items-end gap-0.5">
                   {exchanges.slice(0, 2).map((exchange) => (
-                    <p
-                      key={exchange.id}
-                      className="text-xs text-muted-foreground tabular-nums"
-                    >
+                    <p key={exchange.id} className="text-xs text-muted-foreground tabular-nums">
                       {exchange.currencyCode} {formatAmount(exchange.convertedAmount)}
                     </p>
                   ))}
                   {exchanges.length > 2 && (
-                    <p className="text-[10px] text-muted-foreground/70">
-                      +{exchanges.length - 2} mas
-                    </p>
+                    <p className="text-[10px] text-muted-foreground/70">+{exchanges.length - 2} mas</p>
                   )}
                 </div>
               ) : (
@@ -107,21 +100,18 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               )}
             </div>
 
-            {/* Payment method */}
             <span className="w-40 text-right text-xs text-muted-foreground hidden lg:block truncate">
               {pmName}
             </span>
 
-            {/* Category */}
             <span className="w-36 text-right text-xs text-muted-foreground hidden xl:block truncate">
-              {expense.categoryName}
+              {income.categoryName}
             </span>
 
-            {/* Menu */}
             <ItemActionMenu
-              ariaLabel="Acciones del gasto"
-              onEdit={() => onEdit(expense)}
-              onDelete={() => onDelete(expense)}
+              ariaLabel="Acciones del ingreso"
+              onEdit={() => onEdit(income)}
+              onDelete={() => onDelete(income)}
             />
           </div>
         )
@@ -130,4 +120,4 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
   )
 }
 
-export const ExpensesList = memo(ExpensesListComponent)
+export const IncomesList = memo(IncomesListComponent)
