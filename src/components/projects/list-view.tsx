@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
 import { Badge } from "@/components/ui/badge"
 import { getAccentColor, ROLE_LABEL } from "@/lib/constants"
-import { formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 
 interface ListViewProps {

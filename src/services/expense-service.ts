@@ -7,6 +7,9 @@ import type {
   CreateExpenseRequest,
   UpdateExpenseRequest,
   CreateExpenseFromTemplateRequest,
+  ExpenseDocumentKind,
+  ExtractExpenseFromImageResponse,
+  OcrExtractionQuotaResponse,
 } from "@/types/expense"
 
 // ─── Query params ──────────────────────────────────────────────────────────────
@@ -75,5 +78,32 @@ export function createExpenseFromTemplate(
   return api.post<ExpenseResponse>(
     `/projects/${projectId}/expenses/from-template/${templateId}`,
     data
+  )
+}
+
+export interface ExtractExpenseFromImageRequest {
+  file: File
+  documentKind?: ExpenseDocumentKind
+}
+
+export function extractExpenseFromImage(
+  projectId: string,
+  data: ExtractExpenseFromImageRequest
+) {
+  const formData = new FormData()
+  formData.append("file", data.file)
+  if (data.documentKind) {
+    formData.append("documentKind", data.documentKind)
+  }
+
+  return api.postForm<ExtractExpenseFromImageResponse>(
+    `/projects/${projectId}/expenses/extract-from-image`,
+    formData,
+  )
+}
+
+export function getExpenseExtractionQuota(projectId: string) {
+  return api.get<OcrExtractionQuotaResponse>(
+    `/projects/${projectId}/expenses/extract-from-image/quota`
   )
 }

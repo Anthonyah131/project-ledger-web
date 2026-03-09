@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { useFieldArray, useWatch } from "react-hook-form"
 import { Input } from "@/components/ui/input"
+import { DateInput } from "@/components/ui/date-input"
 import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -20,11 +20,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Loader2, Trash2 } from "lucide-react"
 import { toast } from "sonner"
+import { ProjectCurrencyConversionSection } from "@/components/project-detail/shared/currency-conversion/project-currency-conversion-section"
+import { AlternativeCurrencyExchangesSection } from "@/components/project-detail/shared/currency-conversion/alternative-currency-conversions-section"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import { getExchangeRate } from "@/services/exchange-rate-service"
+import { getTodayIsoDate } from "@/lib/date-utils"
 
 interface ExpenseFormFieldsProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +37,7 @@ interface ExpenseFormFieldsProps {
   watchCurrency: string
   watchAmount: string
   watchExchangeRate: string
+  watchConvertedAmount: string
   alternativeCurrencyCodes?: string[]
   /** Whether to show placeholders (used in Create mode). */
   showPlaceholders?: boolean
@@ -48,9 +51,12 @@ export function ExpenseFormFields({
   watchCurrency,
   watchAmount,
   watchExchangeRate,
+  watchConvertedAmount,
   alternativeCurrencyCodes,
   showPlaceholders = false,
 }: ExpenseFormFieldsProps) {
+  const today = getTodayIsoDate()
+
   // Enforce originalCurrency from the selected payment method.
   const watchPaymentMethodId = useWatch({ control: form.control, name: "paymentMethodId" })
   const selectedPaymentMethod = paymentMethods.find((p) => p.id === watchPaymentMethodId)
@@ -70,13 +76,49 @@ export function ExpenseFormFields({
     control: form.control,
     name: "currencyExchanges",
   })
-  const watchCurrencyExchanges =
-    (useWatch({ control: form.control, name: "currencyExchanges" }) as
-      | Array<{ currencyCode?: string }>
-      | undefined) ?? []
+  const rawCurrencyExchanges = useWatch({
+    control: form.control,
+    name: "currencyExchanges",
+  }) as Array<{ currencyCode?: string }> | undefined
+  const watchCurrencyExchanges = useMemo(
+    () => rawCurrencyExchanges ?? [],
+    [rawCurrencyExchanges],
+  )
 
-  const projectAmount = Number(watchAmount) * Number(watchExchangeRate)
+  const normalizedProjectCurrency = projectCurrency.trim().toUpperCase()
+  const normalizedOriginalCurrency = watchCurrency.trim().toUpperCase()
+  const needsProjectConversion =
+    normalizedProjectCurrency.length > 0 &&
+    normalizedOriginalCurrency.length > 0 &&
+    normalizedProjectCurrency !== normalizedOriginalCurrency
+  const projectAmount = needsProjectConversion
+    ? Number(watchConvertedAmount)
+    : Number(watchAmount)
   const [autoRateLoading, setAutoRateLoading] = useState<Record<number, boolean>>({})
+  const [autoProjectRateLoading, setAutoProjectRateLoading] = useState(false)
+
+  useEffect(() => {
+    if (!needsProjectConversion) {
+      form.setValue("exchangeRate", "1", { shouldValidate: true })
+      if (watchAmount.trim().length > 0) {
+        form.setValue("convertedAmount", watchAmount, { shouldValidate: true })
+      }
+      return
+    }
+
+    if (watchConvertedAmount.trim().length === 0 && watchAmount.trim().length > 0) {
+      const derived = Number(watchAmount) * (Number(watchExchangeRate) || 1)
+      if (Number.isFinite(derived) && derived > 0) {
+        form.setValue("convertedAmount", derived.toFixed(2), { shouldValidate: true })
+      }
+    }
+  }, [
+    form,
+    needsProjectConversion,
+    watchAmount,
+    watchConvertedAmount,
+    watchExchangeRate,
+  ])
 
   const projectRelatedCurrencyCodes = useMemo(
     () =>
@@ -167,6 +209,34 @@ export function ExpenseFormFields({
     }
   }
 
+  async function handleAutoProjectConversion() {
+    if (!needsProjectConversion) return
+
+    const amount = Number(watchAmount)
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.warning("Ingresa un monto valido antes de calcular la conversion.")
+      return
+    }
+
+    setAutoProjectRateLoading(true)
+    try {
+      const response = await getExchangeRate({
+        from: watchCurrency,
+        to: projectCurrency,
+        amount,
+      })
+      form.setValue("exchangeRate", String(response.rate), { shouldValidate: true })
+      form.setValue("convertedAmount", String(response.convertedAmount), {
+        shouldValidate: true,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "No se pudo obtener el tipo de cambio"
+      toast.error("Error al obtener tipo de cambio", { description: msg })
+    } finally {
+      setAutoProjectRateLoading(false)
+    }
+  }
+
   return (
     <>
       {/* Title */}
@@ -240,7 +310,7 @@ export function ExpenseFormFields({
           <FormItem>
             <FormLabel>Fecha del gasto *</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DateInput {...field} max={today} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -299,35 +369,16 @@ export function ExpenseFormFields({
         />
       </div>
 
-      {/* Exchange Rate */}
-      <FormField
-        control={form.control}
-        name="exchangeRate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              Tasa de cambio{" "}
-              <span className="font-normal text-xs text-muted-foreground">
-                ({watchCurrency} {"→"} {projectCurrency})
-              </span>
-            </FormLabel>
-            <FormControl>
-              <Input type="number" step="0.0001" min="0" {...field} />
-            </FormControl>
-            {watchAmount && Number(watchExchangeRate) > 0 && (
-              <p className="text-xs text-muted-foreground">
-                Monto en {projectCurrency}:{" "}
-                <span className="font-medium text-foreground">
-                  {(Number(watchAmount) * Number(watchExchangeRate)).toLocaleString("es", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              </p>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
+      <ProjectCurrencyConversionSection
+        form={form}
+        needsProjectConversion={needsProjectConversion}
+        watchCurrency={watchCurrency}
+        projectCurrency={projectCurrency}
+        watchAmount={watchAmount}
+        autoProjectRateLoading={autoProjectRateLoading}
+        onAutoProjectConversion={handleAutoProjectConversion}
+        convertedAmountLabel={`Monto final en ${projectCurrency}`}
+        sameCurrencyMessage="Moneda de origen y moneda del proyecto son iguales. La conversion base se asume 1:1."
       />
 
       {/* Description */}
@@ -339,6 +390,24 @@ export function ExpenseFormFields({
             <FormLabel>Descripcion</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Receipt number */}
+      <FormField
+        control={form.control}
+        name="receiptNumber"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>No. de recibo / factura</FormLabel>
+            <FormControl>
+              <Input
+                placeholder={showPlaceholders ? "Ej: A-15422" : undefined}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -360,162 +429,18 @@ export function ExpenseFormFields({
         )}
       />
 
-      {/* Currency exchanges section */}
-      <div className="rounded-xl border border-border/70 bg-muted/20 p-4 flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Conversiones a monedas alternativas
-          </p>
-          <span className="rounded-full border border-border/80 bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-            {requiresAlternativeConversions ? "Obligatorio" : "Opcional"}
-          </span>
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          {requiresAlternativeConversions
-            ? "Debes completar una conversion por cada moneda alternativa configurada en el proyecto."
-            : "No hay monedas alternativas vinculadas al proyecto. Configuralas en la pestaña Monedas para habilitar conversiones."}
-        </p>
-
-        <div className="flex flex-col gap-4">
-          {fields.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              Sin conversiones configuradas.
-            </p>
-          )}
-
-          {fields.map((field, index) => {
-            const selectedCurrency = watchCurrencyExchanges[index]?.currencyCode ?? ""
-
-            return (
-              <div
-                key={field.id}
-                className="rounded-lg border border-border/70 bg-background p-4 shadow-sm"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <p className="text-sm font-medium text-foreground">
-                    Conversion {index + 1}
-                  </p>
-                  {!requiresAlternativeConversions && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      aria-label="Eliminar conversion"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name={`currencyExchanges.${index}.currencyCode`}
-                    render={({ field: currencyField }) => (
-                      <FormItem>
-                        <FormLabel>Moneda</FormLabel>
-                        {requiresAlternativeConversions ? (
-                          <FormControl>
-                            <Input value={currencyField.value || ""} readOnly className="bg-muted/40" />
-                          </FormControl>
-                        ) : (
-                          <Select value={currencyField.value} onValueChange={currencyField.onChange}>
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Seleccionar" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {selectableCurrencyCodes.map((c) => (
-                                <SelectItem key={c} value={c}>
-                                  {c}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`currencyExchanges.${index}.exchangeRate`}
-                    render={({ field: rateField }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Tasa ({projectCurrency} {"→"} {selectedCurrency || "?"})
-                        </FormLabel>
-                        <FormControl>
-                          <div className="flex gap-2">
-                            <Input
-                              type="number"
-                              step="0.0001"
-                              min="0"
-                              placeholder="0.0000"
-                              value={rateField.value}
-                              onChange={(e) => {
-                                rateField.onChange(e.target.value)
-                                const rate = Number(e.target.value)
-                                if (rate > 0 && projectAmount > 0) {
-                                  form.setValue(
-                                    `currencyExchanges.${index}.convertedAmount`,
-                                    (projectAmount * rate).toFixed(2),
-                                    { shouldValidate: true }
-                                  )
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              disabled={!!autoRateLoading[index]}
-                              onClick={() => handleAutoRate(index, selectedCurrency)}
-                            >
-                              {autoRateLoading[index] ? (
-                                <Loader2 className="size-4 animate-spin" />
-                              ) : (
-                                "Auto"
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`currencyExchanges.${index}.convertedAmount`}
-                    render={({ field: amountField }) => (
-                      <FormItem className="md:col-span-2">
-                        <FormLabel>Monto {selectedCurrency || ""}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="0.00"
-                            value={amountField.value}
-                            onChange={(e) => amountField.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            )
-          })}
-
-        </div>
-      </div>
+      <AlternativeCurrencyExchangesSection
+        form={form}
+        fields={fields}
+        watchCurrencyExchanges={watchCurrencyExchanges}
+        requiresAlternativeConversions={requiresAlternativeConversions}
+        selectableCurrencyCodes={selectableCurrencyCodes}
+        projectCurrency={projectCurrency}
+        projectAmount={projectAmount}
+        autoRateLoading={autoRateLoading}
+        onAutoRate={handleAutoRate}
+        onRemoveExchange={remove}
+      />
     </>
   )
 }

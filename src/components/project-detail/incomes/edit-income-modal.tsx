@@ -4,6 +4,7 @@ import { FormModal } from "@/components/shared/form-modal"
 import { IncomeFormFields } from "./income-form-fields"
 import type { IncomeResponse, UpdateIncomeRequest } from "@/types/income"
 import type { CategoryResponse } from "@/types/category"
+import type { CurrencyResponse } from "@/types/currency"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import { useUpdateIncomeForm } from "@/hooks/forms/use-income-form"
 
@@ -14,6 +15,7 @@ interface EditIncomeModalProps {
   onSave: (id: string, data: UpdateIncomeRequest) => void
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
+  availableCurrencies: CurrencyResponse[]
   projectCurrency: string
   alternativeCurrencyCodes?: string[]
 }
@@ -25,11 +27,26 @@ export function EditIncomeModal({
   onSave,
   categories,
   paymentMethods,
+  availableCurrencies,
   projectCurrency,
   alternativeCurrencyCodes,
 }: EditIncomeModalProps) {
-  const { form, onSubmit, handleClose, watchCurrency, watchAmount, watchExchangeRate } =
-    useUpdateIncomeForm({ income, onSave, onClose })
+  const {
+    form,
+    onSubmit,
+    handleClose,
+    watchCurrency,
+    watchAmount,
+    watchExchangeRate,
+    watchConvertedAmount,
+  } =
+    useUpdateIncomeForm({
+      income,
+      onSave,
+      onClose,
+      paymentMethods,
+      projectCurrency,
+    })
 
   return (
     <FormModal
@@ -46,10 +63,12 @@ export function EditIncomeModal({
         form={form}
         categories={categories}
         paymentMethods={paymentMethods}
+        availableCurrencies={availableCurrencies}
         projectCurrency={projectCurrency}
         watchCurrency={watchCurrency}
         watchAmount={watchAmount}
         watchExchangeRate={watchExchangeRate}
+        watchConvertedAmount={watchConvertedAmount}
         alternativeCurrencyCodes={alternativeCurrencyCodes}
       />
     </FormModal>

@@ -1,23 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckCircle2, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { BillingSubscriptionCard } from "@/views/billing/components/billing-subscription-card";
+import { BillingPlansGrid } from "@/views/billing/components/billing-plans-grid";
 import { ApiClientError } from "@/lib/api-client";
-import { formatPlanPrice, getBillingStatusMeta } from "@/lib/billing-utils";
-import { formatDate } from "@/lib/format-utils";
-import { getPlanDescription, getPlanFeatures } from "@/lib/plan-presentation";
+import { getBillingStatusMeta } from "@/lib/billing-utils";
 import { useAuth } from "@/context/auth-context";
 import * as billingService from "@/services/billing-service";
 import * as planService from "@/services/plan-service";
@@ -25,6 +16,10 @@ import type { PlanResponse } from "@/types/plan";
 import type { BillingSubscriptionResponse, BillingSubscriptionStatus } from "@/types/subscription";
 
 function getBillingErrorMessage(err: unknown): string {
+  if (billingService.isStripeDisabledError(err)) {
+    return "La facturación con Stripe está deshabilitada por configuración.";
+  }
+
   if (err instanceof ApiClientError) {
     if (err.status === 401) return "Tu sesión expiró. Inicia sesión nuevamente.";
     if (err.status === 403) return "No tienes permisos para consultar la facturación.";
@@ -33,19 +28,6 @@ function getBillingErrorMessage(err: unknown): string {
 
   if (err instanceof Error) return err.message;
   return "No fue posible cargar la información de facturación.";
-}
-
-function getBadgeToneClass(tone: "success" | "warning" | "danger" | "muted"): string {
-  switch (tone) {
-    case "success":
-      return "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400";
-    case "warning":
-      return "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
-    case "danger":
-      return "border-destructive/30 bg-destructive/10 text-destructive";
-    default:
-      return "border-border bg-muted text-muted-foreground";
-  }
 }
 
 const MANAGEABLE_SUBSCRIPTION_STATUSES: readonly BillingSubscriptionStatus[] = [
@@ -65,6 +47,7 @@ export function BillingView() {
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [subscription, setSubscription] = useState<BillingSubscriptionResponse | null>(null);
   const [subscriptionMissing, setSubscriptionMissing] = useState(false);
+  const [stripeDisabled, setStripeDisabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [autoCheckoutDone, setAutoCheckoutDone] = useState(false);
@@ -77,6 +60,7 @@ export function BillingView() {
   const loadBillingData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setStripeDisabled(false);
 
     try {
       const plansPromise = planService.getPlans();
@@ -95,6 +79,10 @@ export function BillingView() {
       } else if (subscriptionResult.reason instanceof ApiClientError && subscriptionResult.reason.status === 404) {
         setSubscription(null);
         setSubscriptionMissing(true);
+      } else if (billingService.isStripeDisabledError(subscriptionResult.reason)) {
+        setSubscription(null);
+        setSubscriptionMissing(false);
+        setStripeDisabled(true);
       } else {
         throw subscriptionResult.reason;
       }
@@ -139,7 +127,12 @@ export function BillingView() {
       const session = await billingService.createCheckoutSession({ planId });
       window.location.href = session.checkoutUrl;
     } catch (err) {
-      setError(getBillingErrorMessage(err));
+      if (billingService.isStripeDisabledError(err)) {
+        setStripeDisabled(true);
+        setError(null);
+      } else {
+        setError(getBillingErrorMessage(err));
+      }
     } finally {
       setActionInProgressPlanId(null);
       setActionInProgressType(null);
@@ -159,7 +152,12 @@ export function BillingView() {
       setSubscription(updatedSubscription);
       setSubscriptionMissing(false);
     } catch (err) {
-      setError(getBillingErrorMessage(err));
+      if (billingService.isStripeDisabledError(err)) {
+        setStripeDisabled(true);
+        setError(null);
+      } else {
+        setError(getBillingErrorMessage(err));
+      }
     } finally {
       setActionInProgressPlanId(null);
       setActionInProgressType(null);
@@ -178,7 +176,12 @@ export function BillingView() {
       setSubscription(updatedSubscription);
       setSubscriptionMissing(false);
     } catch (err) {
-      setError(getBillingErrorMessage(err));
+      if (billingService.isStripeDisabledError(err)) {
+        setStripeDisabled(true);
+        setError(null);
+      } else {
+        setError(getBillingErrorMessage(err));
+      }
     } finally {
       setActionInProgressPlanId(null);
       setActionInProgressType(null);
@@ -186,6 +189,8 @@ export function BillingView() {
   }, []);
 
   const handlePlanAction = useCallback((plan: PlanResponse) => {
+    if (stripeDisabled) return;
+
     const isPaidPlan = plan.monthlyPrice > 0;
 
     if (isPaidPlan) {
@@ -200,7 +205,7 @@ export function BillingView() {
     if (hasManageableSubscription) {
       void cancelAtPeriodEnd(plan.id);
     }
-  }, [cancelAtPeriodEnd, changePlan, hasManageableSubscription, startCheckout]);
+  }, [cancelAtPeriodEnd, changePlan, hasManageableSubscription, startCheckout, stripeDisabled]);
 
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get("checkoutPlanId");
@@ -209,6 +214,7 @@ export function BillingView() {
 
   useEffect(() => {
     if (loading || autoCheckoutDone) return;
+    if (stripeDisabled) return;
     if (!checkoutPlanId) return;
 
     const targetPlan = plans.find((plan) => plan.id === checkoutPlanId);
@@ -222,7 +228,7 @@ export function BillingView() {
 
     setAutoCheckoutDone(true);
     handlePlanAction(targetPlan);
-  }, [loading, autoCheckoutDone, checkoutPlanId, plans, effectiveCurrentPlanId, handlePlanAction]);
+  }, [loading, autoCheckoutDone, stripeDisabled, checkoutPlanId, plans, effectiveCurrentPlanId, handlePlanAction]);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -244,210 +250,33 @@ export function BillingView() {
         </Alert>
       )}
 
-      {loading ? (
-        <Card>
-          <CardContent className="flex items-center gap-2 pt-6 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Cargando estado de suscripción...
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Suscripción actual</CardTitle>
-            <CardDescription>Estado sincronizado con Stripe</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {subscription && currentStatusMeta ? (
-              <>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className={getBadgeToneClass(currentStatusMeta.tone)}>
-                    {currentStatusMeta.label}
-                  </Badge>
-                  <Badge variant="outline">
-                    {subscription.autoRenews ? "Renovación automática activa" : "Renovación automática desactivada"}
-                  </Badge>
-                  {subscription.cancelAtPeriodEnd && (
-                    <Badge variant="outline">Cancelación al final del período</Badge>
-                  )}
-                  {subscription.willDowngradeToFree && (
-                    <Badge variant="outline">Bajará a Free al cierre del ciclo</Badge>
-                  )}
-                </div>
-
-                <p className="text-sm text-muted-foreground">{currentStatusMeta.description}</p>
-
-                {subscription.willDowngradeToFree && subscription.downgradeToFreeAt && (
-                  <p className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-700 dark:text-yellow-300">
-                    Tu plan actual se mantendrá hasta el {formatDate(subscription.downgradeToFreeAt, { withYear: true })}.
-                    Luego pasarás automáticamente a Free.
-                  </p>
-                )}
-
-                <div className="grid gap-3 text-sm md:grid-cols-2">
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Plan</p>
-                    <p className="mt-1 font-medium">{subscription.planName}</p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Renovación</p>
-                    <p className="mt-1 font-medium">
-                      {subscription.autoRenews ? "Se intentará cobrar automáticamente" : "Sin renovación automática"}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Actualizado</p>
-                    <p className="mt-1 font-medium">{formatDate(subscription.updatedAt, { withYear: true })}</p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Período actual inicia</p>
-                    <p className="mt-1 font-medium">
-                      {subscription.currentPeriodStart
-                        ? formatDate(subscription.currentPeriodStart, { withYear: true })
-                        : "Sin dato"}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Período actual termina</p>
-                    <p className="mt-1 font-medium">
-                      {subscription.currentPeriodEnd
-                        ? formatDate(subscription.currentPeriodEnd, { withYear: true })
-                        : "Sin dato"}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Baja a Free</p>
-                    <p className="mt-1 font-medium">
-                      {subscription.willDowngradeToFree && subscription.downgradeToFreeAt
-                        ? formatDate(subscription.downgradeToFreeAt, { withYear: true })
-                        : "No programada"}
-                    </p>
-                  </div>
-                </div>
-              </>
-            ) : fallbackCurrentPlan ? (
-              <>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className={getBadgeToneClass("muted")}>
-                    {subscriptionMissing
-                      ? "Plan Free (sin suscripción Stripe)"
-                      : "Plan sin suscripción activa"}
-                  </Badge>
-                </div>
-
-                <p className="text-sm text-muted-foreground">
-                  {subscriptionMissing
-                    ? `Tu cuenta está en el plan ${fallbackCurrentPlan.name}. El endpoint de suscripción devolvió 404 (sin suscripción de pago).`
-                    : `Tu cuenta está en el plan ${fallbackCurrentPlan.name}. No tienes una suscripción de pago registrada.`}
-                </p>
-
-                <div className="grid gap-3 text-sm md:grid-cols-2">
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Plan</p>
-                    <p className="mt-1 font-medium">{fallbackCurrentPlan.name}</p>
-                  </div>
-                  <div className="rounded-lg border bg-card p-3">
-                    <p className="text-xs text-muted-foreground">Estado</p>
-                    <p className="mt-1 font-medium">Free / sin cobros</p>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {subscriptionMissing
-                  ? "Aún no hay una suscripción registrada para tu usuario."
-                  : "No hay información de suscripción disponible."}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+      {stripeDisabled && (
+        <Alert>
+          <AlertTitle>Facturación no disponible</AlertTitle>
+          <AlertDescription>
+            Stripe está deshabilitado por configuración del entorno. Las acciones de suscripción y checkout no están disponibles.
+          </AlertDescription>
+        </Alert>
       )}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {plans.map((plan) => {
-          const planDescription = getPlanDescription(plan);
-          const planFeatures = getPlanFeatures(plan, 5);
-          const isCurrentPlan = effectiveCurrentPlanId
-            ? effectiveCurrentPlanId === plan.id
-            : plan.slug.toLowerCase() === "free";
-          const isPaidPlan = plan.monthlyPrice > 0;
+      <BillingSubscriptionCard
+        loading={loading}
+        stripeDisabled={stripeDisabled}
+        subscription={subscription}
+        currentStatusMeta={currentStatusMeta}
+        fallbackCurrentPlan={fallbackCurrentPlan}
+        subscriptionMissing={subscriptionMissing}
+      />
 
-          let actionType: "none" | "checkout" | "change-plan" | "cancel" = "none";
-          if (!isCurrentPlan) {
-            if (isPaidPlan) {
-              actionType = hasManageableSubscription ? "change-plan" : "checkout";
-            } else if (hasManageableSubscription) {
-              actionType = "cancel";
-            }
-          }
-
-          const ctaLabelByAction: Record<typeof actionType, string> = {
-            none: "No requiere pago",
-            checkout: "Suscribirse",
-            "change-plan": "Cambiar a este plan",
-            cancel: "Cambiar a Free",
-          };
-
-          const ctaLabel = isCurrentPlan ? "Plan actual" : ctaLabelByAction[actionType];
-          const ctaDisabled = isCurrentPlan || actionType === "none";
-
-          const isActionLoading = actionInProgressPlanId === plan.id;
-          const loadingLabelByAction: Record<Exclude<typeof actionType, "none">, string> = {
-            checkout: "Redirigiendo...",
-            "change-plan": "Actualizando plan...",
-            cancel: "Programando cancelación...",
-          };
-
-          return (
-            <Card key={plan.id} className={isCurrentPlan ? "border-primary/50" : undefined}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between gap-2">
-                  <span>{plan.name}</span>
-                  {isCurrentPlan && <Badge variant="outline">Actual</Badge>}
-                </CardTitle>
-                <CardDescription>{planDescription}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-semibold tracking-tight">
-                  {formatPlanPrice(plan.monthlyPrice, plan.currency)}
-                  <span className="ml-1 text-sm font-normal text-muted-foreground">
-                    {plan.monthlyPrice > 0 ? "/ mes" : ""}
-                  </span>
-                </p>
-                <ul className="mt-4 space-y-2">
-                  {planFeatures.map((feature) => (
-                    <li key={`${plan.id}-${feature}`} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="size-4 shrink-0 text-primary" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  type="button"
-                  className="w-full"
-                  variant={isCurrentPlan ? "outline" : "default"}
-                  disabled={ctaDisabled || actionInProgressPlanId !== null}
-                  onClick={() => handlePlanAction(plan)}
-                >
-                  {isActionLoading && actionInProgressType ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      {loadingLabelByAction[actionInProgressType]}
-                    </>
-                  ) : (
-                    <>
-                      {ctaLabel}
-                      {actionType === "checkout" && <ExternalLink className="size-4" />}
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
-      </section>
+      <BillingPlansGrid
+        plans={plans}
+        effectiveCurrentPlanId={effectiveCurrentPlanId}
+        stripeDisabled={stripeDisabled}
+        hasManageableSubscription={hasManageableSubscription}
+        actionInProgressPlanId={actionInProgressPlanId}
+        actionInProgressType={actionInProgressType}
+        onPlanAction={handlePlanAction}
+      />
     </div>
   );
 }

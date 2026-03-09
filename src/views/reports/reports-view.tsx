@@ -5,39 +5,18 @@
 // 1) Project expense report (per project)
 // 2) Payment method report (user-level)
 
-import { useState, useEffect, useCallback } from "react"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useCallback } from "react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { useReportsCatalogs } from "@/hooks/reports/use-reports-catalogs"
 import { useExpenseReport } from "@/hooks/reports/use-expense-report"
 import { usePaymentMethodReport } from "@/hooks/reports/use-payment-method-report"
 
-import { ReportFilters } from "@/components/reports/report-filters"
-import { ExpenseReportResults } from "@/components/reports/expense-report-results"
-import { PaymentMethodReportResults } from "@/components/reports/payment-method-report-results"
-import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
-
-import * as projectService from "@/services/project-service"
-import * as paymentMethodService from "@/services/payment-method-service"
-import type { ProjectResponse } from "@/types/project"
-import type { PaymentMethodResponse } from "@/types/payment-method"
+import { ReportsExpensesTab } from "@/views/reports/tabs/reports-expenses-tab"
+import { ReportsPaymentMethodsTab } from "@/views/reports/tabs/reports-payment-methods-tab"
 
 export function ReportsView() {
-  // ── Project list for the expense report selector ───────────────────────
-  const [projects, setProjects] = useState<ProjectResponse[]>([])
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>([])
-
-  useEffect(() => {
-    projectService.getProjects().then(setProjects).catch(() => {})
-    paymentMethodService.getPaymentMethods().then(setPaymentMethods).catch(() => {})
-  }, [])
+  const { projects, paymentMethods } = useReportsCatalogs()
 
   // ── Hooks ──────────────────────────────────────────────────────────────
   const expReport = useExpenseReport()
@@ -62,7 +41,7 @@ export function ReportsView() {
           Reportes
         </h1>
         <p className="text-sm text-muted-foreground">
-          Genera reportes detallados de gastos por proyecto o por método de pago. Exporta en Excel o PDF.
+          Genera reportes detallados por proyecto o método de pago. Las exportaciones en Excel y PDF incluyen ingresos y balance neto.
         </p>
       </div>
 
@@ -72,100 +51,37 @@ export function ReportsView() {
           <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
         </TabsList>
 
-        {/* ───── Expense report tab ───── */}
-        <TabsContent value="expenses" className="flex flex-col gap-6 mt-4">
-          <ReportFilters
-            from={expReport.filters.from}
-            to={expReport.filters.to}
-            onFromChange={(v) => expReport.updateFilter("from", v)}
-            onToChange={(v) => expReport.updateFilter("to", v)}
-            onGenerate={expReport.fetchReport}
-            onExport={expReport.exportReport}
-            loading={expReport.loading}
-            exporting={expReport.exporting}
-          >
-            {/* Project selector */}
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-xs text-muted-foreground">Proyecto</Label>
-              <Select
-                value={expReport.filters.projectId}
-                onValueChange={handleProjectChange}
-              >
-                <SelectTrigger size="sm" className="w-52">
-                  <SelectValue placeholder="Selecciona proyecto" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </ReportFilters>
+        <ReportsExpensesTab
+          projects={projects}
+          from={expReport.filters.from}
+          to={expReport.filters.to}
+          projectId={expReport.filters.projectId}
+          dateRangeError={expReport.dateRangeError}
+          loading={expReport.loading}
+          exporting={expReport.exporting}
+          report={expReport.report}
+          onFromChange={(value) => expReport.updateFilter("from", value)}
+          onToChange={(value) => expReport.updateFilter("to", value)}
+          onProjectChange={handleProjectChange}
+          onGenerate={expReport.fetchReport}
+          onExport={expReport.exportReport}
+        />
 
-          {expReport.loading ? (
-            <ReportSkeleton />
-          ) : expReport.report ? (
-            expReport.report.totalExpenseCount === 0 &&
-            (expReport.report.totalIncomeCount ?? 0) === 0 ? (
-              <ReportNoData />
-            ) : (
-              <ExpenseReportResults report={expReport.report} />
-            )
-          ) : (
-            <ReportEmptyPrompt />
-          )}
-        </TabsContent>
-
-        {/* ───── Payment method report tab ───── */}
-        <TabsContent value="payment-methods" className="flex flex-col gap-6 mt-4">
-          <ReportFilters
-            from={pmReport.filters.from}
-            to={pmReport.filters.to}
-            onFromChange={(v) => pmReport.updateFilter("from", v)}
-            onToChange={(v) => pmReport.updateFilter("to", v)}
-            onGenerate={pmReport.fetchReport}
-            onExport={pmReport.exportReport}
-            loading={pmReport.loading}
-            exporting={pmReport.exporting}
-          >
-            {/* Payment method filter (optional) */}
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-xs text-muted-foreground">Método de pago</Label>
-              <Select
-                value={pmReport.filters.paymentMethodId || "all"}
-                onValueChange={handlePaymentMethodFilterChange}
-              >
-                <SelectTrigger size="sm" className="w-52">
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  {paymentMethods.map((pm) => (
-                    <SelectItem key={pm.id} value={pm.id}>
-                      {pm.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </ReportFilters>
-
-          {pmReport.loading ? (
-            <ReportSkeleton />
-          ) : pmReport.report ? (
-            pmReport.report.grandTotalExpenseCount === 0 &&
-            (pmReport.report.grandTotalIncomeCount ?? 0) === 0 ? (
-              <ReportNoData />
-            ) : (
-              <PaymentMethodReportResults report={pmReport.report} />
-            )
-          ) : (
-            <ReportEmptyPrompt />
-          )}
-        </TabsContent>
+        <ReportsPaymentMethodsTab
+          paymentMethods={paymentMethods}
+          from={pmReport.filters.from}
+          to={pmReport.filters.to}
+          paymentMethodId={pmReport.filters.paymentMethodId}
+          dateRangeError={pmReport.dateRangeError}
+          loading={pmReport.loading}
+          exporting={pmReport.exporting}
+          report={pmReport.report}
+          onFromChange={(value) => pmReport.updateFilter("from", value)}
+          onToChange={(value) => pmReport.updateFilter("to", value)}
+          onPaymentMethodChange={handlePaymentMethodFilterChange}
+          onGenerate={pmReport.fetchReport}
+          onExport={pmReport.exportReport}
+        />
       </Tabs>
     </div>
   )

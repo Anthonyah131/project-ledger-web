@@ -1,0 +1,109 @@
+"use client"
+
+// views/payment-methods/payment-method-detail-view.tsx
+// Vista de detalle para un método de pago individual
+
+import { usePaymentMethodDetail } from "@/hooks/payment-methods/use-payment-method-detail"
+import { PaymentMethodDetailPanel } from "@/components/payment-methods/payment-method-detail-panel"
+import { useRouter } from "next/navigation"
+
+interface Props {
+  paymentMethodId: string
+}
+
+export function PaymentMethodDetailView({ paymentMethodId }: Props) {
+  const router = useRouter()
+  const {
+    paymentMethod,
+    expenses,
+    incomes,
+    projects,
+    summary,
+    loadingDetail,
+    loadingExpenses,
+    loadingIncomes,
+    loadingProjects,
+    loadingSummary,
+    error,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sort,
+    handleSortChange,
+    incomePage,
+    setIncomePage,
+    incomePageSize,
+    setIncomePageSize,
+    incomeSort,
+    handleIncomeSortChange,
+    from,
+    to,
+    dateRangeError,
+    projectId,
+    setFrom,
+    setTo,
+    setProjectId,
+    clearFilters,
+    editOpen,
+    setEditOpen,
+    deleteOpen,
+    setDeleteOpen,
+    mutateUpdate,
+    mutateDelete,
+  } = usePaymentMethodDetail(paymentMethodId)
+
+  const handleBack = () => {
+    router.push("/payment-methods")
+  }
+
+  const handleDeleteWithRedirect = async () => {
+    const deleted = await mutateDelete()
+    if (deleted) {
+      router.push("/payment-methods")
+    }
+  }
+
+  return (
+    <PaymentMethodDetailPanel
+      paymentMethod={paymentMethod}
+      expenses={expenses}
+      incomes={incomes}
+      projects={projects}
+      summary={summary}
+      loadingDetail={loadingDetail}
+      loadingExpenses={loadingExpenses}
+      loadingIncomes={loadingIncomes}
+      loadingProjects={loadingProjects}
+      loadingSummary={loadingSummary}
+      error={error}
+      page={page}
+      setPage={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+      sort={sort}
+      handleSortChange={handleSortChange}
+      incomePage={incomePage}
+      setIncomePage={setIncomePage}
+      incomePageSize={incomePageSize}
+      setIncomePageSize={setIncomePageSize}
+      incomeSort={incomeSort}
+      handleIncomeSortChange={handleIncomeSortChange}
+      from={from}
+      to={to}
+      dateRangeError={dateRangeError}
+      projectId={projectId}
+      setFrom={setFrom}
+      setTo={setTo}
+      setProjectId={setProjectId}
+      clearFilters={clearFilters}
+      editOpen={editOpen}
+      setEditOpen={setEditOpen}
+      deleteOpen={deleteOpen}
+      setDeleteOpen={setDeleteOpen}
+      mutateUpdate={mutateUpdate}
+      mutateDelete={handleDeleteWithRedirect}
+      onBack={handleBack}
+    />
+  )
+}

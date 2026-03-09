@@ -1,7 +1,7 @@
 // services/billing-service.ts
 // Stripe billing endpoints consumed by the frontend.
 
-import { api } from "@/lib/api-client";
+import { ApiClientError, api } from "@/lib/api-client";
 import type {
   BillingSubscriptionResponse,
   CancelSubscriptionRequest,
@@ -49,4 +49,12 @@ export function cancelSubscription(data: CancelSubscriptionRequest) {
  */
 export function syncStripePlans() {
   return api.post<void>("/billing/stripe/sync-plans");
+}
+
+/**
+ * Stripe-billing-disabled mode returns HTTP 503 from billing endpoints.
+ * Treat it as a feature-toggle state instead of a transient failure.
+ */
+export function isStripeDisabledError(err: unknown): err is ApiClientError {
+  return err instanceof ApiClientError && err.status === 503;
 }

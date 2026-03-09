@@ -9,7 +9,7 @@ import { ApiClientError } from "@/lib/api-client";
 /**
  * Extract a user-friendly message from any caught error.
  */
-export function getErrorMessage(err: unknown, fallback = "Error inesperado"): string {
+function getErrorMessage(err: unknown, fallback = "Error inesperado"): string {
   if (err instanceof Error) return err.message;
   return fallback;
 }

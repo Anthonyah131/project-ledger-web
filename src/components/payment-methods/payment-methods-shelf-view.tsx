@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
-import { formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
@@ -50,7 +50,7 @@ function PaymentMethodCard({
         "transition-colors duration-150",
         "hover:bg-accent/30 cursor-pointer",
       )}
-      onClick={() => router.push(`/payment-methods/${pm.id}/expenses`)}
+      onClick={() => router.push(`/payment-methods/${pm.id}`)}
     >
       <div className="flex flex-1 gap-4 p-5">
         {/* Accent bar */}
@@ -74,8 +74,8 @@ function PaymentMethodCard({
             {/* Menu */}
             <ItemActionMenu
               ariaLabel="Acciones del método de pago"
-              onOpen={() => router.push(`/payment-methods/${pm.id}/expenses`)}
-              openLabel="Ver gastos"
+              onOpen={() => router.push(`/payment-methods/${pm.id}`)}
+              openLabel="Ver detalle"
               onEdit={() => onEdit(pm)}
               onDelete={() => onDelete(pm)}
               stopPropagation

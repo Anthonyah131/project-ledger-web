@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ROLE_LABEL } from "@/lib/constants"
-import { formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
 import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,

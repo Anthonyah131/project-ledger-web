@@ -1,0 +1,303 @@
+"use client"
+
+import { useCallback } from "react"
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
+import {
+  ArrowLeft,
+  Building,
+  Calendar,
+  FolderKanban,
+  Hash,
+  MoreVertical,
+  ReceiptText,
+  Wallet,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
+import {
+  InfoCard,
+} from "./detail/payment-method-detail-blocks"
+import { PaymentMethodDetailFilters } from "./detail/payment-method-detail-filters"
+import { PaymentMethodDetailTabs } from "./detail/payment-method-detail-tabs"
+import {
+  PAYMENT_METHOD_ACCENT,
+  PAYMENT_METHOD_TYPE_LABEL,
+} from "@/lib/constants"
+import { formatDate } from "@/lib/date-utils"
+import { formatAmount } from "@/lib/format-utils"
+import type {
+  PaymentMethodExpensesResponse,
+  PaymentMethodIncomesResponse,
+  PaymentMethodProjectsResponse,
+  PaymentMethodResponse,
+  PaymentMethodSummaryResponse,
+  UpdatePaymentMethodRequest,
+} from "@/types/payment-method"
+
+const EditPaymentMethodModal = dynamic(() =>
+  import("./edit-payment-method-modal").then((mod) => mod.EditPaymentMethodModal),
+)
+
+interface PaymentMethodDetailPanelProps {
+  paymentMethod: PaymentMethodResponse | null
+  expenses: PaymentMethodExpensesResponse
+  incomes: PaymentMethodIncomesResponse
+  projects: PaymentMethodProjectsResponse
+  summary: PaymentMethodSummaryResponse | null
+  loadingDetail: boolean
+  loadingExpenses: boolean
+  loadingIncomes: boolean
+  loadingProjects: boolean
+  loadingSummary: boolean
+  error: string | null
+  page: number
+  setPage: (p: number) => void
+  pageSize: number
+  setPageSize: (s: number) => void
+  sort: string
+  handleSortChange: (s: string) => void
+  incomePage: number
+  setIncomePage: (p: number) => void
+  incomePageSize: number
+  setIncomePageSize: (s: number) => void
+  incomeSort: string
+  handleIncomeSortChange: (s: string) => void
+  from: string
+  to: string
+  dateRangeError: string | null
+  projectId: string
+  setFrom: (value: string) => void
+  setTo: (value: string) => void
+  setProjectId: (value: string) => void
+  clearFilters: () => void
+  editOpen: boolean
+  setEditOpen: (v: boolean) => void
+  deleteOpen: boolean
+  setDeleteOpen: (v: boolean) => void
+  mutateUpdate: (data: UpdatePaymentMethodRequest) => Promise<void>
+  mutateDelete: () => Promise<boolean>
+  onBack: () => void
+}
+
+function PaymentMethodDetailPanelComponent({
+  paymentMethod,
+  expenses,
+  incomes,
+  projects,
+  summary,
+  loadingDetail,
+  loadingExpenses,
+  loadingIncomes,
+  loadingProjects,
+  loadingSummary,
+  error,
+  page,
+  setPage,
+  pageSize,
+  setPageSize,
+  sort,
+  handleSortChange,
+  incomePage,
+  setIncomePage,
+  incomePageSize,
+  setIncomePageSize,
+  incomeSort,
+  handleIncomeSortChange,
+  from,
+  to,
+  dateRangeError,
+  projectId,
+  setFrom,
+  setTo,
+  setProjectId,
+  clearFilters,
+  editOpen,
+  setEditOpen,
+  deleteOpen,
+  setDeleteOpen,
+  mutateUpdate,
+  mutateDelete,
+  onBack,
+}: PaymentMethodDetailPanelProps) {
+  const router = useRouter()
+
+  const handleSaveEdit = useCallback(
+    async (_id: string, data: UpdatePaymentMethodRequest) => {
+      await mutateUpdate(data)
+    },
+    [mutateUpdate],
+  )
+
+  if (loadingDetail) {
+    return (
+      <div className="w-full max-w-5xl mx-auto space-y-6">
+        <Skeleton className="h-9 w-40" />
+        <Skeleton className="h-36 w-full" />
+        <Skeleton className="h-72 w-full" />
+      </div>
+    )
+  }
+
+  if (!paymentMethod) {
+    return (
+      <div className="w-full max-w-5xl mx-auto">
+        <Alert variant="destructive">
+          <AlertTitle>No se pudo cargar el metodo de pago</AlertTitle>
+          <AlertDescription>
+            {error ?? "El metodo no existe o no tienes permisos para verlo."}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
+  const relatedExpensesCount = summary?.relatedExpensesCount ?? expenses.totalCount
+  const relatedIncomesCount = summary?.relatedIncomesCount ?? incomes.totalCount
+  const relatedProjectsCount = summary?.relatedProjectsCount ?? projects.totalCount
+
+  return (
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
+            <ArrowLeft className="size-5" />
+          </Button>
+
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`w-2 h-8 rounded-full ${PAYMENT_METHOD_ACCENT[paymentMethod.type]}`} />
+            <div className="min-w-0">
+              <h1 className="text-xl font-semibold text-foreground truncate">{paymentMethod.name}</h1>
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                <Badge variant="outline" className="text-[10px]">
+                  {PAYMENT_METHOD_TYPE_LABEL[paymentMethod.type]}
+                </Badge>
+                <Badge variant="secondary" className="text-[10px]">
+                  {paymentMethod.currency}
+                </Badge>
+                {paymentMethod.accountNumber && (
+                  <span className="text-xs text-muted-foreground truncate">
+                    {paymentMethod.accountNumber}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="size-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive">
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <InfoCard icon={Building} label="Banco / emisor" value={paymentMethod.bankName ?? "-"} />
+        <InfoCard icon={Hash} label="Cuenta" value={paymentMethod.accountNumber ?? "-"} />
+        <InfoCard icon={FolderKanban} label="Proyectos" value={String(relatedProjectsCount)} />
+        <InfoCard icon={ReceiptText} label="Gastos" value={String(relatedExpensesCount)} />
+        <InfoCard icon={Wallet} label="Ingresos" value={String(relatedIncomesCount)} />
+        <InfoCard
+          icon={Calendar}
+          label="Ultima actualizacion"
+          value={formatDate(paymentMethod.updatedAt, { withYear: true })}
+        />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Total gasto relacionado</p>
+          <p className="text-lg font-semibold text-foreground mt-1 tabular-nums">
+            {loadingSummary
+              ? "Cargando..."
+              : `${paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Total ingreso relacionado</p>
+          <p className="text-lg font-semibold text-foreground mt-1 tabular-nums">
+            {loadingSummary
+              ? "Cargando..."
+              : `${paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
+          </p>
+        </div>
+      </div>
+
+      <PaymentMethodDetailFilters
+        projects={projects}
+        from={from}
+        to={to}
+        projectId={projectId}
+        dateRangeError={dateRangeError}
+        setFrom={setFrom}
+        setTo={setTo}
+        setProjectId={setProjectId}
+        clearFilters={clearFilters}
+      />
+
+      <PaymentMethodDetailTabs
+        expenses={expenses}
+        incomes={incomes}
+        projects={projects}
+        paymentMethodCurrency={paymentMethod.currency}
+        loadingExpenses={loadingExpenses}
+        loadingIncomes={loadingIncomes}
+        loadingProjects={loadingProjects}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        sort={sort}
+        handleSortChange={handleSortChange}
+        incomePage={incomePage}
+        setIncomePage={setIncomePage}
+        incomePageSize={incomePageSize}
+        setIncomePageSize={setIncomePageSize}
+        incomeSort={incomeSort}
+        handleIncomeSortChange={handleIncomeSortChange}
+        onOpenExpenseProject={(expenseProjectId) => router.push(`/projects/${expenseProjectId}`)}
+        onOpenIncomeProject={(incomeProjectId) => router.push(`/projects/${incomeProjectId}`)}
+        onOpenProjectCard={(cardProjectId) => router.push(`/projects/${cardProjectId}`)}
+      />
+
+      {editOpen && (
+        <EditPaymentMethodModal
+          paymentMethod={paymentMethod}
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          onSave={handleSaveEdit}
+        />
+      )}
+
+      <DeleteEntityModal
+        item={paymentMethod}
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={mutateDelete}
+        title="Eliminar metodo de pago"
+        description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
+        getMessage={(item) => `¿Eliminar "${item.name}"?`}
+      />
+    </div>
+  )
+}
+
+export { PaymentMethodDetailPanelComponent as PaymentMethodDetailPanel }

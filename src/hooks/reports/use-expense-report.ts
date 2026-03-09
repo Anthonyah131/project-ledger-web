@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { getDateRangeError } from "@/lib/date-utils"
 import type { ProjectExpenseReportResponse, ReportFormat } from "@/types/report"
 
 export interface ExpenseReportFilters {
@@ -28,6 +29,8 @@ export function useExpenseReport() {
     format: "json",
   })
 
+  const dateRangeError = getDateRangeError(filters.from, filters.to)
+
   const updateFilter = useCallback(
     <K extends keyof ExpenseReportFilters>(key: K, value: ExpenseReportFilters[K]) => {
       setFilters((prev) => ({ ...prev, [key]: value }))
@@ -37,6 +40,12 @@ export function useExpenseReport() {
 
   // Fetch JSON report
   const fetchReport = useCallback(async () => {
+    const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+    if (currentDateRangeError) {
+      toast.warning(currentDateRangeError)
+      return
+    }
+
     if (!filters.projectId) {
       toast.warning("Selecciona un proyecto para generar el reporte.")
       return
@@ -62,6 +71,12 @@ export function useExpenseReport() {
   // Export as Excel or PDF
   const exportReport = useCallback(
     async (format: "excel" | "pdf") => {
+      const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+      if (currentDateRangeError) {
+        toast.warning(currentDateRangeError)
+        return
+      }
+
       if (!filters.projectId) {
         toast.warning("Selecciona un proyecto para exportar.")
         return
@@ -92,6 +107,7 @@ export function useExpenseReport() {
     loading,
     exporting,
     filters,
+    dateRangeError,
     updateFilter,
     setFilters,
     fetchReport,

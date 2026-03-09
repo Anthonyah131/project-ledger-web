@@ -305,6 +305,8 @@ export interface PaymentMethodReportIncome {
   originalAmount: number;
   originalCurrency: string;
   convertedAmount: number;
+  accountAmount?: number | null;
+  accountCurrency?: string | null;
   projectCurrency: string;
   description?: string | null;
   currencyExchanges?: CurrencyExchangeResponse[] | null;

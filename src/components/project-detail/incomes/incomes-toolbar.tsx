@@ -22,7 +22,8 @@ interface IncomesToolbarProps {
   categories: CategoryResponse[]
   categoryId: string
   onCategoryChange: (id: string) => void
-  onCreate: () => void
+  onCreateManual: () => void
+  onCreateWithAi: () => void
 }
 
 export function IncomesToolbar({
@@ -35,7 +36,8 @@ export function IncomesToolbar({
   categories,
   categoryId,
   onCategoryChange,
-  onCreate,
+  onCreateManual,
+  onCreateWithAi,
 }: IncomesToolbarProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-border bg-card">
@@ -91,10 +93,15 @@ export function IncomesToolbar({
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={onCreate} size="sm">
-        <Plus className="size-3.5" />
-        Nuevo ingreso
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={onCreateManual} size="sm">
+          <Plus className="size-3.5" />
+          Nuevo ingreso
+        </Button>
+        <Button onClick={onCreateWithAi} size="sm" variant="secondary">
+          Con IA
+        </Button>
+      </div>
     </div>
   )
 }

@@ -4,7 +4,7 @@
 // Shared filter toolbar for report views: date range + format selector.
 
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
+import { DateInput } from "@/components/ui/date-input"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Loader2, FileText, FileSpreadsheet, Download } from "lucide-react"
+import { Loader2, FileText, FileSpreadsheet, Download, AlertCircle } from "lucide-react"
 
 interface ReportFiltersProps {
   from: string
@@ -25,6 +25,7 @@ interface ReportFiltersProps {
   onExport: (format: "excel" | "pdf") => void
   loading: boolean
   exporting: boolean
+  dateRangeError?: string | null
   /** Extra controls to render between dates and actions */
   children?: React.ReactNode
 }
@@ -38,9 +39,11 @@ export function ReportFilters({
   onExport,
   loading,
   exporting,
+  dateRangeError,
   children,
 }: ReportFiltersProps) {
   const [exportFormat, setExportFormat] = useState<"excel" | "pdf" | "">("")
+  const hasDateRangeError = Boolean(dateRangeError)
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border bg-card p-5">
@@ -50,12 +53,13 @@ export function ReportFilters({
           <Label htmlFor="report-from" className="text-xs text-muted-foreground">
             Desde
           </Label>
-          <Input
+          <DateInput
             id="report-from"
-            type="date"
             value={from}
             onChange={(e) => onFromChange(e.target.value)}
             className="w-40"
+            max={to || undefined}
+            aria-invalid={hasDateRangeError}
           />
         </div>
 
@@ -63,12 +67,13 @@ export function ReportFilters({
           <Label htmlFor="report-to" className="text-xs text-muted-foreground">
             Hasta
           </Label>
-          <Input
+          <DateInput
             id="report-to"
-            type="date"
             value={to}
             onChange={(e) => onToChange(e.target.value)}
             className="w-40"
+            min={from || undefined}
+            aria-invalid={hasDateRangeError}
           />
         </div>
 
@@ -76,7 +81,7 @@ export function ReportFilters({
 
         {/* Actions */}
         <div className="flex items-end gap-2 ml-auto">
-          <Button onClick={onGenerate} disabled={loading || exporting} size="sm">
+          <Button onClick={onGenerate} disabled={loading || exporting || hasDateRangeError} size="sm">
             {loading ? (
               <Loader2 className="size-3.5 animate-spin" />
             ) : (
@@ -89,7 +94,7 @@ export function ReportFilters({
             <Select
               value={exportFormat}
               onValueChange={(v) => setExportFormat(v as "excel" | "pdf")}
-              disabled={loading || exporting}
+              disabled={loading || exporting || hasDateRangeError}
             >
               <SelectTrigger size="sm" className="w-36" aria-label="Formato de exportación">
                 <SelectValue placeholder="Formato" />
@@ -109,7 +114,7 @@ export function ReportFilters({
             <Button
               size="sm"
               variant="secondary"
-              disabled={!exportFormat || loading || exporting}
+              disabled={!exportFormat || loading || exporting || hasDateRangeError}
               onClick={() => exportFormat && onExport(exportFormat)}
             >
               {exporting ? (
@@ -122,6 +127,17 @@ export function ReportFilters({
           </div>
         </div>
       </div>
+
+      {hasDateRangeError && (
+        <div className="flex items-center gap-1.5 text-xs text-destructive">
+          <AlertCircle className="size-3.5" />
+          <span>{dateRangeError}</span>
+        </div>
+      )}
+
+      <p className="text-xs text-muted-foreground">
+        Las exportaciones incluyen desglose de ingresos y balance neto para facilitar el análisis de flujo.
+      </p>
     </div>
   )
 }

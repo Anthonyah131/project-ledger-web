@@ -1,7 +1,11 @@
 // types/income.ts
 // Income model type definitions
 
-import type { CurrencyExchangeRequest, CurrencyExchangeResponse } from "@/types/expense";
+import type {
+  CurrencyExchangeRequest,
+  CurrencyExchangeResponse,
+  OcrExtractionQuotaResponse,
+} from "@/types/expense";
 
 export interface IncomeResponse {
   id: string;
@@ -14,6 +18,8 @@ export interface IncomeResponse {
   originalCurrency: string;
   exchangeRate: number;
   convertedAmount: number;
+  accountAmount: number;
+  accountCurrency: string;
   title: string;
   description: string | null;
   incomeDate: string;
@@ -44,6 +50,7 @@ export interface CreateIncomeRequest {
   originalCurrency: string;
   exchangeRate?: number;
   convertedAmount: number;
+  accountAmount?: number;
   title: string;
   description?: string | null;
   incomeDate: string;
@@ -59,6 +66,7 @@ export interface UpdateIncomeRequest {
   originalCurrency: string;
   exchangeRate?: number;
   convertedAmount: number;
+  accountAmount?: number;
   title: string;
   description?: string | null;
   incomeDate: string;
@@ -67,3 +75,34 @@ export interface UpdateIncomeRequest {
   /** null = no change, [] = remove all, list = replace all */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
+
+export type IncomeDocumentKind = "receipt" | "invoice";
+
+export interface IncomeExtractionDraft {
+  categoryId: string | null;
+  paymentMethodId: string | null;
+  title: string | null;
+  description: string | null;
+  originalAmount: number | null;
+  originalCurrency: string | null;
+  exchangeRate: number | null;
+  convertedAmount: number | null;
+  accountAmount: number | null;
+  accountCurrency: string | null;
+  incomeDate: string | null;
+  receiptNumber: string | null;
+  notes: string | null;
+  currencyExchanges: CurrencyExchangeRequest[] | null;
+  detectedMerchantName: string | null;
+  detectedPaymentMethodText: string | null;
+}
+
+export interface ExtractIncomeFromImageResponse {
+  provider: string;
+  documentKind: IncomeDocumentKind;
+  modelId: string;
+  draft: IncomeExtractionDraft;
+  warnings?: string[];
+}
+
+export type IncomeExtractionQuotaResponse = OcrExtractionQuotaResponse;

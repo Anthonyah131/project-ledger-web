@@ -4,7 +4,8 @@ import { memo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { getAccentColorRaw, STATUS_COLORS } from "@/lib/constants"
-import { formatAmount, formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
+import { formatAmount } from "@/lib/format-utils"
 import type { ObligationResponse } from "@/types/obligation"
 
 interface ObligationsListProps {

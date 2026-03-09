@@ -10,6 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { ExpenseFormFields } from "./expense-form-fields"
 import type { ExpenseResponse, UpdateExpenseRequest } from "@/types/expense"
@@ -48,9 +55,11 @@ export function EditExpenseModal({
     watchCurrency,
     watchAmount,
     watchExchangeRate,
+    watchConvertedAmount,
   } = useUpdateExpenseForm({ expense, onSave, onClose })
 
-  const selectedObligation = obligations.find((o) => o.id === expense?.obligationId)
+  const watchObligationId = useWatch({ control: form.control, name: "obligationId" })
+  const selectedObligation = obligations.find((o) => o.id === watchObligationId)
   const showEquivalentAmount = !!selectedObligation && selectedObligation.currency !== watchCurrency
   const watchEquivalentAmount = useWatch({
     control: form.control,
@@ -94,8 +103,37 @@ export function EditExpenseModal({
         watchCurrency={watchCurrency}
         watchAmount={watchAmount}
         watchExchangeRate={watchExchangeRate}
+        watchConvertedAmount={watchConvertedAmount}
         alternativeCurrencyCodes={alternativeCurrencyCodes}
       />
+
+      {obligations.length > 0 && (
+        <FormField
+          control={form.control}
+          name="obligationId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Obligacion (opcional)</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Ninguna" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="none">Ninguna</SelectItem>
+                  {obligations.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
 
       {showEquivalentAmount && (
         <FormField

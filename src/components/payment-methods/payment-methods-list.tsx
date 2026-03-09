@@ -1,10 +1,11 @@
 "use client"
 
 import { memo } from "react"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
-import { formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
@@ -15,6 +16,8 @@ interface PaymentMethodsListProps {
 }
 
 function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: PaymentMethodsListProps) {
+  const router = useRouter()
+
   return (
     <div role="list" aria-label="Métodos de pago">
       {/* Header */}
@@ -35,7 +38,9 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
             "group flex items-center px-5 py-3.5",
             "border-b border-border last:border-b-0",
             "hover:bg-accent/30 transition-colors duration-150",
+            "cursor-pointer",
           )}
+          onClick={() => router.push(`/payment-methods/${pm.id}`)}
         >
           {/* Accent dot */}
           <div className={cn("size-2 rounded-full shrink-0 mr-3.5", PAYMENT_METHOD_ACCENT[pm.type])} />
@@ -77,8 +82,11 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
           {/* Menu */}
           <ItemActionMenu
             ariaLabel="Acciones del método de pago"
+            onOpen={() => router.push(`/payment-methods/${pm.id}`)}
+            openLabel="Ver detalle"
             onEdit={() => onEdit(pm)}
             onDelete={() => onDelete(pm)}
+            stopPropagation
           />
         </div>
       ))}

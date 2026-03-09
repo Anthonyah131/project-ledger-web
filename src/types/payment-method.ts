@@ -72,6 +72,67 @@ export interface PaymentMethodExpensesResponse {
   hasNextPage: boolean;
 }
 
+export interface PaymentMethodIncomeItem {
+  id: string;
+  projectId: string;
+  projectName: string | null;
+  projectCurrency: string | null;
+  categoryId: string;
+  categoryName: string;
+  paymentMethodId: string;
+  createdByUserId: string;
+  originalAmount: number;
+  originalCurrency: string;
+  exchangeRate: number;
+  convertedAmount: number;
+  accountAmount: number | null;
+  accountCurrency: string | null;
+  title: string;
+  description: string | null;
+  incomeDate: string;
+  receiptNumber: string | null;
+  notes: string | null;
+  currencyExchanges: CurrencyExchangeResponse[];
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  deletedByUserId: string | null;
+}
+
+export interface PaymentMethodIncomesResponse {
+  items: PaymentMethodIncomeItem[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+export interface PaymentMethodProjectItem {
+  id: string;
+  name: string;
+  description: string | null;
+  currencyCode: string;
+  ownerUserId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentMethodProjectsResponse {
+  items: PaymentMethodProjectItem[];
+  totalCount: number;
+}
+
+export interface PaymentMethodSummaryResponse {
+  relatedExpensesCount: number;
+  relatedIncomesCount: number;
+  relatedProjectsCount: number;
+  totalExpenseAmount: number;
+  totalIncomeAmount: number;
+}
+
 // ─── DB model ──────────────────────────────────────────────────────────────────
 
 export interface PaymentMethod {

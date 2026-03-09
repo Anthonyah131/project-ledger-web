@@ -4,7 +4,7 @@
 //   - Automatic Authorization header injection
 //   - Development-only request/response logging (interceptor)
 //   - Automatic token refresh on 401
-//   - Typed helper methods (get, post, put, patch, delete)
+//   - Typed helper methods (get, post, postForm, put, patch, delete)
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -184,10 +184,12 @@ async function request<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+  const isFormDataBody = typeof FormData !== "undefined" && body instanceof FormData;
+
+  const headers: Record<string, string> = { ...options.headers };
+  if (!isFormDataBody) {
+    headers["Content-Type"] = headers["Content-Type"] ?? "application/json";
+  }
 
   const currentAccessToken = getAccessToken();
   if (!options.skipAuth && currentAccessToken) {
@@ -199,10 +201,16 @@ async function request<T>(
 
   let res: Response;
   try {
+    const requestBody = body === undefined
+      ? undefined
+      : isFormDataBody
+        ? body
+        : JSON.stringify(body);
+
     res = await fetch(url, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: requestBody,
       signal: options.signal,
     });
   } catch (error) {
@@ -218,10 +226,16 @@ async function request<T>(
       const newAccessToken = getAccessToken();
       headers["Authorization"] = `Bearer ${newAccessToken}`;
       try {
+        const retryBody = body === undefined
+          ? undefined
+          : isFormDataBody
+            ? body
+            : JSON.stringify(body);
+
         res = await fetch(url, {
           method,
           headers,
-          body: body ? JSON.stringify(body) : undefined,
+          body: retryBody,
           signal: options.signal,
         });
       } catch (error) {
@@ -260,6 +274,10 @@ export const api = {
   },
 
   post<T>(path: string, body?: unknown, options?: ApiRequestOptions) {
+    return request<T>("POST", path, body, options);
+  },
+
+  postForm<T>(path: string, body: FormData, options?: ApiRequestOptions) {
     return request<T>("POST", path, body, options);
   },
 

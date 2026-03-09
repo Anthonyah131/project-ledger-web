@@ -21,6 +21,8 @@ interface FormModalProps<T extends FieldValues> {
   form: UseFormReturn<T>
   onSubmit: (e?: React.BaseSyntheticEvent) => void
   submitLabel: string
+  submitDisabled?: boolean
+  submitHidden?: boolean
   /** Extra class names for DialogContent (e.g. scroll overflow). */
   contentClassName?: string
   children: ReactNode
@@ -34,6 +36,8 @@ export function FormModal<T extends FieldValues>({
   form,
   onSubmit,
   submitLabel,
+  submitDisabled = false,
+  submitHidden = false,
   contentClassName,
   children,
 }: FormModalProps<T>) {
@@ -51,7 +55,11 @@ export function FormModal<T extends FieldValues>({
               <Button type="button" variant="ghost" onClick={onClose}>
                 Cancelar
               </Button>
-              <Button type="submit">{submitLabel}</Button>
+              {!submitHidden && (
+                <Button type="submit" disabled={submitDisabled}>
+                  {submitLabel}
+                </Button>
+              )}
             </DialogFooter>
           </form>
         </Form>

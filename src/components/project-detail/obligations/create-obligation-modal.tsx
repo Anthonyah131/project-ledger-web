@@ -1,6 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
+import { DateInput } from "@/components/ui/date-input"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -106,7 +107,7 @@ export function CreateObligationModal({
           <FormItem>
             <FormLabel>Fecha de vencimiento</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DateInput {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

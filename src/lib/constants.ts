@@ -4,7 +4,7 @@
 // ─── Project accent colors (bg-* Tailwind classes) ─────────────────────────────
 // Used in: projects shelf-view, list-view, expenses-list
 
-export const ACCENT_COLORS = [
+const ACCENT_COLORS = [
   "bg-primary",
   "bg-[oklch(0.60_0.16_155)]",
   "bg-[oklch(0.58_0.16_30)]",
@@ -22,7 +22,7 @@ export function getAccentColor(index: number): string {
 // ─── Category / obligation accent colors (raw oklch values) ────────────────────
 // Used in: obligations-list, categories-list
 
-export const ACCENT_COLORS_RAW = [
+const ACCENT_COLORS_RAW = [
   "oklch(0.55 0.20 255)",
   "oklch(0.55 0.20 290)",
   "oklch(0.55 0.20 330)",

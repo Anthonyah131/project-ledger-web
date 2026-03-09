@@ -31,6 +31,8 @@ const sampleIncome: IncomeResponse = {
   originalCurrency: "USD",
   exchangeRate: 1,
   convertedAmount: 100,
+  accountAmount: 100,
+  accountCurrency: "USD",
   title: "Ingreso de prueba",
   description: null,
   incomeDate: "2026-03-07",

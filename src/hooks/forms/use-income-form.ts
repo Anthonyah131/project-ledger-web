@@ -16,11 +16,56 @@ import type {
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
+type CurrencyExchangeLike = {
+  currencyCode: string
+  exchangeRate: number
+  convertedAmount: number
+}
+
+function areCurrencyExchangesEqual(
+  left: CurrencyExchangeLike[],
+  right: CurrencyExchangeLike[]
+) {
+  if (left.length !== right.length) return false
+  return left.every((item, index) => {
+    const target = right[index]
+    if (!target) return false
+    return (
+      item.currencyCode === target.currencyCode &&
+      item.exchangeRate === target.exchangeRate &&
+      item.convertedAmount === target.convertedAmount
+    )
+  })
+}
+
+function normalizeCurrencyCode(value: string | null | undefined): string {
+  return value?.trim().toUpperCase() ?? ""
+}
+
+function parsePositiveAmount(value: string): number | undefined {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return undefined
+  return parsed
+}
+
+function requiresManualAccountAmount(params: {
+  accountCurrency: string
+  originalCurrency: string
+  projectCurrency: string
+}): boolean {
+  return (
+    params.accountCurrency.length > 0 &&
+    params.accountCurrency !== params.originalCurrency &&
+    params.accountCurrency !== params.projectCurrency
+  )
+}
+
 interface UseCreateIncomeFormOptions {
   onCreate: (data: CreateIncomeRequest) => void
   onClose: () => void
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
+  projectCurrency: string
 }
 
 export function useCreateIncomeForm({
@@ -28,6 +73,7 @@ export function useCreateIncomeForm({
   onClose,
   categories,
   paymentMethods,
+  projectCurrency,
 }: UseCreateIncomeFormOptions) {
   const defaultCategoryId =
     categories.find((c) => c.isDefault)?.id || categories[0]?.id || ""
@@ -38,7 +84,7 @@ export function useCreateIncomeForm({
     defaultValues: {
       title: "",
       originalAmount: "",
-      originalCurrency: paymentMethods[0]?.currency ?? "CRC",
+      originalCurrency: normalizeCurrencyCode(projectCurrency) || "CRC",
       incomeDate: "",
       categoryId: defaultCategoryId,
       paymentMethodId: defaultPaymentMethodId,
@@ -48,26 +94,75 @@ export function useCreateIncomeForm({
       notes: "",
       receiptNumber: "",
       currencyExchanges: [],
+      accountAmount: "",
     },
   })
 
   const watchCurrency = useWatch({ control: form.control, name: "originalCurrency" })
   const watchAmount = useWatch({ control: form.control, name: "originalAmount" })
   const watchExchangeRate = useWatch({ control: form.control, name: "exchangeRate" })
+  const watchConvertedAmount = useWatch({ control: form.control, name: "convertedAmount" })
 
   function onSubmit(values: CreateIncomeFormValues) {
+    const selectedPaymentMethod = paymentMethods.find(
+      (paymentMethod) => paymentMethod.id === values.paymentMethodId
+    )
+
+    if (!selectedPaymentMethod) {
+      form.setError("paymentMethodId", {
+        type: "manual",
+        message: "Método de pago es requerido",
+      })
+      return
+    }
+
+    const normalizedProjectCurrency = normalizeCurrencyCode(projectCurrency)
+    const normalizedOriginalCurrency = normalizeCurrencyCode(values.originalCurrency)
+    const accountCurrency = normalizeCurrencyCode(selectedPaymentMethod.currency)
+    const manualAccountAmountRequired = requiresManualAccountAmount({
+      accountCurrency,
+      originalCurrency: normalizedOriginalCurrency,
+      projectCurrency: normalizedProjectCurrency,
+    })
+    const parsedAccountAmount = parsePositiveAmount(values.accountAmount)
+
+    form.clearErrors("accountAmount")
+
+    if (values.accountAmount.trim().length > 0 && !parsedAccountAmount) {
+      form.setError("accountAmount", {
+        type: "manual",
+        message: "Account amount must be greater than 0.",
+      })
+      return
+    }
+
+    if (manualAccountAmountRequired && !parsedAccountAmount) {
+      form.setError("accountAmount", {
+        type: "manual",
+        message: "Account amount is required for selected account currency.",
+      })
+      return
+    }
+
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
+    const convertedAmount = Number(values.convertedAmount)
 
     const data: CreateIncomeRequest = {
       title: values.title,
       originalAmount: amount,
-      originalCurrency: values.originalCurrency,
+      originalCurrency: normalizedOriginalCurrency,
       incomeDate: values.incomeDate,
       categoryId: values.categoryId,
       paymentMethodId: values.paymentMethodId,
       exchangeRate: effectiveRate,
-      convertedAmount: parseFloat((amount * effectiveRate).toFixed(2)),
+      convertedAmount:
+        Number.isFinite(convertedAmount) && convertedAmount > 0
+          ? convertedAmount
+          : parseFloat((amount * effectiveRate).toFixed(2)),
+      accountAmount: manualAccountAmountRequired
+        ? parsedAccountAmount
+        : (parsedAccountAmount ?? undefined),
     }
 
     const currencyExchanges = values.currencyExchanges
@@ -106,6 +201,7 @@ export function useCreateIncomeForm({
     watchCurrency,
     watchAmount,
     watchExchangeRate,
+    watchConvertedAmount,
   }
 }
 
@@ -113,13 +209,22 @@ interface UseUpdateIncomeFormOptions {
   income: IncomeResponse | null
   onSave: (id: string, data: UpdateIncomeRequest) => void
   onClose: () => void
+  paymentMethods: PaymentMethodResponse[]
+  projectCurrency: string
 }
 
-export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncomeFormOptions) {
+export function useUpdateIncomeForm({
+  income,
+  onSave,
+  onClose,
+  paymentMethods,
+  projectCurrency,
+}: UseUpdateIncomeFormOptions) {
   const form = useForm<UpdateIncomeFormValues>({
     resolver: zodResolver(updateIncomeSchema),
     defaultValues: {
       currencyExchanges: [],
+      accountAmount: "",
     },
     values: income
       ? {
@@ -134,6 +239,7 @@ export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncome
           description: income.description ?? "",
           notes: income.notes ?? "",
           receiptNumber: income.receiptNumber ?? "",
+          accountAmount: income.accountAmount != null ? String(income.accountAmount) : "",
           currencyExchanges: (income.currencyExchanges ?? []).map((item) => ({
             currencyCode: item.currencyCode,
             exchangeRate: String(item.exchangeRate),
@@ -146,22 +252,73 @@ export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncome
   const watchCurrency = useWatch({ control: form.control, name: "originalCurrency" })
   const watchAmount = useWatch({ control: form.control, name: "originalAmount" })
   const watchExchangeRate = useWatch({ control: form.control, name: "exchangeRate" })
+  const watchConvertedAmount = useWatch({ control: form.control, name: "convertedAmount" })
 
   function onSubmit(values: UpdateIncomeFormValues) {
     if (!income) return
 
+    const selectedPaymentMethod = paymentMethods.find(
+      (paymentMethod) => paymentMethod.id === values.paymentMethodId
+    )
+
+    if (!selectedPaymentMethod) {
+      form.setError("paymentMethodId", {
+        type: "manual",
+        message: "Método de pago es requerido",
+      })
+      return
+    }
+
+    const normalizedProjectCurrency = normalizeCurrencyCode(projectCurrency)
+    const normalizedOriginalCurrency = normalizeCurrencyCode(values.originalCurrency)
+    const accountCurrency = normalizeCurrencyCode(selectedPaymentMethod.currency)
+    const manualAccountAmountRequired = requiresManualAccountAmount({
+      accountCurrency,
+      originalCurrency: normalizedOriginalCurrency,
+      projectCurrency: normalizedProjectCurrency,
+    })
+    const parsedAccountAmount = parsePositiveAmount(values.accountAmount)
+
+    form.clearErrors("accountAmount")
+
+    if (values.accountAmount.trim().length > 0 && !parsedAccountAmount) {
+      form.setError("accountAmount", {
+        type: "manual",
+        message: "Account amount must be greater than 0.",
+      })
+      return
+    }
+
+    if (manualAccountAmountRequired && !parsedAccountAmount) {
+      form.setError("accountAmount", {
+        type: "manual",
+        message: "Account amount is required for selected account currency.",
+      })
+      return
+    }
+
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
+    const convertedAmount = Number(values.convertedAmount)
 
     const data: UpdateIncomeRequest = {
       title: values.title,
       originalAmount: amount,
-      originalCurrency: values.originalCurrency,
+      originalCurrency: normalizedOriginalCurrency,
       incomeDate: values.incomeDate,
       categoryId: values.categoryId,
       paymentMethodId: values.paymentMethodId,
       exchangeRate: effectiveRate,
-      convertedAmount: parseFloat((amount * effectiveRate).toFixed(2)),
+      convertedAmount:
+        Number.isFinite(convertedAmount) && convertedAmount > 0
+          ? convertedAmount
+          : parseFloat((amount * effectiveRate).toFixed(2)),
+      accountAmount: manualAccountAmountRequired
+        ? parsedAccountAmount
+        : (parsedAccountAmount ?? undefined),
+      description: values.description.trim().length > 0 ? values.description : null,
+      notes: values.notes.trim().length > 0 ? values.notes : null,
+      receiptNumber: values.receiptNumber.trim().length > 0 ? values.receiptNumber : null,
     }
 
     const currencyExchanges = values.currencyExchanges
@@ -179,10 +336,17 @@ export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncome
           item.convertedAmount > 0
       )
 
-    if (values.description) data.description = values.description
-    if (values.notes) data.notes = values.notes
-    if (values.receiptNumber) data.receiptNumber = values.receiptNumber
-    data.currencyExchanges = currencyExchanges
+    const existingCurrencyExchanges = (income.currencyExchanges ?? []).map((item) => ({
+      currencyCode: item.currencyCode,
+      exchangeRate: item.exchangeRate,
+      convertedAmount: item.convertedAmount,
+    }))
+    data.currencyExchanges = areCurrencyExchangesEqual(
+      currencyExchanges,
+      existingCurrencyExchanges,
+    )
+      ? null
+      : currencyExchanges
 
     onSave(income.id, data)
     handleClose()
@@ -200,5 +364,6 @@ export function useUpdateIncomeForm({ income, onSave, onClose }: UseUpdateIncome
     watchCurrency,
     watchAmount,
     watchExchangeRate,
+    watchConvertedAmount,
   }
 }

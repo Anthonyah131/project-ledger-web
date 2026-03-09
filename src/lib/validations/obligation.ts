@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { isIsoDateString } from "@/lib/date-utils"
 
 // Helper: required positive numeric string
 const requiredPositiveNumeric = z
@@ -9,13 +10,18 @@ const requiredPositiveNumeric = z
     { message: "Debe ser mayor a 0" },
   )
 
+const optionalIsoDateString = z.string().refine(
+  (value) => value.length === 0 || isIsoDateString(value),
+  { message: "Fecha invalida" },
+)
+
 // ─── Create ───────────────────────────────────────────────────────────────────
 
 export const createObligationSchema = z.object({
   title: z.string().trim().min(1, "Título es requerido"),
   totalAmount: requiredPositiveNumeric,
   currency: z.string().min(1, "Moneda es requerida"),
-  dueDate: z.string(),
+  dueDate: optionalIsoDateString,
   description: z.string().trim(),
 })
 
@@ -26,7 +32,7 @@ export type CreateObligationFormValues = z.infer<typeof createObligationSchema>
 export const updateObligationSchema = z.object({
   title: z.string().trim().min(1, "Título es requerido"),
   totalAmount: requiredPositiveNumeric,
-  dueDate: z.string(),
+  dueDate: optionalIsoDateString,
   description: z.string().trim(),
 })
 

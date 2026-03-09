@@ -3,6 +3,9 @@
 import { api } from "@/lib/api-client";
 import type {
   CreateIncomeRequest,
+  ExtractIncomeFromImageResponse,
+  IncomeDocumentKind,
+  IncomeExtractionQuotaResponse,
   IncomeResponse,
   IncomesPageResponse,
   UpdateIncomeRequest,
@@ -49,4 +52,31 @@ export function updateIncome(projectId: string, incomeId: string, data: UpdateIn
 
 export function deleteIncome(projectId: string, incomeId: string) {
   return api.delete<void>(`/projects/${projectId}/incomes/${incomeId}`);
+}
+
+export interface ExtractIncomeFromImageRequest {
+  file: File;
+  documentKind?: IncomeDocumentKind;
+}
+
+export function extractIncomeFromImage(
+  projectId: string,
+  data: ExtractIncomeFromImageRequest
+) {
+  const formData = new FormData();
+  formData.append("file", data.file);
+  if (data.documentKind) {
+    formData.append("documentKind", data.documentKind);
+  }
+
+  return api.postForm<ExtractIncomeFromImageResponse>(
+    `/projects/${projectId}/incomes/extract-from-image`,
+    formData
+  );
+}
+
+export function getIncomeExtractionQuota(projectId: string) {
+  return api.get<IncomeExtractionQuotaResponse>(
+    `/projects/${projectId}/incomes/extract-from-image/quota`
+  );
 }

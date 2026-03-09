@@ -5,7 +5,8 @@ import { Pencil, PiggyBank, Target, Trash2, TrendingUp, TriangleAlert, Wallet } 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { formatAmount, formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
+import { formatAmount } from "@/lib/format-utils"
 import type { BudgetAlertLevel, ProjectBudgetResponse } from "@/types/project-budget"
 import { BudgetEmptyState } from "./budget-states"
 

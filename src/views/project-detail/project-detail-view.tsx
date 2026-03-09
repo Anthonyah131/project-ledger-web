@@ -4,8 +4,8 @@
 // Orchestrator for the project-detail page — header + resource tabs.
 
 import dynamic from "next/dynamic";
-import { useCallback, useMemo } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useMemo, useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 
 // ── Hook ─────────────────────────────────────────────
@@ -16,104 +16,34 @@ import { ProjectHeader } from "@/components/project-detail/project-header";
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal";
 
 // ── Expenses ─────────────────────────────────────────
-import { ExpensesToolbar } from "@/components/project-detail/expenses/expenses-toolbar";
-import { ExpensesList } from "@/components/project-detail/expenses/expenses-list";
-import {
-  ExpensesEmptyState,
-  ExpensesSkeleton,
-} from "@/components/project-detail/expenses/expense-states";
+import { ProjectDetailExpensesTab } from "@/views/project-detail/tabs/project-detail-expenses-tab";
 
 // ── Incomes ──────────────────────────────────────────
-import { IncomesToolbar } from "@/components/project-detail/incomes/incomes-toolbar";
-import { IncomesList } from "@/components/project-detail/incomes/incomes-list";
-import {
-  IncomesEmptyState,
-  IncomesSkeleton,
-} from "@/components/project-detail/incomes/income-states";
+import { ProjectDetailIncomesTab } from "@/views/project-detail/tabs/project-detail-incomes-tab";
 
-// ── Alternative currencies ─────────────────────────
-import { AlternativeCurrenciesPanel } from "@/components/project-detail/alternative-currencies/alternative-currencies-panel";
-
-// ── Categories ───────────────────────────────────────
-import { CategoriesToolbar } from "@/components/project-detail/categories/categories-toolbar";
-import { CategoriesList } from "@/components/project-detail/categories/categories-list";
-import {
-  CategoriesEmptyState,
-  CategoriesSkeleton,
-} from "@/components/project-detail/categories/category-states";
-
-// ── Obligations ──────────────────────────────────────
-import { ObligationsToolbar } from "@/components/project-detail/obligations/obligations-toolbar";
-import { ObligationsList } from "@/components/project-detail/obligations/obligations-list";
-import {
-  ObligationsEmptyState,
-  ObligationsSkeleton,
-} from "@/components/project-detail/obligations/obligation-states";
-
-// ── Budget ───────────────────────────────────────────
-import { BudgetPanel } from "@/components/project-detail/budget/budget-panel";
-import { BudgetSkeleton } from "@/components/project-detail/budget/budget-states";
-
-// ── Payment Methods (project-scoped) ─────────────────
-import {
-  LinkPaymentMethodModal,
-  ProjectPaymentMethodsList,
-} from "@/components/project-detail/payment-methods/project-payment-methods";
-import {
-  ProjectPaymentMethodsEmptyState,
-  ProjectPaymentMethodsSkeleton,
-} from "@/components/project-detail/payment-methods/project-payment-method-states";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-
-// ── Shared ───────────────────────────────────────────
-import { Pagination } from "@/components/shared/pagination";
+// ── Extracted tabs ───────────────────────────────────
+import { ProjectDetailObligationsTab } from "@/views/project-detail/tabs/project-detail-obligations-tab";
+import { ProjectDetailCategoriesTab } from "@/views/project-detail/tabs/project-detail-categories-tab";
+import { ProjectDetailBudgetTab } from "@/views/project-detail/tabs/project-detail-budget-tab";
+import { ProjectDetailPaymentMethodsTab } from "@/views/project-detail/tabs/project-detail-payment-methods-tab";
+import { ProjectDetailAlternativeCurrenciesTab } from "@/views/project-detail/tabs/project-detail-alternative-currencies-tab";
 
 import type { PaymentMethodResponse } from "@/types/payment-method";
-import type { ExpenseResponse } from "@/types/expense";
-import type { IncomeResponse } from "@/types/income";
-import type { CategoryResponse } from "@/types/category";
-import type { ObligationResponse } from "@/types/obligation";
-import type { ProjectBudgetResponse, SetProjectBudgetRequest } from "@/types/project-budget";
-import type { ProjectPaymentMethodResponse } from "@/types/project-payment-method";
 
 const EditProjectModal = dynamic(() =>
   import("@/components/projects/edit-project-modal").then((mod) => mod.EditProjectModal)
-);
-const CreateExpenseModal = dynamic(() =>
-  import("@/components/project-detail/expenses/create-expense-modal").then((mod) => mod.CreateExpenseModal)
-);
-const EditExpenseModal = dynamic(() =>
-  import("@/components/project-detail/expenses/edit-expense-modal").then((mod) => mod.EditExpenseModal)
-);
-const CreateIncomeModal = dynamic(() =>
-  import("@/components/project-detail/incomes/create-income-modal").then((mod) => mod.CreateIncomeModal)
-);
-const EditIncomeModal = dynamic(() =>
-  import("@/components/project-detail/incomes/edit-income-modal").then((mod) => mod.EditIncomeModal)
-);
-const CreateCategoryModal = dynamic(() =>
-  import("@/components/project-detail/categories/create-category-modal").then((mod) => mod.CreateCategoryModal)
-);
-const EditCategoryModal = dynamic(() =>
-  import("@/components/project-detail/categories/edit-category-modal").then((mod) => mod.EditCategoryModal)
-);
-const CreateObligationModal = dynamic(() =>
-  import("@/components/project-detail/obligations/create-obligation-modal").then((mod) => mod.CreateObligationModal)
-);
-const EditObligationModal = dynamic(() =>
-  import("@/components/project-detail/obligations/edit-obligation-modal").then((mod) => mod.EditObligationModal)
-);
-const SetProjectBudgetModal = dynamic(() =>
-  import("@/components/project-detail/budget/set-budget-modal").then((mod) => mod.SetProjectBudgetModal)
 );
 
 interface Props {
   projectId: string;
 }
 
+type CreateEntryMode = "manual" | "ai";
+
 export function ProjectDetailView({ projectId }: Props) {
   const router = useRouter();
+  const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
+  const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
   const {
     detail,
     editProjectOpen, deleteProjectOpen,
@@ -132,156 +62,11 @@ export function ProjectDetailView({ projectId }: Props) {
 
   const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget } = exp;
   const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget } = inc;
-  const { setCreateOpen: setObligationCreateOpen, setEditTarget: setObligationEditTarget, setDeleteTarget: setObligationDeleteTarget } = obl;
-  const { setCreateOpen: setCategoryCreateOpen, setEditTarget: setCategoryEditTarget, setDeleteTarget: setCategoryDeleteTarget } = cat;
-  const { setUpsertOpen: setBudgetUpsertOpen, setDeleteTarget: setBudgetDeleteTarget } = bud;
-  const { setLinkOpen, setUnlinkTarget } = ppm;
-
   const isOwner = detail.project?.userRole === "owner";
   const canManageBudget = detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canManageAlternativeCurrencies =
     detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canDeleteBudget = detail.project?.userRole === "owner";
-
-  const handleShareMembers = useCallback(() => {
-    router.push(`/projects/${projectId}/members`);
-  }, [router, projectId]);
-
-  const handleExpenseCreateOpen = useCallback(() => {
-    setExpenseCreateOpen(true);
-  }, [setExpenseCreateOpen]);
-
-  const handleExpenseCreateClose = useCallback(() => {
-    setExpenseCreateOpen(false);
-  }, [setExpenseCreateOpen]);
-
-  const handleExpenseEditSelect = useCallback((expense: ExpenseResponse) => {
-    setExpenseEditTarget(expense);
-  }, [setExpenseEditTarget]);
-
-  const handleExpenseEditClose = useCallback(() => {
-    setExpenseEditTarget(null);
-  }, [setExpenseEditTarget]);
-
-  const handleExpenseDeleteSelect = useCallback((expense: ExpenseResponse) => {
-    setExpenseDeleteTarget(expense);
-  }, [setExpenseDeleteTarget]);
-
-  const handleExpenseDeleteClose = useCallback(() => {
-    setExpenseDeleteTarget(null);
-  }, [setExpenseDeleteTarget]);
-
-  const handleIncomeCreateOpen = useCallback(() => {
-    setIncomeCreateOpen(true);
-  }, [setIncomeCreateOpen]);
-
-  const handleIncomeCreateClose = useCallback(() => {
-    setIncomeCreateOpen(false);
-  }, [setIncomeCreateOpen]);
-
-  const handleIncomeEditSelect = useCallback((income: IncomeResponse) => {
-    setIncomeEditTarget(income);
-  }, [setIncomeEditTarget]);
-
-  const handleIncomeEditClose = useCallback(() => {
-    setIncomeEditTarget(null);
-  }, [setIncomeEditTarget]);
-
-  const handleIncomeDeleteSelect = useCallback((income: IncomeResponse) => {
-    setIncomeDeleteTarget(income);
-  }, [setIncomeDeleteTarget]);
-
-  const handleIncomeDeleteClose = useCallback(() => {
-    setIncomeDeleteTarget(null);
-  }, [setIncomeDeleteTarget]);
-
-  const handleObligationCreateOpen = useCallback(() => {
-    setObligationCreateOpen(true);
-  }, [setObligationCreateOpen]);
-
-  const handleObligationCreateClose = useCallback(() => {
-    setObligationCreateOpen(false);
-  }, [setObligationCreateOpen]);
-
-  const handleObligationEditSelect = useCallback((obligation: ObligationResponse) => {
-    setObligationEditTarget(obligation);
-  }, [setObligationEditTarget]);
-
-  const handleObligationEditClose = useCallback(() => {
-    setObligationEditTarget(null);
-  }, [setObligationEditTarget]);
-
-  const handleObligationDeleteSelect = useCallback((obligation: ObligationResponse) => {
-    setObligationDeleteTarget(obligation);
-  }, [setObligationDeleteTarget]);
-
-  const handleObligationDeleteClose = useCallback(() => {
-    setObligationDeleteTarget(null);
-  }, [setObligationDeleteTarget]);
-
-  const handleCategoryCreateOpen = useCallback(() => {
-    setCategoryCreateOpen(true);
-  }, [setCategoryCreateOpen]);
-
-  const handleCategoryCreateClose = useCallback(() => {
-    setCategoryCreateOpen(false);
-  }, [setCategoryCreateOpen]);
-
-  const handleCategoryEditSelect = useCallback((category: CategoryResponse) => {
-    setCategoryEditTarget(category);
-  }, [setCategoryEditTarget]);
-
-  const handleCategoryEditClose = useCallback(() => {
-    setCategoryEditTarget(null);
-  }, [setCategoryEditTarget]);
-
-  const handleCategoryDeleteSelect = useCallback((category: CategoryResponse) => {
-    setCategoryDeleteTarget(category);
-  }, [setCategoryDeleteTarget]);
-
-  const handleCategoryDeleteClose = useCallback(() => {
-    setCategoryDeleteTarget(null);
-  }, [setCategoryDeleteTarget]);
-
-  const handleBudgetUpsertOpen = useCallback(() => {
-    setBudgetUpsertOpen(true);
-  }, [setBudgetUpsertOpen]);
-
-  const handleBudgetUpsertClose = useCallback(() => {
-    setBudgetUpsertOpen(false);
-  }, [setBudgetUpsertOpen]);
-
-  const handleBudgetDeleteSelect = useCallback((budget: ProjectBudgetResponse) => {
-    setBudgetDeleteTarget(budget);
-  }, [setBudgetDeleteTarget]);
-
-  const handleBudgetDeleteClose = useCallback(() => {
-    setBudgetDeleteTarget(null);
-  }, [setBudgetDeleteTarget]);
-
-  const handleBudgetSave = useCallback((data: SetProjectBudgetRequest) => {
-    mutateBudgetSet(data);
-  }, [mutateBudgetSet]);
-
-  const handleLinkDialogClose = useCallback(() => {
-    setLinkOpen(false);
-  }, [setLinkOpen]);
-
-  const handleUnlinkSelect = useCallback((paymentMethod: ProjectPaymentMethodResponse) => {
-    setUnlinkTarget(paymentMethod);
-  }, [setUnlinkTarget]);
-
-  const handleUnlinkClose = useCallback(() => {
-    setUnlinkTarget(null);
-  }, [setUnlinkTarget]);
-
-  const handleProjectEditClose = useCallback(() => {
-    setEditProjectOpen(false);
-  }, [setEditProjectOpen]);
-
-  const handleProjectDeleteClose = useCallback(() => {
-    setDeleteProjectOpen(false);
-  }, [setDeleteProjectOpen]);
 
   // Convert linked project payment methods to PaymentMethodResponse shape
   // so existing expense form components can consume them without changes.
@@ -316,7 +101,7 @@ export function ProjectDetailView({ projectId }: Props) {
         onDelete={mutateProjectDeleteOpen}
         onShare={
           isOwner
-            ? handleShareMembers
+            ? () => router.push(`/projects/${projectId}/members`)
             : undefined
         }
       />
@@ -333,363 +118,126 @@ export function ProjectDetailView({ projectId }: Props) {
           <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
         </TabsList>
 
-        {/* ───── Expenses tab ───── */}
-        <TabsContent value="expenses" className="flex flex-col gap-4">
-          <ExpensesToolbar
-            query={exp.query}
-            onQueryChange={exp.setQuery}
-            sort={exp.sort}
-            onSortChange={exp.handleSortChange}
-            pageSize={exp.pageSize}
-            onPageSizeChange={exp.handlePageSizeChange}
-            categories={cat.categories}
-            categoryId={exp.selectedCategoryId}
-            onCategoryChange={exp.setSelectedCategoryId}
-            onCreate={handleExpenseCreateOpen}
-          />
+        <ProjectDetailExpensesTab
+          projectId={projectId}
+          exp={exp}
+          categories={cat.categories}
+          paymentMethods={paymentMethods}
+          obligations={obl.obligations}
+          projectCurrency={detail.project?.currencyCode ?? ""}
+          alternativeCurrencyCodes={alternativeCurrencyCodes}
+          createMode={expenseCreateMode}
+          onCreateManual={() => {
+            setExpenseCreateMode("manual")
+            setExpenseCreateOpen(true)
+          }}
+          onCreateWithAi={() => {
+            setExpenseCreateMode("ai")
+            setExpenseCreateOpen(true)
+          }}
+          onCreateClose={() => {
+            setExpenseCreateOpen(false)
+            setExpenseCreateMode("manual")
+          }}
+          onEditSelect={setExpenseEditTarget}
+          onEditClose={() => setExpenseEditTarget(null)}
+          onDeleteSelect={setExpenseDeleteTarget}
+          onDeleteClose={() => setExpenseDeleteTarget(null)}
+          onCreate={mutateExpenseCreate}
+          onSave={mutateExpenseUpdate}
+          onDelete={mutateExpenseDelete}
+        />
 
-          {exp.loading ? (
-            <ExpensesSkeleton />
-          ) : exp.expenses.length === 0 ? (
-            <ExpensesEmptyState
-              hasSearch={exp.hasSearch}
-              onCreate={handleExpenseCreateOpen}
-            />
-          ) : (
-            <>
-              <ExpensesList
-                expenses={exp.expenses}
-                projectCurrency={detail.project?.currencyCode ?? ""}
-                paymentMethods={paymentMethods}
-                onEdit={handleExpenseEditSelect}
-                onDelete={handleExpenseDeleteSelect}
-              />
-              {!exp.hasSearch && (
-                <Pagination
-                  page={exp.page}
-                  pageSize={exp.pageSize}
-                  total={exp.total}
-                  onPageChange={exp.setPage}
-                />
-              )}
-            </>
-          )}
+        <ProjectDetailIncomesTab
+          projectId={projectId}
+          inc={inc}
+          categories={cat.categories}
+          paymentMethods={paymentMethods}
+          availableCurrencies={pac.allCurrencies}
+          projectCurrency={detail.project?.currencyCode ?? ""}
+          alternativeCurrencyCodes={alternativeCurrencyCodes}
+          createMode={incomeCreateMode}
+          onCreateManual={() => {
+            setIncomeCreateMode("manual")
+            setIncomeCreateOpen(true)
+          }}
+          onCreateWithAi={() => {
+            setIncomeCreateMode("ai")
+            setIncomeCreateOpen(true)
+          }}
+          onCreateClose={() => {
+            setIncomeCreateOpen(false)
+            setIncomeCreateMode("manual")
+          }}
+          onEditSelect={setIncomeEditTarget}
+          onEditClose={() => setIncomeEditTarget(null)}
+          onDeleteSelect={setIncomeDeleteTarget}
+          onDeleteClose={() => setIncomeDeleteTarget(null)}
+          onCreate={mutateIncomeCreate}
+          onSave={mutateIncomeUpdate}
+          onDelete={mutateIncomeDelete}
+        />
 
-          {exp.createOpen && (
-            <CreateExpenseModal
-              open={exp.createOpen}
-              onClose={handleExpenseCreateClose}
-              onCreate={mutateExpenseCreate}
-              categories={cat.categories}
-              paymentMethods={paymentMethods}
-              obligations={obl.obligations}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              alternativeCurrencyCodes={alternativeCurrencyCodes}
-            />
-          )}
-          {!!exp.editTarget && (
-            <EditExpenseModal
-              expense={exp.editTarget}
-              open={!!exp.editTarget}
-              onClose={handleExpenseEditClose}
-              onSave={mutateExpenseUpdate}
-              categories={cat.categories}
-              paymentMethods={paymentMethods}
-              obligations={obl.obligations}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              alternativeCurrencyCodes={alternativeCurrencyCodes}
-            />
-          )}
-          <DeleteEntityModal
-            item={exp.deleteTarget}
-            open={!!exp.deleteTarget}
-            onClose={handleExpenseDeleteClose}
-            onConfirm={mutateExpenseDelete}
-            title="Eliminar gasto"
-            description="Esta accion no se puede deshacer."
-            getMessage={(e) => `¿Eliminar gasto "${e.title}"?`}
-          />
-        </TabsContent>
+        <ProjectDetailAlternativeCurrenciesTab
+          projectCurrency={detail.project?.currencyCode ?? ""}
+          currencies={pac.currencies}
+          allCurrencies={pac.allCurrencies}
+          loading={pac.loading}
+          catalogLoading={pac.catalogLoading}
+          canManage={!!canManageAlternativeCurrencies}
+          onAdd={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
+          onDelete={mutateAlternativeCurrencyDelete}
+        />
 
-        {/* ───── Incomes tab ───── */}
-        <TabsContent value="incomes" className="flex flex-col gap-4">
-          <IncomesToolbar
-            query={inc.query}
-            onQueryChange={inc.setQuery}
-            sort={inc.sort}
-            onSortChange={inc.handleSortChange}
-            pageSize={inc.pageSize}
-            onPageSizeChange={inc.handlePageSizeChange}
-            categories={cat.categories}
-            categoryId={inc.selectedCategoryId}
-            onCategoryChange={inc.setSelectedCategoryId}
-            onCreate={handleIncomeCreateOpen}
-          />
+        <ProjectDetailObligationsTab
+          obl={obl}
+          onCreateOpen={() => obl.setCreateOpen(true)}
+          onCreateClose={() => obl.setCreateOpen(false)}
+          onEditSelect={obl.setEditTarget}
+          onEditClose={() => obl.setEditTarget(null)}
+          onDeleteSelect={obl.setDeleteTarget}
+          onDeleteClose={() => obl.setDeleteTarget(null)}
+          onCreate={mutateObligationCreate}
+          onSave={mutateObligationUpdate}
+          onDelete={mutateObligationDelete}
+        />
 
-          {inc.loading ? (
-            <IncomesSkeleton />
-          ) : inc.incomes.length === 0 ? (
-            <IncomesEmptyState hasSearch={inc.hasSearch} onCreate={handleIncomeCreateOpen} />
-          ) : (
-            <>
-              <IncomesList
-                incomes={inc.incomes}
-                projectCurrency={detail.project?.currencyCode ?? ""}
-                paymentMethods={paymentMethods}
-                onEdit={handleIncomeEditSelect}
-                onDelete={handleIncomeDeleteSelect}
-              />
-              {!inc.hasSearch && (
-                <Pagination
-                  page={inc.page}
-                  pageSize={inc.pageSize}
-                  total={inc.total}
-                  onPageChange={inc.setPage}
-                />
-              )}
-            </>
-          )}
+        <ProjectDetailCategoriesTab
+          cat={cat}
+          onCreateOpen={() => cat.setCreateOpen(true)}
+          onCreateClose={() => cat.setCreateOpen(false)}
+          onEditSelect={cat.setEditTarget}
+          onEditClose={() => cat.setEditTarget(null)}
+          onDeleteSelect={cat.setDeleteTarget}
+          onDeleteClose={() => cat.setDeleteTarget(null)}
+          onCreate={mutateCategoryCreate}
+          onSave={mutateCategoryUpdate}
+          onDelete={mutateCategoryDelete}
+        />
 
-          {inc.createOpen && (
-            <CreateIncomeModal
-              open={inc.createOpen}
-              onClose={handleIncomeCreateClose}
-              onCreate={mutateIncomeCreate}
-              categories={cat.categories}
-              paymentMethods={paymentMethods}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              alternativeCurrencyCodes={alternativeCurrencyCodes}
-            />
-          )}
-          {!!inc.editTarget && (
-            <EditIncomeModal
-              income={inc.editTarget}
-              open={!!inc.editTarget}
-              onClose={handleIncomeEditClose}
-              onSave={mutateIncomeUpdate}
-              categories={cat.categories}
-              paymentMethods={paymentMethods}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              alternativeCurrencyCodes={alternativeCurrencyCodes}
-            />
-          )}
-          <DeleteEntityModal
-            item={inc.deleteTarget}
-            open={!!inc.deleteTarget}
-            onClose={handleIncomeDeleteClose}
-            onConfirm={mutateIncomeDelete}
-            title="Eliminar ingreso"
-            description="Esta accion no se puede deshacer."
-            getMessage={(income) => `¿Eliminar ingreso "${income.title}"?`}
-          />
-        </TabsContent>
+        <ProjectDetailBudgetTab
+          bud={bud}
+          projectCurrency={detail.project?.currencyCode ?? ""}
+          canManage={!!canManageBudget}
+          canDelete={!!canDeleteBudget}
+          onUpsertOpen={() => bud.setUpsertOpen(true)}
+          onUpsertClose={() => bud.setUpsertOpen(false)}
+          onDeleteSelect={bud.setDeleteTarget}
+          onDeleteClose={() => bud.setDeleteTarget(null)}
+          onSave={mutateBudgetSet}
+          onDelete={mutateBudgetDelete}
+        />
 
-        {/* ───── Alternative currencies tab ───── */}
-        <TabsContent value="alternative-currencies" className="flex flex-col gap-4">
-          <AlternativeCurrenciesPanel
-            projectCurrency={detail.project?.currencyCode ?? ""}
-            currencies={pac.currencies}
-            allCurrencies={pac.allCurrencies}
-            loading={pac.loading}
-            catalogLoading={pac.catalogLoading}
-            canManage={!!canManageAlternativeCurrencies}
-            onAdd={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
-            onDelete={mutateAlternativeCurrencyDelete}
-          />
-        </TabsContent>
-
-        {/* ───── Obligations tab ───── */}
-        <TabsContent value="obligations" className="flex flex-col gap-4">
-          <ObligationsToolbar
-            sort={obl.sort}
-            onSortChange={obl.handleSortChange}
-            statusFilter={obl.statusFilter}
-            onStatusFilterChange={obl.handleStatusFilterChange}
-            pageSize={obl.pageSize}
-            onPageSizeChange={obl.handlePageSizeChange}
-            onCreate={handleObligationCreateOpen}
-          />
-
-          {obl.loading ? (
-            <ObligationsSkeleton />
-          ) : obl.obligations.length === 0 ? (
-            <ObligationsEmptyState
-              hasFilter={obl.hasFilter}
-              onCreate={handleObligationCreateOpen}
-            />
-          ) : (
-            <>
-              <ObligationsList
-                obligations={obl.obligations}
-                onEdit={handleObligationEditSelect}
-                onDelete={handleObligationDeleteSelect}
-              />
-              {!obl.hasFilter && (
-                <Pagination
-                  page={obl.page}
-                  pageSize={obl.pageSize}
-                  total={obl.total}
-                  onPageChange={obl.setPage}
-                />
-              )}
-            </>
-          )}
-
-          {obl.createOpen && (
-            <CreateObligationModal
-              open={obl.createOpen}
-              onClose={handleObligationCreateClose}
-              onCreate={mutateObligationCreate}
-            />
-          )}
-          {!!obl.editTarget && (
-            <EditObligationModal
-              obligation={obl.editTarget}
-              open={!!obl.editTarget}
-              onClose={handleObligationEditClose}
-              onSave={mutateObligationUpdate}
-            />
-          )}
-          <DeleteEntityModal
-            item={obl.deleteTarget}
-            open={!!obl.deleteTarget}
-            onClose={handleObligationDeleteClose}
-            onConfirm={mutateObligationDelete}
-            title="Eliminar obligacion"
-            description="Esta accion no se puede deshacer."
-            getMessage={(o) => `¿Eliminar obligación "${o.title}"?`}
-          />
-        </TabsContent>
-
-        {/* ───── Categories tab ───── */}
-        <TabsContent value="categories" className="flex flex-col gap-4">
-          <CategoriesToolbar
-            query={cat.query}
-            onQueryChange={cat.setQuery}
-            onCreate={handleCategoryCreateOpen}
-          />
-
-          {cat.loading ? (
-            <CategoriesSkeleton />
-          ) : cat.categories.length === 0 ? (
-            <CategoriesEmptyState
-              hasSearch={cat.hasSearch}
-              onCreate={handleCategoryCreateOpen}
-            />
-          ) : (
-            <CategoriesList
-              categories={cat.categories}
-              onEdit={handleCategoryEditSelect}
-              onDelete={handleCategoryDeleteSelect}
-            />
-          )}
-
-          {cat.createOpen && (
-            <CreateCategoryModal
-              open={cat.createOpen}
-              onClose={handleCategoryCreateClose}
-              onCreate={mutateCategoryCreate}
-            />
-          )}
-          {!!cat.editTarget && (
-            <EditCategoryModal
-              category={cat.editTarget}
-              open={!!cat.editTarget}
-              onClose={handleCategoryEditClose}
-              onSave={mutateCategoryUpdate}
-            />
-          )}
-          <DeleteEntityModal
-            item={cat.deleteTarget}
-            open={!!cat.deleteTarget}
-            onClose={handleCategoryDeleteClose}
-            onConfirm={mutateCategoryDelete}
-            title="Eliminar categoria"
-            description="Esta accion no se puede deshacer."
-            getMessage={(c) => `¿Eliminar categoría "${c.name}"? Los gastos de esta categoría se moverán a la categoría General.`}
-          />
-        </TabsContent>
-
-        {/* ───── Budget tab ───── */}
-        <TabsContent value="budget" className="flex flex-col gap-4">
-          {bud.loading ? (
-            <BudgetSkeleton />
-          ) : (
-            <BudgetPanel
-              budget={bud.budget}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              canManage={!!canManageBudget}
-              canDelete={!!canDeleteBudget}
-              onSet={handleBudgetUpsertOpen}
-              onDelete={handleBudgetDeleteSelect}
-            />
-          )}
-
-          {bud.upsertOpen && (
-            <SetProjectBudgetModal
-              open={bud.upsertOpen}
-              budget={bud.budget}
-              projectCurrency={detail.project?.currencyCode ?? ""}
-              onClose={handleBudgetUpsertClose}
-              onSave={handleBudgetSave}
-            />
-          )}
-
-          <DeleteEntityModal
-            item={bud.deleteTarget}
-            open={!!bud.deleteTarget}
-            onClose={handleBudgetDeleteClose}
-            onConfirm={mutateBudgetDelete}
-            title="Eliminar presupuesto"
-            description="El proyecto quedará sin un límite general de gastos."
-            getMessage={() => "¿Eliminar el presupuesto configurado para este proyecto?"}
-          />
-        </TabsContent>
-
-        {/* ───── Payment Methods tab ───── */}
-        <TabsContent value="payment-methods" className="flex flex-col gap-4">
-          {isOwner && (
-            <div className="flex justify-end px-5 py-3 border-b border-border bg-card">
-              <Button onClick={ppm.openLinkDialog} size="sm">
-                <Plus className="size-3.5" />
-                Vincular método
-              </Button>
-            </div>
-          )}
-
-          {ppm.loading ? (
-            <ProjectPaymentMethodsSkeleton />
-          ) : ppm.linkedMethods.length === 0 ? (
-            <ProjectPaymentMethodsEmptyState
-              isOwner={!!isOwner}
-              onLink={ppm.openLinkDialog}
-            />
-          ) : (
-            <ProjectPaymentMethodsList
-              methods={ppm.linkedMethods}
-              isOwner={!!isOwner}
-              onUnlink={handleUnlinkSelect}
-            />
-          )}
-
-          <LinkPaymentMethodModal
-            open={ppm.linkOpen}
-            onClose={handleLinkDialogClose}
-            availableMethods={ppm.availableMethods}
-            linkedMethods={ppm.linkedMethods}
-            loading={ppm.availableLoading}
-            onLink={ppm.handleLink}
-          />
-          <DeleteEntityModal
-            item={ppm.unlinkTarget}
-            open={!!ppm.unlinkTarget}
-            onClose={handleUnlinkClose}
-            onConfirm={ppm.handleUnlink}
-            title="Desvincular método de pago"
-            description="El método ya no podrá usarse para crear gastos en este proyecto."
-            getMessage={(pm) => `¿Desvincular "${pm.paymentMethodName}" del proyecto?`}
-          />
-        </TabsContent>
+        <ProjectDetailPaymentMethodsTab
+          ppm={ppm}
+          isOwner={!!isOwner}
+          onLinkOpen={ppm.openLinkDialog}
+          onLinkClose={() => ppm.setLinkOpen(false)}
+          onUnlinkSelect={ppm.setUnlinkTarget}
+          onUnlinkClose={() => ppm.setUnlinkTarget(null)}
+          onLink={ppm.handleLink}
+          onUnlink={ppm.handleUnlink}
+        />
       </Tabs>
 
       {/* ─── Project-level modals ─── */}
@@ -699,14 +247,14 @@ export function ProjectDetailView({ projectId }: Props) {
             <EditProjectModal
               project={detail.project}
               open={editProjectOpen}
-              onClose={handleProjectEditClose}
+              onClose={() => setEditProjectOpen(false)}
               onSave={mutateProjectUpdate}
             />
           )}
           <DeleteEntityModal
             item={detail.project}
             open={deleteProjectOpen}
-            onClose={handleProjectDeleteClose}
+            onClose={() => setDeleteProjectOpen(false)}
             onConfirm={mutateProjectDelete}
             title="Eliminar proyecto"
             description="Esta accion puede desactivarlo, no eliminarlo definitivamente."

@@ -112,6 +112,7 @@ export interface CreateExpenseRequest {
 export interface UpdateExpenseRequest {
   categoryId: string;
   paymentMethodId: string;
+  obligationId?: string | null;
   obligationEquivalentAmount?: number | null;
   originalAmount: number;
   originalCurrency: string;
@@ -122,6 +123,7 @@ export interface UpdateExpenseRequest {
   expenseDate: string;           // "YYYY-MM-DD"
   receiptNumber?: string | null;
   notes?: string | null;
+  isTemplate?: boolean;
   /** null = no change, [] = remove all, list = replace all */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
@@ -132,6 +134,84 @@ export interface CreateExpenseFromTemplateRequest {
   expenseDate?: string;          // "YYYY-MM-DD"
   obligationId?: string | null;
   notes?: string | null;
+}
+
+export type ExpenseDocumentKind = "receipt" | "invoice";
+
+export interface ExpenseExtractionDraft {
+  categoryId: string | null;
+  paymentMethodId: string | null;
+  obligationId: string | null;
+  obligationEquivalentAmount: number | null;
+  title: string | null;
+  description: string | null;
+  originalAmount: number | null;
+  originalCurrency: string | null;
+  exchangeRate: number | null;
+  convertedAmount: number | null;
+  expenseDate: string | null;
+  receiptNumber: string | null;
+  notes: string | null;
+  isTemplate: boolean;
+  currencyExchanges: CurrencyExchangeRequest[] | null;
+  detectedMerchantName: string | null;
+  detectedPaymentMethodText: string | null;
+}
+
+export interface ExpenseExtractionCategorySuggestion {
+  categoryId: string;
+  name: string;
+  confidence: number;
+  reason: string | null;
+}
+
+export interface ExpenseExtractionPaymentMethodSuggestion {
+  paymentMethodId: string;
+  name: string;
+  type: string;
+  confidence: number;
+  reason: string | null;
+}
+
+export interface ExpenseExtractionAvailableCategory {
+  categoryId: string;
+  name: string;
+  isDefault: boolean;
+}
+
+export interface ExpenseExtractionAvailablePaymentMethod {
+  paymentMethodId: string;
+  name: string;
+  type: string;
+  currency: string;
+  bankName: string | null;
+  accountNumber: string | null;
+}
+
+export interface ExtractExpenseFromImageResponse {
+  provider: string;
+  documentKind: ExpenseDocumentKind;
+  modelId: string;
+  draft: ExpenseExtractionDraft;
+  suggestedCategory: ExpenseExtractionCategorySuggestion | null;
+  suggestedPaymentMethod: ExpenseExtractionPaymentMethodSuggestion | null;
+  availableCategories: ExpenseExtractionAvailableCategory[];
+  availablePaymentMethods: ExpenseExtractionAvailablePaymentMethod[];
+  warnings: string[];
+}
+
+export interface OcrExtractionQuotaResponse {
+  projectOwnerUserId: string;
+  planName: string;
+  planSlug: string;
+  canUseOcr: boolean;
+  usedThisMonth: number;
+  monthlyLimit: number | null;
+  remainingThisMonth: number | null;
+  isUnlimited: boolean;
+  isAvailable: boolean;
+  periodStartUtc: string;
+  periodEndUtc: string;
 }
 
 export interface CurrencyExchangeRequest {

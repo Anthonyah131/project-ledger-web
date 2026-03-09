@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { isDateAfterToday, isIsoDateString } from "@/lib/date-utils"
 
 // Helper: required positive numeric string
 const requiredPositiveNumeric = z
@@ -17,6 +18,16 @@ const optionalNumericString = z
     { message: "Debe ser un número positivo" },
   )
 
+const requiredDateNotFuture = z
+  .string()
+  .min(1, "Fecha es requerida")
+  .refine((value) => isIsoDateString(value), {
+    message: "Fecha invalida",
+  })
+  .refine((value) => !isDateAfterToday(value), {
+    message: "La fecha no puede ser mayor a hoy",
+  })
+
 const currencyExchangeSchema = z.object({
   currencyCode: z.string().trim().min(1, "Moneda es requerida"),
   exchangeRate: requiredPositiveNumeric,
@@ -29,11 +40,13 @@ export const createExpenseSchema = z.object({
   title: z.string().trim().min(1, "Título es requerido"),
   originalAmount: requiredPositiveNumeric,
   originalCurrency: z.string().min(1, "Moneda es requerida"),
-  expenseDate: z.string().min(1, "Fecha es requerida"),
+  expenseDate: requiredDateNotFuture,
   categoryId: z.string().min(1, "Categoría es requerida"),
   paymentMethodId: z.string().min(1, "Método de pago es requerido"),
   exchangeRate: requiredPositiveNumeric,
+  convertedAmount: optionalNumericString,
   description: z.string().trim(),
+  receiptNumber: z.string().trim(),
   notes: z.string().trim(),
   obligationId: z.string(),
   obligationEquivalentAmount: optionalNumericString,
@@ -48,12 +61,16 @@ export const updateExpenseSchema = z.object({
   title: z.string().trim().min(1, "Título es requerido"),
   originalAmount: requiredPositiveNumeric,
   originalCurrency: z.string().min(1, "Moneda es requerida"),
-  expenseDate: z.string().min(1, "Fecha es requerida"),
+  expenseDate: requiredDateNotFuture,
   categoryId: z.string().min(1, "Categoría es requerida"),
   paymentMethodId: z.string().min(1, "Método de pago es requerido"),
+  obligationId: z.string(),
   exchangeRate: requiredPositiveNumeric,
+  convertedAmount: optionalNumericString,
   description: z.string().trim(),
+  receiptNumber: z.string().trim(),
   notes: z.string().trim(),
+  isTemplate: z.boolean().optional(),
   obligationEquivalentAmount: optionalNumericString,
   currencyExchanges: z.array(currencyExchangeSchema),
 })

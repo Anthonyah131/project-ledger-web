@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { getDateRangeError } from "@/lib/date-utils"
 import type { PaymentMethodReportResponse, ReportFormat } from "@/types/report"
 
 export interface PaymentMethodReportFilters {
@@ -28,6 +29,8 @@ export function usePaymentMethodReport() {
     format: "json",
   })
 
+  const dateRangeError = getDateRangeError(filters.from, filters.to)
+
   const updateFilter = useCallback(
     <K extends keyof PaymentMethodReportFilters>(key: K, value: PaymentMethodReportFilters[K]) => {
       setFilters((prev) => ({ ...prev, [key]: value }))
@@ -37,6 +40,12 @@ export function usePaymentMethodReport() {
 
   // Fetch JSON report
   const fetchReport = useCallback(async () => {
+    const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+    if (currentDateRangeError) {
+      toast.warning(currentDateRangeError)
+      return
+    }
+
     setLoading(true)
     setReport(null)
 
@@ -58,6 +67,12 @@ export function usePaymentMethodReport() {
   // Export as Excel or PDF
   const exportReport = useCallback(
     async (format: "excel" | "pdf") => {
+      const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+      if (currentDateRangeError) {
+        toast.warning(currentDateRangeError)
+        return
+      }
+
       setExporting(true)
 
       try {
@@ -84,6 +99,7 @@ export function usePaymentMethodReport() {
     loading,
     exporting,
     filters,
+    dateRangeError,
     updateFilter,
     setFilters,
     fetchReport,

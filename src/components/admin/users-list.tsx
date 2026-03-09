@@ -4,7 +4,7 @@ import { memo } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { formatDate } from "@/lib/format-utils"
+import { formatDate } from "@/lib/date-utils"
 import {
   DropdownMenu,
   DropdownMenuContent,

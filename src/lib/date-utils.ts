@@ -1,0 +1,97 @@
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
+export interface FormatDateOptions {
+  withYear?: boolean
+  fixTimezone?: boolean
+  fallback?: string
+}
+
+/** Returns today's date in local time as YYYY-MM-DD. */
+export function getTodayIsoDate(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+/** Parses an ISO date-only string (YYYY-MM-DD) as local midnight. */
+function parseIsoDate(value: string): Date | null {
+  if (!ISO_DATE_REGEX.test(value)) return null
+
+  const [yearStr, monthStr, dayStr] = value.split("-")
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return null
+  }
+
+  const parsed = new Date(year, month - 1, day)
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return null
+  }
+
+  return parsed
+}
+
+/**
+ * Format an ISO date string using the Spanish locale.
+ * Pass `withYear: true` for the long variant (e.g. "25 ene 2025"),
+ * or omit / set `false` for the short variant (e.g. "25 ene").
+ *
+ * `fixTimezone` parses YYYY-MM-DD as local midnight to avoid
+ * off-by-one-day shifts caused by native UTC date parsing.
+ */
+export function formatDate(
+  iso: string | null,
+  opts: FormatDateOptions = {},
+): string {
+  if (!iso) return opts.fallback ?? ""
+
+  const { withYear = true, fixTimezone = false, fallback = "" } = opts
+  const parsedDate = fixTimezone ? parseIsoDate(iso) : new Date(iso)
+  if (!parsedDate || Number.isNaN(parsedDate.getTime())) return fallback
+
+  try {
+    return parsedDate.toLocaleDateString("es", {
+      day: "numeric",
+      month: "short",
+      ...(withYear ? { year: "numeric" } : {}),
+    })
+  } catch {
+    return fallback
+  }
+}
+
+export function isIsoDateString(value: string): boolean {
+  return parseIsoDate(value) !== null
+}
+
+/** Validates that a date range has chronological order when both are present. */
+function isValidDateRange(from: string, to: string): boolean {
+  if (!from || !to) return true
+
+  const fromDate = parseIsoDate(from)
+  const toDate = parseIsoDate(to)
+  if (!fromDate || !toDate) return false
+
+  return fromDate.getTime() <= toDate.getTime()
+}
+
+export function getDateRangeError(from: string, to: string): string | null {
+  if (!from || !to) return null
+  if (!isValidDateRange(from, to)) {
+    return "La fecha 'Desde' no puede ser mayor que 'Hasta'."
+  }
+  return null
+}
+
+export function isDateAfterToday(value: string): boolean {
+  if (!isIsoDateString(value)) return false
+  return value > getTodayIsoDate()
+}

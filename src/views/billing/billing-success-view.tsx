@@ -16,9 +16,13 @@ import type { BillingSubscriptionResponse } from "@/types/subscription";
 const POLLING_EVERY_MS = 3_000;
 const POLLING_TIMEOUT_MS = 60_000;
 
-type PollState = "polling" | "success" | "timeout" | "error";
+type PollState = "polling" | "success" | "timeout" | "error" | "disabled";
 
 function getBillingErrorMessage(err: unknown): string {
+  if (billingService.isStripeDisabledError(err)) {
+    return "La facturación con Stripe está deshabilitada por configuración.";
+  }
+
   if (err instanceof ApiClientError) {
     if (err.status === 401) return "Tu sesión expiró. Inicia sesión nuevamente.";
     if (err.status === 403) return "No tienes permisos para consultar esta suscripción.";
@@ -79,6 +83,14 @@ export function BillingSuccessView() {
           return "pending";
         }
 
+        if (billingService.isStripeDisabledError(err)) {
+          if (!cancelled) {
+            setError(getBillingErrorMessage(err));
+            setPollState("disabled");
+          }
+          return "error";
+        }
+
         if (!cancelled) {
           setError(getBillingErrorMessage(err));
           setPollState("error");
@@ -133,7 +145,7 @@ export function BillingSuccessView() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
-            Pago confirmado
+            {pollState === "disabled" ? "Facturación no disponible" : "Pago confirmado"}
           </CardTitle>
         </CardHeader>
 
@@ -185,6 +197,15 @@ export function BillingSuccessView() {
               <AlertDescription>{error ?? "Error desconocido."}</AlertDescription>
             </Alert>
           )}
+
+          {pollState === "disabled" && (
+            <Alert>
+              <AlertTitle>Stripe deshabilitado</AlertTitle>
+              <AlertDescription>
+                {error ?? "La facturación con Stripe está deshabilitada por configuración."}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
 
         <CardFooter className="flex flex-wrap gap-2">
@@ -195,7 +216,7 @@ export function BillingSuccessView() {
             </Button>
           )}
 
-          {(pollState === "success" || pollState === "timeout" || pollState === "error") && (
+          {(pollState === "success" || pollState === "timeout" || pollState === "error" || pollState === "disabled") && (
             <Button asChild variant="outline">
               <Link href="/billing">Ver facturación</Link>
             </Button>
