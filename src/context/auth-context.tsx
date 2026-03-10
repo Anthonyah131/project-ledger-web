@@ -43,6 +43,8 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<User>;
   /** Register and persist session */
   register: (email: string, password: string, fullName: string) => Promise<User>;
+  /** Re-fetches the authenticated user profile and refreshes context */
+  refreshUser: () => Promise<void>;
   /** Log out (revoke current device) */
   logout: () => Promise<void>;
   /** Log out from all devices */
@@ -145,6 +147,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persistSession],
   );
 
+  const refreshUser = useCallback(async () => {
+    const profile = await userService.getUserProfile();
+    setUser(profile as unknown as User);
+  }, []);
+
   const logout = useCallback(async () => {
     const refresh = getRefreshToken();
     try {
@@ -180,10 +187,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       login,
       register,
+      refreshUser,
       logout,
       logoutAll,
     }),
-    [user, isLoading, isActionLoading, login, register, logout, logoutAll],
+    [user, isLoading, isActionLoading, login, register, refreshUser, logout, logoutAll],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

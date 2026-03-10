@@ -69,7 +69,7 @@ export function Pricing() {
       return;
     }
 
-    router.push("/billing");
+    router.push(`/settings/billing?checkoutPlanId=${encodeURIComponent(plan.id)}`);
   };
 
   return (

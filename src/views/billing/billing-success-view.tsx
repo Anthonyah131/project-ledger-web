@@ -218,7 +218,7 @@ export function BillingSuccessView() {
 
           {(pollState === "success" || pollState === "timeout" || pollState === "error" || pollState === "disabled") && (
             <Button asChild variant="outline">
-              <Link href="/billing">Ver facturación</Link>
+              <Link href="/settings/billing">Ver facturación</Link>
             </Button>
           )}
 

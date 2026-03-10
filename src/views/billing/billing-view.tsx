@@ -48,6 +48,7 @@ export function BillingView() {
   const [subscription, setSubscription] = useState<BillingSubscriptionResponse | null>(null);
   const [subscriptionMissing, setSubscriptionMissing] = useState(false);
   const [stripeDisabled, setStripeDisabled] = useState(false);
+  const [stripeDisabledReason, setStripeDisabledReason] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [autoCheckoutDone, setAutoCheckoutDone] = useState(false);
@@ -61,17 +62,36 @@ export function BillingView() {
     setLoading(true);
     setError(null);
     setStripeDisabled(false);
+    setStripeDisabledReason(null);
 
     try {
       const plansPromise = planService.getPlans();
+      const billingStatusPromise = billingService
+        .getBillingStatus()
+        .then((value) => ({ ok: true as const, value }))
+        .catch((reason: unknown) => ({ ok: false as const, reason }));
       const subscriptionPromise = billingService
         .getMySubscription()
         .then((value) => ({ ok: true as const, value }))
         .catch((reason: unknown) => ({ ok: false as const, reason }));
 
-      const [plansData, subscriptionResult] = await Promise.all([plansPromise, subscriptionPromise]);
+      const [plansData, billingStatusResult, subscriptionResult] = await Promise.all([
+        plansPromise,
+        billingStatusPromise,
+        subscriptionPromise,
+      ]);
 
       setPlans([...plansData].sort((a, b) => a.displayOrder - b.displayOrder));
+
+      if (billingStatusResult.ok) {
+        setStripeDisabled(!billingStatusResult.value.stripeEnabled);
+        setStripeDisabledReason(billingStatusResult.value.reason);
+      } else if (billingService.isStripeDisabledError(billingStatusResult.reason)) {
+        setStripeDisabled(true);
+        setStripeDisabledReason("Stripe billing is disabled by configuration.");
+      } else {
+        throw billingStatusResult.reason;
+      }
 
       if (subscriptionResult.ok) {
         setSubscription(subscriptionResult.value);
@@ -80,9 +100,8 @@ export function BillingView() {
         setSubscription(null);
         setSubscriptionMissing(true);
       } else if (billingService.isStripeDisabledError(subscriptionResult.reason)) {
-        setSubscription(null);
-        setSubscriptionMissing(false);
         setStripeDisabled(true);
+        setStripeDisabledReason("Stripe billing is disabled by configuration.");
       } else {
         throw subscriptionResult.reason;
       }
@@ -129,6 +148,7 @@ export function BillingView() {
     } catch (err) {
       if (billingService.isStripeDisabledError(err)) {
         setStripeDisabled(true);
+        setStripeDisabledReason("Stripe billing is disabled by configuration.");
         setError(null);
       } else {
         setError(getBillingErrorMessage(err));
@@ -154,6 +174,7 @@ export function BillingView() {
     } catch (err) {
       if (billingService.isStripeDisabledError(err)) {
         setStripeDisabled(true);
+        setStripeDisabledReason("Stripe billing is disabled by configuration.");
         setError(null);
       } else {
         setError(getBillingErrorMessage(err));
@@ -178,6 +199,7 @@ export function BillingView() {
     } catch (err) {
       if (billingService.isStripeDisabledError(err)) {
         setStripeDisabled(true);
+        setStripeDisabledReason("Stripe billing is disabled by configuration.");
         setError(null);
       } else {
         setError(getBillingErrorMessage(err));
@@ -254,7 +276,7 @@ export function BillingView() {
         <Alert>
           <AlertTitle>Facturación no disponible</AlertTitle>
           <AlertDescription>
-            Stripe está deshabilitado por configuración del entorno. Las acciones de suscripción y checkout no están disponibles.
+            {stripeDisabledReason ?? "Stripe está deshabilitado por configuración del entorno. Las acciones de suscripción y checkout no están disponibles."}
           </AlertDescription>
         </Alert>
       )}

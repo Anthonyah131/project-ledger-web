@@ -33,7 +33,7 @@ export function BillingCancelView() {
 
         <CardFooter className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link href="/billing">Volver a facturación</Link>
+            <Link href="/settings/billing">Volver a facturación</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/dashboard">Ir al dashboard</Link>

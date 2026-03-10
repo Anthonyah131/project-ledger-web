@@ -5,32 +5,132 @@
 // 1) Project expense report (per project)
 // 2) Payment method report (user-level)
 
-import { useCallback } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { useReportsCatalogs } from "@/hooks/reports/use-reports-catalogs"
 import { useExpenseReport } from "@/hooks/reports/use-expense-report"
 import { usePaymentMethodReport } from "@/hooks/reports/use-payment-method-report"
+import { isIsoDateString } from "@/lib/date-utils"
 
 import { ReportsExpensesTab } from "@/views/reports/tabs/reports-expenses-tab"
 import { ReportsPaymentMethodsTab } from "@/views/reports/tabs/reports-payment-methods-tab"
 
 export function ReportsView() {
-  const { projects, paymentMethods } = useReportsCatalogs()
+  const searchParams = useSearchParams()
+  const { projects, paymentMethods, loading: catalogsLoading } = useReportsCatalogs()
 
   // ── Hooks ──────────────────────────────────────────────────────────────
-  const expReport = useExpenseReport()
-  const pmReport = usePaymentMethodReport()
+  const {
+    report: expenseReport,
+    loading: expenseLoading,
+    exporting: expenseExporting,
+    filters: expenseFilters,
+    dateRangeError: expenseDateRangeError,
+    updateFilter: updateExpenseFilter,
+    setFilters: setExpenseFilters,
+    fetchReport: fetchExpenseReport,
+    exportReport: exportExpenseReport,
+  } = useExpenseReport()
+
+  const {
+    report: paymentMethodReport,
+    loading: paymentMethodLoading,
+    exporting: paymentMethodExporting,
+    filters: paymentMethodFilters,
+    dateRangeError: paymentMethodDateRangeError,
+    updateFilter: updatePaymentMethodFilter,
+    fetchReport: fetchPaymentMethodReport,
+    exportReport: exportPaymentMethodReport,
+  } = usePaymentMethodReport()
+
+  const prefillAppliedRef = useRef(false)
+  const autoGeneratePendingRef = useRef(false)
+
+  const initialTab = useMemo(
+    () => (searchParams.get("tab") === "payment-methods" ? "payment-methods" : "expenses"),
+    [searchParams],
+  )
+
+  const expensePrefill = useMemo(() => {
+    const fromRaw = (searchParams.get("from") ?? "").trim()
+    const toRaw = (searchParams.get("to") ?? "").trim()
+    const projectIdRaw = (searchParams.get("projectId") ?? "").trim()
+    const projectIdsRaw = (searchParams.get("projectIds") ?? "").trim()
+    const autoGenerateRaw = (searchParams.get("autogenerate") ?? "").trim().toLowerCase()
+
+    const projectIds = Array.from(
+      new Set(
+        projectIdsRaw
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      ),
+    )
+
+    return {
+      from: isIsoDateString(fromRaw) ? fromRaw : "",
+      to: isIsoDateString(toRaw) ? toRaw : "",
+      projectId: projectIdRaw,
+      projectIds,
+      autoGenerate: autoGenerateRaw === "1" || autoGenerateRaw === "true",
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (prefillAppliedRef.current) return
+    if (catalogsLoading) return
+
+    const hasAnyPrefill = Boolean(
+      expensePrefill.from ||
+      expensePrefill.to ||
+      expensePrefill.projectId ||
+      expensePrefill.projectIds.length,
+    )
+
+    if (!hasAnyPrefill) {
+      prefillAppliedRef.current = true
+      return
+    }
+
+    const validProjectIds = new Set(projects.map((project) => project.id))
+    let resolvedProjectId = ""
+
+    if (expensePrefill.projectId && validProjectIds.has(expensePrefill.projectId)) {
+      resolvedProjectId = expensePrefill.projectId
+    } else if (expensePrefill.projectIds.length > 0) {
+      resolvedProjectId = expensePrefill.projectIds.find((id) => validProjectIds.has(id)) ?? ""
+    }
+
+    setExpenseFilters((prev) => ({
+      ...prev,
+      from: expensePrefill.from,
+      to: expensePrefill.to,
+      projectId: resolvedProjectId,
+    }))
+
+    autoGeneratePendingRef.current = expensePrefill.autoGenerate && Boolean(resolvedProjectId)
+    prefillAppliedRef.current = true
+  }, [catalogsLoading, expensePrefill, projects, setExpenseFilters])
+
+  useEffect(() => {
+    if (!autoGeneratePendingRef.current) return
+    if (!expenseFilters.projectId || expenseDateRangeError || expenseLoading) return
+
+    autoGeneratePendingRef.current = false
+    void fetchExpenseReport()
+  }, [expenseDateRangeError, expenseFilters.projectId, expenseLoading, fetchExpenseReport])
 
   // ── Handlers ───────────────────────────────────────────────────────────
   const handleProjectChange = useCallback(
-    (value: string) => expReport.updateFilter("projectId", value),
-    [expReport],
+    (value: string) => updateExpenseFilter("projectId", value),
+    [updateExpenseFilter],
   )
 
   const handlePaymentMethodFilterChange = useCallback(
-    (value: string) => pmReport.updateFilter("paymentMethodId", value === "all" ? "" : value),
-    [pmReport],
+    (value: string) => updatePaymentMethodFilter("paymentMethodId", value === "all" ? "" : value),
+    [updatePaymentMethodFilter],
   )
 
   return (
@@ -45,7 +145,7 @@ export function ReportsView() {
         </p>
       </div>
 
-      <Tabs defaultValue="expenses">
+      <Tabs defaultValue={initialTab}>
         <TabsList variant="line">
           <TabsTrigger value="expenses">Gastos por proyecto</TabsTrigger>
           <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
@@ -53,34 +153,34 @@ export function ReportsView() {
 
         <ReportsExpensesTab
           projects={projects}
-          from={expReport.filters.from}
-          to={expReport.filters.to}
-          projectId={expReport.filters.projectId}
-          dateRangeError={expReport.dateRangeError}
-          loading={expReport.loading}
-          exporting={expReport.exporting}
-          report={expReport.report}
-          onFromChange={(value) => expReport.updateFilter("from", value)}
-          onToChange={(value) => expReport.updateFilter("to", value)}
+          from={expenseFilters.from}
+          to={expenseFilters.to}
+          projectId={expenseFilters.projectId}
+          dateRangeError={expenseDateRangeError}
+          loading={expenseLoading}
+          exporting={expenseExporting}
+          report={expenseReport}
+          onFromChange={(value) => updateExpenseFilter("from", value)}
+          onToChange={(value) => updateExpenseFilter("to", value)}
           onProjectChange={handleProjectChange}
-          onGenerate={expReport.fetchReport}
-          onExport={expReport.exportReport}
+          onGenerate={fetchExpenseReport}
+          onExport={exportExpenseReport}
         />
 
         <ReportsPaymentMethodsTab
           paymentMethods={paymentMethods}
-          from={pmReport.filters.from}
-          to={pmReport.filters.to}
-          paymentMethodId={pmReport.filters.paymentMethodId}
-          dateRangeError={pmReport.dateRangeError}
-          loading={pmReport.loading}
-          exporting={pmReport.exporting}
-          report={pmReport.report}
-          onFromChange={(value) => pmReport.updateFilter("from", value)}
-          onToChange={(value) => pmReport.updateFilter("to", value)}
+          from={paymentMethodFilters.from}
+          to={paymentMethodFilters.to}
+          paymentMethodId={paymentMethodFilters.paymentMethodId}
+          dateRangeError={paymentMethodDateRangeError}
+          loading={paymentMethodLoading}
+          exporting={paymentMethodExporting}
+          report={paymentMethodReport}
+          onFromChange={(value) => updatePaymentMethodFilter("from", value)}
+          onToChange={(value) => updatePaymentMethodFilter("to", value)}
           onPaymentMethodChange={handlePaymentMethodFilterChange}
-          onGenerate={pmReport.fetchReport}
-          onExport={pmReport.exportReport}
+          onGenerate={fetchPaymentMethodReport}
+          onExport={exportPaymentMethodReport}
         />
       </Tabs>
     </div>

@@ -106,3 +106,21 @@ export const changePasswordSchema = z
   })
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>
+
+// ─── Update Profile (Settings) ───────────────────────────────────────────────
+
+export const updateProfileSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(1, "Nombre es requerido")
+    .max(255, "El nombre no puede exceder 255 caracteres"),
+  avatarUrl: z
+    .string()
+    .trim()
+    .refine((value) => value.length === 0 || /^https?:\/\//i.test(value), {
+      message: "Ingresa una URL válida (http o https)",
+    }),
+})
+
+export type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>

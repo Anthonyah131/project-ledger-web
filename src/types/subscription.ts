@@ -11,6 +11,18 @@ export type BillingSubscriptionStatus =
   | "unpaid"
   | (string & {});
 
+/** Returned by GET /api/billing/status */
+export interface BillingStatusResponse {
+  stripeEnabled: boolean;
+  reason: string | null;
+}
+
+/** Standardized response when Stripe is disabled (HTTP 503). */
+export interface StripeDisabledErrorResponse {
+  code: "STRIPE_DISABLED";
+  message: string;
+}
+
 /** Returned by GET /api/billing/subscription/me */
 export interface BillingSubscriptionResponse {
   userId: string | null;

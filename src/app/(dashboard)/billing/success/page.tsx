@@ -1,5 +1,5 @@
-import { BillingSuccessView } from "@/views/billing/billing-success-view";
+import { redirect } from "next/navigation";
 
 export default function BillingSuccessPage() {
-  return <BillingSuccessView />;
+  redirect("/settings/billing/success");
 }

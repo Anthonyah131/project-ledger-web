@@ -1,5 +1,5 @@
-import { BillingView } from "@/views/billing/billing-view";
+import { redirect } from "next/navigation";
 
 export default function BillingPage() {
-  return <BillingView />;
+  redirect("/settings/billing");
 }

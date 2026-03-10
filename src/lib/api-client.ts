@@ -91,6 +91,10 @@ function logError(method: string, url: string, error: unknown) {
   console.groupEnd();
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
 // ─── Refresh lock ──────────────────────────────────────────────────────────────
 // Prevents multiple concurrent refresh requests
 let refreshPromise: Promise<boolean> | null = null;
@@ -214,6 +218,10 @@ async function request<T>(
       signal: options.signal,
     });
   } catch (error) {
+    if (isAbortError(error)) {
+      throw error;
+    }
+
     logError(method, url, error);
     throw getNetworkError();
   }
@@ -239,6 +247,10 @@ async function request<T>(
           signal: options.signal,
         });
       } catch (error) {
+        if (isAbortError(error)) {
+          throw error;
+        }
+
         logError(method, url, error);
         throw getNetworkError();
       }

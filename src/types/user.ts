@@ -49,7 +49,7 @@ export interface UserProfileResponse {
 /** PUT /api/users/profile */
 export interface UpdateProfileRequest {
   fullName: string;        // 1–255 characters
-  avatarUrl?: string;      // optional, must be a valid URL
+  avatarUrl?: string | null; // optional; null clears avatar
 }
 
 /** PUT /api/users/password */

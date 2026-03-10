@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -20,9 +21,12 @@ type ForgotPasswordStep = "request" | "verify" | "reset"
 
 export function useForgotPassword() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const emailFromQuery = (searchParams.get("email") ?? "").trim()
+  const initialEmail = emailFromQuery.includes("@") ? emailFromQuery : ""
   
   const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("request")
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState(initialEmail)
   const [otpCode, setOtpCode] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
@@ -31,7 +35,7 @@ export function useForgotPassword() {
   // Step 1: Request OTP
   const requestForm = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: "" },
+    defaultValues: { email: initialEmail },
   })
 
   // Step 2: Verify OTP

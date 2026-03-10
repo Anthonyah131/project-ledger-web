@@ -1,5 +1,5 @@
-import { BillingCancelView } from "@/views/billing/billing-cancel-view";
+import { redirect } from "next/navigation";
 
 export default function BillingCancelPage() {
-  return <BillingCancelView />;
+  redirect("/settings/billing/cancel");
 }

@@ -1,8 +1,10 @@
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+const MONTH_KEY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/
 
 export interface FormatDateOptions {
   withYear?: boolean
   fixTimezone?: boolean
+  dayStyle?: "numeric" | "2-digit"
   fallback?: string
 }
 
@@ -39,6 +41,26 @@ function parseIsoDate(value: string): Date | null {
   return parsed
 }
 
+/** Parses a month key (YYYY-MM) as UTC first day of month. */
+function parseMonthKey(value: string): Date | null {
+  if (!MONTH_KEY_REGEX.test(value)) return null
+
+  const [yearStr, monthStr] = value.split("-")
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  if (!Number.isInteger(year) || !Number.isInteger(month)) return null
+
+  const parsed = new Date(Date.UTC(year, month - 1, 1))
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1
+  ) {
+    return null
+  }
+
+  return parsed
+}
+
 /**
  * Format an ISO date string using the Spanish locale.
  * Pass `withYear: true` for the long variant (e.g. "25 ene 2025"),
@@ -53,18 +75,40 @@ export function formatDate(
 ): string {
   if (!iso) return opts.fallback ?? ""
 
-  const { withYear = true, fixTimezone = false, fallback = "" } = opts
+  const { withYear = true, fixTimezone = false, dayStyle = "numeric", fallback = "" } = opts
   const parsedDate = fixTimezone ? parseIsoDate(iso) : new Date(iso)
   if (!parsedDate || Number.isNaN(parsedDate.getTime())) return fallback
 
   try {
     return parsedDate.toLocaleDateString("es", {
-      day: "numeric",
+      day: dayStyle,
       month: "short",
       ...(withYear ? { year: "numeric" } : {}),
     })
   } catch {
     return fallback
+  }
+}
+
+export function isMonthKeyString(value: string): boolean {
+  return parseMonthKey(value) !== null
+}
+
+/** Formats YYYY-MM as "Mes YYYY" in Spanish locale. */
+export function formatMonthKey(value: string, fallback = ""): string {
+  const parsedDate = parseMonthKey(value)
+  if (!parsedDate) return fallback || value
+
+  try {
+    const label = parsedDate.toLocaleDateString("es", {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+
+    return label.charAt(0).toUpperCase() + label.slice(1)
+  } catch {
+    return fallback || value
   }
 }
 

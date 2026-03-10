@@ -3,12 +3,29 @@
 
 import { ApiClientError, api } from "@/lib/api-client";
 import type {
+  BillingStatusResponse,
   BillingSubscriptionResponse,
   CancelSubscriptionRequest,
   ChangePlanRequest,
   CreateCheckoutSessionRequest,
   CreateCheckoutSessionResponse,
+  StripeDisabledErrorResponse,
 } from "@/types/subscription";
+
+function isStripeDisabledPayload(data: unknown): data is StripeDisabledErrorResponse {
+  if (!data || typeof data !== "object") return false;
+
+  const value = data as { code?: unknown };
+  return value.code === "STRIPE_DISABLED";
+}
+
+/**
+ * GET /api/billing/status
+ * Returns billing feature status for current environment.
+ */
+export function getBillingStatus() {
+  return api.get<BillingStatusResponse>("/billing/status");
+}
 
 /**
  * GET /api/billing/subscription/me
@@ -56,5 +73,6 @@ export function syncStripePlans() {
  * Treat it as a feature-toggle state instead of a transient failure.
  */
 export function isStripeDisabledError(err: unknown): err is ApiClientError {
-  return err instanceof ApiClientError && err.status === 503;
+  if (!(err instanceof ApiClientError)) return false;
+  return err.status === 503 && isStripeDisabledPayload(err.data);
 }
