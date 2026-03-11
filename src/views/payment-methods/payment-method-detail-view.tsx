@@ -62,6 +62,8 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     if (deleted) {
       router.push("/payment-methods")
     }
+
+    return deleted
   }
 
   return (

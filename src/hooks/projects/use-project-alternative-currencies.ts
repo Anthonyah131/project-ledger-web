@@ -70,8 +70,10 @@ export function useProjectAlternativeCurrencies(projectId: string) {
         toast.success("Moneda alternativa eliminada", {
           description: `${currency.currencyCode} fue removida del proyecto.`,
         })
+        return true
       } catch (err) {
         toastApiError(err, "Error al eliminar moneda alternativa")
+        return false
       }
     },
     [projectId]

@@ -52,6 +52,7 @@ const chartConfig = {
 interface DashboardMonthlyTrendChartProps {
   trendByDay: DashboardTrendDay[]
   currencyCode: string
+  scopeLabel: string
   onOpenDayDetail?: (day: DashboardTrendDay) => void
 }
 
@@ -78,6 +79,7 @@ function formatTooltipAmount(value: number, currencyCode: string, isMobile: bool
 export function DashboardMonthlyTrendChart({
   trendByDay,
   currencyCode,
+  scopeLabel,
   onOpenDayDetail,
 }: DashboardMonthlyTrendChartProps) {
   const isMobile = useIsMobile()
@@ -184,7 +186,7 @@ export function DashboardMonthlyTrendChart({
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle>Tendencia diaria del mes</CardTitle>
         <CardDescription>
-          Gastos, ingresos y balance neto en una sola vista para comparar comportamiento diario.
+          Gastos, ingresos y balance neto de {scopeLabel.toLowerCase()} para comparar el comportamiento diario.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
@@ -195,7 +197,7 @@ export function DashboardMonthlyTrendChart({
         ) : (
           <ChartContainer
             config={resolvedChartConfig}
-            className="h-68 w-full min-w-0 xl:h-76 2xl:h-80"
+            className="h-72 w-full min-w-0 xl:h-80 2xl:h-96"
           >
             <AreaChart
               data={chartData}

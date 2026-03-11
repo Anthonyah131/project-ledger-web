@@ -1,11 +1,8 @@
 import {
   IconArrowDownRight,
   IconArrowUpRight,
-  IconChartBar,
   IconCoins,
-  IconFolder,
   IconReceipt,
-  IconShieldDollar,
 } from "@tabler/icons-react"
 import type { Icon } from "@tabler/icons-react"
 
@@ -79,52 +76,20 @@ export function DashboardMonthlySummaryCards({
       footerIcon: comparison.netDelta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: summary.netBalance >= 0 ? "positive" : "warning",
     },
-    {
-      label: "Proyectos activos",
-      value: String(summary.activeProjects),
-      footer:
-        summary.activeProjects > 0
-          ? "Con actividad en el mes seleccionado"
-          : "Sin actividad para este mes",
-      icon: IconFolder,
-      footerIcon: IconFolder,
-      tone: "neutral",
-    },
-    {
-      label: "Obligaciones pendientes",
-      value: String(summary.pendingObligationsCount),
-      footer: `Monto pendiente: ${formatCurrency(summary.pendingObligationsAmount, currencyCode)}`,
-      icon: IconShieldDollar,
-      footerIcon: IconShieldDollar,
-      tone: summary.pendingObligationsCount === 0 ? "positive" : "warning",
-    },
-    {
-      label: "Presupuesto utilizado",
-      value: `${summary.budgetUsedPercentage.toFixed(2)}%`,
-      footer: "Porcentaje global consumido este mes",
-      icon: IconChartBar,
-      footerIcon: IconChartBar,
-      tone:
-        summary.budgetUsedPercentage >= 85
-          ? "warning"
-          : summary.budgetUsedPercentage >= 60
-            ? "neutral"
-            : "positive",
-    },
   ]
 
   return (
-    <div className="flex flex-wrap gap-3.5 xl:gap-4 2xl:gap-5">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 xl:gap-3.5">
       {cards.map((card) => (
         <Card
           key={card.label}
-          className="group min-w-55 flex-1 basis-65 border-border/70 bg-card/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md xl:basis-[24rem]"
+          className="group min-w-0 border-border/70 bg-card/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
         >
-          <CardHeader className="min-w-0 pb-2.5 xl:pb-3">
-            <CardDescription className="text-[11px] uppercase tracking-wide text-muted-foreground">
+          <CardHeader className="min-w-0 pb-2 px-4 pt-4 xl:pb-2.5">
+            <CardDescription className="text-[10px] uppercase tracking-wide text-muted-foreground">
               {card.label}
             </CardDescription>
-            <CardTitle className="min-w-0 wrap-break-word text-[1.65rem] font-semibold leading-tight tabular-nums lg:text-3xl">
+            <CardTitle className="min-w-0 wrap-break-word text-[1.35rem] font-semibold leading-tight tabular-nums lg:text-2xl">
               {card.value}
             </CardTitle>
             <CardAction>
@@ -133,7 +98,7 @@ export function DashboardMonthlySummaryCards({
               </Badge>
             </CardAction>
           </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 border-t border-border/60 pt-2.5 text-sm xl:pt-3">
+          <CardFooter className="flex-col items-start gap-1.5 border-t border-border/60 px-4 pt-2 text-xs xl:pt-2.5">
             <div className="line-clamp-2 flex min-w-0 gap-2 text-muted-foreground">
               <card.footerIcon className="size-4 shrink-0" />
               <span className="min-w-0 wrap-break-word">{card.footer}</span>

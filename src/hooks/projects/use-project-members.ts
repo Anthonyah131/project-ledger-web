@@ -56,8 +56,10 @@ export function useProjectMembers(projectId: string) {
         toast.success("Miembro agregado", {
           description: `${created.userFullName} fue agregado como ${created.role}.`,
         })
+        return true
       } catch (err) {
         toastApiError(err, "Error al agregar miembro")
+        return false
       }
     },
     [projectId, fetchMembers],

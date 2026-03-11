@@ -45,6 +45,7 @@ const navSecondary = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
+  const homeUrl = user?.isAdmin ? "/admin/users" : "/dashboard"
 
   const navMain = useMemo(
     () => (user?.isAdmin ? adminNavMain : userNavMain),
@@ -60,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="/dashboard">
+              <a href={homeUrl}>
                 <IconShieldDollar className="size-5!" />
                 <span className="text-base font-semibold">Project Ledger</span>
               </a>

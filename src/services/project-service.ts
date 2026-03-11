@@ -15,8 +15,8 @@ import type {
 
 // ─── Projects ──────────────────────────────────────────────────────────────────
 
-export function getProjects() {
-  return api.get<ProjectResponse[]>("/projects");
+export function getProjects(signal?: AbortSignal) {
+  return api.get<ProjectResponse[]>("/projects", { signal });
 }
 
 export function getProject(projectId: string) {

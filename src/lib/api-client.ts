@@ -98,6 +98,15 @@ function isAbortError(error: unknown): boolean {
 // ─── Refresh lock ──────────────────────────────────────────────────────────────
 // Prevents multiple concurrent refresh requests
 let refreshPromise: Promise<boolean> | null = null;
+const pendingGetRequests = new Map<string, Promise<unknown>>();
+
+function getPendingGetKey(url: string, headers: Record<string, string>) {
+  return JSON.stringify({
+    url,
+    authorization: headers.Authorization ?? null,
+    headers,
+  });
+}
 
 async function attemptTokenRefresh(): Promise<boolean> {
   const refresh = getRefreshToken();
@@ -200,82 +209,99 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${currentAccessToken}`;
   }
 
-  logRequest(method, url, body);
-  const start = performance.now();
+  const executeRequest = async (): Promise<T> => {
+    logRequest(method, url, body);
+    const start = performance.now();
 
-  let res: Response;
-  try {
-    const requestBody = body === undefined
-      ? undefined
-      : isFormDataBody
-        ? body
-        : JSON.stringify(body);
+    let res: Response;
+    try {
+      const requestBody = body === undefined
+        ? undefined
+        : isFormDataBody
+          ? body
+          : JSON.stringify(body);
 
-    res = await fetch(url, {
-      method,
-      headers,
-      body: requestBody,
-      signal: options.signal,
-    });
-  } catch (error) {
-    if (isAbortError(error)) {
-      throw error;
+      res = await fetch(url, {
+        method,
+        headers,
+        body: requestBody,
+        signal: options.signal,
+      });
+    } catch (error) {
+      if (isAbortError(error)) {
+        throw error;
+      }
+
+      logError(method, url, error);
+      throw getNetworkError();
     }
 
-    logError(method, url, error);
-    throw getNetworkError();
-  }
+    if (res.status === 401 && !options.skipAuth) {
+      const refreshed = await attemptTokenRefresh();
+      if (refreshed) {
+        const newAccessToken = getAccessToken();
+        headers["Authorization"] = `Bearer ${newAccessToken}`;
+        try {
+          const retryBody = body === undefined
+            ? undefined
+            : isFormDataBody
+              ? body
+              : JSON.stringify(body);
 
-  // ── Handle 401 — attempt token refresh once then retry ───────────────────
-  if (res.status === 401 && !options.skipAuth) {
-    const refreshed = await attemptTokenRefresh();
-    if (refreshed) {
-      // Retry original request with new token
-      const newAccessToken = getAccessToken();
-      headers["Authorization"] = `Bearer ${newAccessToken}`;
-      try {
-        const retryBody = body === undefined
-          ? undefined
-          : isFormDataBody
-            ? body
-            : JSON.stringify(body);
+          res = await fetch(url, {
+            method,
+            headers,
+            body: retryBody,
+            signal: options.signal,
+          });
+        } catch (error) {
+          if (isAbortError(error)) {
+            throw error;
+          }
 
-        res = await fetch(url, {
-          method,
-          headers,
-          body: retryBody,
-          signal: options.signal,
-        });
-      } catch (error) {
-        if (isAbortError(error)) {
-          throw error;
+          logError(method, url, error);
+          throw getNetworkError();
         }
-
-        logError(method, url, error);
-        throw getNetworkError();
       }
     }
+
+    const duration = Math.round(performance.now() - start);
+
+    let data: unknown;
+    const contentType = res.headers.get("content-type");
+
+    if (contentType?.includes("application/json")) {
+      data = await res.json();
+    } else {
+      data = await res.text();
+    }
+
+    logResponse(method, url, res.status, data, duration);
+
+    if (!res.ok) {
+      throw new ApiClientError(res.status, data);
+    }
+
+    return data as T;
+  };
+
+  if (method === "GET" && !options.signal) {
+    const pendingKey = getPendingGetKey(url, headers);
+    const pendingRequest = pendingGetRequests.get(pendingKey);
+
+    if (pendingRequest) {
+      return pendingRequest as Promise<T>;
+    }
+
+    const requestPromise = executeRequest().finally(() => {
+      pendingGetRequests.delete(pendingKey);
+    });
+
+    pendingGetRequests.set(pendingKey, requestPromise);
+    return requestPromise;
   }
 
-  const duration = Math.round(performance.now() - start);
-
-  // ── Parse response ──────────────────────────────────────────────────────
-  let data: unknown;
-  const contentType = res.headers.get("content-type");
-
-  if (contentType?.includes("application/json")) {
-    data = await res.json();
-  } else {
-    data = await res.text();
-  }
-
-  logResponse(method, url, res.status, data, duration);
-
-  if (!res.ok) {
-    throw new ApiClientError(res.status, data);
-  }
-
-  return data as T;
+  return executeRequest();
 }
 
 // ─── Public helpers ────────────────────────────────────────────────────────────

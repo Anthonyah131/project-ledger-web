@@ -111,17 +111,49 @@ export function DashboardMonthlyPaymentMethodsChart({
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle className="text-base font-semibold tracking-tight">Metodos de pago</CardTitle>
         <CardDescription>
-          Distribucion mensual por cuenta o tarjeta.
+          Distribucion del gasto total del mes por cuenta, tarjeta o metodo registrado.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
         {chartData.length === 0 ? (
           <p className="text-sm text-muted-foreground">Sin movimientos en metodos de pago.</p>
         ) : (
-          <>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.9fr] lg:items-start">
+            <div className="space-y-2 order-2 lg:order-1">
+              {chartData.map((method) => (
+                <button
+                  key={method.id}
+                  type="button"
+                  disabled={!onOpenPaymentMethod}
+                  onClick={() => onOpenPaymentMethod?.(method.id)}
+                  className="flex w-full items-center justify-between gap-2 rounded-md border border-border/60 bg-muted/35 px-2 py-2 text-left text-xs transition-all hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm disabled:cursor-default disabled:hover:translate-y-0 disabled:hover:bg-muted/35 disabled:hover:shadow-none"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="size-2 rounded-[2px] shrink-0" style={{ backgroundColor: method.fill }} aria-hidden />
+                    <div className="min-w-0">
+                      <p className="truncate text-foreground">{method.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{method.expenseCount} gastos registrados</p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="font-semibold tabular-nums text-foreground">{formatPercent(method.percentage)}</p>
+                    <p className="text-[11px] tabular-nums text-muted-foreground">
+                      {isMobile
+                        ? formatCompactCurrency(method.totalAmount, currencyCode)
+                        : formatCurrency(method.totalAmount, currencyCode)}
+                    </p>
+                  </div>
+                </button>
+              ))}
+
+              <div className="rounded-md border border-border/60 bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
+                {chartData.length} metodos con gasto en {totalOperations} gastos registrados.
+              </div>
+            </div>
+
             <ChartContainer
               config={chartConfig}
-              className="h-64 w-full min-w-0 xl:h-72 2xl:h-76"
+              className="order-1 h-64 w-full min-w-0 lg:order-2 xl:h-72 2xl:h-80"
             >
               <PieChart>
                 <ChartTooltip
@@ -150,7 +182,7 @@ export function DashboardMonthlyPaymentMethodsChart({
                       return (
                         <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                           <tspan x={viewBox.cx} y={viewBox.cy - 6} className="fill-foreground text-xs font-semibold">
-                            Total
+                            Gasto total
                           </tspan>
                           <tspan x={viewBox.cx} y={viewBox.cy + 13} className="fill-foreground text-lg font-semibold tabular-nums">
                             {isMobile
@@ -158,7 +190,7 @@ export function DashboardMonthlyPaymentMethodsChart({
                               : formatCurrency(totalAmount, currencyCode)}
                           </tspan>
                           <tspan x={viewBox.cx} y={viewBox.cy + 30} className="fill-muted-foreground text-[10px]">
-                            {totalOperations} operaciones
+                            {totalOperations} gastos
                           </tspan>
                         </text>
                       )
@@ -171,41 +203,13 @@ export function DashboardMonthlyPaymentMethodsChart({
                 </Pie>
               </PieChart>
             </ChartContainer>
-
-            <div className="space-y-2">
-              {chartData.map((method) => (
-                <button
-                  key={method.id}
-                  type="button"
-                  disabled={!onOpenPaymentMethod}
-                  onClick={() => onOpenPaymentMethod?.(method.id)}
-                  className="flex w-full items-center justify-between gap-2 rounded-md border border-border/60 bg-muted/35 px-2 py-2 text-left text-xs transition-all hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm disabled:cursor-default disabled:hover:translate-y-0 disabled:hover:bg-muted/35 disabled:hover:shadow-none"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="size-2 rounded-[2px] shrink-0" style={{ backgroundColor: method.fill }} aria-hidden />
-                    <div className="min-w-0">
-                      <p className="truncate text-foreground">{method.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{method.expenseCount} operaciones</p>
-                    </div>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="font-semibold tabular-nums text-foreground">{formatPercent(method.percentage)}</p>
-                    <p className="text-[11px] tabular-nums text-muted-foreground">
-                      {isMobile
-                        ? formatCompactCurrency(method.totalAmount, currencyCode)
-                        : formatCurrency(method.totalAmount, currencyCode)}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </>
+          </div>
         )}
       </CardContent>
       {chartData.length > 0 && (
         <CardFooter className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <span>{chartData.length} metodos</span>
-          <span className="font-medium tabular-nums text-foreground">{totalOperations} operaciones</span>
+          <span>{chartData.length} metodos con gasto</span>
+          <span className="font-medium tabular-nums text-foreground">{totalOperations} gastos</span>
         </CardFooter>
       )}
     </Card>

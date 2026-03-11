@@ -1,11 +1,24 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toastApiError } from "@/lib/error-utils"
-import { getMonthlyOverview } from "@/services/dashboard-service"
-import type { MonthlyOverviewResponse } from "@/types/dashboard"
+import {
+  getDashboardMonthlyPaymentMethods,
+  getDashboardMonthlySummary,
+  getDashboardMonthlyTopCategories,
+  getDashboardMonthlyTrend,
+} from "@/services/dashboard-service"
+import { getProjects } from "@/services/project-service"
+import type {
+  DashboardMonthlySummaryResponse,
+  DashboardPaymentMethodSplit,
+  DashboardTopCategory,
+  DashboardTrendDay,
+} from "@/types/dashboard"
+import type { ProjectResponse } from "@/types/project"
 
 const MONTH_KEY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/
+const ALL_PROJECTS_VALUE = "all"
 
 function getCurrentMonthKey() {
   const now = new Date()
@@ -22,15 +35,24 @@ function isValidMonthKey(month: string): boolean {
   return MONTH_KEY_REGEX.test(month)
 }
 
-export function useMonthlyOverview() {
+interface UseMonthlyOverviewOptions {
+  enabled?: boolean
+}
+
+export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions = {}) {
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonthKey)
-  const [data, setData] = useState<MonthlyOverviewResponse | null>(null)
+  const [summaryData, setSummaryData] = useState<DashboardMonthlySummaryResponse | null>(null)
+  const [trendByDay, setTrendByDay] = useState<DashboardTrendDay[]>([])
+  const [topCategories, setTopCategories] = useState<DashboardTopCategory[]>([])
+  const [paymentMethodSplit, setPaymentMethodSplit] = useState<DashboardPaymentMethodSplit[]>([])
+  const [projects, setProjects] = useState<ProjectResponse[]>([])
+  const [selectedProjectId, setSelectedProjectId] = useState(ALL_PROJECTS_VALUE)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
 
-  const loadMonth = useCallback(async (month: string) => {
+  const loadMonth = useCallback(async (month: string, projectId: string) => {
     if (!isValidMonthKey(month)) {
       setError("El formato de mes es invalido. Debe ser YYYY-MM.")
       return
@@ -44,10 +66,48 @@ export function useMonthlyOverview() {
     setError(null)
 
     try {
-      const overview = await getMonthlyOverview(month, controller.signal)
-      setData(overview)
-      if (overview.month !== month) {
-        setSelectedMonth(overview.month)
+      const resolvedProjectId = projectId === ALL_PROJECTS_VALUE ? null : projectId
+      const [summaryResult, trendResult, categoriesResult, paymentMethodsResult, projectsResult] = await Promise.allSettled([
+        getDashboardMonthlySummary(month, controller.signal),
+        getDashboardMonthlyTrend(month, resolvedProjectId, controller.signal),
+        getDashboardMonthlyTopCategories(month, resolvedProjectId, controller.signal),
+        getDashboardMonthlyPaymentMethods(month, controller.signal),
+        getProjects(controller.signal),
+      ])
+
+      if (
+        (summaryResult.status === "rejected" && isAbortError(summaryResult.reason))
+        || (trendResult.status === "rejected" && isAbortError(trendResult.reason))
+        || (categoriesResult.status === "rejected" && isAbortError(categoriesResult.reason))
+        || (paymentMethodsResult.status === "rejected" && isAbortError(paymentMethodsResult.reason))
+        || (projectsResult.status === "rejected" && isAbortError(projectsResult.reason))
+      ) {
+        return
+      }
+
+      if (summaryResult.status === "rejected") throw summaryResult.reason
+      if (trendResult.status === "rejected") throw trendResult.reason
+      if (categoriesResult.status === "rejected") throw categoriesResult.reason
+      if (paymentMethodsResult.status === "rejected") throw paymentMethodsResult.reason
+
+      const summary = summaryResult.value
+      const trend = trendResult.value
+      const categories = categoriesResult.value
+      const paymentMethods = paymentMethodsResult.value
+      const availableProjects = projectsResult.status === "fulfilled" ? projectsResult.value : []
+
+      setSummaryData(summary)
+      setTrendByDay(trend.trendByDay)
+      setTopCategories(categories.topCategories)
+      setPaymentMethodSplit(paymentMethods.paymentMethodSplit)
+      setProjects(availableProjects)
+
+      if (summary.month !== month) {
+        setSelectedMonth(summary.month)
+      }
+
+      if (resolvedProjectId && !availableProjects.some((project) => project.id === resolvedProjectId)) {
+        setSelectedProjectId(ALL_PROJECTS_VALUE)
       }
     } catch (err) {
       if (isAbortError(err)) return
@@ -61,6 +121,22 @@ export function useMonthlyOverview() {
     }
   }, [])
 
+  const data = useMemo(() => {
+    if (!summaryData) return null
+
+    return {
+      ...summaryData,
+      trendByDay,
+      topCategories,
+      paymentMethodSplit,
+    }
+  }, [paymentMethodSplit, summaryData, topCategories, trendByDay])
+
+  const selectedProjectName = useMemo(() => {
+    if (selectedProjectId === ALL_PROJECTS_VALUE) return "Todos los proyectos"
+    return projects.find((project) => project.id === selectedProjectId)?.name ?? "Proyecto"
+  }, [projects, selectedProjectId])
+
   const goPreviousMonth = useCallback(() => {
     if (!data?.navigation.previousMonth) return
     setSelectedMonth(data.navigation.previousMonth)
@@ -72,12 +148,19 @@ export function useMonthlyOverview() {
   }, [data])
 
   const reload = useCallback(async () => {
-    await loadMonth(selectedMonth)
-  }, [loadMonth, selectedMonth])
+    if (!enabled) return
+    await loadMonth(selectedMonth, selectedProjectId)
+  }, [enabled, loadMonth, selectedMonth, selectedProjectId])
 
   useEffect(() => {
-    void loadMonth(selectedMonth)
-  }, [loadMonth, selectedMonth])
+    if (!enabled) {
+      abortRef.current?.abort()
+      setLoading(false)
+      return
+    }
+
+    void loadMonth(selectedMonth, selectedProjectId)
+  }, [enabled, loadMonth, selectedMonth, selectedProjectId])
 
   useEffect(() => {
     return () => {
@@ -88,9 +171,13 @@ export function useMonthlyOverview() {
   return {
     selectedMonth,
     data,
+    projects,
+    selectedProjectId,
+    selectedProjectName,
     loading,
     error,
     setSelectedMonth,
+    setSelectedProjectId,
     goPreviousMonth,
     goNextMonth,
     reload,

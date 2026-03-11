@@ -23,7 +23,7 @@ import { useAddMemberForm } from "@/hooks/forms/use-member-form"
 interface AddMemberModalProps {
   open: boolean
   onClose: () => void
-  onAdd: (data: AddMemberRequest) => void
+  onAdd: (data: AddMemberRequest) => Promise<boolean>
 }
 
 export function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
@@ -38,6 +38,7 @@ export function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
       form={form}
       onSubmit={onSubmit}
       submitLabel="Agregar miembro"
+      submitDisabled={form.formState.isSubmitting}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -50,6 +51,7 @@ export function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
               <Input
                 type="email"
                 placeholder="usuario@ejemplo.com"
+                autoComplete="email"
                 autoFocus
                 {...field}
               />

@@ -116,8 +116,10 @@ export function useProjectCategories(projectId: string) {
         toast.success("Categoría eliminada", {
           description: `"${category.name}" fue eliminada.`,
         })
+        return true
       } catch (err) {
         toastApiError(err, "Error al eliminar categoría")
+        return false
       }
     },
     [projectId, fetchCategories]

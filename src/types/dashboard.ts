@@ -14,10 +14,6 @@ export interface DashboardSummary {
   totalSpent: number
   totalIncome: number
   netBalance: number
-  activeProjects: number
-  pendingObligationsCount: number
-  pendingObligationsAmount: number
-  budgetUsedPercentage: number
 }
 
 export interface DashboardComparison {
@@ -56,16 +52,6 @@ export interface DashboardPaymentMethodSplit {
   percentage: number
 }
 
-export interface DashboardProjectHealth {
-  projectId: string
-  projectName: string
-  spent: number
-  income: number
-  net: number
-  budget: number | null
-  budgetUsedPercentage: number | null
-}
-
 export type DashboardAlertType = "info" | "warning" | "error"
 
 export interface DashboardAlert {
@@ -78,16 +64,32 @@ export interface DashboardAlert {
   count?: number
 }
 
-export interface MonthlyOverviewResponse {
+export interface DashboardMonthlySummaryResponse {
   month: string
   navigation: DashboardNavigation
   currencyCode: string
   generatedAt: string
   summary: DashboardSummary
   comparison: DashboardComparison
-  trendByDay: DashboardTrendDay[]
-  topCategories: DashboardTopCategory[]
-  paymentMethodSplit: DashboardPaymentMethodSplit[]
-  projectHealth: DashboardProjectHealth[]
   alerts: DashboardAlert[]
+}
+
+export interface DashboardMonthlyTrendResponse {
+  month: string
+  currencyCode: string
+  projectId?: string | null
+  trendByDay: DashboardTrendDay[]
+}
+
+export interface DashboardMonthlyTopCategoriesResponse {
+  month: string
+  currencyCode: string
+  projectId?: string | null
+  topCategories: DashboardTopCategory[]
+}
+
+export interface DashboardMonthlyPaymentMethodsResponse {
+  month: string
+  currencyCode: string
+  paymentMethodSplit: DashboardPaymentMethodSplit[]
 }

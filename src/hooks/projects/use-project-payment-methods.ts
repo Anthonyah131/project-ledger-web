@@ -90,8 +90,10 @@ export function useProjectPaymentMethods(projectId: string) {
         toast.success("Método desvinculado", {
           description: `"${pm.paymentMethodName}" fue desvinculado del proyecto.`,
         })
+        return true
       } catch (err) {
         toastApiError(err, "Error al desvincular método de pago")
+        return false
       }
     },
     [projectId],

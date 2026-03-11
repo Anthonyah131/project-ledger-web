@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { useProjectAlternativeCurrencies } from "@/hooks/projects/use-project-alternative-currencies"
+import { ApiClientError } from "@/lib/api-client"
 import type { CurrencyResponse } from "@/types/currency"
 import type { ProjectAlternativeCurrencyResponse } from "@/types/project-alternative-currency"
 
@@ -106,5 +107,33 @@ describe("useProjectAlternativeCurrencies", () => {
       "EUR"
     )
     await waitFor(() => expect(result.current.currencies).toHaveLength(1))
+  })
+
+  it("returns false and keeps currency when delete fails with business error", async () => {
+    vi.mocked(alternativeCurrencyService.deleteAlternativeCurrency).mockRejectedValue(
+      new ApiClientError(400, {
+        message:
+          "No se puede eliminar la moneda alternativa porque hay gastos o ingresos activos que la usan en este proyecto.",
+      })
+    )
+
+    const { result } = renderHook(() =>
+      useProjectAlternativeCurrencies("project-1")
+    )
+
+    await waitFor(() => expect(result.current.currencies).toHaveLength(1))
+
+    let deleted = true
+    await act(async () => {
+      deleted = await result.current.mutateDelete(existingCurrency)
+    })
+
+    expect(deleted).toBe(false)
+    expect(alternativeCurrencyService.deleteAlternativeCurrency).toHaveBeenCalledWith(
+      "project-1",
+      "USD"
+    )
+    expect(result.current.currencies).toHaveLength(1)
+    expect(result.current.currencies[0]?.id).toBe("pac-1")
   })
 })

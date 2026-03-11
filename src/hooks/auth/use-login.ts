@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,7 +11,13 @@ import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
 
 export function useLogin() {
   const router = useRouter()
-  const { login, isActionLoading: isLoading } = useAuth()
+  const {
+    user,
+    login,
+    isActionLoading: isLoading,
+    isAuthenticated,
+    isLoading: isSessionLoading,
+  } = useAuth()
 
   const [serverError, setServerError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -33,12 +39,20 @@ export function useLogin() {
     return redirectTo
   }
 
+  function resolveHomeRoute() {
+    return resolveRedirect(user?.isAdmin ? "/admin/users" : "/dashboard")
+  }
+
+  useEffect(() => {
+    if (isSessionLoading || !isAuthenticated) return
+
+    router.replace(resolveHomeRoute())
+  }, [isAuthenticated, isSessionLoading, router, user?.isAdmin])
+
   const onSubmit = form.handleSubmit(async (data) => {
     setServerError("")
     try {
-      const loggedInUser = await login(data.email, data.password)
-      const fallback = loggedInUser.isAdmin ? "/admin/users" : "/dashboard"
-      router.push(resolveRedirect(fallback))
+      await login(data.email, data.password)
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 401) {
@@ -58,7 +72,9 @@ export function useLogin() {
     form,
     serverError,
     isLoading,
+    isSessionLoading,
     showPassword,
+    shouldHideForm: isSessionLoading || isAuthenticated,
     onSubmit,
     togglePassword,
   }

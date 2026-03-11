@@ -36,9 +36,12 @@ export function NavUser() {
 
   if (!user) return null
 
+  const displayName = user.fullName?.trim() || user.email || "Usuario"
+
   /** Initials for avatar fallback (up to 2 letters) */
-  const initials = user.fullName
-    .split(" ")
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
     .map((n) => n[0])
     .join("")
@@ -49,7 +52,7 @@ export function NavUser() {
     router.replace("/login")
   }
 
-  const mappedUser = { name: user.fullName, email: user.email, avatar: user.avatarUrl ?? "" }
+  const mappedUser = { name: displayName, email: user.email, avatar: user.avatarUrl ?? "" }
 
   return (
     <SidebarMenu>

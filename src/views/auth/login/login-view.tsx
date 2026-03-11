@@ -24,7 +24,9 @@ export function LoginView() {
     form,
     serverError,
     isLoading,
+    isSessionLoading,
     showPassword,
+    shouldHideForm,
     onSubmit,
     togglePassword,
   } = useLogin()
@@ -39,6 +41,22 @@ export function LoginView() {
     }
 
     router.push(href)
+  }
+
+  if (shouldHideForm) {
+    return (
+      <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-2xl border border-border/70 bg-card/70 p-6 text-center shadow-sm">
+        <Loader2 className="size-5 animate-spin text-primary" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">
+            {isSessionLoading ? "Verificando sesion activa..." : "Redirigiendo al dashboard..."}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Si tu sesion sigue vigente, no necesitas iniciar sesion otra vez.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

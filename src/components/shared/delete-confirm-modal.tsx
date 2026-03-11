@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { AlertTriangle } from "lucide-react"
 import {
   Dialog,
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button"
 interface DeleteConfirmModalProps {
   open: boolean
   onClose: () => void
-  onConfirm: () => void
+  onConfirm: () => boolean | void | Promise<boolean | void>
   title: string
   description: string
   message: string
@@ -28,8 +29,22 @@ export function DeleteConfirmModal({
   description,
   message,
 }: DeleteConfirmModalProps) {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleConfirm = async () => {
+    try {
+      setSubmitting(true)
+      const shouldClose = await onConfirm()
+      if (shouldClose !== false) {
+        onClose()
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && !submitting && onClose()}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <div className="flex items-center gap-3">
@@ -46,17 +61,17 @@ export function DeleteConfirmModal({
         </DialogHeader>
         <p className="text-sm text-foreground py-2">{message}</p>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={onClose} disabled={submitting}>
             Cancelar
           </Button>
           <Button
             variant="destructive"
             onClick={() => {
-              onConfirm()
-              onClose()
+              void handleConfirm()
             }}
+            disabled={submitting}
           >
-            Eliminar
+            {submitting ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogFooter>
       </DialogContent>

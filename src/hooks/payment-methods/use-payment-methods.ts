@@ -139,8 +139,10 @@ export function usePaymentMethods() {
         setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
       }
       toast.success("Método de pago eliminado", { description: `"${pm.name}" fue desactivado.` });
+      return true;
     } catch (err) {
       toastApiError(err, "Error al eliminar método de pago");
+      return false;
     }
   }, [fetchPaymentMethods]);
 

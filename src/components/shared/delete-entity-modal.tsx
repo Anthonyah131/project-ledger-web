@@ -7,7 +7,7 @@ interface DeleteEntityModalProps<T> {
   item: T | null
   open: boolean
   onClose: () => void
-  onConfirm: (item: T) => void
+  onConfirm: (item: T) => boolean | void | Promise<boolean | void>
   /** Dialog title, e.g. "Eliminar proyecto" */
   title: string
   /** Subtitle / disclaimer, e.g. "Esta accion no se puede deshacer." */

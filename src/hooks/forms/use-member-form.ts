@@ -11,7 +11,7 @@ import type { AddMemberRequest } from "@/types/project-member"
 // ─── Add member ───────────────────────────────────────────────────────────────
 
 interface UseAddMemberFormOptions {
-  onAdd: (data: AddMemberRequest) => void
+  onAdd: (data: AddMemberRequest) => Promise<boolean>
   onClose: () => void
 }
 
@@ -24,9 +24,12 @@ export function useAddMemberForm({ onAdd, onClose }: UseAddMemberFormOptions) {
     },
   })
 
-  function onSubmit(values: AddMemberFormValues) {
-    onAdd({ email: values.email, role: values.role })
-    handleClose()
+  async function onSubmit(values: AddMemberFormValues) {
+    const wasAdded = await onAdd({ email: values.email, role: values.role })
+
+    if (wasAdded) {
+      handleClose()
+    }
   }
 
   function handleClose() {

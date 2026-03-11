@@ -61,40 +61,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   // ── Hydrate session on mount ──────────────────────────────────────────────
-  // Check if tokens exist. With access token in sessionStorage, it persists
-  // across page reloads but not browser restarts. This prevents unnecessary
-  // refresh token rotation on every page reload.
+  // Rebuild the session from stored tokens. Prefer a direct profile check when
+  // an access token is still usable, and only fall back to refresh when needed.
   useEffect(() => {
     async function hydrate() {
-      const refresh = getRefreshToken();
       const access = getAccessToken();
-      
-      if (!refresh) {
-        setIsLoading(false);
-        return;
-      }
+      const refresh = getRefreshToken();
 
-      // If we have both tokens in storage, try to verify the session
-      if (access) {
-        try {
-          // Validate session by fetching the full user profile
-          const profile = await userService.getUserProfile();
-          setUser(profile as unknown as User);
-          setIsLoading(false);
-          return;
-        } catch {
-          // Access token expired or invalid, fall through to refresh
-        }
-      }
-
-      // No access token or it's invalid — refresh the session
       try {
+        if (access) {
+          try {
+            const profile = await userService.getUserProfile();
+            setUser(profile as unknown as User);
+            return;
+          } catch {
+            if (!refresh) {
+              clearTokens();
+              setUser(null);
+              return;
+            }
+          }
+        }
+
+        if (!refresh) {
+          setUser(null);
+          return;
+        }
+
         const res = await authService.refreshTokens({ refreshToken: refresh });
         setAccessToken(res.accessToken);
         setRefreshToken(res.refreshToken);
         setUser(res.user);
       } catch {
-        // Refresh token is invalid/expired — clear everything
         clearTokens();
         setUser(null);
       } finally {

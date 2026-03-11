@@ -26,6 +26,7 @@ const categoriesChartConfig = {
 interface DashboardMonthlyCategoriesChartProps {
   topCategories: DashboardTopCategory[]
   currencyCode: string
+  scopeLabel: string
 }
 
 function truncateLabel(value: string, max = 18) {
@@ -36,6 +37,7 @@ function truncateLabel(value: string, max = 18) {
 export function DashboardMonthlyCategoriesChart({
   topCategories,
   currencyCode,
+  scopeLabel,
 }: DashboardMonthlyCategoriesChartProps) {
   const isMobile = useIsMobile()
 
@@ -93,17 +95,42 @@ export function DashboardMonthlyCategoriesChart({
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle className="text-base font-semibold tracking-tight">Top categorias</CardTitle>
         <CardDescription>
-          Comparacion por gasto total en el mes.
+          Gasto total de {scopeLabel.toLowerCase()} agrupado por categoria.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         {chartData.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sin categorias con gasto este mes.</p>
+          <p className="text-sm text-muted-foreground">No hay categorias con gasto para la seleccion actual.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.9fr] lg:items-start">
+            <div className="space-y-1.5 order-2 lg:order-1">
+              {chartData.map((category, index) => (
+                <div
+                  key={category.categoryId}
+                  className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/35 px-2 py-2 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-foreground">{category.categoryName}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      #{index + 1} • {category.expenseCount} gastos
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-medium tabular-nums">
+                    {isMobile
+                      ? formatCompactCurrency(category.totalAmount, currencyCode)
+                      : formatCurrency(category.totalAmount, currencyCode)}
+                  </span>
+                </div>
+              ))}
+
+              <div className="rounded-md border border-border/60 bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
+                {chartData.length} categorias con gasto para la seleccion actual.
+              </div>
+            </div>
+
             <ChartContainer
               config={categoriesChartConfig}
-              className="h-68 w-full min-w-0 xl:h-76 2xl:h-80"
+              className="order-1 h-72 w-full min-w-0 lg:order-2 xl:h-80 2xl:h-96"
             >
               <BarChart
                 accessibilityLayer
@@ -141,27 +168,6 @@ export function DashboardMonthlyCategoriesChart({
                 />
               </BarChart>
             </ChartContainer>
-
-            <div className="space-y-1.5">
-              {chartData.map((category, index) => (
-                <div
-                  key={category.categoryId}
-                  className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/35 px-2 py-2 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-foreground">{category.categoryName}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      #{index + 1} • {category.expenseCount} gastos
-                    </p>
-                  </div>
-                  <span className="shrink-0 font-medium tabular-nums">
-                    {isMobile
-                      ? formatCompactCurrency(category.totalAmount, currencyCode)
-                      : formatCurrency(category.totalAmount, currencyCode)}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </CardContent>

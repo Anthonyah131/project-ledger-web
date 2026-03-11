@@ -192,8 +192,10 @@ export function useProjectDetailView(projectId: string) {
 
   const mutateAlternativeCurrencyDelete = useCallback(
     async (currency: ProjectAlternativeCurrencyResponse) => {
-      await mutateAlternativeCurrencyDeleteRaw(currency)
+      const deleted = await mutateAlternativeCurrencyDeleteRaw(currency)
+      if (!deleted) return false
       await refetchAlternativeCurrencies()
+      return true
     },
     [mutateAlternativeCurrencyDeleteRaw, refetchAlternativeCurrencies],
   )
@@ -218,8 +220,10 @@ export function useProjectDetailView(projectId: string) {
   // ─── Categories cross-tab sync: delete → refresh expenses ───
   const mutateCategoryDelete = useCallback(
     async (category: CategoryResponse) => {
-      await mutateCategoryDeleteRaw(category, { refetch: false })
+      const deleted = await mutateCategoryDeleteRaw(category, { refetch: false })
+      if (!deleted) return false
       await Promise.all([refetchCategories(), refetchExpenses()])
+      return true
     },
     [mutateCategoryDeleteRaw, refetchCategories, refetchExpenses],
   )

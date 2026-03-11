@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ExpenseReportMonthlySectionsCard } from "./expense-report-monthly-sections-card"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
