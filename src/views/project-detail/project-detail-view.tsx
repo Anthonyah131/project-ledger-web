@@ -186,7 +186,7 @@ export function ProjectDetailView({ projectId }: Props) {
           catalogLoading={pac.catalogLoading}
           canManage={!!canManageAlternativeCurrencies}
           onAdd={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
-          onDelete={mutateAlternativeCurrencyDelete}
+          onDelete={(c) => { mutateAlternativeCurrencyDelete(c) }}
         />
 
         <ProjectDetailObligationsTab
@@ -236,7 +236,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onUnlinkSelect={ppm.setUnlinkTarget}
           onUnlinkClose={() => ppm.setUnlinkTarget(null)}
           onLink={ppm.handleLink}
-          onUnlink={ppm.handleUnlink}
+          onUnlink={(pm) => { ppm.handleUnlink(pm) }}
         />
       </Tabs>
 

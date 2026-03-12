@@ -5,8 +5,8 @@ import { RefreshCw } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { BillingSubscriptionCard } from "@/views/billing/components/billing-subscription-card";
-import { BillingPlansGrid } from "@/views/billing/components/billing-plans-grid";
+import { BillingSubscriptionCard } from "@/components/billing/billing-subscription-card";
+import { BillingPlansGrid } from "@/components/billing/billing-plans-grid";
 import { ApiClientError } from "@/lib/api-client";
 import { getBillingStatusMeta } from "@/lib/billing-utils";
 import { useAuth } from "@/context/auth-context";

@@ -51,6 +51,15 @@ const PLAN_LIMIT_FALLBACKS: Record<string, PlanLimitSnapshot> = {
     maxAlternativeCurrencies: 10,
     maxIncomes: 100,
   },
+  premium: {
+    maxProjects: null,
+    maxExpenses: null,
+    maxCategories: null,
+    maxPaymentMethods: null,
+    maxTeamMembers: null,
+    maxAlternativeCurrencies: null,
+    maxIncomes: null,
+  },
 };
 
 function toLimitNumber(value: unknown): NumericLimit {
