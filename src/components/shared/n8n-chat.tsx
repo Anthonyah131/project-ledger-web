@@ -13,7 +13,8 @@ export default function N8nChat() {
   // The auth context stores the full UserProfileResponse shape at runtime
   const profile = user as unknown as UserProfileResponse
   const planSlug = profile?.plan?.slug?.toLowerCase() ?? ''
-  const isPremium = PREMIUM_SLUGS.includes(planSlug)
+  const hasPlanSlug = planSlug.length > 0
+  const isPremium = !hasPlanSlug || PREMIUM_SLUGS.includes(planSlug)
 
   useEffect(() => {
     if (initializedRef.current || !isAuthenticated || !user?.id || !isPremium) {
