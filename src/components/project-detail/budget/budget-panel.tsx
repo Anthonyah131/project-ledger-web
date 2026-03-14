@@ -22,23 +22,23 @@ interface BudgetPanelProps {
 const ALERT_META: Record<BudgetAlertLevel, { label: string; badgeClass: string; progressClass: string }> = {
   normal: {
     label: "Normal",
-    badgeClass: "bg-primary/10 text-primary",
-    progressClass: "bg-primary",
+    badgeClass: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30",
+    progressClass: "bg-gradient-to-r from-violet-500 to-purple-500",
   },
   warning: {
     label: "Alerta",
-    badgeClass: "bg-primary/10 text-primary",
-    progressClass: "bg-primary/70",
+    badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30",
+    progressClass: "bg-gradient-to-r from-amber-400 to-orange-500",
   },
   critical: {
     label: "Crítica",
-    badgeClass: "bg-destructive/10 text-destructive",
-    progressClass: "bg-destructive/70",
+    badgeClass: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30",
+    progressClass: "bg-gradient-to-r from-rose-500 to-red-500",
   },
   exceeded: {
     label: "Excedido",
-    badgeClass: "bg-destructive/10 text-destructive",
-    progressClass: "bg-destructive",
+    badgeClass: "bg-destructive/10 text-destructive border border-destructive/30",
+    progressClass: "bg-gradient-to-r from-red-500 to-rose-600",
   },
 }
 
@@ -84,17 +84,17 @@ function BudgetPanelComponent({
   const exceededBy = Math.max(0, budget.spentAmount - budget.totalBudget)
 
   return (
-    <div className="rounded-2xl border bg-card shadow-sm overflow-hidden">
-      <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-border bg-gradient-to-r from-primary/5 via-card to-card">
+    <div className="rounded-2xl border border-violet-500/20 bg-card shadow-sm shadow-violet-500/5 overflow-hidden">
+      <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
         <div className="flex items-start gap-3 min-w-0">
-          <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+          <div className="size-9 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 mt-0.5 border border-violet-500/20">
             <PiggyBank className="size-4.5" />
           </div>
 
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-semibold text-foreground">Presupuesto del proyecto</h3>
-              <Badge className={cn("text-[10px] px-2 py-0.5", alertMeta.badgeClass)}>
+              <h3 className="text-sm font-bold text-foreground">Presupuesto del proyecto</h3>
+              <Badge className={cn("text-[10px] px-2 py-0.5 font-semibold", alertMeta.badgeClass)}>
                 {alertMeta.label}
               </Badge>
             </div>
@@ -106,7 +106,7 @@ function BudgetPanelComponent({
 
         <div className="flex items-center gap-2">
           {canManage && (
-            <Button size="sm" variant="outline" onClick={onSet}>
+            <Button size="sm" variant="outline" onClick={onSet} className="border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-600 hover:border-violet-500/50 transition-colors">
               <Pencil className="size-3.5" />
               Editar
             </Button>
@@ -127,35 +127,35 @@ function BudgetPanelComponent({
 
       <div className="p-5 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="rounded-xl border border-border p-3.5 bg-card/60">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <div className="rounded-xl border border-violet-500/20 p-3.5 bg-gradient-to-br from-violet-500/5 to-transparent">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-violet-500 dark:text-violet-400">
               <Target className="size-3.5" />
               Total
             </div>
-            <p className="text-base font-semibold text-foreground mt-1.5 tabular-nums">
+            <p className="text-base font-bold text-foreground mt-1.5 tabular-nums">
               {projectCurrency} {formatAmount(budget.totalBudget, "0.00")}
             </p>
           </div>
 
-          <div className="rounded-xl border border-border p-3.5 bg-card/60">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <div className="rounded-xl border border-rose-500/20 p-3.5 bg-gradient-to-br from-rose-500/5 to-transparent">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-rose-500 dark:text-rose-400">
               <TrendingUp className="size-3.5" />
               Gastado
             </div>
-            <p className="text-base font-semibold text-foreground mt-1.5 tabular-nums">
+            <p className="text-base font-bold text-foreground mt-1.5 tabular-nums">
               {projectCurrency} {formatAmount(budget.spentAmount, "0.00")}
             </p>
           </div>
 
-          <div className="rounded-xl border border-border p-3.5 bg-card/60">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <div className="rounded-xl border border-emerald-500/20 p-3.5 bg-gradient-to-br from-emerald-500/5 to-transparent">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
               <Wallet className="size-3.5" />
               Disponible
             </div>
             <p
               className={cn(
-                "text-base font-semibold mt-1.5 tabular-nums",
-                budget.remainingAmount < 0 ? "text-destructive" : "text-foreground",
+                "text-base font-bold mt-1.5 tabular-nums",
+                budget.remainingAmount < 0 ? "text-destructive" : "text-emerald-600 dark:text-emerald-400",
               )}
             >
               {projectCurrency} {formatAmount(budget.remainingAmount, "0.00")}
@@ -163,21 +163,21 @@ function BudgetPanelComponent({
           </div>
         </div>
 
-        <div className="rounded-xl border border-border p-3.5 bg-muted/20 space-y-2.5">
+        <div className="rounded-xl border border-violet-500/20 p-3.5 bg-gradient-to-br from-violet-500/5 to-transparent space-y-2.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Consumo del presupuesto</span>
-            <span className="font-medium text-foreground tabular-nums">
+            <span className="text-muted-foreground font-medium">Consumo del presupuesto</span>
+            <span className="font-bold text-foreground tabular-nums">
               {formatAmount(budget.spentPercentage, "0")}%
             </span>
           </div>
 
-          <div className="relative h-2.5 rounded-full bg-muted overflow-hidden">
+          <div className="relative h-3 rounded-full bg-muted/50 overflow-hidden border border-border/50">
             <div
-              className={cn("h-full transition-all duration-300", alertMeta.progressClass)}
+              className={cn("h-full rounded-full transition-all duration-500 shadow-sm", alertMeta.progressClass)}
               style={{ width: `${progressWidth}%` }}
             />
             <div
-              className="absolute top-0 bottom-0 border-l border-dashed border-foreground/40"
+              className="absolute top-0 bottom-0 border-l-2 border-dashed border-foreground/40"
               style={{ left: `${thresholdWidth}%` }}
               aria-hidden
             />
@@ -185,7 +185,7 @@ function BudgetPanelComponent({
 
           <div className="flex items-center justify-between text-[11px] text-muted-foreground">
             <span>0%</span>
-            <span>Alerta {budget.alertPercentage}%</span>
+            <span className="font-semibold text-amber-600 dark:text-amber-400">Alerta {budget.alertPercentage}%</span>
             <span>100%</span>
           </div>
         </div>

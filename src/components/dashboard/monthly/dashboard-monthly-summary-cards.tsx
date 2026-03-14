@@ -83,8 +83,11 @@ export function DashboardMonthlySummaryCards({
       {cards.map((card) => (
         <Card
           key={card.label}
-          className="group min-w-0 border-border/70 bg-card/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="group relative min-w-0 overflow-hidden border-border/70 bg-card/80 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.2)]"
         >
+          {/* Purple top accent bar */}
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
+
           <CardHeader className="min-w-0 pb-2 px-4 pt-4 xl:pb-2.5">
             <CardDescription className="text-[10px] uppercase tracking-wide text-muted-foreground">
               {card.label}

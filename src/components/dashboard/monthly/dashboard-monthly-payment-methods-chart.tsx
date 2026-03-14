@@ -107,7 +107,7 @@ export function DashboardMonthlyPaymentMethodsChart({
   }
 
   return (
-    <Card className="border-border/70 bg-card/80 shadow-sm">
+    <Card className="border-border/70 bg-card/80 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.18)]">
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle className="text-base font-semibold tracking-tight">Metodos de pago</CardTitle>
         <CardDescription>

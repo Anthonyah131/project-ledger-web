@@ -27,7 +27,11 @@ export function CategoriesToolbar({
         />
       </div>
       <div className="ml-auto">
-        <Button size="sm" className="h-9" onClick={onCreate}>
+        <Button
+          size="sm"
+          className="h-9 bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-700 hover:to-orange-700 border-0 shadow-sm shadow-amber-500/30 transition-all"
+          onClick={onCreate}
+        >
           <Plus className="size-4 mr-1.5" />
           Nueva categoría
         </Button>

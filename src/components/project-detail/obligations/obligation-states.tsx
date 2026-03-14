@@ -25,8 +25,8 @@ export function ObligationsEmptyState({ hasFilter, onCreate }: EmptyProps) {
 
 export function ObligationsSkeleton() {
   return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-      <div className="grid grid-cols-6 gap-4 px-5 py-2 bg-muted/30">
+    <div className="rounded-xl border border-violet-500/20 bg-card shadow-sm overflow-hidden">
+      <div className="grid grid-cols-6 gap-4 px-5 py-2.5 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent border-b border-violet-500/20">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-3 w-16" />
         ))}

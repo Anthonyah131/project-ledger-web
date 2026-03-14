@@ -25,8 +25,8 @@ export function CategoriesEmptyState({ hasSearch, onCreate }: EmptyProps) {
 
 export function CategoriesSkeleton() {
   return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-      <div className="px-5 py-2 bg-muted/30">
+    <div className="rounded-xl border border-amber-500/20 bg-card shadow-sm overflow-hidden">
+      <div className="px-5 py-2.5 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent border-b border-amber-500/20">
         <Skeleton className="h-3 w-20" />
       </div>
       {Array.from({ length: 4 }).map((_, i) => (

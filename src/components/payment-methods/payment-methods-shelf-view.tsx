@@ -18,7 +18,7 @@ interface ShelfViewProps {
 function PaymentMethodsShelfViewComponent({ paymentMethods, onEdit, onDelete }: ShelfViewProps) {
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-cyan-500/10"
       role="list"
       aria-label="Métodos de pago"
     >
@@ -47,21 +47,21 @@ function PaymentMethodCard({
       role="listitem"
       className={cn(
         "group relative bg-card flex flex-col",
-        "transition-colors duration-150",
-        "hover:bg-accent/30 cursor-pointer",
+        "transition-all duration-150",
+        "hover:bg-cyan-500/5 hover:shadow-sm cursor-pointer",
       )}
       onClick={() => router.push(`/payment-methods/${pm.id}`)}
     >
       <div className="flex flex-1 gap-4 p-5">
-        {/* Accent bar */}
-        <div className={cn("w-1 shrink-0 rounded-full self-stretch", PAYMENT_METHOD_ACCENT[pm.type])} />
+        {/* Accent bar — thicker, glowing */}
+        <div className={cn("w-1.5 shrink-0 rounded-full self-stretch shadow-sm", PAYMENT_METHOD_ACCENT[pm.type])} />
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
           {/* Top: name + menu */}
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-foreground leading-snug truncate">
+              <h3 className="text-sm font-bold text-foreground leading-snug truncate">
                 {pm.name}
               </h3>
               {(pm.bankName || pm.description) && (
@@ -84,11 +84,11 @@ function PaymentMethodCard({
 
           {/* Bottom: metadata */}
           <div className="flex items-center gap-2 mt-auto">
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+            <Badge className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
               {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
             </Badge>
             <span className="text-border">{"/"}</span>
-            <span className="text-xs font-medium text-foreground/80">{pm.currency}</span>
+            <span className="text-xs font-bold text-cyan-700 dark:text-cyan-400">{pm.currency}</span>
             {pm.accountNumber && (
               <>
                 <span className="text-border">{"/"}</span>

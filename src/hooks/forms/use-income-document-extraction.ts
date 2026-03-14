@@ -44,7 +44,7 @@ export function useIncomeDocumentExtraction({
 }: UseIncomeDocumentExtractionOptions) {
   const [showFormStep, setShowFormStep] = useState(!isAiMode)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
-  const [documentKind, setDocumentKind] = useState<IncomeDocumentKind>("receipt")
+  const [documentKind, setDocumentKind] = useState<IncomeDocumentKind>("invoice")
   const [extracting, setExtracting] = useState(false)
   const [extractWarnings, setExtractWarnings] = useState<string[]>([])
   const [extractError, setExtractError] = useState<string | null>(null)
@@ -170,7 +170,7 @@ export function useIncomeDocumentExtraction({
   const resetExtractionState = useCallback(() => {
     setShowFormStep(!isAiMode)
     setUploadFile(null)
-    setDocumentKind("receipt")
+    setDocumentKind("invoice")
     setExtracting(false)
     setExtractWarnings([])
     setExtractError(null)

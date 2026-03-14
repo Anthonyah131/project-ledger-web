@@ -18,13 +18,13 @@ interface InfoCardProps {
 
 export function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4 flex items-start gap-3">
-      <div className="text-muted-foreground">
+    <div className="rounded-xl border border-cyan-500/15 bg-gradient-to-br from-cyan-500/5 to-transparent p-4 flex items-start gap-3 shadow-sm">
+      <div className="size-8 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
         <Icon className="size-4" />
       </div>
       <div className="min-w-0">
         <p className="text-[11px] text-muted-foreground uppercase tracking-wide">{label}</p>
-        <p className="text-sm font-medium text-foreground mt-1 truncate">{value}</p>
+        <p className="text-sm font-bold text-foreground mt-1 truncate">{value}</p>
       </div>
     </div>
   )
@@ -39,11 +39,11 @@ interface EmptyBlockProps {
 export function EmptyBlock({ icon: Icon, title, description }: EmptyBlockProps) {
   return (
     <div className="py-16 flex flex-col items-center justify-center text-center gap-3">
-      <div className="size-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
+      <div className="size-11 rounded-xl bg-gradient-to-br from-cyan-500/10 to-sky-500/5 flex items-center justify-center text-cyan-600 dark:text-cyan-400 border border-cyan-500/15">
         <Icon className="size-5" />
       </div>
       <div>
-        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="text-sm font-bold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground mt-1">{description}</p>
       </div>
     </div>
@@ -60,9 +60,9 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
   const showOriginal = expense.originalCurrency !== paymentMethodCurrency
 
   return (
-    <div className="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-rose-500/5 transition-colors">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground truncate">{expense.title}</p>
+        <p className="text-sm font-semibold text-foreground truncate">{expense.title}</p>
         <div className="mt-1 text-xs text-muted-foreground flex flex-wrap items-center gap-2">
           <span>{formatDate(expense.expenseDate, { fixTimezone: true })}</span>
           <span>·</span>
@@ -70,7 +70,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
           {!expense.isActive && (
             <>
               <span>·</span>
-              <Badge variant="secondary" className="text-[10px]">Recordatorio</Badge>
+              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">Recordatorio</Badge>
             </>
           )}
           {expense.receiptNumber && (
@@ -83,7 +83,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
       </div>
 
       <div className="sm:text-right">
-        <p className="text-sm font-semibold text-foreground tabular-nums">
+        <p className="text-sm font-bold text-rose-600 dark:text-rose-400 tabular-nums">
           {paymentMethodCurrency} {formatAmount(expense.convertedAmount, "0.00")}
         </p>
         {showOriginal && (
@@ -93,7 +93,13 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
         )}
       </div>
 
-      <Button type="button" variant="outline" size="sm" onClick={onOpenProject}>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onOpenProject}
+        className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+      >
         Ver proyecto
       </Button>
     </div>
@@ -115,9 +121,9 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
     projectCurrency !== accountCurrency
 
   return (
-    <div className="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-emerald-500/5 transition-colors">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground truncate">{income.title}</p>
+        <p className="text-sm font-semibold text-foreground truncate">{income.title}</p>
         <div className="mt-1 text-xs text-muted-foreground flex flex-wrap items-center gap-2">
           <span>{formatDate(income.incomeDate, { fixTimezone: true })}</span>
           <span>·</span>
@@ -125,7 +131,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
           {!income.isActive && (
             <>
               <span>·</span>
-              <Badge variant="secondary" className="text-[10px]">Recordatorio</Badge>
+              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">Recordatorio</Badge>
             </>
           )}
           {income.projectName && (
@@ -144,7 +150,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
       </div>
 
       <div className="sm:text-right">
-        <p className="text-sm font-semibold text-foreground tabular-nums">
+        <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
           {accountCurrency} {formatAmount(accountAmount, "0.00")}
         </p>
         {showProjectEquivalent && (
@@ -154,7 +160,13 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
         )}
       </div>
 
-      <Button type="button" variant="outline" size="sm" onClick={onOpenProject}>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onOpenProject}
+        className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+      >
         Ver proyecto
       </Button>
     </div>

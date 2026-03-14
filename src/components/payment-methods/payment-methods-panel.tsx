@@ -75,14 +75,19 @@ export function PaymentMethodsPanel() {
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
             Métodos de pago
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} {total === 1 ? "método" : "métodos"}
+            <span className="font-bold text-cyan-600 dark:text-cyan-400">{total}</span>{" "}
+            {total === 1 ? "método" : "métodos"}
           </p>
         </div>
-        <Button onClick={handleOpenCreate} size="sm">
+        <Button
+          onClick={handleOpenCreate}
+          size="sm"
+          className="bg-gradient-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700 border-0 shadow-sm shadow-cyan-500/30 transition-all"
+        >
           <Plus className="size-3.5" />
           Nuevo
         </Button>
@@ -103,7 +108,7 @@ export function PaymentMethodsPanel() {
       />
 
       {/* Content */}
-      <div className="mt-4 bg-card rounded-lg border border-border overflow-hidden">
+      <div className="mt-4 bg-card rounded-xl border border-cyan-500/20 shadow-sm shadow-cyan-500/5 overflow-hidden">
         {loading ? (
           viewMode === "shelf" ? <PaymentMethodsShelfSkeleton /> : <PaymentMethodsSkeleton />
         ) : paymentMethods.length === 0 ? (

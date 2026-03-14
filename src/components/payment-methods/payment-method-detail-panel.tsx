@@ -191,16 +191,16 @@ function PaymentMethodDetailPanelComponent({
           </Button>
 
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-2 h-8 rounded-full ${PAYMENT_METHOD_ACCENT[paymentMethod.type]}`} />
+            <div className={`w-2 h-10 rounded-full shadow-md ${PAYMENT_METHOD_ACCENT[paymentMethod.type]}`} style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
             <div className="min-w-0">
-              <h1 className="text-xl font-semibold text-foreground truncate">{paymentMethod.name}</h1>
+              <h1 className="text-xl font-bold text-foreground truncate">{paymentMethod.name}</h1>
               <div className="flex flex-wrap items-center gap-2 mt-1">
-                <Badge variant="outline" className="text-[10px]">
+                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30">
                   {PAYMENT_METHOD_TYPE_LABEL[paymentMethod.type]}
-                </Badge>
-                <Badge variant="secondary" className="text-[10px]">
+                </span>
+                <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30">
                   {paymentMethod.currency}
-                </Badge>
+                </span>
                 {paymentMethod.accountNumber && (
                   <span className="text-xs text-muted-foreground truncate">
                     {paymentMethod.accountNumber}
@@ -242,22 +242,24 @@ function PaymentMethodDetailPanelComponent({
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Total gasto relacionado</p>
-          <p className="text-lg font-semibold text-foreground mt-1 tabular-nums">
-            {loadingSummary
-              ? "Cargando..."
-              : `${paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Total ingreso relacionado</p>
-          <p className="text-lg font-semibold text-foreground mt-1 tabular-nums">
-            {loadingSummary
-              ? "Cargando..."
-              : `${paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
-          </p>
+      <div className="rounded-xl border border-cyan-500/15 bg-card overflow-hidden shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="p-4 bg-gradient-to-br from-rose-500/5 to-transparent border-b md:border-b-0 md:border-r border-rose-500/15">
+            <p className="text-xs uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">Total gasto relacionado</p>
+            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+              {loadingSummary
+                ? "Cargando..."
+                : `${paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
+            </p>
+          </div>
+          <div className="p-4 bg-gradient-to-br from-emerald-500/5 to-transparent">
+            <p className="text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">Total ingreso relacionado</p>
+            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+              {loadingSummary
+                ? "Cargando..."
+                : `${paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
+            </p>
+          </div>
         </div>
       </div>
 

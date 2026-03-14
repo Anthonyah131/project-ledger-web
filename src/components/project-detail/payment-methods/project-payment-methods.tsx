@@ -96,10 +96,9 @@ export function LinkPaymentMethodModal({
                 </div>
                 <Button
                   size="sm"
-                  variant="outline"
                   onClick={() => handleLink(pm.id)}
                   disabled={linkingId === pm.id}
-                  className="ml-3 shrink-0"
+                  className="ml-3 shrink-0 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/20"
                 >
                   {linkingId === pm.id ? (
                     <Loader2 className="size-3.5 animate-spin" />
@@ -133,7 +132,7 @@ export function ProjectPaymentMethodsList({
   return (
     <div role="list" aria-label="Métodos de pago del proyecto">
       {/* Header */}
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
+      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
         <span className="flex-1">Nombre</span>
         <span className="w-28 text-right hidden sm:block">Tipo</span>
         <span className="w-24 text-right hidden md:block">Moneda</span>
@@ -145,11 +144,11 @@ export function ProjectPaymentMethodsList({
         <div
           key={pm.id}
           role="listitem"
-          className="group flex items-center px-5 py-3.5 border-b border-border last:border-b-0 hover:bg-accent/30 transition-colors duration-150"
+          className="group flex items-center px-5 py-3.5 border-b border-border/50 last:border-b-0 hover:bg-cyan-500/5 transition-colors duration-150"
         >
           {/* Name + bank */}
           <div className="flex-1 min-w-0 mr-4">
-            <p className="text-sm font-medium text-foreground truncate leading-snug">
+            <p className="text-sm font-semibold text-foreground truncate leading-snug">
               {pm.paymentMethodName}
             </p>
             {pm.bankName && (
@@ -166,7 +165,7 @@ export function ProjectPaymentMethodsList({
 
           {/* Currency */}
           <span className="w-24 text-right hidden md:block">
-            <Badge variant="outline" className="text-[10px]">
+            <Badge variant="outline" className="text-[10px] border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
               {pm.currency}
             </Badge>
           </span>

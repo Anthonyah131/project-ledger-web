@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/context/auth-context"
 import { ApiClientError } from "@/lib/api-client"
 import { registerSchema, type RegisterFormValues } from "@/lib/validations/auth"
+import { getGoogleLoginUrl } from "@/services/auth-service"
 
 export function useRegister() {
   const router = useRouter()
@@ -23,6 +24,11 @@ export function useRegister() {
 
   function togglePassword() {
     setShowPassword((prev) => !prev)
+  }
+
+  function continueWithGoogle() {
+    if (typeof window === "undefined") return
+    window.location.assign(getGoogleLoginUrl())
   }
 
   function resolveRedirect(defaultRoute: string) {
@@ -60,5 +66,6 @@ export function useRegister() {
     showPassword,
     onSubmit,
     togglePassword,
+    continueWithGoogle,
   }
 }

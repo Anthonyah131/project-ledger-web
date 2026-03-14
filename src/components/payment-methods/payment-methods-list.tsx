@@ -21,7 +21,7 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
   return (
     <div role="list" aria-label="Métodos de pago">
       {/* Header */}
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
+      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
         <span className="flex-1">Método</span>
         <span className="w-20 text-center hidden sm:block">Tipo</span>
         <span className="w-16 text-center hidden sm:block">Moneda</span>
@@ -36,18 +36,18 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
           role="listitem"
           className={cn(
             "group flex items-center px-5 py-3.5",
-            "border-b border-border last:border-b-0",
-            "hover:bg-accent/30 transition-colors duration-150",
+            "border-b border-border/50 last:border-b-0",
+            "hover:bg-cyan-500/5 transition-colors duration-150",
             "cursor-pointer",
           )}
           onClick={() => router.push(`/payment-methods/${pm.id}`)}
         >
           {/* Accent dot */}
-          <div className={cn("size-2 rounded-full shrink-0 mr-3.5", PAYMENT_METHOD_ACCENT[pm.type])} />
+          <div className={cn("size-2.5 rounded-full shrink-0 mr-3.5 ring-2 ring-offset-1 ring-offset-card", PAYMENT_METHOD_ACCENT[pm.type])} />
 
           {/* Name + subtitle */}
           <div className="flex-1 min-w-0 mr-4">
-            <p className="text-sm font-medium text-foreground truncate leading-snug">
+            <p className="text-sm font-semibold text-foreground truncate leading-snug">
               {pm.name}
             </p>
             {(pm.accountNumber || pm.description) && (
@@ -59,13 +59,13 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
 
           {/* Type badge */}
           <div className="w-20 flex justify-center sm:flex">
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
               {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
             </Badge>
           </div>
 
           {/* Currency */}
-          <span className="w-16 text-center text-xs font-medium text-foreground/80 hidden sm:block">
+          <span className="w-16 text-center text-xs font-bold text-cyan-700 dark:text-cyan-400 hidden sm:block">
             {pm.currency}
           </span>
 

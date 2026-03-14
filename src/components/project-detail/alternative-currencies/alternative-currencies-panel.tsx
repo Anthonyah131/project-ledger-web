@@ -70,19 +70,20 @@ export function AlternativeCurrenciesPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="rounded-xl border border-fuchsia-500/20 bg-card p-4 bg-gradient-to-r from-fuchsia-500/8 via-purple-500/5 to-transparent shadow-sm shadow-fuchsia-500/5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <p className="text-sm font-semibold">Monedas alternativas del proyecto</p>
+            <p className="text-sm font-bold text-foreground">Monedas alternativas del proyecto</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Moneda base del proyecto: {projectCurrency}
+              Moneda base del proyecto:{" "}
+              <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">{projectCurrency}</span>
             </p>
           </div>
 
           {canManage && (
             <div className="flex items-center gap-2">
               <Select value={selectedCode} onValueChange={setSelectedCode}>
-                <SelectTrigger className="w-56 h-8 text-sm" aria-label="Seleccionar moneda alternativa">
+                <SelectTrigger className="w-56 h-8 text-sm border-fuchsia-500/30" aria-label="Seleccionar moneda alternativa">
                   <SelectValue placeholder={catalogLoading ? "Cargando..." : "Agregar moneda"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -97,6 +98,7 @@ export function AlternativeCurrenciesPanel({
                 size="sm"
                 onClick={handleAdd}
                 disabled={!selectedCode || submitting || catalogLoading}
+                className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white hover:from-fuchsia-700 hover:to-purple-700 border-0 shadow-sm shadow-fuchsia-500/30"
               >
                 {submitting ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />}
                 Agregar
@@ -116,8 +118,8 @@ export function AlternativeCurrenciesPanel({
           <p className="text-sm text-muted-foreground">No hay monedas alternativas configuradas.</p>
         </div>
       ) : (
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
+        <div className="rounded-xl border border-fuchsia-500/20 overflow-hidden shadow-sm">
+          <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-fuchsia-600 dark:text-fuchsia-400 uppercase tracking-widest border-b border-fuchsia-500/20 bg-gradient-to-r from-fuchsia-500/10 via-purple-500/5 to-transparent">
             <span className="flex-1">Moneda</span>
             <span className="w-28 text-right hidden sm:block">Simbolo</span>
             {canManage && <span className="w-8" />}
@@ -126,10 +128,10 @@ export function AlternativeCurrenciesPanel({
           {currencies.map((currency) => (
             <div
               key={currency.id}
-              className="flex items-center px-5 py-3.5 border-b border-border last:border-b-0 hover:bg-accent/20"
+              className="flex items-center px-5 py-3.5 border-b border-border/50 last:border-b-0 hover:bg-fuchsia-500/5 transition-colors"
             >
               <div className="flex-1 min-w-0 mr-4">
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-bold text-foreground">
                   {currency.currencyCode}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5 truncate">
@@ -138,7 +140,7 @@ export function AlternativeCurrenciesPanel({
               </div>
 
               <span className="w-28 text-right hidden sm:block">
-                <Badge variant="secondary" className="text-xs">{currency.currencySymbol}</Badge>
+                <Badge variant="secondary" className="text-xs bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-400 border-fuchsia-500/30">{currency.currencySymbol}</Badge>
               </span>
 
               {canManage && (

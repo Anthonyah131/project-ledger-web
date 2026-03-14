@@ -11,20 +11,24 @@ interface BudgetEmptyStateProps {
 
 export function BudgetEmptyState({ canManage, onSet }: BudgetEmptyStateProps) {
   return (
-    <div className="rounded-2xl border bg-card shadow-sm px-6 py-12 relative overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
+    <div className="rounded-2xl border border-violet-500/20 bg-card shadow-sm shadow-violet-500/5 px-6 py-12 relative overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-r from-violet-500/15 via-purple-500/8 to-transparent" />
       <div className="flex flex-col items-center justify-center gap-4 text-center">
-        <div className="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary">
-          <PiggyBank className="size-5 text-muted-foreground" />
+        <div className="flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 border border-violet-500/20 shadow-sm shadow-violet-500/20">
+          <PiggyBank className="size-6 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Sin presupuesto configurado</h3>
+          <h3 className="text-sm font-bold text-foreground">Sin presupuesto configurado</h3>
           <p className="text-xs text-muted-foreground mt-1.5 max-w-70 leading-relaxed">
             Define un presupuesto para controlar cuánto llevas gastado en este proyecto.
           </p>
         </div>
         {canManage && (
-          <Button onClick={onSet} size="sm" className="mt-1">
+          <Button
+            onClick={onSet}
+            size="sm"
+            className="mt-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/30"
+          >
             Configurar presupuesto
           </Button>
         )}

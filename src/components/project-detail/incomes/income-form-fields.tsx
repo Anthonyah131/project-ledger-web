@@ -445,8 +445,11 @@ export function IncomeFormFields({
           <FormItem>
             <FormLabel>Descripcion</FormLabel>
             <FormControl>
-              <Textarea rows={2} className="resize-none" {...field} />
+              <Textarea rows={3} className="resize-none" {...field} />
             </FormControl>
+            <p className="text-xs text-muted-foreground">
+              El extractor OCR puede sugerir una descripción contextual. Revisa y ajusta si es necesario.
+            </p>
             <FormMessage />
           </FormItem>
         )}

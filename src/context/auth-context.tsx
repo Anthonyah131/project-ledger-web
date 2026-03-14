@@ -41,6 +41,8 @@ interface AuthContextValue {
 
   /** Log in and persist session */
   login: (email: string, password: string) => Promise<User>;
+  /** Persist session from an OAuth access token and fetch profile */
+  loginWithAccessToken: (accessToken: string) => Promise<User>;
   /** Register and persist session */
   register: (email: string, password: string, fullName: string) => Promise<User>;
   /** Re-fetches the authenticated user profile and refreshes context */
@@ -131,6 +133,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persistSession],
   );
 
+  const loginWithAccessToken = useCallback(async (accessToken: string): Promise<User> => {
+    setIsActionLoading(true);
+    try {
+      setAccessToken(accessToken);
+      setRefreshToken(null);
+
+      const profile = await userService.getUserProfile();
+      const nextUser = profile as unknown as User;
+      setUser(nextUser);
+      return nextUser;
+    } catch (error) {
+      clearTokens();
+      setUser(null);
+      throw error;
+    } finally {
+      setIsActionLoading(false);
+    }
+  }, []);
+
   const register = useCallback(
     async (email: string, password: string, fullName: string): Promise<User> => {
       setIsActionLoading(true);
@@ -184,12 +205,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isActionLoading,
       isAuthenticated: !!user,
       login,
+      loginWithAccessToken,
       register,
       refreshUser,
       logout,
       logoutAll,
     }),
-    [user, isLoading, isActionLoading, login, register, refreshUser, logout, logoutAll],
+    [user, isLoading, isActionLoading, login, loginWithAccessToken, register, refreshUser, logout, logoutAll],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -108,11 +108,20 @@ export function IncomesToolbar({
         </Select>
       </div>
       <div className="flex items-center gap-2">
-        <Button onClick={onCreateManual} size="sm">
+        <Button
+          onClick={onCreateManual}
+          size="sm"
+          className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 border-0 shadow-sm shadow-emerald-500/30 transition-all"
+        >
           <Plus className="size-3.5" />
           Nuevo ingreso
         </Button>
-        <Button onClick={onCreateWithAi} size="sm" variant="secondary">
+        <Button
+          onClick={onCreateWithAi}
+          size="sm"
+          variant="outline"
+          className="border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60"
+        >
           Con IA
         </Button>
       </div>

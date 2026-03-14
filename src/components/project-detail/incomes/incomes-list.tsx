@@ -60,7 +60,7 @@ function IncomesListComponent({
 
   return (
     <div role="list" aria-label="Lista de ingresos">
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
+      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
         <span className="flex-1">Titulo</span>
         <span className="w-28 text-right hidden sm:block">Fecha</span>
         <span className="w-44 text-right hidden md:block">Monto</span>
@@ -82,11 +82,11 @@ function IncomesListComponent({
             role="listitem"
             className={cn(
               "group flex items-center px-5 py-3.5",
-              "border-b border-border last:border-b-0",
-              "hover:bg-accent/30 transition-colors duration-150"
+              "border-b border-border/50 last:border-b-0",
+              "hover:bg-emerald-500/5 transition-colors duration-150"
             )}
           >
-            <div className={cn("size-2 rounded-full shrink-0 mr-3.5", getAccentColor(i))} />
+            <div className={cn("size-2.5 rounded-full shrink-0 mr-3.5 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
 
             <div className="flex-1 min-w-0 mr-4">
               <p className="text-sm font-medium text-foreground truncate leading-snug">
@@ -96,7 +96,7 @@ function IncomesListComponent({
                 <div className="mt-1">
                   <Badge
                     variant="outline"
-                    className="border-amber-500/40 bg-amber-500/15 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:text-amber-200"
+                    className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
                   >
                     Recordatorio
                   </Badge>
@@ -114,7 +114,7 @@ function IncomesListComponent({
             </span>
 
             <div className="w-44 text-right hidden md:block">
-              <p className="text-sm font-semibold text-foreground tabular-nums">
+              <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
                 {projectCurrency} {formatAmount(income.convertedAmount)}
               </p>
               {showOriginal && (

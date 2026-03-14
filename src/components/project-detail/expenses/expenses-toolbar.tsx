@@ -106,11 +106,20 @@ export function ExpensesToolbar({
         </Select>
       </div>
       <div className="flex items-center gap-2">
-        <Button onClick={onCreateManual} size="sm">
+        <Button
+          onClick={onCreateManual}
+          size="sm"
+          className="bg-gradient-to-r from-rose-600 to-pink-600 text-white hover:from-rose-700 hover:to-pink-700 border-0 shadow-sm shadow-rose-500/30 transition-all"
+        >
           <Plus className="size-3.5" />
           Nuevo gasto
         </Button>
-        <Button onClick={onCreateWithAi} size="sm" variant="secondary">
+        <Button
+          onClick={onCreateWithAi}
+          size="sm"
+          variant="outline"
+          className="border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60"
+        >
           Con IA
         </Button>
       </div>

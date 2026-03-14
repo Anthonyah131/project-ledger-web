@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/context/auth-context"
 import { ApiClientError } from "@/lib/api-client"
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
+import { getGoogleLoginUrl } from "@/services/auth-service"
 
 export function useLogin() {
   const router = useRouter()
@@ -31,6 +32,11 @@ export function useLogin() {
     setShowPassword((prev) => !prev)
   }
 
+  function continueWithGoogle() {
+    if (typeof window === "undefined") return
+    window.location.assign(getGoogleLoginUrl())
+  }
+
   function resolveRedirect(defaultRoute: string) {
     if (typeof window === "undefined") return defaultRoute
     const redirectTo = new URLSearchParams(window.location.search).get("redirectTo")
@@ -39,15 +45,13 @@ export function useLogin() {
     return redirectTo
   }
 
-  function resolveHomeRoute() {
-    return resolveRedirect(user?.isAdmin ? "/admin/users" : "/dashboard")
-  }
+  const homeRoute = resolveRedirect(user?.isAdmin ? "/admin/users" : "/dashboard")
 
   useEffect(() => {
     if (isSessionLoading || !isAuthenticated) return
 
-    router.replace(resolveHomeRoute())
-  }, [isAuthenticated, isSessionLoading, router, user?.isAdmin])
+    router.replace(homeRoute)
+  }, [homeRoute, isAuthenticated, isSessionLoading, router])
 
   const onSubmit = form.handleSubmit(async (data) => {
     setServerError("")
@@ -77,5 +81,6 @@ export function useLogin() {
     shouldHideForm: isSessionLoading || isAuthenticated,
     onSubmit,
     togglePassword,
+    continueWithGoogle,
   }
 }

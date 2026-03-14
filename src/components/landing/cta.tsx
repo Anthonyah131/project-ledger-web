@@ -1,4 +1,4 @@
-import { ChevronRight, TrendingUp } from "lucide-react";
+import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export function CTA() {
@@ -9,16 +9,19 @@ export function CTA() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-1/2 top-0 h-48 w-96 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
         </div>
+
         <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/20 text-primary ring-1 ring-primary/30">
-          <TrendingUp className="h-6 w-6" />
+          <Sparkles className="h-6 w-6" />
         </div>
+
         <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
-          Empieza a gestionar mejor hoy
+          ¿Listo para tener control real?
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-          Únete a miles de equipos que ya toman decisiones más inteligentes con
-          Project Ledger.
+          Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración.
+          Actualiza cuando tu proyecto lo necesite.
         </p>
+
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/register"
@@ -28,11 +31,23 @@ export function CTA() {
             <ChevronRight className="h-4 w-4" />
           </Link>
           <Link
-            href="/login"
+            href="#pricing"
             className="inline-flex h-12 items-center px-8 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
           >
-            Ya tengo cuenta →
+            Ver todos los planes →
           </Link>
+        </div>
+
+        {/* Feature pills */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          {["OCR con IA", "Multi-moneda", "Colaboración en equipo", "Reportes", "Chatbot financiero"].map((f) => (
+            <span
+              key={f}
+              className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary/80"
+            >
+              {f}
+            </span>
+          ))}
         </div>
       </div>
     </section>

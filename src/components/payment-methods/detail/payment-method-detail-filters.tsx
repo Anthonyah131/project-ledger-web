@@ -43,10 +43,12 @@ export function PaymentMethodDetailFilters({
     from.length > 0 || to.length > 0 || projectId.length > 0 || activeStatus !== "active"
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-violet-500/20 bg-gradient-to-r from-violet-500/5 via-purple-500/3 to-transparent p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <Filter className="size-4 text-muted-foreground" />
-        <p className="text-sm font-medium text-foreground">Filtros compartidos</p>
+        <div className="size-7 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+          <Filter className="size-3.5" />
+        </div>
+        <p className="text-sm font-bold text-foreground">Filtros compartidos</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr_1fr_auto] gap-3">
@@ -97,7 +99,13 @@ export function PaymentMethodDetailFilters({
           </SelectContent>
         </Select>
 
-        <Button type="button" variant="outline" onClick={clearFilters} disabled={!hasFilters}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={clearFilters}
+          disabled={!hasFilters}
+          className="border-violet-500/30 text-violet-700 dark:text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/50 disabled:opacity-40"
+        >
           <X className="size-4" />
           Limpiar
         </Button>

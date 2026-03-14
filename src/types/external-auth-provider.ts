@@ -1,7 +1,7 @@
 // types/external-auth-provider.ts
 // OAuth external auth provider model type definitions
 
-export type OAuthProvider = 'google' | 'microsoft' | 'github' | 'facebook' | 'apple';
+export type OAuthProvider = 'google';
 
 export interface ExternalAuthProvider {
   id: string;

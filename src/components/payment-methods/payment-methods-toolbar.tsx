@@ -49,7 +49,7 @@ export function PaymentMethodsToolbar({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Buscar…"
-            className="pl-8.5 h-8 text-sm"
+            className="pl-8.5 h-8 text-sm focus-visible:ring-cyan-500/50 focus-visible:border-cyan-500/50"
             aria-label="Buscar métodos de pago"
             autoComplete="off"
           />
@@ -94,7 +94,7 @@ export function PaymentMethodsToolbar({
 
         {/* View toggle */}
         <div
-          className="flex items-center h-8 border border-border rounded-md overflow-hidden"
+          className="flex items-center h-8 border border-cyan-500/30 rounded-md overflow-hidden"
           role="radiogroup"
           aria-label="Modo de vista"
         >
@@ -107,8 +107,8 @@ export function PaymentMethodsToolbar({
             className={cn(
               "flex items-center justify-center size-8 transition-colors duration-150",
               viewMode === "shelf"
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                ? "bg-gradient-to-br from-cyan-500 to-sky-600 text-white shadow-sm"
+                : "text-muted-foreground hover:text-cyan-600 hover:bg-cyan-500/10",
             )}
           >
             <LayoutGrid className="size-3.5" />
@@ -120,10 +120,10 @@ export function PaymentMethodsToolbar({
             aria-checked={viewMode === "list"}
             aria-label="Vista lista"
             className={cn(
-              "flex items-center justify-center size-8 border-l border-border transition-colors duration-150",
+              "flex items-center justify-center size-8 border-l border-cyan-500/30 transition-colors duration-150",
               viewMode === "list"
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                ? "bg-gradient-to-br from-cyan-500 to-sky-600 text-white shadow-sm"
+                : "text-muted-foreground hover:text-cyan-600 hover:bg-cyan-500/10",
             )}
           >
             <List className="size-3.5" />

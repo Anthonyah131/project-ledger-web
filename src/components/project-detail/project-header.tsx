@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react"
+import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Users, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ROLE_LABEL } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
@@ -29,10 +29,10 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
 
   if (loading || !project) {
     return (
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-violet-500/20 overflow-hidden shadow-sm">
         <div className="flex">
-          <div className="w-1 bg-muted shrink-0" />
-          <div className="flex-1 px-6 py-5">
+          <div className="w-1.5 bg-gradient-to-b from-violet-500 to-purple-600 shrink-0" />
+          <div className="flex-1 px-6 py-5 bg-gradient-to-r from-violet-500/5 to-transparent">
             <Skeleton className="h-6 w-48" />
             <div className="flex items-center gap-2 mt-3">
               <Skeleton className="h-5 w-12 rounded-full" />
@@ -46,29 +46,39 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
   }
 
   return (
-    <div className="bg-card rounded-lg border border-border overflow-hidden">
+    <div className="bg-card rounded-xl border border-violet-500/20 overflow-hidden shadow-sm shadow-violet-500/5">
       <div className="flex">
-        {/* Accent bar */}
-        <div className={cn("w-1 shrink-0 bg-primary")} />
+        {/* Vivid gradient accent bar */}
+        <div className="w-1.5 shrink-0 bg-gradient-to-b from-violet-500 via-purple-600 to-fuchsia-600" />
 
-        <div className="flex-1 flex items-start justify-between px-6 py-5">
+        <div className="flex-1 flex items-start justify-between px-6 py-5 bg-gradient-to-r from-violet-500/5 via-transparent to-transparent">
           {/* Info */}
           <div>
-            <h1 className="text-xl font-semibold text-foreground tracking-tight">
-              {project.name}
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl font-bold text-foreground tracking-tight">
+                {project.name}
+              </h1>
+              <Sparkles className="size-4 text-violet-400 opacity-70" />
+            </div>
             {project.description && (
               <p className="text-sm text-muted-foreground mt-1 max-w-lg">
                 {project.description}
               </p>
             )}
-            <div className="flex items-center gap-2 mt-3">
-              <Badge variant="outline" className="text-[11px] font-medium">
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <Badge
+                variant="outline"
+                className="text-[11px] font-semibold border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300"
+              >
                 {project.currencyCode}
               </Badge>
               <Badge
-                variant={project.userRole === "owner" ? "default" : "secondary"}
-                className="text-[11px] font-medium"
+                className={cn(
+                  "text-[11px] font-semibold",
+                  project.userRole === "owner"
+                    ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 shadow-sm shadow-violet-500/30"
+                    : "bg-violet-500/10 text-violet-600 dark:text-violet-300 border-violet-500/30"
+                )}
               >
                 {ROLE_LABEL[project.userRole]}
               </Badge>
@@ -82,7 +92,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => router.push("/projects")}
-              className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 transition-all duration-150"
               aria-label="Volver a proyectos"
             >
               <ArrowLeft className="size-4" />
@@ -90,7 +100,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 transition-all duration-150"
                   aria-label="Acciones del proyecto"
                 >
                   <MoreHorizontal className="size-4" />

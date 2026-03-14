@@ -34,7 +34,7 @@ export function ProjectPaymentMethodsEmptyState({ isOwner, onLink }: EmptyStateP
 export function ProjectPaymentMethodsSkeleton() {
   return (
     <div className="flex flex-col">
-      <div className="px-5 py-2.5 border-b border-border bg-muted/30">
+      <div className="px-5 py-2.5 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
         <Skeleton className="h-3 w-64" />
       </div>
       {Array.from({ length: 4 }).map((_, i) => (

@@ -99,7 +99,11 @@ export function ObligationsToolbar({
 
       {/* Create */}
       <div className="ml-auto">
-        <Button size="sm" className="h-9" onClick={onCreate}>
+        <Button
+          size="sm"
+          className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/30 transition-all"
+          onClick={onCreate}
+        >
           <Plus className="size-4 mr-1.5" />
           Nueva obligación
         </Button>

@@ -1,5 +1,6 @@
 "use client"
 
+import { TriangleAlert } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface DocumentExtractionFeedbackProps {
@@ -11,15 +12,20 @@ export function DocumentExtractionFeedback({ warnings, error }: DocumentExtracti
   return (
     <>
       {warnings.length > 0 && (
-        <Alert>
-          <AlertTitle>Revisa estos avisos</AlertTitle>
-          <AlertDescription>
-            <ul className="list-disc pl-4">
-              {warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
-              ))}
-            </ul>
-          </AlertDescription>
+        <Alert className="border-amber-500/50 bg-amber-50/10 text-amber-700 dark:text-amber-400">
+          <div className="flex items-start gap-2">
+            <TriangleAlert className="size-4 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <AlertTitle>Avisos del extractor</AlertTitle>
+              <AlertDescription>
+                <ul className="list-disc pl-4">
+                  {warnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </div>
+          </div>
         </Alert>
       )}
 

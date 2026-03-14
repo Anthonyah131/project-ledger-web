@@ -8,11 +8,6 @@
 - Services in `src/services/**` are thin HTTP wrappers over `src/lib/api-client.ts`. Put business logic, derived UI state, and toast handling in hooks or views, not in services.
 - Reuse the centralized API client in `src/lib/api-client.ts` for all backend calls. Preserve its token refresh behavior and re-throw `AbortError` instead of converting canceled requests into network errors.
 
-## Build And Test
-
-- Use `npm run dev` for local development, `npm run build` for production builds, `npm run lint` for ESLint, `npm test` for a single Vitest run, and `npm run test:watch` while iterating.
-- Tests use Vitest with jsdom and Testing Library. Put new tests under `tests/**` in a structure that mirrors `src/**`.
-- When testing hooks or views that call services, mock the service module and `sonner` toast calls instead of making real network requests.
 
 ## Conventions
 

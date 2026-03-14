@@ -82,9 +82,9 @@ export function PaymentMethodDetailTabs({
       </TabsList>
 
       <TabsContent value="expenses" className="space-y-4">
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-border bg-muted/20">
-            <p className="text-xs text-muted-foreground">{expenses.totalCount} pagos asociados</p>
+        <div className="rounded-xl border border-rose-500/20 overflow-hidden shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-rose-500/20 bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent">
+            <p className="text-xs font-bold text-rose-600 dark:text-rose-400">{expenses.totalCount} pagos asociados</p>
             <div className="flex items-center gap-2">
               <Select value={sort} onValueChange={handleSortChange}>
                 <SelectTrigger className="h-8 w-42.5 text-xs" aria-label="Orden de pagos">
@@ -151,9 +151,9 @@ export function PaymentMethodDetailTabs({
       </TabsContent>
 
       <TabsContent value="incomes" className="space-y-4">
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-border bg-muted/20">
-            <p className="text-xs text-muted-foreground">{incomes.totalCount} ingresos asociados</p>
+        <div className="rounded-xl border border-emerald-500/20 overflow-hidden shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
+            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{incomes.totalCount} ingresos asociados</p>
             <div className="flex items-center gap-2">
               <Select value={incomeSort} onValueChange={handleIncomeSortChange}>
                 <SelectTrigger className="h-8 w-42.5 text-xs" aria-label="Orden de ingresos">
@@ -219,9 +219,9 @@ export function PaymentMethodDetailTabs({
       </TabsContent>
 
       <TabsContent value="projects">
-        <div className="rounded-lg border border-border overflow-hidden bg-card">
-          <div className="px-4 py-3 border-b border-border bg-muted/20">
-            <p className="text-xs text-muted-foreground">{projects.totalCount} proyectos vinculados</p>
+        <div className="rounded-xl border border-violet-500/20 overflow-hidden bg-card shadow-sm">
+          <div className="px-4 py-3 border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
+            <p className="text-xs font-bold text-violet-600 dark:text-violet-400">{projects.totalCount} proyectos vinculados</p>
           </div>
 
           {loadingProjects ? (
@@ -243,15 +243,15 @@ export function PaymentMethodDetailTabs({
                 <button
                   key={project.id}
                   onClick={() => onOpenProjectCard(project.id)}
-                  className="text-left rounded-lg border border-border bg-background hover:bg-accent/30 transition-colors p-4"
+                  className="text-left rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent hover:from-violet-500/10 hover:shadow-sm transition-all p-4"
                 >
-                  <p className="text-sm font-semibold text-foreground truncate">{project.name}</p>
+                  <p className="text-sm font-bold text-foreground truncate">{project.name}</p>
                   {project.description && (
                     <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{project.description}</p>
                   )}
 
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline" className="text-[10px]">{project.currencyCode}</Badge>
+                    <Badge variant="outline" className="text-[10px] border-violet-500/30 text-violet-600 dark:text-violet-400">{project.currencyCode}</Badge>
                     <span>Owner: {project.ownerUserId.slice(0, 8)}...</span>
                   </div>
 

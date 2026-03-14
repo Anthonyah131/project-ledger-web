@@ -26,7 +26,7 @@ export function IncomesEmptyState({ hasSearch, onCreate }: EmptyStateProps) {
 export function IncomesSkeleton() {
   return (
     <div className="flex flex-col">
-      <div className="px-5 py-2.5 border-b border-border bg-muted/30">
+      <div className="px-5 py-2.5 border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
         <Skeleton className="h-3 w-64" />
       </div>
       {Array.from({ length: 6 }).map((_, i) => (

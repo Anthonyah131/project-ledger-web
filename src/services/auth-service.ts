@@ -16,6 +16,8 @@ import type {
   VerifyOtpRequest,
 } from "@/types/token";
 
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5192/api").replace(/\/$/, "");
+
 // ─── Public endpoints (no token needed) ────────────────────────────────────────
 
 export function login(data: LoginRequest) {
@@ -40,6 +42,10 @@ export function verifyOtp(data: VerifyOtpRequest) {
 
 export function resetPassword(data: ResetPasswordRequest) {
   return api.post<MessageResponse>("/auth/reset-password", data, { skipAuth: true });
+}
+
+export function getGoogleLoginUrl() {
+  return `${API_BASE_URL}/auth/google/login`;
 }
 
 // ─── Authenticated endpoints ───────────────────────────────────────────────────

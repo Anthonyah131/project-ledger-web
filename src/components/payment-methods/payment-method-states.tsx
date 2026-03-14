@@ -29,11 +29,11 @@ export function EmptyState({ hasSearch, onCreate }: EmptyStateProps) {
 
 export function PaymentMethodsShelfSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-cyan-500/10">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="bg-card p-5">
           <div className="flex gap-4">
-            <Skeleton className="w-1 h-20 rounded-full" />
+            <Skeleton className="w-1.5 h-20 rounded-full" />
             <div className="flex-1 flex flex-col gap-3">
               <div>
                 <Skeleton className="h-4 w-32" />
@@ -55,7 +55,7 @@ export function PaymentMethodsShelfSkeleton() {
 export function PaymentMethodsSkeleton() {
   return (
     <div className="flex flex-col">
-      <div className="px-5 py-2.5 border-b border-border bg-muted/30">
+      <div className="px-5 py-2.5 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
         <Skeleton className="h-3 w-64" />
       </div>
       {Array.from({ length: 5 }).map((_, i) => (
