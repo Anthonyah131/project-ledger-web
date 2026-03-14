@@ -1,10 +1,11 @@
 "use client"
 
-import { memo, useMemo } from "react"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
+import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { ExpenseResponse } from "@/types/expense"
 import type { PaymentMethodResponse } from "@/types/payment-method"
@@ -15,12 +16,39 @@ interface ExpensesListProps {
   paymentMethods: PaymentMethodResponse[]
   onEdit: (expense: ExpenseResponse) => void
   onDelete: (expense: ExpenseResponse) => void
+  onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void | Promise<void>
 }
 
-function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete }: ExpensesListProps) {
+function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive }: ExpensesListProps) {
+  const activatingIdsRef = useRef<Set<string>>(new Set())
+  const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
+
   const paymentMethodNameById = useMemo(
     () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
     [paymentMethods]
+  )
+
+  const handleActivate = useCallback(
+    async (expense: ExpenseResponse) => {
+      if (expense.isActive || activatingIdsRef.current.has(expense.id)) {
+        return
+      }
+
+      activatingIdsRef.current.add(expense.id)
+      setActivatingIds((prev) => new Set(prev).add(expense.id))
+
+      try {
+        await Promise.resolve(onToggleActive(expense, true))
+      } finally {
+        activatingIdsRef.current.delete(expense.id)
+        setActivatingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(expense.id)
+          return next
+        })
+      }
+    },
+    [onToggleActive]
   )
 
   return (
@@ -37,6 +65,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
       </div>
 
       {expenses.map((expense, i) => {
+        const isActivating = activatingIds.has(expense.id)
         const showOriginal = expense.originalCurrency !== projectCurrency
         const exchanges = expense.currencyExchanges ?? []
         const pmName = paymentMethodNameById.get(expense.paymentMethodId) ?? "—"
@@ -59,6 +88,16 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {expense.title}
               </p>
+              {!expense.isActive && (
+                <div className="mt-1">
+                  <Badge
+                    variant="outline"
+                    className="border-amber-500/40 bg-amber-500/15 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:text-amber-200"
+                  >
+                    Recordatorio
+                  </Badge>
+                </div>
+              )}
               {expense.description && (
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {expense.description}
@@ -121,6 +160,11 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
             {/* Menu */}
             <ItemActionMenu
               ariaLabel="Acciones del gasto"
+              onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
+              activateLabel="Activar movimiento"
+              activatingLabel="Activando..."
+              isActivating={isActivating}
+              disabled={isActivating}
               onEdit={() => onEdit(expense)}
               onDelete={() => onDelete(expense)}
             />

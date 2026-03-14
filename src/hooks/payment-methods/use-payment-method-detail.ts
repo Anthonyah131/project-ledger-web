@@ -17,6 +17,13 @@ import type {
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method"
 
+export type MovementActiveStatusFilter = "all" | "active" | "inactive"
+
+function toIsActiveParam(status: MovementActiveStatusFilter): boolean | undefined {
+  if (status === "all") return undefined
+  return status === "active"
+}
+
 interface UsePaymentMethodDetailReturn {
   paymentMethod: PaymentMethodResponse | null
   expenses: PaymentMethodExpensesResponse
@@ -37,6 +44,7 @@ interface UsePaymentMethodDetailReturn {
   incomeSort: string
   from: string
   to: string
+  activeStatus: MovementActiveStatusFilter
   dateRangeError: string | null
   projectId: string
   setPage: (p: number) => void
@@ -48,6 +56,7 @@ interface UsePaymentMethodDetailReturn {
   setFrom: (value: string) => void
   setTo: (value: string) => void
   setProjectId: (value: string) => void
+  setActiveStatus: (value: MovementActiveStatusFilter) => void
   clearFilters: () => void
   editOpen: boolean
   setEditOpen: (v: boolean) => void
@@ -117,6 +126,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
   const [from, setFromState] = useState("")
   const [to, setToState] = useState("")
   const [projectId, setProjectIdState] = useState("")
+  const [activeStatus, setActiveStatusState] = useState<MovementActiveStatusFilter>("active")
   const dateRangeError = getDateRangeError(from, to)
 
   // Modal state
@@ -180,6 +190,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
         from: from || undefined,
         to: to || undefined,
         projectId: projectId || undefined,
+        isActive: toIsActiveParam(activeStatus),
       })
       setExpenses(data)
     } catch (err) {
@@ -187,7 +198,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     } finally {
       setLoadingExpenses(false)
     }
-  }, [id, page, pageSize, sort, from, to, projectId, dateRangeError])
+  }, [id, page, pageSize, sort, from, to, projectId, activeStatus, dateRangeError])
 
   const fetchIncomes = useCallback(async () => {
     if (dateRangeError) return
@@ -203,6 +214,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
         from: from || undefined,
         to: to || undefined,
         projectId: projectId || undefined,
+        isActive: toIsActiveParam(activeStatus),
       })
       setIncomes(data)
     } catch (err) {
@@ -210,7 +222,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     } finally {
       setLoadingIncomes(false)
     }
-  }, [id, incomePage, incomePageSize, incomeSort, from, to, projectId, dateRangeError])
+  }, [id, incomePage, incomePageSize, incomeSort, from, to, projectId, activeStatus, dateRangeError])
 
   useEffect(() => {
     void fetchPaymentMethod()
@@ -293,6 +305,13 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     setFromState("")
     setToState("")
     setProjectIdState("")
+    setActiveStatusState("active")
+    setPage(1)
+    setIncomePage(1)
+  }, [])
+
+  const setActiveStatus = useCallback((value: MovementActiveStatusFilter) => {
+    setActiveStatusState(value)
     setPage(1)
     setIncomePage(1)
   }, [])
@@ -337,6 +356,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     incomeSort,
     from,
     to,
+    activeStatus,
     dateRangeError,
     projectId,
     setPage,
@@ -348,6 +368,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     setFrom,
     setTo,
     setProjectId,
+    setActiveStatus,
     clearFilters,
     editOpen,
     setEditOpen,

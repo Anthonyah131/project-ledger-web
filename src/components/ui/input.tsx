@@ -2,11 +2,11 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, type, id, autoComplete, ...props }: React.ComponentProps<"input">) {
   const generatedId = React.useId()
-  const resolvedId = props.id ?? generatedId
+  const resolvedId = id ?? generatedId
   const resolvedAutoComplete =
-    props.autoComplete ??
+    autoComplete ??
     (type === "email"
       ? "email"
       : type === "tel"

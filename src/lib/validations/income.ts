@@ -45,6 +45,7 @@ export const createIncomeSchema = z.object({
   description: z.string().trim(),
   notes: z.string().trim(),
   receiptNumber: z.string().trim(),
+  isActive: z.boolean(),
   currencyExchanges: z.array(currencyExchangeSchema),
   // Kept for future compatibility if backend makes convertedAmount editable.
   convertedAmount: optionalPositiveNumeric,
@@ -64,6 +65,7 @@ export const updateIncomeSchema = z.object({
   description: z.string().trim(),
   notes: z.string().trim(),
   receiptNumber: z.string().trim(),
+  isActive: z.boolean(),
   currencyExchanges: z.array(currencyExchangeSchema),
   convertedAmount: optionalPositiveNumeric,
   accountAmount: optionalPositiveAccountNumeric,

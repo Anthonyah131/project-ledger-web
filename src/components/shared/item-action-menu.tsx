@@ -1,6 +1,14 @@
 "use client"
 
-import { Pencil, Trash2, ArrowRight, MoreHorizontal, Users } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +29,11 @@ interface ItemActionMenuProps {
   /** If provided, renders an "Open" option at the top with a separator */
   onOpen?: () => void;
   openLabel?: string;
+  /** If provided, renders an "Activate" option for inactive entities */
+  onActivate?: () => void;
+  activateLabel?: string;
+  activatingLabel?: string;
+  isActivating?: boolean;
   /** If provided, renders a "Gestionar accesos" option */
   onShare?: () => void;
   shareLabel?: string;
@@ -32,6 +45,8 @@ interface ItemActionMenuProps {
   align?: "start" | "center" | "end";
   /** Use the "ghost" trigger style (Button variant). When false, uses a custom minimal trigger. */
   variant?: "ghost" | "minimal";
+  /** Disable the trigger and all actions */
+  disabled?: boolean;
 }
 
 export function ItemActionMenu({
@@ -40,6 +55,10 @@ export function ItemActionMenu({
   onDelete,
   onOpen,
   openLabel = "Abrir",
+  onActivate,
+  activateLabel = "Activar",
+  activatingLabel = "Activando...",
+  isActivating = false,
   onShare,
   shareLabel = "Gestionar accesos",
   editLabel = "Editar",
@@ -47,11 +66,25 @@ export function ItemActionMenu({
   stopPropagation = false,
   align = "end",
   variant = "minimal",
+  disabled = false,
 }: ItemActionMenuProps) {
-  function withStop<E extends React.SyntheticEvent>(fn: () => void) {
+  function runAfterMenuClose(fn: () => void) {
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
+      window.requestAnimationFrame(() => fn());
+      return;
+    }
+
+    setTimeout(fn, 0);
+  }
+
+  function withStop<E extends { stopPropagation?: () => void }>(fn: () => void) {
     return (e: E) => {
-      if (stopPropagation) e.stopPropagation();
-      fn();
+      if (stopPropagation) e.stopPropagation?.();
+      runAfterMenuClose(fn);
     };
   }
 
@@ -64,6 +97,8 @@ export function ItemActionMenu({
             size="icon"
             className="size-8 text-muted-foreground/0 group-hover:text-muted-foreground transition-colors"
             onClick={stopPropagation ? (e) => e.stopPropagation() : undefined}
+            aria-label={ariaLabel}
+            disabled={disabled}
           >
             <MoreHorizontal className="size-4" />
             <span className="sr-only">{ariaLabel}</span>
@@ -71,10 +106,12 @@ export function ItemActionMenu({
         ) : (
           <button
             onClick={stopPropagation ? (e) => e.stopPropagation() : undefined}
+            disabled={disabled}
             className={cn(
               "shrink-0 ml-2 flex items-center justify-center size-7 rounded-md",
               "text-muted-foreground/0 group-hover:text-muted-foreground",
               "hover:bg-accent hover:text-foreground",
+              "disabled:pointer-events-none disabled:text-muted-foreground/40",
               "transition-all duration-150",
               "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
             )}
@@ -87,7 +124,7 @@ export function ItemActionMenu({
       <DropdownMenuContent align={align} className="w-44">
         {onOpen && (
           <>
-            <DropdownMenuItem onClick={withStop(onOpen)}>
+            <DropdownMenuItem onSelect={withStop(onOpen)}>
               <ArrowRight className="size-4" />
               {openLabel}
             </DropdownMenuItem>
@@ -96,19 +133,32 @@ export function ItemActionMenu({
         )}
         {onShare && (
           <>
-            <DropdownMenuItem onClick={withStop(onShare)}>
+            <DropdownMenuItem onSelect={withStop(onShare)}>
               <Users className="size-4" />
               {shareLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem onClick={withStop(onEdit)}>
+        {onActivate && (
+          <>
+            <DropdownMenuItem onSelect={withStop(onActivate)} disabled={isActivating}>
+              {isActivating ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="size-4" />
+              )}
+              {isActivating ? activatingLabel : activateLabel}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem onSelect={withStop(onEdit)}>
           <Pencil className="size-4" />
           {editLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={withStop(onDelete)}
+          onSelect={withStop(onDelete)}
           className="text-destructive focus:text-destructive"
         >
           <Trash2 className="size-4" />

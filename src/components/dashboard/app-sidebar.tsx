@@ -40,7 +40,7 @@ const adminNavMain = [
 
 const navSecondary = [
   { title: "Configuración", url: "/settings", icon: IconSettings },
-  { title: "Ayuda",         url: "#",         icon: IconHelp },
+  { title: "Ayuda",         url: "/help",     icon: IconHelp },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

@@ -5,7 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 import { ThemeProvider } from "@/context/theme-context";
 import N8nChat from "@/components/shared/n8n-chat";
-import N8nChatDebug from "@/components/shared/n8n-chat-debug";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +38,7 @@ export default function RootLayout({
             {children}
             <Toaster position="bottom-right" richColors closeButton />
             <N8nChat />
-            <N8nChatDebug />
+
           </AuthProvider>
         </ThemeProvider>
       </body>

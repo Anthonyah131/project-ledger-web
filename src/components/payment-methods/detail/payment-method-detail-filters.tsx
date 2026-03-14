@@ -16,11 +16,13 @@ interface PaymentMethodDetailFiltersProps {
   projects: PaymentMethodProjectsResponse
   from: string
   to: string
+  activeStatus: "all" | "active" | "inactive"
   projectId: string
   dateRangeError: string | null
   setFrom: (value: string) => void
   setTo: (value: string) => void
   setProjectId: (value: string) => void
+  setActiveStatus: (value: "all" | "active" | "inactive") => void
   clearFilters: () => void
 }
 
@@ -28,14 +30,17 @@ export function PaymentMethodDetailFilters({
   projects,
   from,
   to,
+  activeStatus,
   projectId,
   dateRangeError,
   setFrom,
   setTo,
   setProjectId,
+  setActiveStatus,
   clearFilters,
 }: PaymentMethodDetailFiltersProps) {
-  const hasFilters = from.length > 0 || to.length > 0 || projectId.length > 0
+  const hasFilters =
+    from.length > 0 || to.length > 0 || projectId.length > 0 || activeStatus !== "active"
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
@@ -44,21 +49,27 @@ export function PaymentMethodDetailFilters({
         <p className="text-sm font-medium text-foreground">Filtros compartidos</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr_auto] gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr_1fr_auto] gap-3">
         <DateInput
+          id="payment-method-from"
+          name="paymentMethodFrom"
           value={from}
           onChange={(event) => setFrom(event.target.value)}
           aria-label="Fecha desde"
           max={to || undefined}
           aria-invalid={Boolean(dateRangeError)}
+          autoComplete="off"
         />
 
         <DateInput
+          id="payment-method-to"
+          name="paymentMethodTo"
           value={to}
           onChange={(event) => setTo(event.target.value)}
           aria-label="Fecha hasta"
           min={from || undefined}
           aria-invalid={Boolean(dateRangeError)}
+          autoComplete="off"
         />
 
         <Select value={projectId || "all"} onValueChange={(value) => setProjectId(value === "all" ? "" : value)}>
@@ -72,6 +83,17 @@ export function PaymentMethodDetailFilters({
                 {project.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={activeStatus} onValueChange={setActiveStatus}>
+          <SelectTrigger aria-label="Filtrar por estado contable">
+            <SelectValue placeholder="Contabilizados" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Contabilizados</SelectItem>
+            <SelectItem value="inactive">Recordatorios</SelectItem>
+            <SelectItem value="all">Todos</SelectItem>
           </SelectContent>
         </Select>
 

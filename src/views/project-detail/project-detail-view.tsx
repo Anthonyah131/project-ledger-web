@@ -52,7 +52,9 @@ export function ProjectDetailView({ projectId }: Props) {
     mutateProjectUpdate, mutateProjectDelete,
     exp, inc, pac, cat, obl, bud, ppm,
     mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
+    mutateExpenseActiveState,
     mutateIncomeCreate, mutateIncomeUpdate, mutateIncomeDelete,
+    mutateIncomeActiveState,
     mutateAlternativeCurrencyAdd, mutateAlternativeCurrencyDelete,
     mutateCategoryCreate, mutateCategoryUpdate,
     mutateCategoryDelete,
@@ -146,6 +148,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onCreate={mutateExpenseCreate}
           onSave={mutateExpenseUpdate}
           onDelete={mutateExpenseDelete}
+          onToggleActive={mutateExpenseActiveState}
         />
 
         <ProjectDetailIncomesTab
@@ -176,6 +179,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onCreate={mutateIncomeCreate}
           onSave={mutateIncomeUpdate}
           onDelete={mutateIncomeDelete}
+          onToggleActive={mutateIncomeActiveState}
         />
 
         <ProjectDetailAlternativeCurrenciesTab

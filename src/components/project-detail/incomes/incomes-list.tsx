@@ -1,10 +1,11 @@
 "use client"
 
-import { memo, useMemo } from "react"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
+import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { IncomeResponse } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
@@ -15,6 +16,7 @@ interface IncomesListProps {
   paymentMethods: PaymentMethodResponse[]
   onEdit: (income: IncomeResponse) => void
   onDelete: (income: IncomeResponse) => void
+  onToggleActive: (income: IncomeResponse, isActive: boolean) => void | Promise<void>
 }
 
 function IncomesListComponent({
@@ -23,10 +25,37 @@ function IncomesListComponent({
   paymentMethods,
   onEdit,
   onDelete,
+  onToggleActive,
 }: IncomesListProps) {
+  const activatingIdsRef = useRef<Set<string>>(new Set())
+  const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
+
   const paymentMethodNameById = useMemo(
     () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
     [paymentMethods]
+  )
+
+  const handleActivate = useCallback(
+    async (income: IncomeResponse) => {
+      if (income.isActive || activatingIdsRef.current.has(income.id)) {
+        return
+      }
+
+      activatingIdsRef.current.add(income.id)
+      setActivatingIds((prev) => new Set(prev).add(income.id))
+
+      try {
+        await Promise.resolve(onToggleActive(income, true))
+      } finally {
+        activatingIdsRef.current.delete(income.id)
+        setActivatingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(income.id)
+          return next
+        })
+      }
+    },
+    [onToggleActive]
   )
 
   return (
@@ -42,6 +71,7 @@ function IncomesListComponent({
       </div>
 
       {incomes.map((income, i) => {
+        const isActivating = activatingIds.has(income.id)
         const showOriginal = income.originalCurrency !== projectCurrency
         const exchanges = income.currencyExchanges ?? []
         const pmName = paymentMethodNameById.get(income.paymentMethodId) ?? "—"
@@ -62,6 +92,16 @@ function IncomesListComponent({
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {income.title}
               </p>
+              {!income.isActive && (
+                <div className="mt-1">
+                  <Badge
+                    variant="outline"
+                    className="border-amber-500/40 bg-amber-500/15 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:text-amber-200"
+                  >
+                    Recordatorio
+                  </Badge>
+                </div>
+              )}
               {income.description && (
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {income.description}
@@ -111,6 +151,11 @@ function IncomesListComponent({
 
             <ItemActionMenu
               ariaLabel="Acciones del ingreso"
+              onActivate={!income.isActive ? () => { void handleActivate(income) } : undefined}
+              activateLabel="Activar movimiento"
+              activatingLabel="Activando..."
+              isActivating={isActivating}
+              disabled={isActivating}
               onEdit={() => onEdit(income)}
               onDelete={() => onDelete(income)}
             />

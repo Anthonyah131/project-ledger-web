@@ -18,6 +18,7 @@ export interface GetIncomesParams {
   /** Mapped to backend query param `isDescending` */
   sortDirection?: "asc" | "desc";
   includeDeleted?: boolean;
+  isActive?: boolean;
 }
 
 export function getIncomes(projectId: string, params: GetIncomesParams = {}) {
@@ -30,6 +31,9 @@ export function getIncomes(projectId: string, params: GetIncomesParams = {}) {
   }
   if (params.includeDeleted !== undefined) {
     query.set("includeDeleted", String(params.includeDeleted));
+  }
+  if (params.isActive !== undefined) {
+    query.set("isActive", String(params.isActive));
   }
 
   const qs = query.toString();
@@ -48,6 +52,21 @@ export function createIncome(projectId: string, data: CreateIncomeRequest) {
 
 export function updateIncome(projectId: string, incomeId: string, data: UpdateIncomeRequest) {
   return api.put<IncomeResponse>(`/projects/${projectId}/incomes/${incomeId}`, data);
+}
+
+interface UpdateIncomeActiveStateRequest {
+  isActive: boolean;
+}
+
+export function updateIncomeActiveState(
+  projectId: string,
+  incomeId: string,
+  data: UpdateIncomeActiveStateRequest
+) {
+  return api.patch<IncomeResponse>(
+    `/projects/${projectId}/incomes/${incomeId}/active-state`,
+    data
+  );
 }
 
 export function deleteIncome(projectId: string, incomeId: string) {

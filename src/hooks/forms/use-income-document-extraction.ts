@@ -65,6 +65,9 @@ export function useIncomeDocumentExtraction({
     if (draft.notes) {
       form.setValue("notes", draft.notes, { shouldValidate: true })
     }
+    if (typeof draft.isActive === "boolean") {
+      form.setValue("isActive", draft.isActive, { shouldValidate: true })
+    }
     if (draft.receiptNumber) {
       form.setValue("receiptNumber", draft.receiptNumber, { shouldValidate: true })
     }

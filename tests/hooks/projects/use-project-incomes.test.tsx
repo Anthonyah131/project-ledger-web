@@ -38,6 +38,7 @@ const sampleIncome: IncomeResponse = {
   incomeDate: "2026-03-07",
   receiptNumber: null,
   notes: null,
+  isActive: true,
   createdAt: "2026-03-07T00:00:00Z",
   updatedAt: "2026-03-07T00:00:00Z",
   isDeleted: false,

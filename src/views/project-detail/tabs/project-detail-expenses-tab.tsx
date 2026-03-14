@@ -29,6 +29,8 @@ const EditExpenseModal = dynamic(() =>
 interface ExpensesTabState {
   query: string
   setQuery: (value: string) => void
+  activeStatus: "all" | "active" | "inactive"
+  handleActiveStatusChange: (value: "all" | "active" | "inactive") => void
   sort: string
   handleSortChange: (value: string) => void
   pageSize: number
@@ -65,6 +67,7 @@ interface ProjectDetailExpensesTabProps {
   onCreate: (data: CreateExpenseRequest) => void
   onSave: (id: string, data: UpdateExpenseRequest) => void
   onDelete: (expense: ExpenseResponse) => void
+  onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void
 }
 
 export function ProjectDetailExpensesTab({
@@ -86,12 +89,15 @@ export function ProjectDetailExpensesTab({
   onCreate,
   onSave,
   onDelete,
+  onToggleActive,
 }: ProjectDetailExpensesTabProps) {
   return (
     <TabsContent value="expenses" className="flex flex-col gap-4">
       <ExpensesToolbar
         query={exp.query}
         onQueryChange={exp.setQuery}
+        activeStatus={exp.activeStatus}
+        onActiveStatusChange={exp.handleActiveStatusChange}
         sort={exp.sort}
         onSortChange={exp.handleSortChange}
         pageSize={exp.pageSize}
@@ -115,6 +121,7 @@ export function ProjectDetailExpensesTab({
             paymentMethods={paymentMethods}
             onEdit={onEditSelect}
             onDelete={onDeleteSelect}
+            onToggleActive={onToggleActive}
           />
           {!exp.hasSearch && (
             <Pagination

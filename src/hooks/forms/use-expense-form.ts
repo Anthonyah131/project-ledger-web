@@ -71,6 +71,7 @@ export function useCreateExpenseForm({
       description: "",
       receiptNumber: "",
       notes: "",
+      isActive: true,
       obligationId: "",
       obligationEquivalentAmount: "",
       currencyExchanges: [],
@@ -98,6 +99,7 @@ export function useCreateExpenseForm({
         Number.isFinite(convertedAmount) && convertedAmount > 0
           ? convertedAmount
           : parseFloat((amount * effectiveRate).toFixed(2)),
+      isActive: values.isActive,
     }
     const currencyExchanges = values.currencyExchanges
       .map((item) => ({
@@ -161,6 +163,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
     resolver: zodResolver(updateExpenseSchema),
     defaultValues: {
       obligationId: "none",
+      isActive: true,
       isTemplate: false,
       currencyExchanges: [],
     },
@@ -178,6 +181,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
           description: expense.description ?? "",
           receiptNumber: expense.receiptNumber ?? "",
           notes: expense.notes ?? "",
+          isActive: expense.isActive,
           isTemplate: expense.isTemplate,
           obligationEquivalentAmount:
             expense.obligationEquivalentAmount != null
@@ -221,6 +225,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
       description: values.description.trim().length > 0 ? values.description : null,
       receiptNumber: values.receiptNumber.trim().length > 0 ? values.receiptNumber : null,
       notes: values.notes.trim().length > 0 ? values.notes : null,
+      isActive: values.isActive,
       isTemplate: values.isTemplate ?? expense.isTemplate,
     }
     const currencyExchanges = values.currencyExchanges

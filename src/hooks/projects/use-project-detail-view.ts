@@ -50,6 +50,7 @@ export function useProjectDetailView(projectId: string) {
     mutateCreate: mutateExpenseCreateRaw,
     mutateUpdate: mutateExpenseUpdateRaw,
     mutateDelete: mutateExpenseDeleteRaw,
+    mutateActiveState: mutateExpenseActiveStateRaw,
     refetch: refetchExpenses,
   } = exp
   const {
@@ -74,6 +75,7 @@ export function useProjectDetailView(projectId: string) {
     mutateCreate: mutateIncomeCreateRaw,
     mutateUpdate: mutateIncomeUpdateRaw,
     mutateDelete: mutateIncomeDeleteRaw,
+    mutateActiveState: mutateIncomeActiveStateRaw,
     refetch: refetchIncomes,
   } = inc
   const {
@@ -147,6 +149,18 @@ export function useProjectDetailView(projectId: string) {
     [mutateExpenseDeleteRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
   )
 
+  const mutateExpenseActiveState = useCallback(
+    async (expense: ExpenseResponse, isActive: boolean) => {
+      await mutateExpenseActiveStateRaw(expense, isActive, { refetch: false })
+      await Promise.all([
+        refetchExpenses(),
+        expense.obligationId ? refetchObligations() : Promise.resolve(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
+    },
+    [mutateExpenseActiveStateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+  )
+
   // ─── Income CRUD → refresh budget (if configured) ───
   const mutateIncomeCreate = useCallback(
     async (data: CreateIncomeRequest) => {
@@ -179,6 +193,17 @@ export function useProjectDetailView(projectId: string) {
       ])
     },
     [mutateIncomeDeleteRaw, refetchIncomes, currentBudget, refetchBudget],
+  )
+
+  const mutateIncomeActiveState = useCallback(
+    async (income: IncomeResponse, isActive: boolean) => {
+      await mutateIncomeActiveStateRaw(income, isActive, { refetch: false })
+      await Promise.all([
+        refetchIncomes(),
+        currentBudget ? refetchBudget() : Promise.resolve(),
+      ])
+    },
+    [mutateIncomeActiveStateRaw, refetchIncomes, currentBudget, refetchBudget],
   )
 
   // ─── Alternative currencies ───
@@ -293,9 +318,11 @@ export function useProjectDetailView(projectId: string) {
     mutateExpenseCreate,
     mutateExpenseUpdate,
     mutateExpenseDelete,
+    mutateExpenseActiveState,
     mutateIncomeCreate,
     mutateIncomeUpdate,
     mutateIncomeDelete,
+    mutateIncomeActiveState,
     mutateAlternativeCurrencyAdd,
     mutateAlternativeCurrencyDelete,
     mutateCategoryCreate,

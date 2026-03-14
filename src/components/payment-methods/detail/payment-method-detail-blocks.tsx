@@ -2,6 +2,7 @@
 
 import type { ComponentType } from "react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type {
@@ -66,6 +67,12 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
           <span>{formatDate(expense.expenseDate, { fixTimezone: true })}</span>
           <span>·</span>
           <span>{expense.categoryName}</span>
+          {!expense.isActive && (
+            <>
+              <span>·</span>
+              <Badge variant="secondary" className="text-[10px]">Recordatorio</Badge>
+            </>
+          )}
           {expense.receiptNumber && (
             <>
               <span>·</span>
@@ -115,6 +122,12 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
           <span>{formatDate(income.incomeDate, { fixTimezone: true })}</span>
           <span>·</span>
           <span>{income.categoryName}</span>
+          {!income.isActive && (
+            <>
+              <span>·</span>
+              <Badge variant="secondary" className="text-[10px]">Recordatorio</Badge>
+            </>
+          )}
           {income.projectName && (
             <>
               <span>·</span>

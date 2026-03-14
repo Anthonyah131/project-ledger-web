@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/auth-context";
 import { ApiClientError } from "@/lib/api-client";
 import { updateProfileSchema, type UpdateProfileFormValues } from "@/lib/validations/auth";
@@ -27,9 +28,9 @@ import type { UpdateProfileRequest } from "@/types/user";
 function getProfileErrorMessage(err: unknown): string {
   if (err instanceof ApiClientError) {
     if (err.status === 400) return "Revisa los datos del perfil e intenta de nuevo.";
-    if (err.status === 401) return "Tu sesion expiro. Inicia sesion nuevamente.";
+    if (err.status === 401) return "Tu sesión expiró. Inicia sesión nuevamente.";
     if (err.status === 403) return "No tienes permisos para editar el perfil.";
-    if (err.status === 404) return "No se encontro el usuario para actualizar perfil.";
+    if (err.status === 404) return "No se encontró el usuario para actualizar perfil.";
     return err.message;
   }
 
@@ -100,88 +101,102 @@ export function SettingsProfileView() {
 
   if (!user) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Perfil</CardTitle>
-          <CardDescription>No hay una sesion activa para mostrar el perfil.</CardDescription>
-        </CardHeader>
-      </Card>
+      <section>
+        <div className="mb-4">
+          <h2 className="text-base font-semibold">Perfil</h2>
+          <p className="text-sm text-muted-foreground">No hay una sesión activa para mostrar el perfil.</p>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Perfil</CardTitle>
-        <CardDescription>Actualiza tu informacion personal visible en la aplicacion.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center gap-3 rounded-lg border bg-muted/30 p-4">
-          <Avatar className="h-12 w-12 rounded-lg">
+    <section>
+      <div className="mb-1">
+        <h2 className="text-base font-semibold">Perfil público</h2>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Actualiza tu información personal visible en la aplicación.
+        </p>
+      </div>
+
+      <Separator className="my-4" />
+
+      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        {/* Form */}
+        <Card className="flex-1">
+          <Form {...form}>
+            <form onSubmit={onSubmit}>
+              <CardContent className="space-y-4 pt-6">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre completo</FormLabel>
+                      <FormControl>
+                        <Input disabled={isSaving} autoComplete="name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormItem>
+                  <FormLabel>Correo electrónico</FormLabel>
+                  <FormControl>
+                    <Input value={user.email} readOnly disabled />
+                  </FormControl>
+                </FormItem>
+
+                <FormField
+                  control={form.control}
+                  name="avatarUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL del avatar</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://..."
+                          disabled={isSaving}
+                          autoComplete="url"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+
+              <CardFooter className="border-t bg-muted/30 px-6 py-3">
+                <Button type="submit" size="sm" disabled={isSaving || !form.formState.isDirty}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar cambios"
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+
+        {/* Avatar preview */}
+        <div className="flex shrink-0 flex-col items-center gap-3 rounded-lg border bg-muted/20 p-5 text-center md:w-48">
+          <Avatar className="h-20 w-20 rounded-xl shadow-sm">
             <AvatarImage src={previewAvatar} alt={previewName} />
-            <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+            <AvatarFallback className="rounded-xl text-2xl">{initials}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium">{previewName}</p>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
+            <p className="text-sm font-medium leading-tight">{previewName}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{user.email}</p>
           </div>
+          <p className="text-[11px] text-muted-foreground">Vista previa de tu perfil</p>
         </div>
-
-        <Form {...form}>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre completo</FormLabel>
-                  <FormControl>
-                    <Input disabled={isSaving} autoComplete="name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormItem>
-              <FormLabel>Correo electronico</FormLabel>
-              <FormControl>
-                <Input value={user.email} readOnly disabled />
-              </FormControl>
-            </FormItem>
-
-            <FormField
-              control={form.control}
-              name="avatarUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL del avatar</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://..."
-                      disabled={isSaving}
-                      autoComplete="url"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" disabled={isSaving || !form.formState.isDirty}>
-              {isSaving ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                "Guardar cambios"
-              )}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

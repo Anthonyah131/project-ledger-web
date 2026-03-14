@@ -25,6 +25,7 @@ export interface IncomeResponse {
   incomeDate: string;
   receiptNumber: string | null;
   notes: string | null;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
@@ -56,6 +57,7 @@ export interface CreateIncomeRequest {
   incomeDate: string;
   receiptNumber?: string | null;
   notes?: string | null;
+  isActive?: boolean;
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
 
@@ -72,6 +74,7 @@ export interface UpdateIncomeRequest {
   incomeDate: string;
   receiptNumber?: string | null;
   notes?: string | null;
+  isActive?: boolean;
   /** null = no change, [] = remove all, list = replace all */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
@@ -92,6 +95,7 @@ export interface IncomeExtractionDraft {
   incomeDate: string | null;
   receiptNumber: string | null;
   notes: string | null;
+  isActive: boolean;
   currencyExchanges: CurrencyExchangeRequest[] | null;
   detectedMerchantName: string | null;
   detectedPaymentMethodText: string | null;

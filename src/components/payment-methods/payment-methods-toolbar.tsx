@@ -44,11 +44,14 @@ export function PaymentMethodsToolbar({
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <Input
+            id="payment-methods-search"
+            name="paymentMethodsSearch"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Buscar…"
             className="pl-8.5 h-8 text-sm"
             aria-label="Buscar métodos de pago"
+            autoComplete="off"
           />
         </div>
         <Select value={typeFilter} onValueChange={onTypeFilterChange}>
@@ -96,6 +99,7 @@ export function PaymentMethodsToolbar({
           aria-label="Modo de vista"
         >
           <button
+            type="button"
             onClick={() => onViewModeChange("shelf")}
             role="radio"
             aria-checked={viewMode === "shelf"}
@@ -110,6 +114,7 @@ export function PaymentMethodsToolbar({
             <LayoutGrid className="size-3.5" />
           </button>
           <button
+            type="button"
             onClick={() => onViewModeChange("list")}
             role="radio"
             aria-checked={viewMode === "list"}

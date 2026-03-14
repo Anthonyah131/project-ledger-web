@@ -60,6 +60,9 @@ export function useExpenseDocumentExtraction({
     if (draft.notes) {
       form.setValue("notes", draft.notes, { shouldValidate: true })
     }
+    if (typeof draft.isActive === "boolean") {
+      form.setValue("isActive", draft.isActive, { shouldValidate: true })
+    }
     if (draft.obligationId && obligations.some((obligation) => obligation.id === draft.obligationId)) {
       form.setValue("obligationId", draft.obligationId, { shouldValidate: true })
     }

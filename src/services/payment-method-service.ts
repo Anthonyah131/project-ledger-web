@@ -43,6 +43,7 @@ export interface GetPaymentMethodExpensesParams {
   from?: string;
   to?: string;
   projectId?: string;
+  isActive?: boolean;
 }
 
 export function getPaymentMethodExpenses(
@@ -57,6 +58,7 @@ export function getPaymentMethodExpenses(
   if (params.from) query.set("from", params.from);
   if (params.to) query.set("to", params.to);
   if (params.projectId) query.set("projectId", params.projectId);
+  if (params.isActive !== undefined) query.set("isActive", String(params.isActive));
 
   const qs = query.toString();
   const url = qs
@@ -76,6 +78,7 @@ export interface GetPaymentMethodIncomesParams {
   from?: string;
   to?: string;
   projectId?: string;
+  isActive?: boolean;
 }
 
 export function getPaymentMethodIncomes(
@@ -90,6 +93,7 @@ export function getPaymentMethodIncomes(
   if (params.from) query.set("from", params.from);
   if (params.to) query.set("to", params.to);
   if (params.projectId) query.set("projectId", params.projectId);
+  if (params.isActive !== undefined) query.set("isActive", String(params.isActive));
 
   const qs = query.toString();
   const url = qs

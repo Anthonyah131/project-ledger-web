@@ -15,6 +15,8 @@ import type { CategoryResponse } from "@/types/category"
 interface IncomesToolbarProps {
   query: string
   onQueryChange: (q: string) => void
+  activeStatus: "all" | "active" | "inactive"
+  onActiveStatusChange: (value: "all" | "active" | "inactive") => void
   sort: string
   onSortChange: (s: string) => void
   pageSize: number
@@ -29,6 +31,8 @@ interface IncomesToolbarProps {
 export function IncomesToolbar({
   query,
   onQueryChange,
+  activeStatus,
+  onActiveStatusChange,
   sort,
   onSortChange,
   pageSize,
@@ -70,6 +74,16 @@ export function IncomesToolbar({
             </SelectContent>
           </Select>
         )}
+        <Select value={activeStatus} onValueChange={onActiveStatusChange}>
+          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label="Filtrar por estado">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Contabilizados</SelectItem>
+            <SelectItem value="inactive">Recordatorios</SelectItem>
+            <SelectItem value="all">Todos</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={sort} onValueChange={onSortChange}>
           <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label="Ordenar">
             <SelectValue />

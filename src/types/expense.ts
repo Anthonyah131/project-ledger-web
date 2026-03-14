@@ -39,6 +39,8 @@ export interface Expense {
   notes: string | null;
   /** True for reusable expense templates (may NOT have an obligationId) */
   isTemplate: boolean;
+  /** True when expense is contabilized in totals and reports */
+  isActive: boolean;
 
   // ─── Alternative currencies (0..N per transaction) ───────
   /** Converted amounts to project alternative currencies */
@@ -72,6 +74,7 @@ export interface ExpenseResponse {
   receiptNumber: string | null;
   notes: string | null;
   isTemplate: boolean;
+  isActive: boolean;
   currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
@@ -105,6 +108,7 @@ export interface CreateExpenseRequest {
   receiptNumber?: string | null;
   notes?: string | null;
   isTemplate?: boolean;
+  isActive?: boolean;
   /** Optional replacement list of transaction conversions */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
@@ -124,6 +128,7 @@ export interface UpdateExpenseRequest {
   receiptNumber?: string | null;
   notes?: string | null;
   isTemplate?: boolean;
+  isActive?: boolean;
   /** null = no change, [] = remove all, list = replace all */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
 }
@@ -153,6 +158,7 @@ export interface ExpenseExtractionDraft {
   receiptNumber: string | null;
   notes: string | null;
   isTemplate: boolean;
+  isActive: boolean;
   currencyExchanges: CurrencyExchangeRequest[] | null;
   detectedMerchantName: string | null;
   detectedPaymentMethodText: string | null;

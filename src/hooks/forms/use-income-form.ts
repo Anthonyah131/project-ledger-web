@@ -93,6 +93,7 @@ export function useCreateIncomeForm({
       description: "",
       notes: "",
       receiptNumber: "",
+      isActive: true,
       currencyExchanges: [],
       accountAmount: "",
     },
@@ -160,6 +161,7 @@ export function useCreateIncomeForm({
         Number.isFinite(convertedAmount) && convertedAmount > 0
           ? convertedAmount
           : parseFloat((amount * effectiveRate).toFixed(2)),
+      isActive: values.isActive,
       accountAmount: manualAccountAmountRequired
         ? parsedAccountAmount
         : (parsedAccountAmount ?? undefined),
@@ -223,6 +225,7 @@ export function useUpdateIncomeForm({
   const form = useForm<UpdateIncomeFormValues>({
     resolver: zodResolver(updateIncomeSchema),
     defaultValues: {
+      isActive: true,
       currencyExchanges: [],
       accountAmount: "",
     },
@@ -239,6 +242,7 @@ export function useUpdateIncomeForm({
           description: income.description ?? "",
           notes: income.notes ?? "",
           receiptNumber: income.receiptNumber ?? "",
+          isActive: income.isActive,
           accountAmount: income.accountAmount != null ? String(income.accountAmount) : "",
           currencyExchanges: (income.currencyExchanges ?? []).map((item) => ({
             currencyCode: item.currencyCode,
@@ -316,6 +320,7 @@ export function useUpdateIncomeForm({
       accountAmount: manualAccountAmountRequired
         ? parsedAccountAmount
         : (parsedAccountAmount ?? undefined),
+      isActive: values.isActive,
       description: values.description.trim().length > 0 ? values.description : null,
       notes: values.notes.trim().length > 0 ? values.notes : null,
       receiptNumber: values.receiptNumber.trim().length > 0 ? values.receiptNumber : null,

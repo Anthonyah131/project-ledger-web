@@ -74,11 +74,13 @@ interface PaymentMethodDetailPanelProps {
   handleIncomeSortChange: (s: string) => void
   from: string
   to: string
+  activeStatus: "all" | "active" | "inactive"
   dateRangeError: string | null
   projectId: string
   setFrom: (value: string) => void
   setTo: (value: string) => void
   setProjectId: (value: string) => void
+  setActiveStatus: (value: "all" | "active" | "inactive") => void
   clearFilters: () => void
   editOpen: boolean
   setEditOpen: (v: boolean) => void
@@ -115,11 +117,13 @@ function PaymentMethodDetailPanelComponent({
   handleIncomeSortChange,
   from,
   to,
+  activeStatus,
   dateRangeError,
   projectId,
   setFrom,
   setTo,
   setProjectId,
+  setActiveStatus,
   clearFilters,
   editOpen,
   setEditOpen,
@@ -130,6 +134,19 @@ function PaymentMethodDetailPanelComponent({
   onBack,
 }: PaymentMethodDetailPanelProps) {
   const router = useRouter()
+
+  const runAfterMenuClose = useCallback((action: () => void) => {
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+
+    if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
+      window.requestAnimationFrame(action)
+      return
+    }
+
+    setTimeout(action, 0)
+  }, [])
 
   const handleSaveEdit = useCallback(
     async (_id: string, data: UpdatePaymentMethodRequest) => {
@@ -196,13 +213,16 @@ function PaymentMethodDetailPanelComponent({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Acciones del método de pago">
               <MoreVertical className="size-5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setEditOpen(true)}>Editar</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive">
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(() => setEditOpen(true))}>Editar</DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => runAfterMenuClose(() => setDeleteOpen(true))}
+              className="text-destructive"
+            >
               Eliminar
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -245,11 +265,13 @@ function PaymentMethodDetailPanelComponent({
         projects={projects}
         from={from}
         to={to}
+        activeStatus={activeStatus}
         projectId={projectId}
         dateRangeError={dateRangeError}
         setFrom={setFrom}
         setTo={setTo}
         setProjectId={setProjectId}
+        setActiveStatus={setActiveStatus}
         clearFilters={clearFilters}
       />
 

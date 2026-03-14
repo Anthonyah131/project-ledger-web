@@ -21,6 +21,7 @@ export interface GetExpensesParams {
   /** Mapped to backend query param `isDescending` */
   sortDirection?: "asc" | "desc"
   includeDeleted?: boolean
+  isActive?: boolean
 }
 
 // ─── Expenses (scoped to project) ─────────────────────────────────────────────
@@ -35,6 +36,9 @@ export function getExpenses(projectId: string, params: GetExpensesParams = {}) {
   }
   if (params.includeDeleted !== undefined)
     query.set("includeDeleted", String(params.includeDeleted))
+  if (params.isActive !== undefined) {
+    query.set("isActive", String(params.isActive))
+  }
 
   const qs = query.toString()
   const url = qs
@@ -58,6 +62,21 @@ export function updateExpense(
   data: UpdateExpenseRequest
 ) {
   return api.put<ExpenseResponse>(`/projects/${projectId}/expenses/${expenseId}`, data)
+}
+
+interface UpdateExpenseActiveStateRequest {
+  isActive: boolean
+}
+
+export function updateExpenseActiveState(
+  projectId: string,
+  expenseId: string,
+  data: UpdateExpenseActiveStateRequest
+) {
+  return api.patch<ExpenseResponse>(
+    `/projects/${projectId}/expenses/${expenseId}/active-state`,
+    data,
+  )
 }
 
 export function deleteExpense(projectId: string, expenseId: string) {

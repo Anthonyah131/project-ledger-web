@@ -6,6 +6,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { DateInput } from "@/components/ui/date-input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -461,6 +462,24 @@ export function IncomeFormFields({
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="isActive"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start gap-3 space-y-0 rounded-md border border-border p-4">
+            <FormControl>
+              <Checkbox checked={field.value} onCheckedChange={(value) => field.onChange(value === true)} />
+            </FormControl>
+            <div className="leading-none">
+              <FormLabel className="cursor-pointer">Contabilizar ahora</FormLabel>
+              <p className="text-xs text-muted-foreground mt-1">
+                Si lo desactivas, se guarda como recordatorio y no afecta totales ni reportes.
+              </p>
+            </div>
           </FormItem>
         )}
       />

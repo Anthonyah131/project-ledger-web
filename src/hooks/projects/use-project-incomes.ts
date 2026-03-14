@@ -12,6 +12,13 @@ import type {
 } from "@/types/income"
 import type { MutationOptions } from "@/types/common"
 
+export type IncomeActiveStatusFilter = "all" | "active" | "inactive"
+
+function toIsActiveParam(status: IncomeActiveStatusFilter): boolean | undefined {
+  if (status === "all") return undefined
+  return status === "active"
+}
+
 export function useProjectIncomes(projectId: string) {
   const [incomes, setIncomes] = useState<IncomeResponse[]>([])
   const [totalCount, setTotalCount] = useState(0)
@@ -23,6 +30,7 @@ export function useProjectIncomes(projectId: string) {
 
   const [query, setQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")
+  const [activeStatus, setActiveStatus] = useState<IncomeActiveStatusFilter>("active")
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<IncomeResponse | null>(null)
@@ -37,6 +45,7 @@ export function useProjectIncomes(projectId: string) {
         pageSize,
         sortBy,
         sortDirection,
+        isActive: toIsActiveParam(activeStatus),
       })
       setIncomes(data.items)
       setTotalCount(data.totalCount)
@@ -46,7 +55,7 @@ export function useProjectIncomes(projectId: string) {
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort])
+  }, [projectId, page, pageSize, sort, activeStatus])
 
   useEffect(() => {
     fetchIncomes()
@@ -115,6 +124,21 @@ export function useProjectIncomes(projectId: string) {
     [projectId, fetchIncomes]
   )
 
+  const mutateActiveState = useCallback(
+    async (income: IncomeResponse, isActive: boolean, options?: MutationOptions) => {
+      try {
+        await incomeService.updateIncomeActiveState(projectId, income.id, { isActive })
+        toast.success(isActive ? "Ingreso activado" : "Ingreso marcado como recordatorio")
+        if (options?.refetch ?? true) {
+          await fetchIncomes()
+        }
+      } catch (err) {
+        toastApiError(err, "Error al actualizar estado del ingreso")
+      }
+    },
+    [projectId, fetchIncomes]
+  )
+
   const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size)
     setPage(1)
@@ -122,6 +146,11 @@ export function useProjectIncomes(projectId: string) {
 
   const handleSortChange = useCallback((s: string) => {
     setSort(s)
+    setPage(1)
+  }, [])
+
+  const handleActiveStatusChange = useCallback((status: IncomeActiveStatusFilter) => {
+    setActiveStatus(status)
     setPage(1)
   }, [])
 
@@ -137,6 +166,7 @@ export function useProjectIncomes(projectId: string) {
     setQuery,
     selectedCategoryId,
     setSelectedCategoryId,
+    activeStatus,
     sort,
     createOpen,
     setCreateOpen,
@@ -147,8 +177,10 @@ export function useProjectIncomes(projectId: string) {
     mutateCreate,
     mutateUpdate,
     mutateDelete,
+    mutateActiveState,
     handlePageSizeChange,
     handleSortChange,
+    handleActiveStatusChange,
     refetch: fetchIncomes,
   }
 }

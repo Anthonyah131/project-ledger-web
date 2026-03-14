@@ -29,6 +29,8 @@ const EditIncomeModal = dynamic(() =>
 interface IncomesTabState {
   query: string
   setQuery: (value: string) => void
+  activeStatus: "all" | "active" | "inactive"
+  handleActiveStatusChange: (value: "all" | "active" | "inactive") => void
   sort: string
   handleSortChange: (value: string) => void
   pageSize: number
@@ -65,6 +67,7 @@ interface ProjectDetailIncomesTabProps {
   onCreate: (data: CreateIncomeRequest) => void
   onSave: (id: string, data: UpdateIncomeRequest) => void
   onDelete: (income: IncomeResponse) => void
+  onToggleActive: (income: IncomeResponse, isActive: boolean) => void
 }
 
 export function ProjectDetailIncomesTab({
@@ -86,12 +89,15 @@ export function ProjectDetailIncomesTab({
   onCreate,
   onSave,
   onDelete,
+  onToggleActive,
 }: ProjectDetailIncomesTabProps) {
   return (
     <TabsContent value="incomes" className="flex flex-col gap-4">
       <IncomesToolbar
         query={inc.query}
         onQueryChange={inc.setQuery}
+        activeStatus={inc.activeStatus}
+        onActiveStatusChange={inc.handleActiveStatusChange}
         sort={inc.sort}
         onSortChange={inc.handleSortChange}
         pageSize={inc.pageSize}
@@ -115,6 +121,7 @@ export function ProjectDetailIncomesTab({
             paymentMethods={paymentMethods}
             onEdit={onEditSelect}
             onDelete={onDeleteSelect}
+            onToggleActive={onToggleActive}
           />
           {!inc.hasSearch && (
             <Pagination

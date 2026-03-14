@@ -54,6 +54,7 @@ export interface PaymentMethodExpenseItem {
   receiptNumber: string | null;
   notes: string | null;
   isTemplate: boolean;
+  isActive: boolean;
   currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
@@ -92,6 +93,7 @@ export interface PaymentMethodIncomeItem {
   incomeDate: string;
   receiptNumber: string | null;
   notes: string | null;
+  isActive: boolean;
   currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;

@@ -39,11 +39,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     handleIncomeSortChange,
     from,
     to,
+    activeStatus,
     dateRangeError,
     projectId,
     setFrom,
     setTo,
     setProjectId,
+    setActiveStatus,
     clearFilters,
     editOpen,
     setEditOpen,
@@ -93,11 +95,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
       handleIncomeSortChange={handleIncomeSortChange}
       from={from}
       to={to}
+      activeStatus={activeStatus}
       dateRangeError={dateRangeError}
       projectId={projectId}
       setFrom={setFrom}
       setTo={setTo}
       setProjectId={setProjectId}
+      setActiveStatus={setActiveStatus}
       clearFilters={clearFilters}
       editOpen={editOpen}
       setEditOpen={setEditOpen}

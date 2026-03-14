@@ -15,6 +15,13 @@ import type {
 } from "@/types/expense"
 import type { MutationOptions } from "@/types/common"
 
+export type ExpenseActiveStatusFilter = "all" | "active" | "inactive"
+
+function toIsActiveParam(status: ExpenseActiveStatusFilter): boolean | undefined {
+  if (status === "all") return undefined
+  return status === "active"
+}
+
 export function useProjectExpenses(projectId: string) {
   const [expenses, setExpenses] = useState<ExpenseResponse[]>([])
   const [totalCount, setTotalCount] = useState(0)
@@ -28,6 +35,7 @@ export function useProjectExpenses(projectId: string) {
   // Client-side search
   const [query, setQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")
+  const [activeStatus, setActiveStatus] = useState<ExpenseActiveStatusFilter>("active")
 
   // Modals
   const [createOpen, setCreateOpen] = useState(false)
@@ -45,6 +53,7 @@ export function useProjectExpenses(projectId: string) {
         pageSize,
         sortBy,
         sortDirection,
+        isActive: toIsActiveParam(activeStatus),
       })
       setExpenses(data.items)
       setTotalCount(data.totalCount)
@@ -54,7 +63,7 @@ export function useProjectExpenses(projectId: string) {
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort])
+  }, [projectId, page, pageSize, sort, activeStatus])
 
   useEffect(() => {
     fetchExpenses()
@@ -133,6 +142,25 @@ export function useProjectExpenses(projectId: string) {
     [projectId, fetchExpenses]
   )
 
+  const mutateActiveState = useCallback(
+    async (
+      expense: ExpenseResponse,
+      isActive: boolean,
+      options?: MutationOptions
+    ) => {
+      try {
+        await expenseService.updateExpenseActiveState(projectId, expense.id, { isActive })
+        toast.success(isActive ? "Gasto activado" : "Gasto marcado como recordatorio")
+        if (options?.refetch ?? true) {
+          await fetchExpenses()
+        }
+      } catch (err) {
+        toastApiError(err, "Error al actualizar estado del gasto")
+      }
+    },
+    [projectId, fetchExpenses]
+  )
+
   // ── Page/sort handlers ────────────────────────────────────
 
   const handlePageSizeChange = useCallback((size: number) => {
@@ -145,6 +173,11 @@ export function useProjectExpenses(projectId: string) {
     setPage(1)
   }, [])
 
+  const handleActiveStatusChange = useCallback((status: ExpenseActiveStatusFilter) => {
+    setActiveStatus(status)
+    setPage(1)
+  }, [])
+
   return {
     expenses: filtered,
     total: hasSearch ? filtered.length : totalCount,
@@ -154,6 +187,7 @@ export function useProjectExpenses(projectId: string) {
     pageSize,
     query, setQuery,
     selectedCategoryId, setSelectedCategoryId,
+    activeStatus,
     sort,
     createOpen, setCreateOpen,
     editTarget, setEditTarget,
@@ -161,8 +195,10 @@ export function useProjectExpenses(projectId: string) {
     mutateCreate,
     mutateUpdate,
     mutateDelete,
+    mutateActiveState,
     handlePageSizeChange,
     handleSortChange,
+    handleActiveStatusChange,
     refetch: fetchExpenses,
   }
 }
