@@ -15,6 +15,9 @@ export function formatDateLabel(value: string): string {
 }
 
 export function formatCurrency(value: number, currencyCode: string): string {
+  if (!currencyCode) {
+    return formatAmount(value, "0.00")
+  }
   return new Intl.NumberFormat("es", {
     style: "currency",
     currency: currencyCode,
@@ -38,6 +41,9 @@ export function formatPercent(value: number): string {
 }
 
 export function formatCompactCurrency(value: number, currencyCode: string): string {
+  if (!currencyCode) {
+    return formatAmount(value, "0.00")
+  }
   return new Intl.NumberFormat("es", {
     style: "currency",
     currency: currencyCode,

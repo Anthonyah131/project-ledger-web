@@ -7,6 +7,13 @@ export type PaymentMethodType = 'bank' | 'cash' | 'card';
 
 // ─── API shapes ────────────────────────────────────────────────────────────────
 
+export interface PaymentMethodPartnerSummary {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+}
+
 export interface PaymentMethodResponse {
   id: string;
   name: string;
@@ -15,6 +22,10 @@ export interface PaymentMethodResponse {
   bankName: string | null;
   accountNumber: string | null;
   description: string | null;
+  /** ID del partner dueño de esta cuenta. null si no tiene partner asignado. */
+  partner_id: string | null;
+  /** Datos del partner asignado. null si no tiene partner o si fue eliminado. */
+  partner: PaymentMethodPartnerSummary | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -48,6 +59,10 @@ export interface PaymentMethodExpenseItem {
   originalCurrency: string;
   exchangeRate: number;
   convertedAmount: number;
+  /** Monto en la moneda del método de pago. Null para gastos históricos. */
+  accountAmount: number | null;
+  /** Moneda del método de pago. Null para gastos históricos. */
+  accountCurrency: string | null;
   title: string;
   description: string | null;
   expenseDate: string;
@@ -133,6 +148,18 @@ export interface PaymentMethodSummaryResponse {
   relatedProjectsCount: number;
   totalExpenseAmount: number;
   totalIncomeAmount: number;
+  /** Moneda en que se expresan los totales (moneda del método de pago). */
+  currency?: string;
+}
+
+export interface PaymentMethodBalanceResponse {
+  payment_method_id: string;
+  payment_method_name: string;
+  currency: string;
+  project_id: string;
+  total_income: number;
+  total_expenses: number;
+  balance: number;
 }
 
 // ─── DB model ──────────────────────────────────────────────────────────────────

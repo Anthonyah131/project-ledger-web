@@ -12,6 +12,7 @@ import { DashboardMonthlyPaymentMethodsChart } from "@/components/dashboard/mont
 import { DashboardMonthlySummaryCards } from "@/components/dashboard/monthly/dashboard-monthly-summary-cards"
 import { DashboardMonthlyTrendChart } from "@/components/dashboard/monthly/dashboard-monthly-trend-chart"
 import { formatMonthLabel } from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { EmptyState } from "@/components/shared/empty-state"
 import {
   Select,
   SelectContent,
@@ -33,6 +34,7 @@ export function DashboardView() {
     projects,
     selectedProjectId,
     selectedProjectName,
+    projectsLoading,
     loading,
     error,
     goPreviousMonth,
@@ -41,7 +43,7 @@ export function DashboardView() {
     setSelectedProjectId,
   } = useMonthlyOverview()
 
-  const monthLabel = formatMonthLabel(data?.navigation.currentMonth ?? selectedMonth)
+  const monthLabel = formatMonthLabel(data?.navigation.current_month ?? selectedMonth)
   const displayName = user?.fullName?.trim() || "Usuario"
   const userFirstName = displayName.split(/\s+/)[0] || displayName
 
@@ -50,13 +52,13 @@ export function DashboardView() {
   }, [router])
 
   const handleOpenAlert = useCallback((alert: DashboardAlert) => {
-    if (alert.projectId) {
-      router.push(`/projects/${alert.projectId}`)
+    if (alert.project_id) {
+      router.push(`/projects/${alert.project_id}`)
       return
     }
 
-    if (alert.paymentMethodId) {
-      router.push(`/payment-methods/${alert.paymentMethodId}`)
+    if (alert.payment_method_id) {
+      router.push(`/payment-methods/${alert.payment_method_id}`)
       return
     }
 
@@ -70,7 +72,7 @@ export function DashboardView() {
       autogenerate: "1",
     })
 
-    const projectIds = Array.from(new Set(day.projectIds ?? []))
+    const projectIds = Array.from(new Set(day.project_ids ?? []))
     if (projectIds.length > 0) {
       query.set("projectId", projectIds[0])
     }
@@ -82,7 +84,7 @@ export function DashboardView() {
   }, [router])
 
   if (!user) return null
-  if (loading && !data) return <DashboardMonthlyLoading />
+  if ((loading || projectsLoading) && !data) return <DashboardMonthlyLoading />
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -90,15 +92,52 @@ export function DashboardView() {
         userFirstName={userFirstName}
         isActive={user.isActive}
         monthLabel={monthLabel}
-        generatedAt={data?.generatedAt}
+        generatedAt={data?.generated_at}
         alerts={data?.alerts ?? []}
         loading={loading}
-        canGoNext={Boolean(data?.navigation.hasNextData)}
+        canGoPrevious={Boolean(data?.navigation.has_previous_data)}
+        canGoNext={Boolean(data?.navigation.has_next_data && !data?.navigation.is_current_month)}
         onGoPreviousMonth={goPreviousMonth}
         onGoNextMonth={goNextMonth}
         onReload={reload}
         onOpenAlert={handleOpenAlert}
       />
+
+      {projects.length > 0 && (
+        <section className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Proyecto analizado
+          </p>
+          <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+            <SelectTrigger className="w-full bg-background/80 sm:w-72">
+              <SelectValue placeholder="Selecciona un proyecto" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map((project) => (
+                <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </section>
+      )}
+
+      {!projectsLoading && projects.length === 0 && (
+        <div className="rounded-2xl border border-border/70 bg-card/80 px-4 py-6">
+          <EmptyState
+            hasSearch={false}
+            onCreate={() => router.push("/workspaces")}
+            title="Aun no tienes proyectos"
+            description="Para crear un proyecto necesitas un workspace. Crea tu primer workspace para comenzar."
+            createLabel="Crear workspace"
+          />
+        </div>
+      )}
+
+      {projects.length > 0 && !selectedProjectId && (
+        <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">
+          Selecciona un proyecto para cargar el dashboard mensual.
+        </div>
+      )}
 
       {error && (
         <DashboardMonthlyErrorCard error={error} onRetry={reload} />
@@ -110,50 +149,31 @@ export function DashboardView() {
             <DashboardMonthlySummaryCards
               summary={data.summary}
               comparison={data.comparison}
-              currencyCode={data.currencyCode}
+              currencyCode={data.currency_code}
             />
           </section>
 
           <section>
             <DashboardMonthlyPaymentMethodsChart
-              paymentMethodSplit={data.paymentMethodSplit}
-              currencyCode={data.currencyCode}
+              paymentMethodSplit={data.payment_method_split ?? []}
+              currencyCode={data.currency_code}
               onOpenPaymentMethod={handleOpenPaymentMethod}
             />
           </section>
 
-          <section className="space-y-3">
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Proyecto analizado
-              </p>
-              <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                <SelectTrigger className="w-full bg-background/80 sm:w-72">
-                  <SelectValue placeholder="Todos los proyectos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los proyectos</SelectItem>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <section className="space-y-4">
+            <DashboardMonthlyTrendChart
+              trendByDay={data.trend_by_day ?? []}
+              currencyCode={data.currency_code}
+              scopeLabel={selectedProjectName}
+              onOpenDayDetail={handleOpenTrendDay}
+            />
 
-            <div className="space-y-4">
-              <DashboardMonthlyTrendChart
-                trendByDay={data.trendByDay}
-                currencyCode={data.currencyCode}
-                scopeLabel={selectedProjectName}
-                onOpenDayDetail={handleOpenTrendDay}
-              />
-
-              <DashboardMonthlyCategoriesChart
-                topCategories={data.topCategories}
-                currencyCode={data.currencyCode}
-                scopeLabel={selectedProjectName}
-              />
-            </div>
+            <DashboardMonthlyCategoriesChart
+              topCategories={data.top_categories ?? []}
+              currencyCode={data.currency_code}
+              scopeLabel={selectedProjectName}
+            />
           </section>
         </>
       )}

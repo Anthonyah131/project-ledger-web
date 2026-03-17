@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as pmService from "@/services/payment-method-service"
+import { getPartners } from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
 import { getDateRangeError } from "@/lib/date-utils"
 import type {
@@ -13,9 +14,11 @@ import type {
   PaymentMethodResponse,
   PaymentMethodExpensesResponse,
   PaymentMethodProjectsResponse,
+  PaymentMethodBalanceResponse,
   PaymentMethodSummaryResponse,
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method"
+import type { PartnerResponse } from "@/types/partner"
 
 export type MovementActiveStatusFilter = "all" | "active" | "inactive"
 
@@ -30,11 +33,13 @@ interface UsePaymentMethodDetailReturn {
   incomes: PaymentMethodIncomesResponse
   projects: PaymentMethodProjectsResponse
   summary: PaymentMethodSummaryResponse | null
+  balance: PaymentMethodBalanceResponse | null
   loadingDetail: boolean
   loadingExpenses: boolean
   loadingIncomes: boolean
   loadingProjects: boolean
   loadingSummary: boolean
+  loadingBalance: boolean
   error: string | null
   page: number
   pageSize: number
@@ -68,6 +73,13 @@ interface UsePaymentMethodDetailReturn {
   refetchExpenses: () => Promise<void>
   refetchIncomes: () => Promise<void>
   refetchProjects: () => Promise<void>
+  partners: PartnerResponse[]
+  loadingPartners: boolean
+  linkPartnerOpen: boolean
+  setLinkPartnerOpen: (v: boolean) => void
+  openLinkPartnerDialog: () => void
+  handleLinkPartner: (partnerId: string) => Promise<void>
+  handleUnlinkPartner: () => Promise<void>
 }
 
 const INITIAL_EXPENSES: PaymentMethodExpensesResponse = {
@@ -109,11 +121,13 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
   const [incomes, setIncomes] = useState<PaymentMethodIncomesResponse>(INITIAL_INCOMES)
   const [projects, setProjects] = useState<PaymentMethodProjectsResponse>(INITIAL_PROJECTS)
   const [summary, setSummary] = useState<PaymentMethodSummaryResponse | null>(null)
+  const [balance, setBalance] = useState<PaymentMethodBalanceResponse | null>(null)
   const [loadingDetail, setLoadingDetail] = useState(true)
   const [loadingExpenses, setLoadingExpenses] = useState(false)
   const [loadingIncomes, setLoadingIncomes] = useState(false)
   const [loadingProjects, setLoadingProjects] = useState(false)
   const [loadingSummary, setLoadingSummary] = useState(false)
+  const [loadingBalance, setLoadingBalance] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Pagination / sort state
@@ -132,6 +146,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
   // Modal state
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+
+  // Partner link state
+  const [partners, setPartners] = useState<PartnerResponse[]>([])
+  const [loadingPartners, setLoadingPartners] = useState(false)
+  const [linkPartnerOpen, setLinkPartnerOpen] = useState(false)
 
   // Fetch payment method detail
   const fetchPaymentMethod = useCallback(async () => {
@@ -174,6 +193,25 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       setLoadingSummary(false)
     }
   }, [id])
+
+  const fetchBalance = useCallback(async () => {
+    if (!projectId) {
+      setBalance(null)
+      setLoadingBalance(false)
+      return
+    }
+
+    try {
+      setLoadingBalance(true)
+      const data = await pmService.getPaymentMethodBalance(id, projectId)
+      setBalance(data)
+    } catch (err) {
+      setBalance(null)
+      toastApiError(err, "Error al cargar balance por proyecto")
+    } finally {
+      setLoadingBalance(false)
+    }
+  }, [id, projectId])
 
   // Fetch expenses
   const fetchExpenses = useCallback(async () => {
@@ -237,6 +275,10 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
   useEffect(() => {
     void fetchIncomes()
   }, [fetchIncomes])
+
+  useEffect(() => {
+    void fetchBalance()
+  }, [fetchBalance])
 
   // CRUD
   const mutateUpdate = useCallback(async (data: UpdatePaymentMethodRequest) => {
@@ -336,17 +378,61 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     setIncomePage(1)
   }, [])
 
+  const fetchPartners = useCallback(async () => {
+    try {
+      setLoadingPartners(true)
+      const data = await getPartners({ take: 200 })
+      setPartners(data.items)
+    } catch {
+      // non-critical
+    } finally {
+      setLoadingPartners(false)
+    }
+  }, [])
+
+  const openLinkPartnerDialog = useCallback(() => {
+    setLinkPartnerOpen(true)
+    fetchPartners()
+  }, [fetchPartners])
+
+  const handleLinkPartner = useCallback(async (partnerId: string) => {
+    try {
+      const updated = await pmService.linkPartner(id, { partnerId })
+      setPaymentMethod(updated)
+      setLinkPartnerOpen(false)
+      toast.success("Partner vinculado", {
+        description: "El partner fue asignado al método de pago.",
+      })
+    } catch (err) {
+      toastApiError(err, "Error al vincular partner")
+    }
+  }, [id])
+
+  const handleUnlinkPartner = useCallback(async () => {
+    try {
+      const updated = await pmService.unlinkPartner(id)
+      setPaymentMethod(updated)
+      toast.success("Partner quitado", {
+        description: "El partner fue desvinculado del método de pago.",
+      })
+    } catch (err) {
+      toastApiError(err, "Error al quitar partner")
+    }
+  }, [id])
+
   return {
     paymentMethod,
     expenses,
     incomes,
     projects,
     summary,
+    balance,
     loadingDetail,
     loadingExpenses,
     loadingIncomes,
     loadingProjects,
     loadingSummary,
+    loadingBalance,
     error,
     page,
     pageSize,
@@ -380,5 +466,12 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     refetchExpenses,
     refetchIncomes,
     refetchProjects,
+    partners,
+    loadingPartners,
+    linkPartnerOpen,
+    setLinkPartnerOpen,
+    openLinkPartnerDialog,
+    handleLinkPartner,
+    handleUnlinkPartner,
   }
 }

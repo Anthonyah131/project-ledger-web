@@ -39,10 +39,10 @@ export function DashboardMonthlyPaymentMethodsChart({
 
   const chartData = useMemo(
     () => paymentMethodSplit.map((method, index) => ({
-      id: method.paymentMethodId,
-      name: method.paymentMethodName,
-      totalAmount: method.totalAmount,
-      expenseCount: method.expenseCount,
+      id: method.payment_method_id,
+      name: method.payment_method_name,
+      totalAmount: method.total_amount,
+      expenseCount: method.expense_count,
       percentage: method.percentage,
       fill: CHART_COLORS[index % CHART_COLORS.length],
     })),

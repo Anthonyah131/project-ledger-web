@@ -11,6 +11,7 @@ import {
   Hash,
   MoreVertical,
   ReceiptText,
+  User,
   Wallet,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -40,9 +41,11 @@ import type {
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
   PaymentMethodResponse,
+  PaymentMethodBalanceResponse,
   PaymentMethodSummaryResponse,
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method"
+import type { PartnerResponse } from "@/types/partner"
 
 const EditPaymentMethodModal = dynamic(() =>
   import("./edit-payment-method-modal").then((mod) => mod.EditPaymentMethodModal),
@@ -54,11 +57,13 @@ interface PaymentMethodDetailPanelProps {
   incomes: PaymentMethodIncomesResponse
   projects: PaymentMethodProjectsResponse
   summary: PaymentMethodSummaryResponse | null
+  balance: PaymentMethodBalanceResponse | null
   loadingDetail: boolean
   loadingExpenses: boolean
   loadingIncomes: boolean
   loadingProjects: boolean
   loadingSummary: boolean
+  loadingBalance: boolean
   error: string | null
   page: number
   setPage: (p: number) => void
@@ -89,6 +94,13 @@ interface PaymentMethodDetailPanelProps {
   mutateUpdate: (data: UpdatePaymentMethodRequest) => Promise<void>
   mutateDelete: () => Promise<boolean>
   onBack: () => void
+  partners: PartnerResponse[]
+  loadingPartners: boolean
+  linkPartnerOpen: boolean
+  setLinkPartnerOpen: (v: boolean) => void
+  openLinkPartnerDialog: () => void
+  onLinkPartner: (partnerId: string) => Promise<void>
+  onUnlinkPartner: () => Promise<void>
 }
 
 function PaymentMethodDetailPanelComponent({
@@ -97,11 +109,13 @@ function PaymentMethodDetailPanelComponent({
   incomes,
   projects,
   summary,
+  balance,
   loadingDetail,
   loadingExpenses,
   loadingIncomes,
   loadingProjects,
   loadingSummary,
+  loadingBalance,
   error,
   page,
   setPage,
@@ -132,19 +146,21 @@ function PaymentMethodDetailPanelComponent({
   mutateUpdate,
   mutateDelete,
   onBack,
+  partners,
+  loadingPartners,
+  linkPartnerOpen,
+  setLinkPartnerOpen,
+  openLinkPartnerDialog,
+  onLinkPartner,
+  onUnlinkPartner,
 }: PaymentMethodDetailPanelProps) {
   const router = useRouter()
 
   const runAfterMenuClose = useCallback((action: () => void) => {
-    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur()
-    }
-
     if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
       window.requestAnimationFrame(action)
       return
     }
-
     setTimeout(action, 0)
   }, [])
 
@@ -181,6 +197,7 @@ function PaymentMethodDetailPanelComponent({
   const relatedExpensesCount = summary?.relatedExpensesCount ?? expenses.totalCount
   const relatedIncomesCount = summary?.relatedIncomesCount ?? incomes.totalCount
   const relatedProjectsCount = summary?.relatedProjectsCount ?? projects.totalCount
+  const selectedProjectName = projects.items.find((project) => project.id === projectId)?.name
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
@@ -206,6 +223,12 @@ function PaymentMethodDetailPanelComponent({
                     {paymentMethod.accountNumber}
                   </span>
                 )}
+                {paymentMethod.partner && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-400 border border-violet-500/30">
+                    <User className="size-2.5" />
+                    {paymentMethod.partner.name}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -229,7 +252,10 @@ function PaymentMethodDetailPanelComponent({
         </DropdownMenu>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${paymentMethod.partner ? "lg:grid-cols-7" : "lg:grid-cols-6"}`}>
+        {paymentMethod.partner && (
+          <InfoCard icon={User} label="Partner" value={paymentMethod.partner.name} />
+        )}
         <InfoCard icon={Building} label="Banco / emisor" value={paymentMethod.bankName ?? "-"} />
         <InfoCard icon={Hash} label="Cuenta" value={paymentMethod.accountNumber ?? "-"} />
         <InfoCard icon={FolderKanban} label="Proyectos" value={String(relatedProjectsCount)} />
@@ -249,7 +275,7 @@ function PaymentMethodDetailPanelComponent({
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
               {loadingSummary
                 ? "Cargando..."
-                : `${paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
+                : `${summary?.currency ?? paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
             </p>
           </div>
           <div className="p-4 bg-gradient-to-br from-emerald-500/5 to-transparent">
@@ -257,7 +283,56 @@ function PaymentMethodDetailPanelComponent({
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
               {loadingSummary
                 ? "Cargando..."
-                : `${paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
+                : `${summary?.currency ?? paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-primary/15 bg-card/80 shadow-sm">
+        <div className="border-b border-border/60 px-4 py-3">
+          <p className="text-xs uppercase tracking-wide text-primary font-semibold">Balance por proyecto</p>
+          <p className="text-[11px] text-muted-foreground">
+            {projectId
+              ? `Proyecto: ${selectedProjectName ?? "Proyecto seleccionado"}`
+              : "Selecciona un proyecto para ver el balance de esta cuenta."}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          <div className="p-4 border-b md:border-b-0 md:border-r border-border/50">
+            <p className="text-[11px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">Total ingresos</p>
+            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+              {loadingBalance
+                ? "Cargando..."
+                : projectId
+                  ? balance
+                    ? `${paymentMethod.currency} ${formatAmount(balance.total_income, "0.00")}`
+                    : "--"
+                  : "--"}
+            </p>
+          </div>
+          <div className="p-4 border-b md:border-b-0 md:border-r border-border/50">
+            <p className="text-[11px] uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">Total gastos</p>
+            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+              {loadingBalance
+                ? "Cargando..."
+                : projectId
+                  ? balance
+                    ? `${paymentMethod.currency} ${formatAmount(balance.total_expenses, "0.00")}`
+                    : "--"
+                  : "--"}
+            </p>
+          </div>
+          <div className="p-4">
+            <p className="text-[11px] uppercase tracking-wide text-foreground/70 font-medium">Balance</p>
+            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+              {loadingBalance
+                ? "Cargando..."
+                : projectId
+                  ? balance
+                    ? `${paymentMethod.currency} ${formatAmount(balance.balance, "0.00")}`
+                    : "--"
+                  : "--"}
             </p>
           </div>
         </div>
@@ -300,6 +375,16 @@ function PaymentMethodDetailPanelComponent({
         onOpenExpenseProject={(expenseProjectId) => router.push(`/projects/${expenseProjectId}`)}
         onOpenIncomeProject={(incomeProjectId) => router.push(`/projects/${incomeProjectId}`)}
         onOpenProjectCard={(cardProjectId) => router.push(`/projects/${cardProjectId}`)}
+        partnerTab={{
+          currentPartner: paymentMethod.partner,
+          partners,
+          loadingPartners,
+          linkPartnerOpen,
+          onOpenLinkDialog: openLinkPartnerDialog,
+          onCloseLinkDialog: () => setLinkPartnerOpen(false),
+          onLink: onLinkPartner,
+          onUnlink: onUnlinkPartner,
+        }}
       />
 
       {editOpen && (

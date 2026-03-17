@@ -38,11 +38,8 @@ export function EditPaymentMethodModal({
   onClose,
   onSave,
 }: EditPaymentMethodModalProps) {
-  const { form, onSubmit, handleClose, watchType } = useUpdatePaymentMethodForm({
-    paymentMethod,
-    onSave,
-    onClose,
-  })
+  const { form, onSubmit, handleClose, watchType } =
+    useUpdatePaymentMethodForm({ paymentMethod, onSave, onClose })
 
   return (
     <FormModal

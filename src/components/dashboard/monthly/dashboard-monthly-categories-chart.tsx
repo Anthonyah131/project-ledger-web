@@ -42,10 +42,10 @@ export function DashboardMonthlyCategoriesChart({
   const isMobile = useIsMobile()
 
   const chartData = topCategories.map((category) => ({
-    categoryId: category.categoryId,
-    categoryName: category.categoryName,
-    totalAmount: category.totalAmount,
-    expenseCount: category.expenseCount,
+    categoryId: category.category_id,
+    categoryName: category.category_name,
+    totalAmount: category.total_amount,
+    expenseCount: category.expense_count,
     percentage: category.percentage,
   }))
 

@@ -1,5 +1,5 @@
-import { ProjectsView } from "@/views/projects/projects-view";
+import { ProjectsWorkspacesView } from "@/views/projects/projects-workspaces-view";
 
 export default function ProjectsPage() {
-  return <ProjectsView />;
+  return <ProjectsWorkspacesView />;
 }

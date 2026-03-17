@@ -1,28 +1,28 @@
 // types/dashboard.ts
-// API model definitions for monthly dashboard overview endpoint.
+// API model definitions for monthly dashboard endpoints.
 
 export interface DashboardNavigation {
-  previousMonth: string
-  currentMonth: string
-  nextMonth: string
-  isCurrentMonth: boolean
-  hasPreviousData: boolean
-  hasNextData: boolean
+  previous_month: string
+  current_month: string
+  next_month: string
+  is_current_month: boolean
+  has_previous_data: boolean
+  has_next_data: boolean
 }
 
 export interface DashboardSummary {
-  totalSpent: number
-  totalIncome: number
-  netBalance: number
+  total_spent: number
+  total_income: number
+  net_balance: number
 }
 
 export interface DashboardComparison {
-  previousMonth: string
-  spentDelta: number
-  spentDeltaPercentage: number
-  incomeDelta: number
-  incomeDeltaPercentage: number
-  netDelta: number
+  previous_month: string
+  spent_delta: number
+  spent_delta_percentage: number
+  income_delta: number
+  income_delta_percentage: number
+  net_delta: number
 }
 
 export interface DashboardTrendDay {
@@ -30,45 +30,46 @@ export interface DashboardTrendDay {
   spent: number
   income: number
   net: number
-  projectIds?: string[]
-  expenseCount?: number
-  incomeCount?: number
+  project_ids?: string[]
+  expense_count?: number
+  income_count?: number
 }
 
 export interface DashboardTopCategory {
-  categoryId: string
-  categoryName: string
-  totalAmount: number
-  expenseCount: number
+  category_id: string
+  category_name: string
+  total_amount: number
+  expense_count: number
   percentage: number
-  projectIds?: string[]
+  project_ids?: string[]
 }
 
 export interface DashboardPaymentMethodSplit {
-  paymentMethodId: string
-  paymentMethodName: string
-  totalAmount: number
-  expenseCount: number
+  payment_method_id: string
+  payment_method_name: string
+  total_amount: number
+  expense_count: number
   percentage: number
 }
 
-export type DashboardAlertType = "info" | "warning" | "error"
+export type DashboardAlertType = "info" | "warning"
 
 export interface DashboardAlert {
   type: DashboardAlertType
   code: string
   message: string
-  projectId?: string | null
-  paymentMethodId?: string | null
-  priority?: number
-  count?: number
+  project_id: string | null
+  payment_method_id: string | null
+  priority: number
+  count: number
 }
 
 export interface DashboardMonthlySummaryResponse {
   month: string
+  currency_code: string
+  project_id: string
+  generated_at: string
   navigation: DashboardNavigation
-  currencyCode: string
-  generatedAt: string
   summary: DashboardSummary
   comparison: DashboardComparison
   alerts: DashboardAlert[]
@@ -76,20 +77,21 @@ export interface DashboardMonthlySummaryResponse {
 
 export interface DashboardMonthlyTrendResponse {
   month: string
-  currencyCode: string
-  projectId?: string | null
-  trendByDay: DashboardTrendDay[]
+  currency_code: string
+  project_id: string
+  trend_by_day: DashboardTrendDay[]
 }
 
 export interface DashboardMonthlyTopCategoriesResponse {
   month: string
-  currencyCode: string
-  projectId?: string | null
-  topCategories: DashboardTopCategory[]
+  currency_code: string
+  project_id: string
+  top_categories: DashboardTopCategory[]
 }
 
 export interface DashboardMonthlyPaymentMethodsResponse {
   month: string
-  currencyCode: string
-  paymentMethodSplit: DashboardPaymentMethodSplit[]
+  currency_code: string
+  project_id: string
+  payment_method_split: DashboardPaymentMethodSplit[]
 }

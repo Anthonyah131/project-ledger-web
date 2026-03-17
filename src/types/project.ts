@@ -28,8 +28,25 @@ export interface ProjectResponse {
   description: string | null;
   /** Role of the authenticated user in this project */
   userRole: ProjectMemberRole;
+  /** ID del workspace al que pertenece el proyecto */
+  workspaceId: string | null;
+  /** Nombre del workspace. null si no está en ningún workspace */
+  workspaceName: string | null;
+  /** Indica si el proyecto tiene splits por partners activados */
+  partnersEnabled: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+/** Paged response from GET /projects */
+export interface PagedProjectsResponse {
+  items: ProjectResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 // ─── Request bodies ────────────────────────────────────────────────────────────
@@ -38,6 +55,8 @@ export interface CreateProjectRequest {
   name: string;
   currencyCode: string;
   description?: string;
+  /** Opcional: ID del workspace al que pertenece el proyecto */
+  workspace_id?: string;
 }
 
 export interface UpdateProjectRequest {

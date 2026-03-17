@@ -4,6 +4,7 @@
 import { api } from "@/lib/api-client";
 import type {
   ProjectResponse,
+  PagedProjectsResponse,
   CreateProjectRequest,
   UpdateProjectRequest,
 } from "@/types/project";
@@ -15,8 +16,24 @@ import type {
 
 // ─── Projects ──────────────────────────────────────────────────────────────────
 
-export function getProjects(signal?: AbortSignal) {
-  return api.get<ProjectResponse[]>("/projects", { signal });
+export type ProjectSortBy = "name" | "createdAt" | "updatedAt" | "currencyCode";
+
+export interface GetProjectsParams {
+  page?: number;
+  pageSize?: number;
+  sortBy?: ProjectSortBy;
+  sortDirection?: "asc" | "desc";
+  signal?: AbortSignal;
+}
+
+export function getProjects({ page = 1, pageSize = 200, sortBy = "createdAt", sortDirection = "desc", signal }: GetProjectsParams = {}) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+    sortBy,
+    sortDirection,
+  });
+  return api.get<PagedProjectsResponse>(`/projects?${qs}`, { signal });
 }
 
 export function getProject(projectId: string) {

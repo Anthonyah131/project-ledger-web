@@ -2,7 +2,6 @@ import {
   IconAlertTriangle,
   IconBell,
   IconCircleCheck,
-  IconCircleX,
   IconInfoCircle,
 } from "@tabler/icons-react"
 
@@ -14,14 +13,6 @@ interface DashboardMonthlyAlertsIndicatorProps {
 }
 
 function getAlertTone(type: DashboardAlert["type"]) {
-  if (type === "error") {
-    return {
-      icon: IconCircleX,
-      badge: "border-destructive/40 bg-destructive/12 text-destructive",
-      dot: "bg-destructive",
-    }
-  }
-
   if (type === "warning") {
     return {
       icon: IconAlertTriangle,

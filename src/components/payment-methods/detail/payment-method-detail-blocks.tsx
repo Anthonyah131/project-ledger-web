@@ -57,7 +57,15 @@ interface ExpenseRowProps {
 }
 
 export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: ExpenseRowProps) {
-  const showOriginal = expense.originalCurrency !== paymentMethodCurrency
+  // Use accountAmount/accountCurrency (amount in the payment method's currency).
+  // Fall back for historical expenses that don't have accountAmount yet.
+  const accountAmount = expense.accountAmount ?? (
+    expense.originalCurrency === paymentMethodCurrency
+      ? expense.originalAmount
+      : expense.convertedAmount
+  )
+  const accountCurrency = expense.accountCurrency ?? paymentMethodCurrency
+  const showOriginal = expense.originalCurrency !== accountCurrency
 
   return (
     <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-rose-500/5 transition-colors">
@@ -84,7 +92,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
 
       <div className="sm:text-right">
         <p className="text-sm font-bold text-rose-600 dark:text-rose-400 tabular-nums">
-          {paymentMethodCurrency} {formatAmount(expense.convertedAmount, "0.00")}
+          {accountCurrency} {formatAmount(accountAmount, "0.00")}
         </p>
         {showOriginal && (
           <p className="text-xs text-muted-foreground tabular-nums">

@@ -1,8 +1,17 @@
 "use client"
 
-import { Calendar, CreditCard, FolderKanban, Wallet } from "lucide-react"
+import { useState } from "react"
+import { Calendar, CreditCard, FolderKanban, Link, Unlink, User, Wallet } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
@@ -22,7 +31,20 @@ import type {
   PaymentMethodExpensesResponse,
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
+  PaymentMethodPartnerSummary,
 } from "@/types/payment-method"
+import type { PartnerResponse } from "@/types/partner"
+
+interface PartnerTabProps {
+  currentPartner: PaymentMethodPartnerSummary | null
+  partners: PartnerResponse[]
+  loadingPartners: boolean
+  linkPartnerOpen: boolean
+  onOpenLinkDialog: () => void
+  onCloseLinkDialog: () => void
+  onLink: (partnerId: string) => Promise<void>
+  onUnlink: () => Promise<void>
+}
 
 interface PaymentMethodDetailTabsProps {
   expenses: PaymentMethodExpensesResponse
@@ -47,6 +69,81 @@ interface PaymentMethodDetailTabsProps {
   onOpenExpenseProject: (projectId: string) => void
   onOpenIncomeProject: (projectId: string) => void
   onOpenProjectCard: (projectId: string) => void
+  partnerTab: PartnerTabProps
+}
+
+function PartnerLinkList({
+  partners,
+  loading,
+  onLink,
+}: {
+  partners: PartnerResponse[]
+  loading: boolean
+  onLink: (partnerId: string) => Promise<void>
+}) {
+  const [pendingId, setPendingId] = useState<string | null>(null)
+
+  async function handleLink(partnerId: string) {
+    setPendingId(partnerId)
+    try {
+      await onLink(partnerId)
+    } finally {
+      setPendingId(null)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-3 py-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 py-2">
+            <Skeleton className="size-8 rounded-lg" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-20 mt-1.5" />
+            </div>
+            <Skeleton className="h-7 w-20" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (partners.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-10 text-center">
+        <User className="size-8 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground">No tienes partners registrados.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-1 py-2">
+      {partners.map((partner) => (
+        <div key={partner.id} className="flex items-center gap-3 py-2">
+          <div className="size-8 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+            <User className="size-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{partner.name}</p>
+            {partner.email && (
+              <p className="text-xs text-muted-foreground truncate">{partner.email}</p>
+            )}
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs h-7 shrink-0"
+            disabled={pendingId === partner.id}
+            onClick={() => handleLink(partner.id)}
+          >
+            {pendingId === partner.id ? "..." : "Asignar"}
+          </Button>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export function PaymentMethodDetailTabs({
@@ -72,6 +169,7 @@ export function PaymentMethodDetailTabs({
   onOpenExpenseProject,
   onOpenIncomeProject,
   onOpenProjectCard,
+  partnerTab,
 }: PaymentMethodDetailTabsProps) {
   return (
     <Tabs defaultValue="expenses">
@@ -79,6 +177,7 @@ export function PaymentMethodDetailTabs({
         <TabsTrigger value="expenses">Pagos relacionados</TabsTrigger>
         <TabsTrigger value="incomes">Ingresos relacionados</TabsTrigger>
         <TabsTrigger value="projects">Proyectos</TabsTrigger>
+        <TabsTrigger value="partner">Partner</TabsTrigger>
       </TabsList>
 
       <TabsContent value="expenses" className="space-y-4">
@@ -264,6 +363,80 @@ export function PaymentMethodDetailTabs({
             </div>
           )}
         </div>
+      </TabsContent>
+
+      <TabsContent value="partner">
+        <div className="p-5">
+          {partnerTab.currentPartner ? (
+            <div className="flex flex-col gap-4">
+              <div className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/5 to-transparent p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+                      <User className="size-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">{partnerTab.currentPartner.name}</p>
+                      {partnerTab.currentPartner.email && (
+                        <p className="text-xs text-muted-foreground">{partnerTab.currentPartner.email}</p>
+                      )}
+                      {partnerTab.currentPartner.phone && (
+                        <p className="text-xs text-muted-foreground">{partnerTab.currentPartner.phone}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={partnerTab.onUnlink}
+                    className="text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
+                  >
+                    <Unlink className="size-3.5 mr-1" />
+                    Quitar
+                  </Button>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Para cambiar el partner, primero quita el actual y luego asigna uno nuevo.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-3 py-14 text-center">
+              <div className="size-12 rounded-xl bg-muted/50 flex items-center justify-center">
+                <User className="size-6 text-muted-foreground/40" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Sin partner vinculado</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+                  Vincula un partner para asociar este método de pago a una entidad.
+                </p>
+              </div>
+              <Button size="sm" onClick={partnerTab.onOpenLinkDialog}>
+                <Link className="size-3.5 mr-1" />
+                Asignar partner
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Link partner dialog */}
+        <Dialog open={partnerTab.linkPartnerOpen} onOpenChange={(v) => !v && partnerTab.onCloseLinkDialog()}>
+          <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Asignar partner</DialogTitle>
+              <DialogDescription>
+                Selecciona el partner a vincular con este método de pago.
+              </DialogDescription>
+            </DialogHeader>
+            <PartnerLinkList
+              partners={partnerTab.partners}
+              loading={partnerTab.loadingPartners}
+              onLink={async (partnerId) => {
+                await partnerTab.onLink(partnerId)
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </TabsContent>
     </Tabs>
   )

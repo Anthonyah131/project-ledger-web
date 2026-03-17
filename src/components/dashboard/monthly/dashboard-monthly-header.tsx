@@ -18,6 +18,7 @@ interface DashboardMonthlyHeaderProps {
   generatedAt?: string
   alerts: DashboardAlert[]
   loading: boolean
+  canGoPrevious: boolean
   canGoNext: boolean
   onGoPreviousMonth: () => void
   onGoNextMonth: () => void
@@ -32,6 +33,7 @@ export function DashboardMonthlyHeader({
   generatedAt,
   alerts,
   loading,
+  canGoPrevious,
   canGoNext,
   onGoPreviousMonth,
   onGoNextMonth,
@@ -74,7 +76,7 @@ export function DashboardMonthlyHeader({
             variant="outline"
             size="icon-sm"
             onClick={onGoPreviousMonth}
-            disabled={loading}
+            disabled={!canGoPrevious || loading}
             aria-label="Mes anterior"
           >
             <IconChevronLeft className="size-4" />
@@ -84,15 +86,17 @@ export function DashboardMonthlyHeader({
             {monthLabel}
           </Badge>
 
-          <Button
-            variant="outline"
-            size="icon-sm"
-            onClick={onGoNextMonth}
-            disabled={!canGoNext || loading}
-            aria-label="Mes siguiente"
-          >
-            <IconChevronRight className="size-4" />
-          </Button>
+          {canGoNext && (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={onGoNextMonth}
+              disabled={loading}
+              aria-label="Mes siguiente"
+            >
+              <IconChevronRight className="size-4" />
+            </Button>
+          )}
 
           <Button variant="outline" size="sm" onClick={onReload} disabled={loading}>
             <IconRefresh className="size-4" />

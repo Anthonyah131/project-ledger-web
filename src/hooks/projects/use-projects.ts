@@ -26,7 +26,6 @@ function comparator(sort: string) {
   const mult = dir === "asc" ? 1 : -1;
   return (a: ProjectResponse, b: ProjectResponse) => {
     if (field === "name") return a.name.localeCompare(b.name) * mult;
-    // default: date fields
     const key = field as "createdAt" | "updatedAt";
     return (new Date(a[key]).getTime() - new Date(b[key]).getTime()) * mult;
   };
@@ -34,22 +33,19 @@ function comparator(sort: string) {
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
-export function useProjects() {
-  // All projects (from API)
+export function useProjects(options: { workspaceId?: string; projectIds?: string[] } = {}) {
+  const { workspaceId, projectIds } = options
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // View state
   const [viewMode, setViewMode] = useState<ViewMode>("shelf");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [query, setQuery] = useState("");
-
   const [currency, setCurrency] = useState("all");
   const [sort, setSort] = useState("updatedAt:desc");
 
-  // Modal state
   const [createOpen, setCreateOpen] = useState(false);
   const [editProject, setEditProject] = useState<ProjectResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ProjectResponse | null>(null);
@@ -59,8 +55,8 @@ export function useProjects() {
   const fetchProjects = useCallback(async () => {
     try {
       setError(null);
-      const data = await projectService.getProjects();
-      setProjects(data);
+      const data = await projectService.getProjects({ pageSize: 200 });
+      setProjects(data.items);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error al cargar proyectos";
       setError(msg);
@@ -83,11 +79,19 @@ export function useProjects() {
 
   const filtered = useMemo(() => {
     let result = projects;
+    if (workspaceId) {
+      if (projectIds && projectIds.length > 0) {
+        const idSet = new Set(projectIds);
+        result = result.filter((p) => idSet.has(p.id));
+      } else {
+        result = result.filter((p) => p.workspaceId === workspaceId);
+      }
+    }
     if (debouncedQuery) result = result.filter((p) => matchesQuery(p, debouncedQuery));
     if (currency !== "all") result = result.filter((p) => p.currencyCode === currency);
     result = [...result].sort(comparator(sort));
     return result;
-  }, [projects, debouncedQuery, currency, sort]);
+  }, [projects, workspaceId, projectIds, debouncedQuery, currency, sort]);
 
   const total = filtered.length;
   const paged = useMemo(
@@ -102,7 +106,10 @@ export function useProjects() {
   const mutateCreate = useCallback(
     async (data: CreateProjectRequest) => {
       try {
-        const created = await projectService.createProject(data);
+        const payload: CreateProjectRequest = workspaceId
+          ? { ...data, workspace_id: workspaceId }
+          : data;
+        const created = await projectService.createProject(payload);
         setProjects((prev) => [created, ...prev]);
         setPage(1);
         toast.success("Proyecto creado", { description: `"${created.name}" se agregó correctamente.` });
@@ -110,7 +117,7 @@ export function useProjects() {
         toastApiError(err, "Error al crear proyecto");
       }
     },
-    []
+    [workspaceId]
   );
 
   const mutateUpdate = useCallback(
@@ -157,28 +164,21 @@ export function useProjects() {
   }, []);
 
   return {
-    // Data
     projects: paged,
     total,
     globalIndex,
     loading,
     error,
     hasSearch,
-
-    // View state
     viewMode, setViewMode,
     page, setPage,
     pageSize,
     query, setQuery,
     currency,
     sort,
-
-    // Modal state
     createOpen, setCreateOpen,
     editProject, setEditProject,
     deleteTarget, setDeleteTarget,
-
-    // Actions
     mutateCreate,
     mutateUpdate,
     mutateDelete,

@@ -16,12 +16,12 @@ export function useReportsCatalogs() {
     setLoading(true)
 
     const [projectsResult, paymentMethodsResult] = await Promise.allSettled([
-      projectService.getProjects(),
+      projectService.getProjects({ pageSize: 200 }),
       paymentMethodService.getPaymentMethods(),
     ])
 
     if (projectsResult.status === "fulfilled") {
-      setProjects(projectsResult.value)
+      setProjects(projectsResult.value.items)
     } else {
       setProjects([])
       toastApiError(projectsResult.reason, "No se pudieron cargar los proyectos")

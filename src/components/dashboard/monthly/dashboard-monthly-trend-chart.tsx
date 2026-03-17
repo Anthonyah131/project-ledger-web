@@ -103,10 +103,10 @@ export function DashboardMonthlyTrendChart({
     if (!active || payload.length === 0) return null
 
     const day = payload[0]?.payload
-    const expenseCount = day?.expenseCount ?? 0
-    const incomeCount = day?.incomeCount ?? 0
+    const expenseCount = day?.expense_count ?? 0
+    const incomeCount = day?.income_count ?? 0
     const movementCount = expenseCount + incomeCount
-    const projectCount = day?.projectIds?.length ?? 0
+    const projectCount = day?.project_ids?.length ?? 0
 
     return (
       <div className="grid min-w-44 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">

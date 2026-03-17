@@ -19,11 +19,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     incomes,
     projects,
     summary,
+    balance,
     loadingDetail,
     loadingExpenses,
     loadingIncomes,
     loadingProjects,
     loadingSummary,
+    loadingBalance,
     error,
     page,
     setPage,
@@ -53,6 +55,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     setDeleteOpen,
     mutateUpdate,
     mutateDelete,
+    partners,
+    loadingPartners,
+    linkPartnerOpen,
+    setLinkPartnerOpen,
+    openLinkPartnerDialog,
+    handleLinkPartner,
+    handleUnlinkPartner,
   } = usePaymentMethodDetail(paymentMethodId)
 
   const handleBack = () => {
@@ -75,11 +84,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
       incomes={incomes}
       projects={projects}
       summary={summary}
+      balance={balance}
       loadingDetail={loadingDetail}
       loadingExpenses={loadingExpenses}
       loadingIncomes={loadingIncomes}
       loadingProjects={loadingProjects}
       loadingSummary={loadingSummary}
+      loadingBalance={loadingBalance}
       error={error}
       page={page}
       setPage={setPage}
@@ -110,6 +121,13 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
       mutateUpdate={mutateUpdate}
       mutateDelete={handleDeleteWithRedirect}
       onBack={handleBack}
+      partners={partners}
+      loadingPartners={loadingPartners}
+      linkPartnerOpen={linkPartnerOpen}
+      setLinkPartnerOpen={setLinkPartnerOpen}
+      openLinkPartnerDialog={openLinkPartnerDialog}
+      onLinkPartner={handleLinkPartner}
+      onUnlinkPartner={handleUnlinkPartner}
     />
   )
 }

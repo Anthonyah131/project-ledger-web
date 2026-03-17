@@ -15,6 +15,7 @@ interface ShelfViewProps {
   onEdit: (project: ProjectResponse) => void
   onDelete: (project: ProjectResponse) => void
   onShare: (project: ProjectResponse) => void
+  onDisconnect?: (project: ProjectResponse) => void
   globalIndex: number
 }
 
@@ -23,6 +24,7 @@ function ShelfViewComponent({
   onEdit,
   onDelete,
   onShare,
+  onDisconnect,
   globalIndex,
 }: ShelfViewProps) {
   return (
@@ -37,7 +39,10 @@ function ShelfViewComponent({
           project={project}
           accentIndex={globalIndex + i}
           onEdit={onEdit}
-          onDelete={onDelete}          onShare={onShare}        />
+          onDelete={onDelete}
+          onShare={onShare}
+          onDisconnect={onDisconnect}
+        />
       ))}
     </div>
   )
@@ -51,15 +56,18 @@ function ProjectCard({
   onEdit,
   onDelete,
   onShare,
+  onDisconnect,
 }: {
   project: ProjectResponse
   accentIndex: number
   onEdit: (project: ProjectResponse) => void
   onDelete: (project: ProjectResponse) => void
   onShare: (project: ProjectResponse) => void
+  onDisconnect?: (project: ProjectResponse) => void
 }) {
   const router = useRouter()
   const accent = getAccentColor(accentIndex)
+  const workspaceName = project.workspaceName
 
   return (
     <div
@@ -98,12 +106,13 @@ function ProjectCard({
               onEdit={() => onEdit(project)}
               onDelete={() => onDelete(project)}
               onShare={project.userRole === "owner" ? () => onShare(project) : undefined}
+              onDisconnect={onDisconnect ? () => onDisconnect(project) : undefined}
               stopPropagation
             />
           </div>
 
           {/* Bottom: metadata */}
-          <div className="flex items-center gap-2 mt-auto">
+          <div className="flex items-center gap-2 mt-auto flex-wrap">
             <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground/80">
               <span className="text-muted-foreground">{formatCurrencySymbol(project.currencyCode)}</span>
               {project.currencyCode}
@@ -115,6 +124,14 @@ function ProjectCard({
             >
               {ROLE_LABEL[project.userRole]}
             </Badge>
+            {workspaceName && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 h-4 font-medium text-muted-foreground"
+              >
+                {workspaceName}
+              </Badge>
+            )}
             <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
               {formatDate(project.updatedAt, { withYear: false })}
             </span>

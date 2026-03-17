@@ -24,7 +24,13 @@ const EditProjectModal = dynamic(() =>
   import("./edit-project-modal").then((mod) => mod.EditProjectModal)
 )
 
-export function ProjectsShelf() {
+interface ProjectsShelfProps {
+  workspaceId?: string
+  projectIds?: string[]
+  onDisconnect?: (projectId: string) => Promise<void>
+}
+
+export function ProjectsShelf({ workspaceId, projectIds, onDisconnect }: ProjectsShelfProps = {}) {
   const router = useRouter()
   const {
     projects,
@@ -47,7 +53,7 @@ export function ProjectsShelf() {
     handlePageSizeChange,
     handleCurrencyChange,
     handleSortChange,
-  } = useProjects()
+  } = useProjects({ workspaceId, projectIds })
 
   const handleOpenCreate = useCallback(() => {
     setCreateOpen(true)
@@ -76,6 +82,10 @@ export function ProjectsShelf() {
   const handleShare = useCallback((project: (typeof projects)[number]) => {
     router.push(`/projects/${project.id}/members`)
   }, [router])
+
+  const handleDisconnect = useCallback(async (project: (typeof projects)[number]) => {
+    if (onDisconnect) await onDisconnect(project.id)
+  }, [onDisconnect])
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -121,6 +131,7 @@ export function ProjectsShelf() {
             onEdit={handleSelectEdit}
             onDelete={handleSelectDelete}
             onShare={handleShare}
+            onDisconnect={onDisconnect ? handleDisconnect : undefined}
             globalIndex={globalIndex}
           />
         ) : (
@@ -129,6 +140,7 @@ export function ProjectsShelf() {
             onEdit={handleSelectEdit}
             onDelete={handleSelectDelete}
             onShare={handleShare}
+            onDisconnect={onDisconnect ? handleDisconnect : undefined}
             globalIndex={globalIndex}
           />
         )}

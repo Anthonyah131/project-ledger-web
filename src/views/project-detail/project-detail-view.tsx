@@ -27,8 +27,7 @@ import { ProjectDetailCategoriesTab } from "@/views/project-detail/tabs/project-
 import { ProjectDetailBudgetTab } from "@/views/project-detail/tabs/project-detail-budget-tab";
 import { ProjectDetailPaymentMethodsTab } from "@/views/project-detail/tabs/project-detail-payment-methods-tab";
 import { ProjectDetailAlternativeCurrenciesTab } from "@/views/project-detail/tabs/project-detail-alternative-currencies-tab";
-
-import type { PaymentMethodResponse } from "@/types/payment-method";
+import { ProjectDetailPartnersTab } from "@/views/project-detail/tabs/project-detail-partners-tab";
 
 const EditProjectModal = dynamic(() =>
   import("@/components/projects/edit-project-modal").then((mod) => mod.EditProjectModal)
@@ -50,7 +49,7 @@ export function ProjectDetailView({ projectId }: Props) {
     setEditProjectOpen, setDeleteProjectOpen,
     mutateProjectEditOpen, mutateProjectDeleteOpen,
     mutateProjectUpdate, mutateProjectDelete,
-    exp, inc, pac, cat, obl, bud, ppm,
+    exp, inc, pac, cat, obl, bud, ppm, ppp,
     mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
     mutateExpenseActiveState,
     mutateIncomeCreate, mutateIncomeUpdate, mutateIncomeDelete,
@@ -69,24 +68,6 @@ export function ProjectDetailView({ projectId }: Props) {
   const canManageAlternativeCurrencies =
     detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canDeleteBudget = detail.project?.userRole === "owner";
-
-  // Convert linked project payment methods to PaymentMethodResponse shape
-  // so existing expense form components can consume them without changes.
-  const paymentMethods: PaymentMethodResponse[] = useMemo(
-    () =>
-      ppm.linkedMethods.map((m) => ({
-        id: m.paymentMethodId,
-        name: m.paymentMethodName,
-        type: m.type,
-        currency: m.currency,
-        bankName: m.bankName,
-        accountNumber: m.accountNumber,
-        description: null,
-        createdAt: m.linkedAt,
-        updatedAt: m.linkedAt,
-      })),
-    [ppm.linkedMethods],
-  );
 
   const alternativeCurrencyCodes = useMemo(
     () => pac.currencies.map((currency) => currency.currencyCode),
@@ -117,6 +98,7 @@ export function ProjectDetailView({ projectId }: Props) {
           <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="budget">Presupuesto</TabsTrigger>
+          <TabsTrigger value="partners">Partners</TabsTrigger>
           <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
         </TabsList>
 
@@ -124,7 +106,7 @@ export function ProjectDetailView({ projectId }: Props) {
           projectId={projectId}
           exp={exp}
           categories={cat.categories}
-          paymentMethods={paymentMethods}
+          paymentMethods={ppm.paymentMethods}
           obligations={obl.obligations}
           projectCurrency={detail.project?.currencyCode ?? ""}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
@@ -155,7 +137,7 @@ export function ProjectDetailView({ projectId }: Props) {
           projectId={projectId}
           inc={inc}
           categories={cat.categories}
-          paymentMethods={paymentMethods}
+          paymentMethods={ppm.paymentMethods}
           availableCurrencies={pac.allCurrencies}
           projectCurrency={detail.project?.currencyCode ?? ""}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
@@ -232,15 +214,38 @@ export function ProjectDetailView({ projectId }: Props) {
           onDelete={mutateBudgetDelete}
         />
 
-        <ProjectDetailPaymentMethodsTab
-          ppm={ppm}
+        <ProjectDetailPartnersTab
+          ppp={ppp}
           isOwner={!!isOwner}
-          onLinkOpen={ppm.openLinkDialog}
-          onLinkClose={() => ppm.setLinkOpen(false)}
-          onUnlinkSelect={ppm.setUnlinkTarget}
-          onUnlinkClose={() => ppm.setUnlinkTarget(null)}
+          linkedPartnerIds={useMemo(
+            () => new Set(ppm.linkedPMs.map((pm) => pm.partner_id).filter((id): id is string => !!id)),
+            [ppm.linkedPMs],
+          )}
+          onAssignOpen={ppp.openAssignDialog}
+          onAssignClose={() => ppp.setAssignOpen(false)}
+          onRemoveSelect={ppp.setRemoveTarget}
+          onRemoveClose={() => ppp.setRemoveTarget(null)}
+          onAssign={ppp.handleAssign}
+          onRemove={(pp) => { ppp.handleRemove(pp) }}
+        />
+
+        <ProjectDetailPaymentMethodsTab
+          ppm={{
+            loading: ppm.loading,
+            linkedPMs: ppm.linkedPMs,
+            availableGroups: ppm.availableGroups,
+            unpartneredPMs: ppm.unpartneredPMs,
+            availableLoading: ppm.availableLoading,
+            addOpen: ppm.addOpen,
+            removeTarget: ppm.removeTarget,
+          }}
+          isOwner={!!isOwner}
+          onAddOpen={ppm.openAddDialog}
+          onAddClose={() => ppm.setAddOpen(false)}
           onLink={ppm.handleLink}
-          onUnlink={(pm) => { ppm.handleUnlink(pm) }}
+          onRemoveSelect={ppm.setRemoveTarget}
+          onRemoveClose={() => ppm.setRemoveTarget(null)}
+          onUnlink={ppm.handleUnlink}
         />
       </Tabs>
 

@@ -33,10 +33,8 @@ export function CreatePaymentMethodModal({
   onClose,
   onCreate,
 }: CreatePaymentMethodModalProps) {
-  const { form, onSubmit, handleClose, watchType } = useCreatePaymentMethodForm({
-    onCreate,
-    onClose,
-  })
+  const { form, onSubmit, handleClose, watchType } =
+    useCreatePaymentMethodForm({ onCreate, onClose })
 
   return (
     <FormModal

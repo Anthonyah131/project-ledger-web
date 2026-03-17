@@ -14,10 +14,11 @@ interface ListViewProps {
   onEdit: (project: ProjectResponse) => void
   onDelete: (project: ProjectResponse) => void
   onShare: (project: ProjectResponse) => void
+  onDisconnect?: (project: ProjectResponse) => void
   globalIndex: number
 }
 
-function ListViewComponent({ projects, onEdit, onDelete, onShare, globalIndex }: ListViewProps) {
+function ListViewComponent({ projects, onEdit, onDelete, onShare, onDisconnect, globalIndex }: ListViewProps) {
   const router = useRouter()
 
   return (
@@ -45,7 +46,7 @@ function ListViewComponent({ projects, onEdit, onDelete, onShare, globalIndex }:
           {/* Accent dot */}
           <div className={cn("size-2 rounded-full shrink-0 mr-3.5", getAccentColor(globalIndex + i))} />
 
-          {/* Name + desc */}
+          {/* Name + desc + workspace badge */}
           <div className="flex-1 min-w-0 mr-4">
             <p className="text-sm font-medium text-foreground truncate leading-snug">
               {project.name}
@@ -54,6 +55,14 @@ function ListViewComponent({ projects, onEdit, onDelete, onShare, globalIndex }:
               <p className="text-xs text-muted-foreground truncate mt-0.5 leading-relaxed">
                 {project.description}
               </p>
+            )}
+            {project.workspaceName && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 h-4 font-medium text-muted-foreground mt-1"
+              >
+                {project.workspaceName}
+              </Badge>
             )}
           </div>
 
@@ -85,6 +94,7 @@ function ListViewComponent({ projects, onEdit, onDelete, onShare, globalIndex }:
             onEdit={() => onEdit(project)}
             onDelete={() => onDelete(project)}
             onShare={project.userRole === "owner" ? () => onShare(project) : undefined}
+            onDisconnect={onDisconnect ? () => onDisconnect(project) : undefined}
             stopPropagation
           />
         </div>

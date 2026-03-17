@@ -13,6 +13,7 @@ import { useProjectBudget } from "./use-project-budget"
 import { useProjectPaymentMethods } from "./use-project-payment-methods"
 import { useProjectIncomes } from "./use-project-incomes"
 import { useProjectAlternativeCurrencies } from "./use-project-alternative-currencies"
+import { useProjectPartners } from "./use-project-partners"
 import type { UpdateProjectRequest } from "@/types/project"
 import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
 import type { CreateIncomeRequest, IncomeResponse, UpdateIncomeRequest } from "@/types/income"
@@ -44,6 +45,7 @@ export function useProjectDetailView(projectId: string) {
   const ppm = useProjectPaymentMethods(projectId)
   const inc = useProjectIncomes(projectId)
   const pac = useProjectAlternativeCurrencies(projectId)
+  const ppp = useProjectPartners(projectId)
 
   const { mutateUpdate: mutateDetailUpdate, mutateDelete: mutateDetailDelete } = detail
   const {
@@ -314,6 +316,7 @@ export function useProjectDetailView(projectId: string) {
     obl,
     bud,
     ppm,
+    ppp,
     // cross-tab sync handlers
     mutateExpenseCreate,
     mutateExpenseUpdate,

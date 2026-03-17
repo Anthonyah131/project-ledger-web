@@ -11,6 +11,7 @@ import {
   IconSettings,
   IconShieldDollar,
   IconUserShield,
+  IconUsersGroup,
 } from "@tabler/icons-react"
 
 import { useAuth } from "@/context/auth-context"
@@ -30,6 +31,7 @@ import {
 const userNavMain = [
   { title: "Dashboard",        url: "/dashboard",        icon: IconDashboard },
   { title: "Proyectos",        url: "/projects",         icon: IconFolder },
+  { title: "Partners",         url: "/partners",         icon: IconUsersGroup },
   { title: "Métodos de pago",  url: "/payment-methods",  icon: IconCreditCard },
   { title: "Reportes",         url: "/reports",          icon: IconChartBar },
 ]

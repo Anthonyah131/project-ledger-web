@@ -9,6 +9,7 @@ import type {
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
   PaymentMethodSummaryResponse,
+  PaymentMethodBalanceResponse,
 } from "@/types/payment-method";
 
 // ─── Payment Methods ───────────────────────────────────────────────────────────
@@ -111,4 +112,25 @@ export function getPaymentMethodProjects(id: string) {
 
 export function getPaymentMethodSummary(id: string) {
   return api.get<PaymentMethodSummaryResponse>(`/payment-methods/${id}/summary`);
+}
+
+export function getPaymentMethodBalance(id: string, projectId: string) {
+  const query = new URLSearchParams({ project_id: projectId })
+  // Backward compatibility in case the backend still expects camelCase.
+  query.set("projectId", projectId)
+  return api.get<PaymentMethodBalanceResponse>(`/payment-methods/${id}/balance?${query.toString()}`);
+}
+
+// ─── Partner link / unlink ────────────────────────────────────────────────────
+
+export interface LinkPartnerRequest {
+  partnerId: string;
+}
+
+export function linkPartner(id: string, data: LinkPartnerRequest) {
+  return api.post<PaymentMethodResponse>(`/payment-methods/${id}/partner`, data);
+}
+
+export function unlinkPartner(id: string) {
+  return api.delete<PaymentMethodResponse>(`/payment-methods/${id}/partner`);
 }

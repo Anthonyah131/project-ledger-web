@@ -7,6 +7,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  Unlink,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,9 @@ interface ItemActionMenuProps {
   /** If provided, renders a "Gestionar accesos" option */
   onShare?: () => void;
   shareLabel?: string;
+  /** If provided, renders a "Desconectar" option (workspace context) */
+  onDisconnect?: () => void;
+  disconnectLabel?: string;
   editLabel?: string;
   deleteLabel?: string;
   /** Stop event propagation on trigger and items (for clickable rows) */
@@ -61,6 +65,8 @@ export function ItemActionMenu({
   isActivating = false,
   onShare,
   shareLabel = "Gestionar accesos",
+  onDisconnect,
+  disconnectLabel = "Desconectar del workspace",
   editLabel = "Editar",
   deleteLabel = "Eliminar",
   stopPropagation = false,
@@ -69,23 +75,11 @@ export function ItemActionMenu({
   disabled = false,
 }: ItemActionMenuProps) {
   function runAfterMenuClose(fn: () => void) {
-    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
     if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
       window.requestAnimationFrame(() => fn());
       return;
     }
-
     setTimeout(fn, 0);
-  }
-
-  function withStop<E extends { stopPropagation?: () => void }>(fn: () => void) {
-    return (e: E) => {
-      if (stopPropagation) e.stopPropagation?.();
-      runAfterMenuClose(fn);
-    };
   }
 
   return (
@@ -121,10 +115,10 @@ export function ItemActionMenu({
           </button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-44">
+      <DropdownMenuContent align={align} className="w-44" onClick={(e) => e.stopPropagation()}>
         {onOpen && (
           <>
-            <DropdownMenuItem onSelect={withStop(onOpen)}>
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(onOpen)}>
               <ArrowRight className="size-4" />
               {openLabel}
             </DropdownMenuItem>
@@ -133,7 +127,7 @@ export function ItemActionMenu({
         )}
         {onShare && (
           <>
-            <DropdownMenuItem onSelect={withStop(onShare)}>
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(onShare)}>
               <Users className="size-4" />
               {shareLabel}
             </DropdownMenuItem>
@@ -142,7 +136,7 @@ export function ItemActionMenu({
         )}
         {onActivate && (
           <>
-            <DropdownMenuItem onSelect={withStop(onActivate)} disabled={isActivating}>
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(onActivate)} disabled={isActivating}>
               {isActivating ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
@@ -153,12 +147,21 @@ export function ItemActionMenu({
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem onSelect={withStop(onEdit)}>
+        {onDisconnect && (
+          <>
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(onDisconnect)}>
+              <Unlink className="size-4" />
+              {disconnectLabel}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem onSelect={() => runAfterMenuClose(onEdit)}>
           <Pencil className="size-4" />
           {editLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={withStop(onDelete)}
+          onSelect={() => runAfterMenuClose(onDelete)}
           className="text-destructive focus:text-destructive"
         >
           <Trash2 className="size-4" />

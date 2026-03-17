@@ -49,32 +49,32 @@ export function DashboardMonthlySummaryCards({
   comparison,
   currencyCode,
 }: DashboardMonthlySummaryCardsProps) {
-  const previousMonthLabel = formatMonthLabel(comparison.previousMonth)
+  const previousMonthLabel = formatMonthLabel(comparison.previous_month)
 
   const cards: SummaryCardItem[] = [
     {
       label: "Gastos del mes",
-      value: formatCurrency(summary.totalSpent, currencyCode),
-      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.spentDelta, currencyCode)} (${formatSignedPercent(comparison.spentDeltaPercentage)})`,
+      value: formatCurrency(summary.total_spent, currencyCode),
+      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.spent_delta, currencyCode)} (${formatSignedPercent(comparison.spent_delta_percentage)})`,
       icon: IconReceipt,
-      footerIcon: comparison.spentDelta >= 0 ? IconArrowUpRight : IconArrowDownRight,
-      tone: comparison.spentDelta <= 0 ? "positive" : "warning",
+      footerIcon: comparison.spent_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
+      tone: comparison.spent_delta <= 0 ? "positive" : "warning",
     },
     {
       label: "Ingresos del mes",
-      value: formatCurrency(summary.totalIncome, currencyCode),
-      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.incomeDelta, currencyCode)} (${formatSignedPercent(comparison.incomeDeltaPercentage)})`,
+      value: formatCurrency(summary.total_income, currencyCode),
+      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.income_delta, currencyCode)} (${formatSignedPercent(comparison.income_delta_percentage)})`,
       icon: IconCoins,
-      footerIcon: comparison.incomeDelta >= 0 ? IconArrowUpRight : IconArrowDownRight,
-      tone: comparison.incomeDelta >= 0 ? "positive" : "warning",
+      footerIcon: comparison.income_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
+      tone: comparison.income_delta >= 0 ? "positive" : "warning",
     },
     {
       label: "Balance neto",
-      value: formatCurrency(summary.netBalance, currencyCode),
-      footer: `Cambio neto mensual: ${formatSignedCurrency(comparison.netDelta, currencyCode)}`,
-      icon: summary.netBalance >= 0 ? IconArrowUpRight : IconArrowDownRight,
-      footerIcon: comparison.netDelta >= 0 ? IconArrowUpRight : IconArrowDownRight,
-      tone: summary.netBalance >= 0 ? "positive" : "warning",
+      value: formatCurrency(summary.net_balance, currencyCode),
+      footer: `Cambio neto mensual: ${formatSignedCurrency(comparison.net_delta, currencyCode)}`,
+      icon: summary.net_balance >= 0 ? IconArrowUpRight : IconArrowDownRight,
+      footerIcon: comparison.net_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
+      tone: summary.net_balance >= 0 ? "positive" : "warning",
     },
   ]
 
