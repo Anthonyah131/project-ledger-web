@@ -75,6 +75,8 @@ export function useCreateExpenseForm({
       obligationId: "",
       obligationEquivalentAmount: "",
       currencyExchanges: [],
+      splitType: "percentage",
+      splits: [],
     },
   })
 
@@ -87,6 +89,10 @@ export function useCreateExpenseForm({
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
     const convertedAmount = Number(values.convertedAmount)
+    const finalConvertedAmount =
+      Number.isFinite(convertedAmount) && convertedAmount > 0
+        ? convertedAmount
+        : parseFloat((amount * effectiveRate).toFixed(2))
     const data: CreateExpenseRequest = {
       title: values.title,
       originalAmount: amount,
@@ -95,10 +101,7 @@ export function useCreateExpenseForm({
       categoryId: values.categoryId,
       paymentMethodId: values.paymentMethodId,
       exchangeRate: effectiveRate,
-      convertedAmount:
-        Number.isFinite(convertedAmount) && convertedAmount > 0
-          ? convertedAmount
-          : parseFloat((amount * effectiveRate).toFixed(2)),
+      convertedAmount: finalConvertedAmount,
       isActive: values.isActive,
     }
     const currencyExchanges = values.currencyExchanges
@@ -130,6 +133,40 @@ export function useCreateExpenseForm({
     ) {
       data.obligationEquivalentAmount = Number(values.obligationEquivalentAmount)
     }
+    const splitType = (values.splitType ?? "percentage") as "percentage" | "fixed"
+    const splits = (values.splits ?? [])
+      .filter((s) => Number(s.splitValue) > 0)
+      .map((s) => {
+        const splitValue = Number(s.splitValue)
+        const resolvedAmount =
+          splitType === "percentage"
+            ? parseFloat((finalConvertedAmount * splitValue / 100).toFixed(2))
+            : splitValue
+        const entry: import("@/types/expense").SplitInput = { partnerId: s.partnerId, splitType, splitValue, resolvedAmount }
+        // Use form's per-split CEs if populated, otherwise auto-compute from parent
+        const formCEs = (s.currencyExchanges ?? []).filter(
+          (ce) => ce.currencyCode && Number(ce.exchangeRate) > 0 && Number(ce.convertedAmount) > 0
+        )
+        if (formCEs.length > 0) {
+          entry.currencyExchanges = formCEs.map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: Number(ce.exchangeRate),
+            convertedAmount: Number(ce.convertedAmount),
+          }))
+        } else if (currencyExchanges.length > 0) {
+          entry.currencyExchanges = currencyExchanges.map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: ce.exchangeRate,
+            convertedAmount: parseFloat(
+              splitType === "percentage"
+                ? (ce.convertedAmount * splitValue / 100).toFixed(2)
+                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(2) : "0"
+            ),
+          }))
+        }
+        return entry
+      })
+    if (splits.length > 0) data.splits = splits
     onCreate(data)
     handleClose()
   }
@@ -166,6 +203,8 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
       isActive: true,
       isTemplate: false,
       currencyExchanges: [],
+      splitType: "percentage",
+      splits: [],
     },
     values: expense
       ? {
@@ -192,6 +231,17 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
             exchangeRate: String(item.exchangeRate),
             convertedAmount: String(item.convertedAmount),
           })),
+          splitType: expense.splits?.[0]?.splitType ?? "percentage",
+          splits: (expense.splits ?? []).map((s) => ({
+            partnerId: s.partnerId,
+            partnerName: s.partnerName,
+            splitValue: String(s.splitValue),
+            currencyExchanges: (s.currencyExchanges ?? []).map((ce) => ({
+              currencyCode: ce.currencyCode,
+              exchangeRate: String(ce.exchangeRate),
+              convertedAmount: String(ce.convertedAmount),
+            })),
+          })),
         }
       : undefined,
   })
@@ -206,6 +256,10 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
     const amount = Number(values.originalAmount)
     const effectiveRate = Number(values.exchangeRate) || 1
     const convertedAmount = Number(values.convertedAmount)
+    const finalConvertedAmount =
+      Number.isFinite(convertedAmount) && convertedAmount > 0
+        ? convertedAmount
+        : parseFloat((amount * effectiveRate).toFixed(2))
     const data: UpdateExpenseRequest = {
       title: values.title,
       originalAmount: amount,
@@ -218,10 +272,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
           ? values.obligationId
           : null,
       exchangeRate: effectiveRate,
-      convertedAmount:
-        Number.isFinite(convertedAmount) && convertedAmount > 0
-          ? convertedAmount
-          : parseFloat((amount * effectiveRate).toFixed(2)),
+      convertedAmount: finalConvertedAmount,
       description: values.description.trim().length > 0 ? values.description : null,
       receiptNumber: values.receiptNumber.trim().length > 0 ? values.receiptNumber : null,
       notes: values.notes.trim().length > 0 ? values.notes : null,
@@ -259,6 +310,40 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
     )
       ? null
       : currencyExchanges
+
+    const splitType = (values.splitType ?? "percentage") as "percentage" | "fixed"
+    const splits = (values.splits ?? [])
+      .filter((s) => Number(s.splitValue) > 0)
+      .map((s) => {
+        const splitValue = Number(s.splitValue)
+        const resolvedAmount =
+          splitType === "percentage"
+            ? parseFloat((finalConvertedAmount * splitValue / 100).toFixed(2))
+            : splitValue
+        const entry: import("@/types/expense").SplitInput = { partnerId: s.partnerId, splitType, splitValue, resolvedAmount }
+        const formCEs = (s.currencyExchanges ?? []).filter(
+          (ce) => ce.currencyCode && Number(ce.exchangeRate) > 0 && Number(ce.convertedAmount) > 0
+        )
+        if (formCEs.length > 0) {
+          entry.currencyExchanges = formCEs.map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: Number(ce.exchangeRate),
+            convertedAmount: Number(ce.convertedAmount),
+          }))
+        } else if (currencyExchanges.length > 0) {
+          entry.currencyExchanges = currencyExchanges.map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: ce.exchangeRate,
+            convertedAmount: parseFloat(
+              splitType === "percentage"
+                ? (ce.convertedAmount * splitValue / 100).toFixed(2)
+                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(2) : "0"
+            ),
+          }))
+        }
+        return entry
+      })
+    if (splits.length > 0) data.splits = splits
 
     onSave(expense.id, data)
     handleClose()

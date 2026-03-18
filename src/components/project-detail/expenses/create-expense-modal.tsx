@@ -26,6 +26,7 @@ import type { CreateExpenseRequest } from "@/types/expense"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ObligationResponse } from "@/types/obligation"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useCreateExpenseForm } from "@/hooks/forms/use-expense-form"
 
 interface CreateExpenseModalProps {
@@ -39,6 +40,8 @@ interface CreateExpenseModalProps {
   obligations: ObligationResponse[]
   projectCurrency: string
   alternativeCurrencyCodes?: string[]
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
 }
 
 export function CreateExpenseModal({
@@ -52,6 +55,8 @@ export function CreateExpenseModal({
   obligations,
   projectCurrency,
   alternativeCurrencyCodes,
+  partnersEnabled = false,
+  assignedPartners = [],
 }: CreateExpenseModalProps) {
   const {
     form,
@@ -163,6 +168,8 @@ export function CreateExpenseModal({
             watchConvertedAmount={watchConvertedAmount}
             alternativeCurrencyCodes={alternativeCurrencyCodes}
             showPlaceholders
+            partnersEnabled={partnersEnabled}
+            assignedPartners={assignedPartners}
           />
 
           {obligations.length > 0 && (

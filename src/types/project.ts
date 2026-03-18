@@ -64,6 +64,11 @@ export interface UpdateProjectRequest {
   description?: string | null;
 }
 
+/** Body for PATCH /projects/:id/settings */
+export interface UpdateProjectSettingsRequest {
+  partnersEnabled: boolean;
+}
+
 // ─── View helpers ──────────────────────────────────────────────────────────────
 
 export type ViewMode = "shelf" | "list";

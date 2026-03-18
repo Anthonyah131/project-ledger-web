@@ -34,6 +34,21 @@ const currencyExchangeSchema = z.object({
   convertedAmount: requiredPositiveNumeric,
 })
 
+const splitCurrencyExchangeFormSchema = z.object({
+  currencyCode: z.string(),
+  exchangeRate: z.string(),
+  convertedAmount: z.string(),
+})
+
+const splitItemSchema = z.object({
+  partnerId: z.string().min(1),
+  partnerName: z.string(),
+  splitValue: z
+    .string()
+    .refine((v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0), "Debe ser un número"),
+  currencyExchanges: z.array(splitCurrencyExchangeFormSchema).optional(),
+})
+
 export const createIncomeSchema = z.object({
   title: z.string().trim().min(1, "Título es requerido"),
   originalAmount: requiredPositiveNumeric,
@@ -50,6 +65,8 @@ export const createIncomeSchema = z.object({
   // Kept for future compatibility if backend makes convertedAmount editable.
   convertedAmount: optionalPositiveNumeric,
   accountAmount: optionalPositiveAccountNumeric,
+  splitType: z.enum(["percentage", "fixed"]).optional(),
+  splits: z.array(splitItemSchema).optional(),
 })
 
 export type CreateIncomeFormValues = z.infer<typeof createIncomeSchema>
@@ -69,6 +86,8 @@ export const updateIncomeSchema = z.object({
   currencyExchanges: z.array(currencyExchangeSchema),
   convertedAmount: optionalPositiveNumeric,
   accountAmount: optionalPositiveAccountNumeric,
+  splitType: z.enum(["percentage", "fixed"]).optional(),
+  splits: z.array(splitItemSchema).optional(),
 })
 
 export type UpdateIncomeFormValues = z.infer<typeof updateIncomeSchema>

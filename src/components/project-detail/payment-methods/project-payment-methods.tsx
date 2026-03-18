@@ -87,6 +87,11 @@ export function LinkPaymentMethodModal({
                     <Badge variant="secondary" className="text-[10px]">
                       {pm.currency}
                     </Badge>
+                    {pm.partner?.name && (
+                      <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200">
+                        {pm.partner.name}
+                      </Badge>
+                    )}
                     {pm.bankName && (
                       <span className="text-xs text-muted-foreground truncate">
                         {pm.bankName}
@@ -98,7 +103,7 @@ export function LinkPaymentMethodModal({
                   size="sm"
                   onClick={() => handleLink(pm.id)}
                   disabled={linkingId === pm.id}
-                  className="ml-3 shrink-0 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/20"
+                  className="ml-3 shrink-0 bg-linear-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/20"
                 >
                   {linkingId === pm.id ? (
                     <Loader2 className="size-3.5 animate-spin" />
@@ -132,7 +137,7 @@ export function ProjectPaymentMethodsList({
   return (
     <div role="list" aria-label="Métodos de pago del proyecto">
       {/* Header */}
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
+      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-linear-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
         <span className="flex-1">Nombre</span>
         <span className="w-28 text-right hidden sm:block">Tipo</span>
         <span className="w-24 text-right hidden md:block">Moneda</span>
@@ -163,11 +168,20 @@ export function ProjectPaymentMethodsList({
             {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
           </span>
 
-          {/* Currency */}
+
+          {/* Currency + Partner */}
           <span className="w-24 text-right hidden md:block">
-            <Badge variant="outline" className="text-[10px] border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
-              {pm.currency}
-            </Badge>
+            {/* Use a div inside span for flex layout to avoid Tailwind class conflict */}
+            <div className="flex flex-col items-end gap-1">
+              <Badge variant="outline" className="text-[10px] border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+                {pm.currency}
+              </Badge>
+              {pm.partnerName && (
+                <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200 mt-0.5">
+                  {pm.partnerName}
+                </Badge>
+              )}
+            </div>
           </span>
 
           {/* Owner */}

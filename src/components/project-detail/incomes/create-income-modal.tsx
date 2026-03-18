@@ -12,6 +12,7 @@ import type {
 import type { CategoryResponse } from "@/types/category"
 import type { CurrencyResponse } from "@/types/currency"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useCreateIncomeForm } from "@/hooks/forms/use-income-form"
 import { useIncomeDocumentExtraction } from "@/hooks/forms/use-income-document-extraction"
 
@@ -26,6 +27,8 @@ interface CreateIncomeModalProps {
   availableCurrencies: CurrencyResponse[]
   projectCurrency: string
   alternativeCurrencyCodes?: string[]
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
 }
 
 export function CreateIncomeModal({
@@ -39,6 +42,8 @@ export function CreateIncomeModal({
   availableCurrencies,
   projectCurrency,
   alternativeCurrencyCodes,
+  partnersEnabled = false,
+  assignedPartners = [],
 }: CreateIncomeModalProps) {
   const {
     form,
@@ -135,6 +140,8 @@ export function CreateIncomeModal({
           watchConvertedAmount={watchConvertedAmount}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           showPlaceholders
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
         />
       )}
     </FormModal>

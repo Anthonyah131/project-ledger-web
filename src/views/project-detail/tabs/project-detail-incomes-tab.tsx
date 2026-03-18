@@ -18,6 +18,7 @@ import type {
   UpdateIncomeRequest,
 } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 
 const CreateIncomeModal = dynamic(() =>
   import("@/components/project-detail/incomes/create-income-modal").then((mod) => mod.CreateIncomeModal)
@@ -57,6 +58,8 @@ interface ProjectDetailIncomesTabProps {
   projectCurrency: string
   alternativeCurrencyCodes: string[]
   createMode: "manual" | "ai"
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
   onCreateManual: () => void
   onCreateWithAi: () => void
   onCreateClose: () => void
@@ -79,6 +82,8 @@ export function ProjectDetailIncomesTab({
   projectCurrency,
   alternativeCurrencyCodes,
   createMode,
+  partnersEnabled = false,
+  assignedPartners = [],
   onCreateManual,
   onCreateWithAi,
   onCreateClose,
@@ -146,6 +151,8 @@ export function ProjectDetailIncomesTab({
           availableCurrencies={availableCurrencies}
           projectCurrency={projectCurrency}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
         />
       )}
 
@@ -160,6 +167,8 @@ export function ProjectDetailIncomesTab({
           availableCurrencies={availableCurrencies}
           projectCurrency={projectCurrency}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
         />
       )}
 

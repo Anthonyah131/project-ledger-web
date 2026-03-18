@@ -18,6 +18,7 @@ import type {
 } from "@/types/expense"
 import type { ObligationResponse } from "@/types/obligation"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 
 const CreateExpenseModal = dynamic(() =>
   import("@/components/project-detail/expenses/create-expense-modal").then((mod) => mod.CreateExpenseModal)
@@ -57,6 +58,8 @@ interface ProjectDetailExpensesTabProps {
   projectCurrency: string
   alternativeCurrencyCodes: string[]
   createMode: "manual" | "ai"
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
   onCreateManual: () => void
   onCreateWithAi: () => void
   onCreateClose: () => void
@@ -79,6 +82,8 @@ export function ProjectDetailExpensesTab({
   projectCurrency,
   alternativeCurrencyCodes,
   createMode,
+  partnersEnabled = false,
+  assignedPartners = [],
   onCreateManual,
   onCreateWithAi,
   onCreateClose,
@@ -146,6 +151,8 @@ export function ProjectDetailExpensesTab({
           obligations={obligations}
           projectCurrency={projectCurrency}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
         />
       )}
 
@@ -160,6 +167,8 @@ export function ProjectDetailExpensesTab({
           obligations={obligations}
           projectCurrency={projectCurrency}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
         />
       )}
 

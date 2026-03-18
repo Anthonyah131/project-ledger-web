@@ -24,6 +24,7 @@ interface AssignPartnerModalProps {
   availablePartners: PartnerResponse[]
   assignedPartners: ProjectPartnerResponse[]
   loading: boolean
+  partnersEnabled: boolean
   onAssign: (partnerId: string) => Promise<void>
 }
 
@@ -33,12 +34,15 @@ export function AssignPartnerModal({
   availablePartners,
   assignedPartners,
   loading,
+  partnersEnabled,
   onAssign,
 }: AssignPartnerModalProps) {
   const [assigningId, setAssigningId] = useState<string | null>(null)
 
   const assignedIds = new Set(assignedPartners.map((p) => p.partnerId))
   const unassigned = availablePartners.filter((p) => !assignedIds.has(p.id))
+  // When splits are disabled, limit to 1 partner
+  const limitReached = !partnersEnabled && assignedPartners.length >= 1
 
   async function handleAssign(partnerId: string) {
     setAssigningId(partnerId)
@@ -59,7 +63,17 @@ export function AssignPartnerModal({
           </DialogDescription>
         </DialogHeader>
 
-        {loading ? (
+        {limitReached ? (
+          <div className="flex flex-col items-center gap-2 py-8 text-center">
+            <Users className="size-8 text-muted-foreground/50" />
+            <p className="text-sm text-muted-foreground">
+              Solo se puede asignar un partner cuando los splits están desactivados.
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Activa los splits por partners en la configuración del proyecto para añadir más.
+            </p>
+          </div>
+        ) : loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
@@ -81,9 +95,9 @@ export function AssignPartnerModal({
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                  {p.email && (
+                  {p.email ? (
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{p.email}</p>
-                  )}
+                  ) : null}
                 </div>
                 <Button
                   size="sm"

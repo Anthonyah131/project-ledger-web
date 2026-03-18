@@ -3,7 +3,6 @@
 // views/project-detail/project-detail-view.tsx
 // Orchestrator for the project-detail page — header + resource tabs.
 
-import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
@@ -21,17 +20,16 @@ import { ProjectDetailExpensesTab } from "@/views/project-detail/tabs/project-de
 // ── Incomes ──────────────────────────────────────────
 import { ProjectDetailIncomesTab } from "@/views/project-detail/tabs/project-detail-incomes-tab";
 
-// ── Extracted tabs ───────────────────────────────────
+// ── Other tabs ───────────────────────────────────────
 import { ProjectDetailObligationsTab } from "@/views/project-detail/tabs/project-detail-obligations-tab";
 import { ProjectDetailCategoriesTab } from "@/views/project-detail/tabs/project-detail-categories-tab";
 import { ProjectDetailBudgetTab } from "@/views/project-detail/tabs/project-detail-budget-tab";
-import { ProjectDetailPaymentMethodsTab } from "@/views/project-detail/tabs/project-detail-payment-methods-tab";
-import { ProjectDetailAlternativeCurrenciesTab } from "@/views/project-detail/tabs/project-detail-alternative-currencies-tab";
-import { ProjectDetailPartnersTab } from "@/views/project-detail/tabs/project-detail-partners-tab";
 
-const EditProjectModal = dynamic(() =>
-  import("@/components/projects/edit-project-modal").then((mod) => mod.EditProjectModal)
-);
+// ── Settings tab ─────────────────────────────────────
+import {
+  ProjectDetailSettingsTab,
+  type ProjectSettingsSection,
+} from "@/views/project-detail/tabs/project-detail-settings-tab";
 
 interface Props {
   projectId: string;
@@ -43,12 +41,16 @@ export function ProjectDetailView({ projectId }: Props) {
   const router = useRouter();
   const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
   const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
+  const [activeTab, setActiveTab] = useState("expenses");
+  const [settingsSection, setSettingsSection] =
+    useState<ProjectSettingsSection>("general");
+
   const {
     detail,
-    editProjectOpen, deleteProjectOpen,
-    setEditProjectOpen, setDeleteProjectOpen,
-    mutateProjectEditOpen, mutateProjectDeleteOpen,
-    mutateProjectUpdate, mutateProjectDelete,
+    deleteProjectOpen,
+    setDeleteProjectOpen,
+    mutateProjectDeleteOpen,
+    mutateProjectUpdate, mutateProjectDelete, mutateProjectSettingsUpdate,
     exp, inc, pac, cat, obl, bud, ppm, ppp,
     mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
     mutateExpenseActiveState,
@@ -74,13 +76,21 @@ export function ProjectDetailView({ projectId }: Props) {
     [pac.currencies],
   );
 
+  const linkedPartnerIds = useMemo(
+    () => new Set(ppm.linkedPMs.map((pm) => pm.partner_id).filter((id): id is string => !!id)),
+    [ppm.linkedPMs],
+  );
+
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
       {/* Header */}
       <ProjectHeader
         project={detail.project}
         loading={detail.loading}
-        onEdit={mutateProjectEditOpen}
+        onEdit={() => {
+          setActiveTab("settings");
+          setSettingsSection("general");
+        }}
         onDelete={mutateProjectDeleteOpen}
         onShare={
           isOwner
@@ -90,16 +100,14 @@ export function ProjectDetailView({ projectId }: Props) {
       />
 
       {/* Tabs */}
-      <Tabs defaultValue="expenses">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList variant="line">
           <TabsTrigger value="expenses">Gastos</TabsTrigger>
           <TabsTrigger value="incomes">Ingresos</TabsTrigger>
-          <TabsTrigger value="alternative-currencies">Monedas</TabsTrigger>
           <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="budget">Presupuesto</TabsTrigger>
-          <TabsTrigger value="partners">Partners</TabsTrigger>
-          <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
+          <TabsTrigger value="settings">Configuración</TabsTrigger>
         </TabsList>
 
         <ProjectDetailExpensesTab
@@ -111,6 +119,8 @@ export function ProjectDetailView({ projectId }: Props) {
           projectCurrency={detail.project?.currencyCode ?? ""}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           createMode={expenseCreateMode}
+          partnersEnabled={detail.project?.partnersEnabled ?? false}
+          assignedPartners={ppp.assignedPartners}
           onCreateManual={() => {
             setExpenseCreateMode("manual")
             setExpenseCreateOpen(true)
@@ -142,6 +152,8 @@ export function ProjectDetailView({ projectId }: Props) {
           projectCurrency={detail.project?.currencyCode ?? ""}
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           createMode={incomeCreateMode}
+          partnersEnabled={detail.project?.partnersEnabled ?? false}
+          assignedPartners={ppp.assignedPartners}
           onCreateManual={() => {
             setIncomeCreateMode("manual")
             setIncomeCreateOpen(true)
@@ -162,17 +174,6 @@ export function ProjectDetailView({ projectId }: Props) {
           onSave={mutateIncomeUpdate}
           onDelete={mutateIncomeDelete}
           onToggleActive={mutateIncomeActiveState}
-        />
-
-        <ProjectDetailAlternativeCurrenciesTab
-          projectCurrency={detail.project?.currencyCode ?? ""}
-          currencies={pac.currencies}
-          allCurrencies={pac.allCurrencies}
-          loading={pac.loading}
-          catalogLoading={pac.catalogLoading}
-          canManage={!!canManageAlternativeCurrencies}
-          onAdd={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
-          onDelete={(c) => { mutateAlternativeCurrencyDelete(c) }}
         />
 
         <ProjectDetailObligationsTab
@@ -214,62 +215,62 @@ export function ProjectDetailView({ projectId }: Props) {
           onDelete={mutateBudgetDelete}
         />
 
-        <ProjectDetailPartnersTab
-          ppp={ppp}
+        <ProjectDetailSettingsTab
+          activeSection={settingsSection}
+          onSectionChange={setSettingsSection}
+          // General
+          project={detail.project ?? null}
           isOwner={!!isOwner}
-          linkedPartnerIds={useMemo(
-            () => new Set(ppm.linkedPMs.map((pm) => pm.partner_id).filter((id): id is string => !!id)),
-            [ppm.linkedPMs],
-          )}
+          onSaveProject={mutateProjectUpdate}
+          // Currencies
+          projectCurrency={detail.project?.currencyCode ?? ""}
+          currencies={pac.currencies}
+          allCurrencies={pac.allCurrencies}
+          currenciesLoading={pac.loading}
+          currenciesCatalogLoading={pac.catalogLoading}
+          canManageCurrencies={!!canManageAlternativeCurrencies}
+          onAddCurrency={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
+          onDeleteCurrency={(c) => { mutateAlternativeCurrencyDelete(c) }}
+          // Partners
+          ppp={ppp}
+          partnersEnabled={detail.project?.partnersEnabled ?? false}
+          linkedPartnerIds={linkedPartnerIds}
+          onTogglePartners={(enabled) => mutateProjectSettingsUpdate({ partnersEnabled: enabled })}
           onAssignOpen={ppp.openAssignDialog}
           onAssignClose={() => ppp.setAssignOpen(false)}
-          onRemoveSelect={ppp.setRemoveTarget}
-          onRemoveClose={() => ppp.setRemoveTarget(null)}
+          onRemoveSelectPartner={ppp.setRemoveTarget}
+          onRemoveClosePartner={() => ppp.setRemoveTarget(null)}
           onAssign={ppp.handleAssign}
-          onRemove={(pp) => { ppp.handleRemove(pp) }}
-        />
-
-        <ProjectDetailPaymentMethodsTab
+          onRemovePartner={(pp) => { ppp.handleRemove(pp) }}
+          // Payment methods
           ppm={{
             loading: ppm.loading,
             linkedPMs: ppm.linkedPMs,
-            availableGroups: ppm.availableGroups,
-            unpartneredPMs: ppm.unpartneredPMs,
-            availableLoading: ppm.availableLoading,
+            linkableItems: ppm.linkableItems,
+            linkableLoading: ppm.linkableLoading,
             addOpen: ppm.addOpen,
             removeTarget: ppm.removeTarget,
           }}
-          isOwner={!!isOwner}
           onAddOpen={ppm.openAddDialog}
           onAddClose={() => ppm.setAddOpen(false)}
           onLink={ppm.handleLink}
-          onRemoveSelect={ppm.setRemoveTarget}
-          onRemoveClose={() => ppm.setRemoveTarget(null)}
+          onRemoveSelectPM={ppm.setRemoveTarget}
+          onRemoveClosePM={() => ppm.setRemoveTarget(null)}
           onUnlink={ppm.handleUnlink}
         />
       </Tabs>
 
       {/* ─── Project-level modals ─── */}
       {detail.project && (
-        <>
-          {editProjectOpen && (
-            <EditProjectModal
-              project={detail.project}
-              open={editProjectOpen}
-              onClose={() => setEditProjectOpen(false)}
-              onSave={mutateProjectUpdate}
-            />
-          )}
-          <DeleteEntityModal
-            item={detail.project}
-            open={deleteProjectOpen}
-            onClose={() => setDeleteProjectOpen(false)}
-            onConfirm={mutateProjectDelete}
-            title="Eliminar proyecto"
-            description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
-            getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
-          />
-        </>
+        <DeleteEntityModal
+          item={detail.project}
+          open={deleteProjectOpen}
+          onClose={() => setDeleteProjectOpen(false)}
+          onConfirm={mutateProjectDelete}
+          title="Eliminar proyecto"
+          description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
+          getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
+        />
       )}
     </div>
   );

@@ -1,28 +1,24 @@
 "use client"
 
 // hooks/projects/use-project-payment-methods.ts
-// Manages payment methods linked to a project and the available ones (for add dialog).
+// Manages payment methods linked to a project and the linkable ones (for add dialog).
 
 import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as ppService from "@/services/project-partner-service"
 import { toastApiError } from "@/lib/error-utils"
-import type {
-  AvailablePaymentMethodsPartnerItem,
-  ProjectPaymentMethodItem,
-} from "@/types/project-partner"
+import type { ProjectPaymentMethodItem } from "@/types/project-partner"
+import type { LinkablePaymentMethodItem } from "@/types/project-partner"
 import type { PaymentMethodResponse } from "@/types/payment-method"
-import type { PartnerPaymentMethodItem } from "@/types/partner"
 
 export function useProjectPaymentMethods(projectId: string) {
   // ── Linked payment methods ───────────────────────────────
   const [linkedPMs, setLinkedPMs] = useState<ProjectPaymentMethodItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  // ── Available payment methods (for add dialog, lazy) ────
-  const [availableGroups, setAvailableGroups] = useState<AvailablePaymentMethodsPartnerItem[]>([])
-  const [unpartneredPMs, setUnpartneredPMs] = useState<PartnerPaymentMethodItem[]>([])
-  const [availableLoading, setAvailableLoading] = useState(false)
+  // ── Linkable payment methods (for add dialog, lazy) ─────
+  const [linkableItems, setLinkableItems] = useState<LinkablePaymentMethodItem[]>([])
+  const [linkableLoading, setLinkableLoading] = useState(false)
 
   // ── Dialog state ─────────────────────────────────────────
   const [addOpen, setAddOpen] = useState(false)
@@ -47,25 +43,24 @@ export function useProjectPaymentMethods(projectId: string) {
     fetchLinked()
   }, [fetchLinked])
 
-  // ── Fetch available (triggered when add dialog opens) ───
+  // ── Fetch linkable (triggered when add dialog opens) ────
 
-  const fetchAvailable = useCallback(async () => {
+  const fetchLinkable = useCallback(async () => {
     try {
-      setAvailableLoading(true)
-      const data = await ppService.getProjectAvailablePaymentMethods(projectId)
-      setUnpartneredPMs(data.unpartneredPaymentMethods ?? [])
-      setAvailableGroups(data.partners)
+      setLinkableLoading(true)
+      const data = await ppService.getLinkablePaymentMethods(projectId)
+      setLinkableItems(data)
     } catch {
       // non-critical
     } finally {
-      setAvailableLoading(false)
+      setLinkableLoading(false)
     }
   }, [projectId])
 
   const openAddDialog = useCallback(() => {
     setAddOpen(true)
-    fetchAvailable()
-  }, [fetchAvailable])
+    fetchLinkable()
+  }, [fetchLinkable])
 
   // ── Link ─────────────────────────────────────────────────
 
@@ -73,6 +68,8 @@ export function useProjectPaymentMethods(projectId: string) {
     async (pmId: string, pmName: string) => {
       try {
         await ppService.linkPaymentMethod(projectId, { paymentMethodId: pmId })
+        // Remove linked item from local linkable list immediately
+        setLinkableItems((prev) => prev.filter((pm) => pm.id !== pmId))
         await fetchLinked()
         toast.success("Método de pago vinculado", {
           description: `"${pmName}" fue vinculado al proyecto.`,
@@ -93,7 +90,7 @@ export function useProjectPaymentMethods(projectId: string) {
         setLinkedPMs((prev) => prev.filter((p) => p.id !== pm.id))
         setRemoveTarget(null)
         toast.success("Método de pago quitado", {
-          description: `"${pm.name}" fue quitado del proyecto.`,
+          description: `"${pm.paymentMethodName}" fue quitado del proyecto.`,
         })
         return true
       } catch (err) {
@@ -109,8 +106,8 @@ export function useProjectPaymentMethods(projectId: string) {
   const paymentMethods: PaymentMethodResponse[] = useMemo(
     () =>
       linkedPMs.map((pm) => ({
-        id: pm.id,
-        name: pm.name,
+        id: pm.paymentMethodId,
+        name: pm.paymentMethodName,
         type: pm.type,
         currency: pm.currency,
         bankName: pm.bankName,
@@ -130,9 +127,8 @@ export function useProjectPaymentMethods(projectId: string) {
   return {
     linkedPMs,
     loading,
-    availableGroups,
-    unpartneredPMs,
-    availableLoading,
+    linkableItems,
+    linkableLoading,
     addOpen,
     setAddOpen,
     removeTarget,

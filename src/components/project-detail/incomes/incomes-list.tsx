@@ -1,6 +1,7 @@
 "use client"
 
 import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { GitBranch } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
@@ -92,21 +93,32 @@ function IncomesListComponent({
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {income.title}
               </p>
-              {!income.isActive && (
-                <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
-                  >
-                    Recordatorio
-                  </Badge>
+              {(!income.isActive || income.hasSplits) ? (
+                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                  {!income.isActive ? (
+                    <Badge
+                      variant="outline"
+                      className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
+                    >
+                      Recordatorio
+                    </Badge>
+                  ) : null}
+                  {income.hasSplits ? (
+                    <Badge
+                      variant="outline"
+                      className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
+                    >
+                      <GitBranch className="size-2.5" />
+                      Split
+                    </Badge>
+                  ) : null}
                 </div>
-              )}
-              {income.description && (
+              ) : null}
+              {income.description ? (
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {income.description}
                 </p>
-              )}
+              ) : null}
             </div>
 
             <span className="w-28 text-right text-xs text-muted-foreground tabular-nums hidden sm:block">

@@ -6,6 +6,7 @@ import type { IncomeResponse, UpdateIncomeRequest } from "@/types/income"
 import type { CategoryResponse } from "@/types/category"
 import type { CurrencyResponse } from "@/types/currency"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useUpdateIncomeForm } from "@/hooks/forms/use-income-form"
 
 interface EditIncomeModalProps {
@@ -18,6 +19,8 @@ interface EditIncomeModalProps {
   availableCurrencies: CurrencyResponse[]
   projectCurrency: string
   alternativeCurrencyCodes?: string[]
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
 }
 
 export function EditIncomeModal({
@@ -30,6 +33,8 @@ export function EditIncomeModal({
   availableCurrencies,
   projectCurrency,
   alternativeCurrencyCodes,
+  partnersEnabled = false,
+  assignedPartners = [],
 }: EditIncomeModalProps) {
   const {
     form,
@@ -70,6 +75,8 @@ export function EditIncomeModal({
         watchExchangeRate={watchExchangeRate}
         watchConvertedAmount={watchConvertedAmount}
         alternativeCurrencyCodes={alternativeCurrencyCodes}
+        partnersEnabled={partnersEnabled}
+        assignedPartners={assignedPartners}
       />
     </FormModal>
   )

@@ -8,6 +8,8 @@ import type {
   ProjectAvailablePaymentMethodsResponse,
   ProjectPaymentMethodsResponse,
   LinkPaymentMethodRequest,
+  LinkablePaymentMethodItem,
+  SplitDefaultsResponse,
 } from "@/types/project-partner"
 
 /** List partners assigned to a project */
@@ -45,4 +47,18 @@ export function linkPaymentMethod(projectId: string, data: LinkPaymentMethodRequ
 /** Unlink a payment method from a project */
 export function unlinkPaymentMethod(projectId: string, pmId: string) {
   return api.delete<void>(`/projects/${projectId}/payment-methods/${pmId}`)
+}
+
+/** List payment methods that can be linked to a project (pre-filtered by backend) */
+export function getLinkablePaymentMethods(projectId: string) {
+  return api.get<LinkablePaymentMethodItem[]>(
+    `/projects/${projectId}/payment-methods/linkable`,
+  )
+}
+
+/** Get default split percentages for partners assigned to a project */
+export function getPartnerSplitDefaults(projectId: string) {
+  return api.get<SplitDefaultsResponse>(
+    `/projects/${projectId}/partners/split-defaults`,
+  )
 }

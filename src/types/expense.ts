@@ -75,7 +75,11 @@ export interface ExpenseResponse {
   notes: string | null;
   isTemplate: boolean;
   isActive: boolean;
+  /** True if the expense has partner splits recorded */
+  hasSplits: boolean;
   currencyExchanges: CurrencyExchangeResponse[];
+  /** Splits detail — only present on GET by ID. null if no splits */
+  splits: SplitResponse[] | null;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
@@ -111,6 +115,8 @@ export interface CreateExpenseRequest {
   isActive?: boolean;
   /** Optional replacement list of transaction conversions */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
+  /** Explicit partner splits. Omit to let backend auto-assign */
+  splits?: SplitInput[] | null;
 }
 
 export interface UpdateExpenseRequest {
@@ -131,6 +137,12 @@ export interface UpdateExpenseRequest {
   isActive?: boolean;
   /** null = no change, [] = remove all, list = replace all */
   currencyExchanges?: CurrencyExchangeRequest[] | null;
+  /**
+   * Omit → keep existing splits unchanged.
+   * [] → remove all splits.
+   * items → replace all splits.
+   */
+  splits?: SplitInput[] | null;
 }
 
 export interface CreateExpenseFromTemplateRequest {
@@ -231,4 +243,32 @@ export interface CurrencyExchangeResponse {
   currencyCode: string;
   exchangeRate: number;
   convertedAmount: number;
+}
+
+// ─── Partner splits ───────────────────────────────────────────────────────────
+
+export type SplitType = "percentage" | "fixed";
+
+/** Split detail in GET responses */
+export interface SplitResponse {
+  partnerId: string;
+  partnerName: string;
+  splitType: SplitType;
+  /** Percentage (e.g. 60) or fixed amount */
+  splitValue: number;
+  /** Resolved amount in the project's base currency */
+  resolvedAmount: number;
+  /** Equivalents in project alternative currencies. null if none configured */
+  currencyExchanges: CurrencyExchangeResponse[] | null;
+}
+
+/** Split entry in POST/PUT request bodies */
+export interface SplitInput {
+  partnerId: string;
+  splitType: SplitType;
+  splitValue: number;
+  /** Resolved amount in the project's base currency. Calculated by the frontend. */
+  resolvedAmount: number;
+  /** Optional — include when project has alternative currencies */
+  currencyExchanges?: CurrencyExchangeRequest[];
 }

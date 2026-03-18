@@ -6,7 +6,8 @@
 import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as projectService from "@/services/project-service"
-import type { ProjectResponse, UpdateProjectRequest } from "@/types/project"
+import { toastApiError } from "@/lib/error-utils"
+import type { ProjectResponse, UpdateProjectRequest, UpdateProjectSettingsRequest } from "@/types/project"
 
 export function useProjectDetail(projectId: string) {
   const [project, setProject] = useState<ProjectResponse | null>(null)
@@ -57,11 +58,33 @@ export function useProjectDetail(projectId: string) {
     }
   }, [projectId])
 
+  const mutateUpdateSettings = useCallback(
+    async (data: UpdateProjectSettingsRequest) => {
+      try {
+        await projectService.updateProjectSettings(projectId, data)
+        setProject((prev) =>
+          prev ? { ...prev, partnersEnabled: data.partnersEnabled } : prev,
+        )
+        toast.success(
+          data.partnersEnabled
+            ? "Splits por partners activados"
+            : "Splits por partners desactivados",
+        )
+        return true
+      } catch (err) {
+        toastApiError(err, "Error al actualizar configuración del proyecto")
+        return false
+      }
+    },
+    [projectId],
+  )
+
   return {
     project,
     loading,
     mutateUpdate,
     mutateDelete,
+    mutateUpdateSettings,
     refetch: fetchProject,
   }
 }

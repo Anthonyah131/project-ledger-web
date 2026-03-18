@@ -7,6 +7,7 @@ import type {
   PagedProjectsResponse,
   CreateProjectRequest,
   UpdateProjectRequest,
+  UpdateProjectSettingsRequest,
 } from "@/types/project";
 import type {
   ProjectMemberResponse,
@@ -50,6 +51,11 @@ export function updateProject(projectId: string, data: UpdateProjectRequest) {
 
 export function deleteProject(projectId: string) {
   return api.delete<void>(`/projects/${projectId}`);
+}
+
+/** PATCH /projects/:id/settings — toggle partner splits feature */
+export function updateProjectSettings(projectId: string, data: UpdateProjectSettingsRequest) {
+  return api.patch<void>(`/projects/${projectId}/settings`, data);
 }
 
 // ─── Members ───────────────────────────────────────────────────────────────────

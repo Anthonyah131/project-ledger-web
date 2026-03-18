@@ -23,6 +23,7 @@ import type { ExpenseResponse, UpdateExpenseRequest } from "@/types/expense"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ObligationResponse } from "@/types/obligation"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useUpdateExpenseForm } from "@/hooks/forms/use-expense-form"
 
 interface EditExpenseModalProps {
@@ -35,6 +36,8 @@ interface EditExpenseModalProps {
   obligations: ObligationResponse[]
   projectCurrency: string
   alternativeCurrencyCodes?: string[]
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
 }
 
 export function EditExpenseModal({
@@ -47,6 +50,8 @@ export function EditExpenseModal({
   obligations,
   projectCurrency,
   alternativeCurrencyCodes,
+  partnersEnabled = false,
+  assignedPartners = [],
 }: EditExpenseModalProps) {
   const {
     form,
@@ -105,6 +110,8 @@ export function EditExpenseModal({
         watchExchangeRate={watchExchangeRate}
         watchConvertedAmount={watchConvertedAmount}
         alternativeCurrencyCodes={alternativeCurrencyCodes}
+        partnersEnabled={partnersEnabled}
+        assignedPartners={assignedPartners}
       />
 
       {obligations.length > 0 && (

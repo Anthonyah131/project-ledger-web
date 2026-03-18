@@ -14,6 +14,8 @@ export interface ProjectPaymentMethodResponse {
   accountNumber: string | null
   ownerUserName: string
   linkedAt: string
+  /** Nombre del partner asociado, si existe */
+  partnerName?: string | null
 }
 
 /** Body for POST /projects/:id/payment-methods */

@@ -35,11 +35,13 @@ export interface ProjectAvailablePaymentMethodsResponse {
 /** Shape of a payment method linked to a project */
 export interface ProjectPaymentMethodItem {
   id: string
-  name: string
+  paymentMethodId: string
+  paymentMethodName: string
   type: PaymentMethodType
   currency: string
   bankName: string | null
   accountNumber: string | null
+  ownerUserName: string | null
   partner_id: string | null
   partnerName: string | null
 }
@@ -50,4 +52,28 @@ export interface ProjectPaymentMethodsResponse {
 
 export interface LinkPaymentMethodRequest {
   paymentMethodId: string
+}
+
+/** Item returned by GET /projects/:id/payment-methods/linkable */
+export interface LinkablePaymentMethodItem {
+  id: string
+  name: string
+  type: PaymentMethodType
+  currency: string
+  bankName: string | null
+  accountNumber: string | null
+  partnerId: string
+  partnerName: string
+}
+
+/** Item in GET /projects/:id/partners/split-defaults response */
+export interface SplitDefaultPartner {
+  partnerId: string
+  name: string
+  defaultPercentage: number
+}
+
+/** Response from GET /projects/:id/partners/split-defaults */
+export interface SplitDefaultsResponse {
+  partners: SplitDefaultPartner[]
 }

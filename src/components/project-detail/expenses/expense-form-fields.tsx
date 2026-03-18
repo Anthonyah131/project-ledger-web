@@ -24,8 +24,10 @@ import {
 import { toast } from "sonner"
 import { ProjectCurrencyConversionSection } from "@/components/project-detail/shared/currency-conversion/project-currency-conversion-section"
 import { AlternativeCurrencyExchangesSection } from "@/components/project-detail/shared/currency-conversion/alternative-currency-conversions-section"
+import { SplitSection } from "@/components/project-detail/shared/split-section"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { getExchangeRate } from "@/services/exchange-rate-service"
 import { getTodayIsoDate } from "@/lib/date-utils"
 
@@ -42,6 +44,8 @@ interface ExpenseFormFieldsProps {
   alternativeCurrencyCodes?: string[]
   /** Whether to show placeholders (used in Create mode). */
   showPlaceholders?: boolean
+  partnersEnabled?: boolean
+  assignedPartners?: ProjectPartnerResponse[]
 }
 
 export function ExpenseFormFields({
@@ -55,6 +59,8 @@ export function ExpenseFormFields({
   watchConvertedAmount,
   alternativeCurrencyCodes,
   showPlaceholders = false,
+  partnersEnabled = false,
+  assignedPartners = [],
 }: ExpenseFormFieldsProps) {
   const today = getTodayIsoDate()
 
@@ -462,6 +468,14 @@ export function ExpenseFormFields({
         autoRateLoading={autoRateLoading}
         onAutoRate={handleAutoRate}
         onRemoveExchange={remove}
+      />
+
+      <SplitSection
+        form={form}
+        assignedPartners={assignedPartners}
+        partnersEnabled={partnersEnabled}
+        watchConvertedAmount={projectAmount > 0 ? String(projectAmount) : ""}
+        projectCurrency={projectCurrency}
       />
     </>
   )

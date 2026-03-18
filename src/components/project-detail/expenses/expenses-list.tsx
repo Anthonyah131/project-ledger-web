@@ -1,6 +1,7 @@
 "use client"
 
 import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { GitBranch } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
@@ -88,21 +89,32 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {expense.title}
               </p>
-              {!expense.isActive && (
-                <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
-                  >
-                    Recordatorio
-                  </Badge>
+              {(!expense.isActive || expense.hasSplits) ? (
+                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                  {!expense.isActive ? (
+                    <Badge
+                      variant="outline"
+                      className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
+                    >
+                      Recordatorio
+                    </Badge>
+                  ) : null}
+                  {expense.hasSplits ? (
+                    <Badge
+                      variant="outline"
+                      className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
+                    >
+                      <GitBranch className="size-2.5" />
+                      Split
+                    </Badge>
+                  ) : null}
                 </div>
-              )}
-              {expense.description && (
+              ) : null}
+              {expense.description ? (
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {expense.description}
                 </p>
-              )}
+              ) : null}
             </div>
 
             {/* Date */}
