@@ -43,8 +43,7 @@ export function useProjectAlternativeCurrencies(projectId: string) {
   }, [])
 
   useEffect(() => {
-    fetchProjectCurrencies()
-    fetchCatalog()
+    Promise.all([fetchProjectCurrencies(), fetchCatalog()])
   }, [fetchProjectCurrencies, fetchCatalog])
 
   const mutateAdd = useCallback(

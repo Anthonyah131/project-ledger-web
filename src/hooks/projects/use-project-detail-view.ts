@@ -3,7 +3,7 @@
 // hooks/projects/use-project-detail-view.ts
 // Orchestrates all state and side-effects for the project-detail page.
 
-import { useState, useCallback } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useProjectDetail } from "./use-project-detail"
 import { useProjectExpenses } from "./use-project-expenses"
@@ -14,6 +14,7 @@ import { useProjectPaymentMethods } from "./use-project-payment-methods"
 import { useProjectIncomes } from "./use-project-incomes"
 import { useProjectAlternativeCurrencies } from "./use-project-alternative-currencies"
 import { useProjectPartners } from "./use-project-partners"
+import { useProjectPartnerSettlements } from "./use-project-partner-settlements"
 import type { UpdateProjectRequest, UpdateProjectSettingsRequest } from "@/types/project"
 import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
 import type { CreateIncomeRequest, IncomeResponse, UpdateIncomeRequest } from "@/types/income"
@@ -46,6 +47,8 @@ export function useProjectDetailView(projectId: string) {
   const inc = useProjectIncomes(projectId)
   const pac = useProjectAlternativeCurrencies(projectId)
   const ppp = useProjectPartners(projectId)
+  const partnersEnabled = detail.project?.partnersEnabled ?? false
+  const sel = useProjectPartnerSettlements(projectId, partnersEnabled)
 
   const {
     mutateUpdate: mutateDetailUpdate,
@@ -72,11 +75,17 @@ export function useProjectDetailView(projectId: string) {
     refetch: refetchObligations,
   } = obl
   const {
-    budget: currentBudget,
+    hasBudget,
     mutateSet: mutateBudgetSetRaw,
     mutateDelete: mutateBudgetDeleteRaw,
     refetch: refetchBudget,
   } = bud
+
+  // Stable refs so expense/income callbacks don't recreate when these change
+  const hasBudgetRef = useRef(hasBudget)
+  hasBudgetRef.current = hasBudget
+  const partnersEnabledRef = useRef(partnersEnabled)
+  partnersEnabledRef.current = partnersEnabled
   const {
     mutateCreate: mutateIncomeCreateRaw,
     mutateUpdate: mutateIncomeUpdateRaw,
@@ -89,16 +98,12 @@ export function useProjectDetailView(projectId: string) {
     mutateDelete: mutateAlternativeCurrencyDeleteRaw,
     refetch: refetchAlternativeCurrencies,
   } = pac
+  const { refetchBalance: refetchPartnerBalance } = sel
 
   // ─── Project modal state ──────────────────────────────────
-  const [editProjectOpen, setEditProjectOpen] = useState(false)
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
 
   // ─── Project header actions ───────────────────────────────
-  const mutateProjectEditOpen = useCallback(() => {
-    setEditProjectOpen(true)
-  }, [])
-
   const mutateProjectDeleteOpen = useCallback(() => {
     setDeleteProjectOpen(true)
   }, [])
@@ -125,17 +130,18 @@ export function useProjectDetailView(projectId: string) {
     [mutateDetailDelete, router],
   )
 
-  // ─── Cross-tab sync: expense CRUD → refresh obligations + budget ───
+  // ─── Cross-tab sync: expense CRUD → refresh obligations + budget + partner balances ───
   const mutateExpenseCreate = useCallback(
     async (data: CreateExpenseRequest) => {
       await mutateExpenseCreateRaw(data, { refetch: false })
       await Promise.all([
         refetchExpenses(),
         data.obligationId ? refetchObligations() : Promise.resolve(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateExpenseCreateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+    [mutateExpenseCreateRaw, refetchExpenses, refetchObligations, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateExpenseUpdate = useCallback(
@@ -144,10 +150,11 @@ export function useProjectDetailView(projectId: string) {
       await Promise.all([
         refetchExpenses(),
         refetchObligations(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateExpenseUpdateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+    [mutateExpenseUpdateRaw, refetchExpenses, refetchObligations, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateExpenseDelete = useCallback(
@@ -156,10 +163,11 @@ export function useProjectDetailView(projectId: string) {
       await Promise.all([
         refetchExpenses(),
         expense.obligationId ? refetchObligations() : Promise.resolve(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateExpenseDeleteRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+    [mutateExpenseDeleteRaw, refetchExpenses, refetchObligations, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateExpenseActiveState = useCallback(
@@ -168,22 +176,24 @@ export function useProjectDetailView(projectId: string) {
       await Promise.all([
         refetchExpenses(),
         expense.obligationId ? refetchObligations() : Promise.resolve(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateExpenseActiveStateRaw, refetchExpenses, refetchObligations, currentBudget, refetchBudget],
+    [mutateExpenseActiveStateRaw, refetchExpenses, refetchObligations, refetchBudget, refetchPartnerBalance],
   )
 
-  // ─── Income CRUD → refresh budget (if configured) ───
+  // ─── Income CRUD → refresh budget + partner balances ───
   const mutateIncomeCreate = useCallback(
     async (data: CreateIncomeRequest) => {
       await mutateIncomeCreateRaw(data, { refetch: false })
       await Promise.all([
         refetchIncomes(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateIncomeCreateRaw, refetchIncomes, currentBudget, refetchBudget],
+    [mutateIncomeCreateRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateIncomeUpdate = useCallback(
@@ -191,10 +201,11 @@ export function useProjectDetailView(projectId: string) {
       await mutateIncomeUpdateRaw(incomeId, data, { refetch: false })
       await Promise.all([
         refetchIncomes(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateIncomeUpdateRaw, refetchIncomes, currentBudget, refetchBudget],
+    [mutateIncomeUpdateRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateIncomeDelete = useCallback(
@@ -202,10 +213,11 @@ export function useProjectDetailView(projectId: string) {
       await mutateIncomeDeleteRaw(income, { refetch: false })
       await Promise.all([
         refetchIncomes(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateIncomeDeleteRaw, refetchIncomes, currentBudget, refetchBudget],
+    [mutateIncomeDeleteRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateIncomeActiveState = useCallback(
@@ -213,10 +225,11 @@ export function useProjectDetailView(projectId: string) {
       await mutateIncomeActiveStateRaw(income, isActive, { refetch: false })
       await Promise.all([
         refetchIncomes(),
-        currentBudget ? refetchBudget() : Promise.resolve(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
       ])
     },
-    [mutateIncomeActiveStateRaw, refetchIncomes, currentBudget, refetchBudget],
+    [mutateIncomeActiveStateRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
   )
 
   // ─── Alternative currencies ───
@@ -311,11 +324,8 @@ export function useProjectDetailView(projectId: string) {
   return {
     // project
     detail,
-    editProjectOpen,
     deleteProjectOpen,
-    setEditProjectOpen,
     setDeleteProjectOpen,
-    mutateProjectEditOpen,
     mutateProjectDeleteOpen,
     mutateProjectUpdate,
     mutateProjectDelete,
@@ -329,6 +339,7 @@ export function useProjectDetailView(projectId: string) {
     bud,
     ppm,
     ppp,
+    sel,
     // cross-tab sync handlers
     mutateExpenseCreate,
     mutateExpenseUpdate,
@@ -348,5 +359,8 @@ export function useProjectDetailView(projectId: string) {
     mutateObligationDelete,
     mutateBudgetSet,
     mutateBudgetDelete,
+    mutateSettlementCreate: sel.mutateCreate,
+    mutateSettlementUpdate: sel.mutateUpdate,
+    mutateSettlementDelete: sel.mutateDelete,
   }
 }

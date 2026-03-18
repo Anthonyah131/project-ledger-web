@@ -3,7 +3,7 @@
 // views/project-detail/project-detail-view.tsx
 // Orchestrator for the project-detail page — header + resource tabs.
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 
@@ -24,6 +24,9 @@ import { ProjectDetailIncomesTab } from "@/views/project-detail/tabs/project-det
 import { ProjectDetailObligationsTab } from "@/views/project-detail/tabs/project-detail-obligations-tab";
 import { ProjectDetailCategoriesTab } from "@/views/project-detail/tabs/project-detail-categories-tab";
 import { ProjectDetailBudgetTab } from "@/views/project-detail/tabs/project-detail-budget-tab";
+
+// ── Partners tab ─────────────────────────────────────
+import { ProjectDetailPartnersTab } from "@/views/project-detail/tabs/project-detail-partners-tab";
 
 // ── Settings tab ─────────────────────────────────────
 import {
@@ -51,7 +54,7 @@ export function ProjectDetailView({ projectId }: Props) {
     setDeleteProjectOpen,
     mutateProjectDeleteOpen,
     mutateProjectUpdate, mutateProjectDelete, mutateProjectSettingsUpdate,
-    exp, inc, pac, cat, obl, bud, ppm, ppp,
+    exp, inc, pac, cat, obl, bud, ppm, ppp, sel,
     mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
     mutateExpenseActiveState,
     mutateIncomeCreate, mutateIncomeUpdate, mutateIncomeDelete,
@@ -61,6 +64,7 @@ export function ProjectDetailView({ projectId }: Props) {
     mutateCategoryDelete,
     mutateObligationCreate, mutateObligationUpdate, mutateObligationDelete,
     mutateBudgetSet, mutateBudgetDelete,
+    mutateSettlementCreate, mutateSettlementUpdate, mutateSettlementDelete,
   } = useProjectDetailView(projectId);
 
   const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget } = exp;
@@ -70,6 +74,9 @@ export function ProjectDetailView({ projectId }: Props) {
   const canManageAlternativeCurrencies =
     detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canDeleteBudget = detail.project?.userRole === "owner";
+  const partnersEnabled = detail.project?.partnersEnabled ?? false;
+  const canEditSettlements =
+    detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
 
   const alternativeCurrencyCodes = useMemo(
     () => pac.currencies.map((currency) => currency.currencyCode),
@@ -81,22 +88,110 @@ export function ProjectDetailView({ projectId }: Props) {
     [ppm.linkedPMs],
   );
 
+  // ── Stable callbacks (avoid inline arrows in JSX) ─────────
+
+  const handleEditProject = useCallback(() => {
+    setActiveTab("settings");
+    setSettingsSection("general");
+  }, []);
+
+  const handleShareProject = useCallback(
+    () => router.push(`/projects/${projectId}/members`),
+    [router, projectId],
+  );
+
+  // Expense create/close handlers
+  const handleExpenseCreateManual = useCallback(() => {
+    setExpenseCreateMode("manual");
+    setExpenseCreateOpen(true);
+  }, [setExpenseCreateOpen]);
+
+  const handleExpenseCreateAi = useCallback(() => {
+    setExpenseCreateMode("ai");
+    setExpenseCreateOpen(true);
+  }, [setExpenseCreateOpen]);
+
+  const handleExpenseCreateClose = useCallback(() => {
+    setExpenseCreateOpen(false);
+    setExpenseCreateMode("manual");
+  }, [setExpenseCreateOpen]);
+
+  const handleExpenseEditClose = useCallback(() => setExpenseEditTarget(null), [setExpenseEditTarget]);
+  const handleExpenseDeleteClose = useCallback(() => setExpenseDeleteTarget(null), [setExpenseDeleteTarget]);
+
+  // Income create/close handlers
+  const handleIncomeCreateManual = useCallback(() => {
+    setIncomeCreateMode("manual");
+    setIncomeCreateOpen(true);
+  }, [setIncomeCreateOpen]);
+
+  const handleIncomeCreateAi = useCallback(() => {
+    setIncomeCreateMode("ai");
+    setIncomeCreateOpen(true);
+  }, [setIncomeCreateOpen]);
+
+  const handleIncomeCreateClose = useCallback(() => {
+    setIncomeCreateOpen(false);
+    setIncomeCreateMode("manual");
+  }, [setIncomeCreateOpen]);
+
+  const handleIncomeEditClose = useCallback(() => setIncomeEditTarget(null), [setIncomeEditTarget]);
+  const handleIncomeDeleteClose = useCallback(() => setIncomeDeleteTarget(null), [setIncomeDeleteTarget]);
+
+  // Obligations open/close
+  const handleOblCreateOpen = useCallback(() => obl.setCreateOpen(true), [obl]);
+  const handleOblCreateClose = useCallback(() => obl.setCreateOpen(false), [obl]);
+  const handleOblEditClose = useCallback(() => obl.setEditTarget(null), [obl]);
+  const handleOblDeleteClose = useCallback(() => obl.setDeleteTarget(null), [obl]);
+
+  // Categories open/close
+  const handleCatCreateOpen = useCallback(() => cat.setCreateOpen(true), [cat]);
+  const handleCatCreateClose = useCallback(() => cat.setCreateOpen(false), [cat]);
+  const handleCatEditClose = useCallback(() => cat.setEditTarget(null), [cat]);
+  const handleCatDeleteClose = useCallback(() => cat.setDeleteTarget(null), [cat]);
+
+  // Budget open/close
+  const handleBudUpsertOpen = useCallback(() => bud.setUpsertOpen(true), [bud]);
+  const handleBudUpsertClose = useCallback(() => bud.setUpsertOpen(false), [bud]);
+  const handleBudDeleteClose = useCallback(() => bud.setDeleteTarget(null), [bud]);
+
+  // Settings: currencies
+  const handleAddCurrency = useCallback(
+    (currencyCode: string) => mutateAlternativeCurrencyAdd({ currencyCode }),
+    [mutateAlternativeCurrencyAdd],
+  );
+
+  // Settings: partners
+  const handleTogglePartners = useCallback(
+    (enabled: boolean) => mutateProjectSettingsUpdate({ partnersEnabled: enabled }),
+    [mutateProjectSettingsUpdate],
+  );
+  const handleAssignClose = useCallback(() => ppp.setAssignOpen(false), [ppp]);
+  const handleRemoveClosePartner = useCallback(() => ppp.setRemoveTarget(null), [ppp]);
+
+  // Settings: payment methods
+  const ppmState = useMemo(() => ({
+    loading: ppm.loading,
+    linkedPMs: ppm.linkedPMs,
+    linkableItems: ppm.linkableItems,
+    linkableLoading: ppm.linkableLoading,
+    addOpen: ppm.addOpen,
+    removeTarget: ppm.removeTarget,
+  }), [ppm.loading, ppm.linkedPMs, ppm.linkableItems, ppm.linkableLoading, ppm.addOpen, ppm.removeTarget]);
+
+  const handleAddClose = useCallback(() => ppm.setAddOpen(false), [ppm]);
+  const handleRemoveClosePM = useCallback(() => ppm.setRemoveTarget(null), [ppm]);
+  const handleDeleteProjectClose = useCallback(() => setDeleteProjectOpen(false), [setDeleteProjectOpen]);
+
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
       {/* Header */}
       <ProjectHeader
         project={detail.project}
         loading={detail.loading}
-        onEdit={() => {
-          setActiveTab("settings");
-          setSettingsSection("general");
-        }}
+        onEdit={handleEditProject}
         onDelete={mutateProjectDeleteOpen}
-        onShare={
-          isOwner
-            ? () => router.push(`/projects/${projectId}/members`)
-            : undefined
-        }
+        onShare={isOwner ? handleShareProject : undefined}
       />
 
       {/* Tabs */}
@@ -107,6 +202,9 @@ export function ProjectDetailView({ projectId }: Props) {
           <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="budget">Presupuesto</TabsTrigger>
+          {partnersEnabled && (
+            <TabsTrigger value="partners">Socios</TabsTrigger>
+          )}
           <TabsTrigger value="settings">Configuración</TabsTrigger>
         </TabsList>
 
@@ -121,22 +219,13 @@ export function ProjectDetailView({ projectId }: Props) {
           createMode={expenseCreateMode}
           partnersEnabled={detail.project?.partnersEnabled ?? false}
           assignedPartners={ppp.assignedPartners}
-          onCreateManual={() => {
-            setExpenseCreateMode("manual")
-            setExpenseCreateOpen(true)
-          }}
-          onCreateWithAi={() => {
-            setExpenseCreateMode("ai")
-            setExpenseCreateOpen(true)
-          }}
-          onCreateClose={() => {
-            setExpenseCreateOpen(false)
-            setExpenseCreateMode("manual")
-          }}
+          onCreateManual={handleExpenseCreateManual}
+          onCreateWithAi={handleExpenseCreateAi}
+          onCreateClose={handleExpenseCreateClose}
           onEditSelect={setExpenseEditTarget}
-          onEditClose={() => setExpenseEditTarget(null)}
+          onEditClose={handleExpenseEditClose}
           onDeleteSelect={setExpenseDeleteTarget}
-          onDeleteClose={() => setExpenseDeleteTarget(null)}
+          onDeleteClose={handleExpenseDeleteClose}
           onCreate={mutateExpenseCreate}
           onSave={mutateExpenseUpdate}
           onDelete={mutateExpenseDelete}
@@ -154,22 +243,13 @@ export function ProjectDetailView({ projectId }: Props) {
           createMode={incomeCreateMode}
           partnersEnabled={detail.project?.partnersEnabled ?? false}
           assignedPartners={ppp.assignedPartners}
-          onCreateManual={() => {
-            setIncomeCreateMode("manual")
-            setIncomeCreateOpen(true)
-          }}
-          onCreateWithAi={() => {
-            setIncomeCreateMode("ai")
-            setIncomeCreateOpen(true)
-          }}
-          onCreateClose={() => {
-            setIncomeCreateOpen(false)
-            setIncomeCreateMode("manual")
-          }}
+          onCreateManual={handleIncomeCreateManual}
+          onCreateWithAi={handleIncomeCreateAi}
+          onCreateClose={handleIncomeCreateClose}
           onEditSelect={setIncomeEditTarget}
-          onEditClose={() => setIncomeEditTarget(null)}
+          onEditClose={handleIncomeEditClose}
           onDeleteSelect={setIncomeDeleteTarget}
-          onDeleteClose={() => setIncomeDeleteTarget(null)}
+          onDeleteClose={handleIncomeDeleteClose}
           onCreate={mutateIncomeCreate}
           onSave={mutateIncomeUpdate}
           onDelete={mutateIncomeDelete}
@@ -178,12 +258,12 @@ export function ProjectDetailView({ projectId }: Props) {
 
         <ProjectDetailObligationsTab
           obl={obl}
-          onCreateOpen={() => obl.setCreateOpen(true)}
-          onCreateClose={() => obl.setCreateOpen(false)}
+          onCreateOpen={handleOblCreateOpen}
+          onCreateClose={handleOblCreateClose}
           onEditSelect={obl.setEditTarget}
-          onEditClose={() => obl.setEditTarget(null)}
+          onEditClose={handleOblEditClose}
           onDeleteSelect={obl.setDeleteTarget}
-          onDeleteClose={() => obl.setDeleteTarget(null)}
+          onDeleteClose={handleOblDeleteClose}
           onCreate={mutateObligationCreate}
           onSave={mutateObligationUpdate}
           onDelete={mutateObligationDelete}
@@ -191,12 +271,12 @@ export function ProjectDetailView({ projectId }: Props) {
 
         <ProjectDetailCategoriesTab
           cat={cat}
-          onCreateOpen={() => cat.setCreateOpen(true)}
-          onCreateClose={() => cat.setCreateOpen(false)}
+          onCreateOpen={handleCatCreateOpen}
+          onCreateClose={handleCatCreateClose}
           onEditSelect={cat.setEditTarget}
-          onEditClose={() => cat.setEditTarget(null)}
+          onEditClose={handleCatEditClose}
           onDeleteSelect={cat.setDeleteTarget}
-          onDeleteClose={() => cat.setDeleteTarget(null)}
+          onDeleteClose={handleCatDeleteClose}
           onCreate={mutateCategoryCreate}
           onSave={mutateCategoryUpdate}
           onDelete={mutateCategoryDelete}
@@ -207,13 +287,27 @@ export function ProjectDetailView({ projectId }: Props) {
           projectCurrency={detail.project?.currencyCode ?? ""}
           canManage={!!canManageBudget}
           canDelete={!!canDeleteBudget}
-          onUpsertOpen={() => bud.setUpsertOpen(true)}
-          onUpsertClose={() => bud.setUpsertOpen(false)}
+          onUpsertOpen={handleBudUpsertOpen}
+          onUpsertClose={handleBudUpsertClose}
           onDeleteSelect={bud.setDeleteTarget}
-          onDeleteClose={() => bud.setDeleteTarget(null)}
+          onDeleteClose={handleBudDeleteClose}
           onSave={mutateBudgetSet}
           onDelete={mutateBudgetDelete}
         />
+
+        {partnersEnabled && (
+          <ProjectDetailPartnersTab
+            projectId={projectId}
+            sel={sel}
+            assignedPartners={ppp.assignedPartners}
+            projectCurrency={detail.project?.currencyCode ?? ""}
+            alternativeCurrencyCodes={alternativeCurrencyCodes}
+            canEdit={!!canEditSettlements}
+            onCreate={mutateSettlementCreate}
+            onSave={mutateSettlementUpdate}
+            onDelete={mutateSettlementDelete}
+          />
+        )}
 
         <ProjectDetailSettingsTab
           activeSection={settingsSection}
@@ -229,33 +323,26 @@ export function ProjectDetailView({ projectId }: Props) {
           currenciesLoading={pac.loading}
           currenciesCatalogLoading={pac.catalogLoading}
           canManageCurrencies={!!canManageAlternativeCurrencies}
-          onAddCurrency={(currencyCode) => mutateAlternativeCurrencyAdd({ currencyCode })}
-          onDeleteCurrency={(c) => { mutateAlternativeCurrencyDelete(c) }}
+          onAddCurrency={handleAddCurrency}
+          onDeleteCurrency={mutateAlternativeCurrencyDelete}
           // Partners
           ppp={ppp}
           partnersEnabled={detail.project?.partnersEnabled ?? false}
           linkedPartnerIds={linkedPartnerIds}
-          onTogglePartners={(enabled) => mutateProjectSettingsUpdate({ partnersEnabled: enabled })}
+          onTogglePartners={handleTogglePartners}
           onAssignOpen={ppp.openAssignDialog}
-          onAssignClose={() => ppp.setAssignOpen(false)}
+          onAssignClose={handleAssignClose}
           onRemoveSelectPartner={ppp.setRemoveTarget}
-          onRemoveClosePartner={() => ppp.setRemoveTarget(null)}
+          onRemoveClosePartner={handleRemoveClosePartner}
           onAssign={ppp.handleAssign}
-          onRemovePartner={(pp) => { ppp.handleRemove(pp) }}
+          onRemovePartner={ppp.handleRemove}
           // Payment methods
-          ppm={{
-            loading: ppm.loading,
-            linkedPMs: ppm.linkedPMs,
-            linkableItems: ppm.linkableItems,
-            linkableLoading: ppm.linkableLoading,
-            addOpen: ppm.addOpen,
-            removeTarget: ppm.removeTarget,
-          }}
+          ppm={ppmState}
           onAddOpen={ppm.openAddDialog}
-          onAddClose={() => ppm.setAddOpen(false)}
+          onAddClose={handleAddClose}
           onLink={ppm.handleLink}
           onRemoveSelectPM={ppm.setRemoveTarget}
-          onRemoveClosePM={() => ppm.setRemoveTarget(null)}
+          onRemoveClosePM={handleRemoveClosePM}
           onUnlink={ppm.handleUnlink}
         />
       </Tabs>
@@ -265,7 +352,7 @@ export function ProjectDetailView({ projectId }: Props) {
         <DeleteEntityModal
           item={detail.project}
           open={deleteProjectOpen}
-          onClose={() => setDeleteProjectOpen(false)}
+          onClose={handleDeleteProjectClose}
           onConfirm={mutateProjectDelete}
           title="Eliminar proyecto"
           description="Esta accion puede desactivarlo, no eliminarlo definitivamente."

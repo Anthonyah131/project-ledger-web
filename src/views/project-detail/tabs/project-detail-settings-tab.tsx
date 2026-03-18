@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { CreditCard, Globe, Pencil, Users, Plus, X } from "lucide-react"
 import { TabsContent } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
@@ -106,7 +106,7 @@ export interface ProjectDetailSettingsTabProps {
   onAddCurrency: (currencyCode: string) => Promise<void> | void
   onDeleteCurrency: (
     currency: ProjectAlternativeCurrencyResponse,
-  ) => Promise<void> | void
+  ) => Promise<void | boolean> | void
   // Partners
   ppp: PartnersState
   partnersEnabled: boolean
@@ -497,16 +497,18 @@ function AddPMDialog({
     }
   }
 
-  const groups = linkableItems.reduce<
-    Record<string, { partnerName: string; items: LinkablePaymentMethodItem[] }>
-  >((acc, pm) => {
-    if (!acc[pm.partnerId]) {
-      acc[pm.partnerId] = { partnerName: pm.partnerName, items: [] }
-    }
-    acc[pm.partnerId].items.push(pm)
-    return acc
-  }, {})
-  const groupEntries = Object.entries(groups)
+  const groupEntries = useMemo(() => {
+    const groups = linkableItems.reduce<
+      Record<string, { partnerName: string; items: LinkablePaymentMethodItem[] }>
+    >((acc, pm) => {
+      if (!acc[pm.partnerId]) {
+        acc[pm.partnerId] = { partnerName: pm.partnerName, items: [] }
+      }
+      acc[pm.partnerId].items.push(pm)
+      return acc
+    }, {})
+    return Object.entries(groups)
+  }, [linkableItems])
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>

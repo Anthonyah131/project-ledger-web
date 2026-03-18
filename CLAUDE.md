@@ -53,6 +53,13 @@ Page (src/app/(dashboard)/...)
 - Use `toast` (Sonner) for user feedback; use `toastApiError` utility for API errors
 - Plan-limit errors (403) should trigger upgrade prompts, not generic error toasts
 
+### Dates
+
+- **Never use `new Date(dateString)` directly** for display. Always use `formatDate()` from `src/lib/date-utils.ts`.
+- Date-only strings (`YYYY-MM-DD`) from the API are treated as calendar dates with no timezone. `formatDate` auto-detects them and parses as local midnight to avoid UTC off-by-one-day shifts.
+- Full timestamps (`createdAt`, `updatedAt`, etc.) are parsed normally with `new Date()`.
+- The `fixTimezone` option on `formatDate` is deprecated — the behavior is now automatic.
+
 ### Environment Variables
 
 ```

@@ -3,6 +3,7 @@ const MONTH_KEY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/
 
 export interface FormatDateOptions {
   withYear?: boolean
+  /** @deprecated Date-only strings (YYYY-MM-DD) are now always parsed as local midnight automatically. */
   fixTimezone?: boolean
   dayStyle?: "numeric" | "2-digit"
   fallback?: string
@@ -66,8 +67,8 @@ function parseMonthKey(value: string): Date | null {
  * Pass `withYear: true` for the long variant (e.g. "25 ene 2025"),
  * or omit / set `false` for the short variant (e.g. "25 ene").
  *
- * `fixTimezone` parses YYYY-MM-DD as local midnight to avoid
- * off-by-one-day shifts caused by native UTC date parsing.
+ * Date-only strings (YYYY-MM-DD) are always parsed as local midnight to avoid
+ * off-by-one-day shifts caused by UTC date parsing. Full timestamps use new Date().
  */
 export function formatDate(
   iso: string | null,
@@ -75,8 +76,9 @@ export function formatDate(
 ): string {
   if (!iso) return opts.fallback ?? ""
 
-  const { withYear = true, fixTimezone = false, dayStyle = "numeric", fallback = "" } = opts
-  const parsedDate = fixTimezone ? parseIsoDate(iso) : new Date(iso)
+  const { withYear = true, dayStyle = "numeric", fallback = "" } = opts
+  // Auto-detect date-only strings and always parse as local midnight (no UTC shift).
+  const parsedDate = ISO_DATE_REGEX.test(iso) ? parseIsoDate(iso) : new Date(iso)
   if (!parsedDate || Number.isNaN(parsedDate.getTime())) return fallback
 
   try {

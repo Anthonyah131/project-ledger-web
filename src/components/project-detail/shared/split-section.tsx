@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useFieldArray, useWatch } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
 import { GitBranch, RefreshCw } from "lucide-react"
@@ -32,6 +32,41 @@ type RawSplitItem = {
   partnerName?: string
   splitValue?: string
   currencyExchanges?: SplitCE[]
+}
+
+/** Build empty CE shells from parent exchanges (no computed amounts). */
+function buildEmptyCEs(parentCEs: ParentCE[]): SplitCE[] {
+  return parentCEs
+    .filter((pce) => pce.currencyCode)
+    .map((pce) => ({ currencyCode: pce.currencyCode ?? "", exchangeRate: pce.exchangeRate ?? "", convertedAmount: "" }))
+}
+
+/** Pure function: compute split currency-exchanges from parent exchanges. */
+function computeSplitCEs(
+  splitValue: number,
+  parentCEs: ParentCE[],
+  isPercentage: boolean,
+  convertedAmount: number,
+): SplitCE[] {
+  if (!parentCEs.length) return []
+  const valid = parentCEs.filter(
+    (pce) => pce.currencyCode && Number(pce.convertedAmount) > 0,
+  )
+  if (!valid.length) return []
+
+  return valid.map((pce) => {
+    const parentConverted = Number(pce.convertedAmount)
+    const splitConverted = isPercentage
+      ? parseFloat((parentConverted * splitValue / 100).toFixed(2))
+      : convertedAmount > 0
+        ? parseFloat((parentConverted * splitValue / convertedAmount).toFixed(2))
+        : 0
+    return {
+      currencyCode: pce.currencyCode ?? "",
+      exchangeRate: pce.exchangeRate ?? "",
+      convertedAmount: String(splitConverted),
+    }
+  })
 }
 
 interface SplitSectionProps {
@@ -68,37 +103,14 @@ export function SplitSection({
   const convertedAmount = Number(watchConvertedAmount)
   const isPercentage = splitType === "percentage"
 
-  // Compute initial CEs for a split value based on parent exchanges
-  function computeSplitCEs(splitValue: number, parentCEs: ParentCE[]): SplitCE[] {
-    if (!parentCEs.length) return []
-    const validParentCEs = parentCEs.filter(
-      (pce) => pce.currencyCode && Number(pce.convertedAmount) > 0
-    )
-    if (!validParentCEs.length) return []
-
-    return validParentCEs.map((pce) => {
-      const parentConverted = Number(pce.convertedAmount)
-      const splitConverted =
-        isPercentage
-          ? parseFloat((parentConverted * splitValue / 100).toFixed(2))
-          : convertedAmount > 0
-          ? parseFloat((parentConverted * splitValue / convertedAmount).toFixed(2))
-          : 0
-      return {
-        currencyCode: pce.currencyCode ?? "",
-        exchangeRate: pce.exchangeRate ?? "",
-        convertedAmount: String(splitConverted),
-      }
-    })
-  }
-
   // Sync field array entries with assigned partners list.
   // On partner list change: reset to current values, preserving existing splitValues.
   useEffect(() => {
     if (!partnersEnabled || n === 0) return
 
-    const current = rawSplits ?? []
-    const parentCEs = parentCurrencyExchanges ?? []
+    // Read live form state (not stale render closure) so RHF's values-reset is visible here.
+    const current = (form.getValues("splits") as RawSplitItem[] | undefined) ?? []
+    const parentCEs = (form.getValues("currencyExchanges") as ParentCE[] | undefined) ?? []
 
     const next = assignedPartners.map((p) => {
       const existing = current.find((s) => s.partnerId === p.partnerId)
@@ -111,10 +123,8 @@ export function SplitSection({
         existingCEs.length > 0
           ? existingCEs
           : numValue > 0
-          ? computeSplitCEs(numValue, parentCEs)
-          : parentCEs
-              .filter((pce) => pce.currencyCode)
-              .map((pce) => ({ currencyCode: pce.currencyCode ?? "", exchangeRate: pce.exchangeRate ?? "", convertedAmount: "" }))
+          ? computeSplitCEs(numValue, parentCEs, isPercentage, convertedAmount)
+          : buildEmptyCEs(parentCEs)
 
       return { partnerId: p.partnerId, partnerName: p.partnerName, splitValue, currencyExchanges }
     })
@@ -131,21 +141,39 @@ export function SplitSection({
       replace(next)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assignedPartners, partnersEnabled, replace])
+  }, [assignedPartners, partnersEnabled, replace, form])
+
+  // Tracks whether splits were already populated from the API on initial load.
+  // Resets to false on each mount (modal is conditionally rendered, so this is per-open).
+  const splitsInitializedRef = useRef(false)
 
   // Reactive: when a split value changes, auto-recalculate its CEs.
   // Using a key derived from split values only, so setting CE values doesn't loop.
-  const splitValuesKey = (rawSplits ?? []).map((s) => s.splitValue).join(",")
+  const splitValuesKey = useMemo(
+    () => (rawSplits ?? []).map((s) => s.splitValue).join(","),
+    [rawSplits],
+  )
   useEffect(() => {
     if (!partnersEnabled) return
     const parentCEs = parentCurrencyExchanges ?? []
     if (!parentCEs.some((pce) => pce.currencyCode && Number(pce.convertedAmount) > 0)) return
 
+    // On the first run where splits already have valid CEs (loaded from the API via RHF reset),
+    // skip recalculation to preserve the original values. Subsequent user-driven changes
+    // (split value edits, amount changes, type changes) always recalculate.
+    if (!splitsInitializedRef.current) {
+      splitsInitializedRef.current = true
+      const hasSplitCEs = (rawSplits ?? []).some(
+        (s) => (s.currencyExchanges ?? []).some((ce) => ce.currencyCode && Number(ce.convertedAmount) > 0)
+      )
+      if (hasSplitCEs) return
+    }
+
     ;(rawSplits ?? []).forEach((split, index) => {
       const splitValue = Number(split.splitValue)
-      const updatedCEs = splitValue > 0 ? computeSplitCEs(splitValue, parentCEs) : parentCEs
-        .filter((pce) => pce.currencyCode)
-        .map((pce) => ({ currencyCode: pce.currencyCode ?? "", exchangeRate: pce.exchangeRate ?? "", convertedAmount: "" }))
+      const updatedCEs = splitValue > 0
+        ? computeSplitCEs(splitValue, parentCEs, isPercentage, convertedAmount)
+        : buildEmptyCEs(parentCEs)
 
       if (updatedCEs.length > 0) {
         form.setValue(`splits.${index}.currencyExchanges`, updatedCEs, { shouldValidate: false })
@@ -176,40 +204,26 @@ export function SplitSection({
     [parentCurrencyExchanges]
   )
 
-  function fillEqual() {
+  const fillEqual = useCallback(() => {
     if (n === 0) return
     const parentCEs = parentCurrencyExchanges ?? []
-    if (isPercentage) {
-      const base = Math.floor((100 / n) * 100) / 100
-      const last = parseFloat((100 - base * (n - 1)).toFixed(2))
-      replace(
-        assignedPartners.map((p, i) => {
-          const val = i === n - 1 ? last : base
-          return {
-            partnerId: p.partnerId,
-            partnerName: p.partnerName,
-            splitValue: String(val),
-            currencyExchanges: computeSplitCEs(val, parentCEs),
-          }
-        })
-      )
-    } else {
-      if (!convertedAmount || convertedAmount <= 0) return
-      const base = Math.floor((convertedAmount / n) * 100) / 100
-      const last = parseFloat((convertedAmount - base * (n - 1)).toFixed(2))
-      replace(
-        assignedPartners.map((p, i) => {
-          const val = i === n - 1 ? last : base
-          return {
-            partnerId: p.partnerId,
-            partnerName: p.partnerName,
-            splitValue: String(val),
-            currencyExchanges: computeSplitCEs(val, parentCEs),
-          }
-        })
-      )
-    }
-  }
+    const total = isPercentage ? 100 : convertedAmount
+    if (!total || total <= 0) return
+
+    const base = Math.floor((total / n) * 100) / 100
+    const last = parseFloat((total - base * (n - 1)).toFixed(2))
+    replace(
+      assignedPartners.map((p, i) => {
+        const val = i === n - 1 ? last : base
+        return {
+          partnerId: p.partnerId,
+          partnerName: p.partnerName,
+          splitValue: String(val),
+          currencyExchanges: computeSplitCEs(val, parentCEs, isPercentage, convertedAmount),
+        }
+      }),
+    )
+  }, [n, parentCurrencyExchanges, isPercentage, convertedAmount, replace, assignedPartners])
 
   if (!partnersEnabled || n === 0) return null
 

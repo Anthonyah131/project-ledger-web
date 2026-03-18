@@ -16,6 +16,27 @@ export function formatAmount(
   }).format(amount)
 }
 
+// Cache formatters per currency to avoid reconstructing Intl.NumberFormat on every call.
+const currencyFormatters = new Map<string, Intl.NumberFormat>()
+
+/**
+ * Format a numeric amount with currency symbol using the runtime locale.
+ * Works correctly for any ISO currency (USD, EUR, CRC, MXN, …).
+ */
+export function formatCurrencyAmount(amount: number, currency: string): string {
+  let formatter = currencyFormatters.get(currency)
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+    currencyFormatters.set(currency, formatter)
+  }
+  return formatter.format(amount)
+}
+
 /**
  * Map a currency ISO code to its symbol.
  */
