@@ -244,9 +244,8 @@ export function useProjectDetailView(projectId: string) {
   const mutateAlternativeCurrencyDelete = useCallback(
     async (currency: ProjectAlternativeCurrencyResponse) => {
       const deleted = await mutateAlternativeCurrencyDeleteRaw(currency)
-      if (!deleted) return false
+      if (!deleted) return
       await refetchAlternativeCurrencies()
-      return true
     },
     [mutateAlternativeCurrencyDeleteRaw, refetchAlternativeCurrencies],
   )
