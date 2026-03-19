@@ -19,13 +19,11 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     incomes,
     projects,
     summary,
-    balance,
     loadingDetail,
     loadingExpenses,
     loadingIncomes,
     loadingProjects,
     loadingSummary,
-    loadingBalance,
     error,
     page,
     setPage,
@@ -84,13 +82,11 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
       incomes={incomes}
       projects={projects}
       summary={summary}
-      balance={balance}
       loadingDetail={loadingDetail}
       loadingExpenses={loadingExpenses}
       loadingIncomes={loadingIncomes}
       loadingProjects={loadingProjects}
       loadingSummary={loadingSummary}
-      loadingBalance={loadingBalance}
       error={error}
       page={page}
       setPage={setPage}

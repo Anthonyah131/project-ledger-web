@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import dynamic from "next/dynamic"
 import { TabsContent } from "@/components/ui/tabs"
+import { MovementDetailSheet } from "@/components/project-detail/shared/movement-detail-sheet"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { Pagination } from "@/components/shared/pagination"
 import { IncomesToolbar } from "@/components/project-detail/incomes/incomes-toolbar"
@@ -96,6 +98,8 @@ export function ProjectDetailIncomesTab({
   onDelete,
   onToggleActive,
 }: ProjectDetailIncomesTabProps) {
+  const [viewTarget, setViewTarget] = useState<IncomeResponse | null>(null)
+
   return (
     <TabsContent value="incomes" className="flex flex-col gap-4">
       <IncomesToolbar
@@ -127,6 +131,7 @@ export function ProjectDetailIncomesTab({
             onEdit={onEditSelect}
             onDelete={onDeleteSelect}
             onToggleActive={onToggleActive}
+            onView={setViewTarget}
           />
           {!inc.hasSearch && (
             <Pagination
@@ -180,6 +185,14 @@ export function ProjectDetailIncomesTab({
         title="Eliminar ingreso"
         description="Esta accion no se puede deshacer."
         getMessage={(income) => `¿Eliminar ingreso "${income.title}"?`}
+      />
+
+      <MovementDetailSheet
+        movement={viewTarget ? { type: "income", data: viewTarget } : null}
+        projectCurrency={projectCurrency}
+        paymentMethods={paymentMethods}
+        onClose={() => setViewTarget(null)}
+        onEdit={() => { setViewTarget(null); onEditSelect(viewTarget!) }}
       />
     </TabsContent>
   )

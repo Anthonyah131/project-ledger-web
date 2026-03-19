@@ -21,7 +21,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { GitBranch, SlidersHorizontal } from "lucide-react"
 import { ProjectCurrencyConversionSection } from "@/components/project-detail/shared/currency-conversion/project-currency-conversion-section"
 import { AlternativeCurrencyExchangesSection } from "@/components/project-detail/shared/currency-conversion/alternative-currency-conversions-section"
 import { SplitSection } from "@/components/project-detail/shared/split-section"
@@ -31,6 +39,7 @@ import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { getExchangeRate } from "@/services/exchange-rate-service"
 import { getTodayIsoDate } from "@/lib/date-utils"
+import { formatPaymentMethodLabel } from "@/lib/payment-method-utils"
 
 interface IncomeFormFieldsProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,6 +94,7 @@ export function IncomeFormFields({
 
   const normalizedProjectCurrency = projectCurrency.trim().toUpperCase()
   const normalizedOriginalCurrency = watchCurrency.trim().toUpperCase()
+
   const currencyOptions = useMemo(() => {
     const byCode = new Map<string, CurrencyResponse>()
     availableCurrencies.forEach((currency) => {
@@ -105,20 +115,26 @@ export function IncomeFormFields({
       left.code.localeCompare(right.code)
     )
   }, [availableCurrencies, normalizedOriginalCurrency])
+
   const accountCurrency = selectedPaymentMethod?.currency?.trim().toUpperCase() ?? ""
+
+  // Show account amount field when payment method currency differs from BOTH origin and project currency
   const requiresManualAccountAmount =
     accountCurrency.length > 0 &&
     normalizedOriginalCurrency.length > 0 &&
     normalizedProjectCurrency.length > 0 &&
     accountCurrency !== normalizedOriginalCurrency &&
     accountCurrency !== normalizedProjectCurrency
+
   const needsProjectConversion =
     normalizedProjectCurrency.length > 0 &&
     normalizedOriginalCurrency.length > 0 &&
     normalizedProjectCurrency !== normalizedOriginalCurrency
+
   const projectAmount = needsProjectConversion
     ? Number(watchConvertedAmount)
     : Number(watchAmount)
+
   const [autoRateLoading, setAutoRateLoading] = useState<Record<number, boolean>>({})
   const [autoProjectRateLoading, setAutoProjectRateLoading] = useState(false)
 
@@ -263,7 +279,10 @@ export function IncomeFormFields({
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
+      {/* ── Campos obligatorios ─────────────────────────────────────── */}
+
+      {/* Title */}
       <FormField
         control={form.control}
         name="title"
@@ -282,6 +301,7 @@ export function IncomeFormFields({
         )}
       />
 
+      {/* Amount + Currency */}
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={form.control}
@@ -316,15 +336,13 @@ export function IncomeFormFields({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Lista de monedas cargada desde el catalogo de la base de datos.
-              </p>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
 
+      {/* Date */}
       <FormField
         control={form.control}
         name="incomeDate"
@@ -339,6 +357,7 @@ export function IncomeFormFields({
         )}
       />
 
+      {/* Category + Payment Method (Cuenta destino) */}
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={form.control}
@@ -369,7 +388,7 @@ export function IncomeFormFields({
           name="paymentMethodId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Metodo de pago *</FormLabel>
+              <FormLabel>Cuenta destino *</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -379,107 +398,43 @@ export function IncomeFormFields({
                 <SelectContent>
                   {paymentMethods.map((pm) => (
                     <SelectItem key={pm.id} value={pm.id}>
-                      {pm.name} ({pm.currency})
+                      {formatPaymentMethodLabel(pm)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Account currency: {accountCurrency || "—"}
-              </p>
+              {selectedPaymentMethod && (
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
+                  <Badge variant="outline" className="text-[10px] font-medium">
+                    {selectedPaymentMethod.currency}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] font-medium text-sky-600 dark:text-sky-400 border-sky-500/40">
+                    {{ bank: "Banco", cash: "Efectivo", card: "Tarjeta" }[selectedPaymentMethod.type]}
+                  </Badge>
+                  {selectedPaymentMethod.bankName && (
+                    <Badge variant="outline" className="text-[10px] font-medium text-slate-600 dark:text-slate-400 border-slate-500/40">
+                      {selectedPaymentMethod.bankName}
+                    </Badge>
+                  )}
+                  {selectedPaymentMethod.partner && (
+                    <Badge variant="outline" className="text-[10px] font-medium text-violet-600 dark:text-violet-400 border-violet-500/40">
+                      {selectedPaymentMethod.partner.name}
+                    </Badge>
+                  )}
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
 
-      {requiresManualAccountAmount && (
-        <FormField
-          control={form.control}
-          name="accountAmount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount deposited in account currency *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-
-      <ProjectCurrencyConversionSection
-        form={form}
-        needsProjectConversion={needsProjectConversion}
-        watchCurrency={watchCurrency}
-        projectCurrency={projectCurrency}
-        watchAmount={watchAmount}
-        autoProjectRateLoading={autoProjectRateLoading}
-        onAutoProjectConversion={handleAutoProjectConversion}
-        convertedAmountLabel={`Amount in project currency (${projectCurrency})`}
-        sameCurrencyMessage="Moneda de origen y moneda del proyecto son iguales. La conversion base se asume 1:1."
-        sameCurrencyMessageVariant="card"
-        showConvertedAmountWhenSameCurrency
-        readOnlyWhenNoConversion
-      />
-
-      <FormField
-        control={form.control}
-        name="receiptNumber"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Numero de recibo</FormLabel>
-            <FormControl>
-              <Input placeholder={showPlaceholders ? "REC-001" : undefined} {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Descripcion</FormLabel>
-            <FormControl>
-              <Textarea rows={3} className="resize-none" {...field} />
-            </FormControl>
-            <p className="text-xs text-muted-foreground">
-              El extractor OCR puede sugerir una descripción contextual. Revisa y ajusta si es necesario.
-            </p>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="notes"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Notas</FormLabel>
-            <FormControl>
-              <Textarea rows={2} className="resize-none" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
+      {/* Contabilizar — arriba con los campos obligatorios */}
       <FormField
         control={form.control}
         name="isActive"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-start gap-3 space-y-0 rounded-md border border-border p-4">
+          <FormItem className="flex flex-row items-start gap-3 space-y-0 rounded-md border border-border p-3">
             <FormControl>
               <Checkbox checked={field.value} onCheckedChange={(value) => field.onChange(value === true)} />
             </FormControl>
@@ -493,26 +448,143 @@ export function IncomeFormFields({
         )}
       />
 
-      <AlternativeCurrencyExchangesSection
-        form={form}
-        fields={fields}
-        watchCurrencyExchanges={watchCurrencyExchanges}
-        requiresAlternativeConversions={requiresAlternativeConversions}
-        selectableCurrencyCodes={selectableCurrencyCodes}
-        projectCurrency={projectCurrency}
-        projectAmount={projectAmount}
-        autoRateLoading={autoRateLoading}
-        onAutoRate={handleAutoRate}
-        onRemoveExchange={remove}
-      />
+      {/* ── Conversiones de moneda (condicional) ────────────────────── */}
+      {needsProjectConversion && (
+        <ProjectCurrencyConversionSection
+          form={form}
+          needsProjectConversion={needsProjectConversion}
+          watchCurrency={watchCurrency}
+          projectCurrency={projectCurrency}
+          watchAmount={watchAmount}
+          autoProjectRateLoading={autoProjectRateLoading}
+          onAutoProjectConversion={handleAutoProjectConversion}
+          convertedAmountLabel={`Monto en ${projectCurrency}`}
+          sameCurrencyMessage=""
+        />
+      )}
 
-      <SplitSection
-        form={form}
-        assignedPartners={assignedPartners}
-        partnersEnabled={partnersEnabled}
-        watchConvertedAmount={projectAmount > 0 ? String(projectAmount) : ""}
-        projectCurrency={projectCurrency}
-      />
-    </>
+      {requiresManualAccountAmount && (
+        <FormField
+          control={form.control}
+          name="accountAmount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Monto depositado en {accountCurrency} *</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  {...field}
+                />
+              </FormControl>
+              <p className="text-xs text-muted-foreground">
+                La cuenta destino usa {accountCurrency}, diferente a la moneda del ingreso ({normalizedOriginalCurrency}). Ingresa el monto real que llega a esta cuenta.
+              </p>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {requiresAlternativeConversions && (
+        <AlternativeCurrencyExchangesSection
+          form={form}
+          fields={fields}
+          watchCurrencyExchanges={watchCurrencyExchanges}
+          requiresAlternativeConversions={requiresAlternativeConversions}
+          selectableCurrencyCodes={selectableCurrencyCodes}
+          projectCurrency={projectCurrency}
+          projectAmount={projectAmount}
+          autoRateLoading={autoRateLoading}
+          onAutoRate={handleAutoRate}
+          onRemoveExchange={remove}
+        />
+      )}
+
+      {/* ── Acordeones ──────────────────────────────────────────────── */}
+      <Accordion type="multiple" className="rounded-md border border-border">
+        {/* Campos opcionales */}
+        <AccordionItem value="optional" className="px-3">
+          <AccordionTrigger className="text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground">
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal className="size-3.5" />
+              Campos opcionales
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col gap-4 pb-1">
+              <FormField
+                control={form.control}
+                name="receiptNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Numero de recibo</FormLabel>
+                    <FormControl>
+                      <Input placeholder={showPlaceholders ? "REC-001" : undefined} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripcion</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} className="resize-none" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notas</FormLabel>
+                    <FormControl>
+                      <Textarea rows={2} className="resize-none" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* División entre partners */}
+        <AccordionItem value="splits" className="px-3">
+          <AccordionTrigger
+            disabled={!partnersEnabled}
+            className="text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground disabled:cursor-not-allowed"
+          >
+            <span className="flex items-center gap-2">
+              <GitBranch className="size-3.5" />
+              Division entre partners
+              {!partnersEnabled && (
+                <span className="text-[10px] font-normal text-muted-foreground/60">(no habilitado)</span>
+              )}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="pb-1">
+              <SplitSection
+                form={form}
+                assignedPartners={assignedPartners}
+                partnersEnabled={partnersEnabled}
+                watchConvertedAmount={projectAmount > 0 ? String(projectAmount) : ""}
+                projectCurrency={projectCurrency}
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   )
 }

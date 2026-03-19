@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { User } from "lucide-react"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
 interface PaymentMethodsListProps {
@@ -26,6 +27,7 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
         <span className="w-20 text-center hidden sm:block">Tipo</span>
         <span className="w-16 text-center hidden sm:block">Moneda</span>
         <span className="w-40 hidden md:block">Banco / Emisor</span>
+        <span className="w-32 hidden lg:block">Partner</span>
         <span className="w-28 text-right hidden lg:block">Actualizado</span>
         <span className="w-8" />
       </div>
@@ -73,6 +75,21 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
           <span className="w-40 text-xs text-muted-foreground truncate hidden md:block">
             {pm.bankName ?? "—"}
           </span>
+
+          {/* Partner */}
+          <div className="w-32 hidden lg:block">
+            {pm.partner ? (
+              <Badge
+                variant="outline"
+                className="text-[10px] font-medium text-violet-600 dark:text-violet-400 border-violet-500/40 bg-violet-500/5 gap-1 max-w-full"
+              >
+                <User className="size-2.5 shrink-0" />
+                <span className="truncate">{pm.partner.name}</span>
+              </Badge>
+            ) : (
+              <span className="text-xs text-muted-foreground/30">—</span>
+            )}
+          </div>
 
           {/* Updated date */}
           <span className="w-28 text-right text-xs text-muted-foreground tabular-nums hidden lg:block">

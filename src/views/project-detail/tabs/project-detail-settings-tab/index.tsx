@@ -71,6 +71,7 @@ export interface ProjectDetailSettingsTabProps {
   currenciesLoading: boolean
   currenciesCatalogLoading: boolean
   canManageCurrencies: boolean
+  hasExistingMovements?: boolean
   onAddCurrency: (currencyCode: string) => Promise<void> | void
   onDeleteCurrency: (currency: ProjectAlternativeCurrencyResponse) => Promise<void> | void
   // Partners
@@ -108,6 +109,7 @@ export function ProjectDetailSettingsTab({
   currenciesLoading,
   currenciesCatalogLoading,
   canManageCurrencies,
+  hasExistingMovements,
   onAddCurrency,
   onDeleteCurrency,
   ppp,
@@ -180,6 +182,7 @@ export function ProjectDetailSettingsTab({
               loading={currenciesLoading}
               catalogLoading={currenciesCatalogLoading}
               canManage={canManageCurrencies}
+              hasExistingMovements={hasExistingMovements}
               onAdd={onAddCurrency}
               onDelete={onDeleteCurrency}
             />

@@ -113,10 +113,10 @@ export function useProjectPaymentMethods(projectId: string) {
         bankName: pm.bankName,
         accountNumber: pm.accountNumber,
         description: null,
-        partner_id: pm.partner_id,
+        partner_id: pm.partnerId,
         partner:
-          pm.partnerName && pm.partner_id
-            ? { id: pm.partner_id, name: pm.partnerName, email: null, phone: null }
+          pm.partnerName && pm.partnerId
+            ? { id: pm.partnerId, name: pm.partnerName, email: null, phone: null }
             : null,
         createdAt: "",
         updatedAt: "",

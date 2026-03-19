@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import dynamic from "next/dynamic"
 import { TabsContent } from "@/components/ui/tabs"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { Pagination } from "@/components/shared/pagination"
 import { ExpensesToolbar } from "@/components/project-detail/expenses/expenses-toolbar"
 import { ExpensesList } from "@/components/project-detail/expenses/expenses-list"
+import { MovementDetailSheet } from "@/components/project-detail/shared/movement-detail-sheet"
 import {
   ExpensesEmptyState,
   ExpensesSkeleton,
@@ -96,6 +98,8 @@ export function ProjectDetailExpensesTab({
   onDelete,
   onToggleActive,
 }: ProjectDetailExpensesTabProps) {
+  const [viewTarget, setViewTarget] = useState<ExpenseResponse | null>(null)
+
   return (
     <TabsContent value="expenses" className="flex flex-col gap-4">
       <ExpensesToolbar
@@ -127,6 +131,7 @@ export function ProjectDetailExpensesTab({
             onEdit={onEditSelect}
             onDelete={onDeleteSelect}
             onToggleActive={onToggleActive}
+            onView={setViewTarget}
           />
           {!exp.hasSearch && (
             <Pagination
@@ -180,6 +185,14 @@ export function ProjectDetailExpensesTab({
         title="Eliminar gasto"
         description="Esta accion no se puede deshacer."
         getMessage={(expense) => `¿Eliminar gasto "${expense.title}"?`}
+      />
+
+      <MovementDetailSheet
+        movement={viewTarget ? { type: "expense", data: viewTarget } : null}
+        projectCurrency={projectCurrency}
+        paymentMethods={paymentMethods}
+        onClose={() => setViewTarget(null)}
+        onEdit={() => { setViewTarget(null); onEditSelect(viewTarget!) }}
       />
     </TabsContent>
   )

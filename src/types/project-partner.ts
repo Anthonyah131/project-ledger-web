@@ -42,7 +42,7 @@ export interface ProjectPaymentMethodItem {
   bankName: string | null
   accountNumber: string | null
   ownerUserName: string | null
-  partner_id: string | null
+  partnerId: string | null
   partnerName: string | null
 }
 

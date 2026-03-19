@@ -41,7 +41,6 @@ import type {
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
   PaymentMethodResponse,
-  PaymentMethodBalanceResponse,
   PaymentMethodSummaryResponse,
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method"
@@ -57,13 +56,11 @@ interface PaymentMethodDetailPanelProps {
   incomes: PaymentMethodIncomesResponse
   projects: PaymentMethodProjectsResponse
   summary: PaymentMethodSummaryResponse | null
-  balance: PaymentMethodBalanceResponse | null
   loadingDetail: boolean
   loadingExpenses: boolean
   loadingIncomes: boolean
   loadingProjects: boolean
   loadingSummary: boolean
-  loadingBalance: boolean
   error: string | null
   page: number
   setPage: (p: number) => void
@@ -109,13 +106,11 @@ function PaymentMethodDetailPanelComponent({
   incomes,
   projects,
   summary,
-  balance,
   loadingDetail,
   loadingExpenses,
   loadingIncomes,
   loadingProjects,
   loadingSummary,
-  loadingBalance,
   error,
   page,
   setPage,
@@ -197,7 +192,6 @@ function PaymentMethodDetailPanelComponent({
   const relatedExpensesCount = summary?.relatedExpensesCount ?? expenses.totalCount
   const relatedIncomesCount = summary?.relatedIncomesCount ?? incomes.totalCount
   const relatedProjectsCount = summary?.relatedProjectsCount ?? projects.totalCount
-  const selectedProjectName = projects.items.find((project) => project.id === projectId)?.name
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
@@ -284,55 +278,6 @@ function PaymentMethodDetailPanelComponent({
               {loadingSummary
                 ? "Cargando..."
                 : `${summary?.currency ?? paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-primary/15 bg-card/80 shadow-sm">
-        <div className="border-b border-border/60 px-4 py-3">
-          <p className="text-xs uppercase tracking-wide text-primary font-semibold">Balance por proyecto</p>
-          <p className="text-[11px] text-muted-foreground">
-            {projectId
-              ? `Proyecto: ${selectedProjectName ?? "Proyecto seleccionado"}`
-              : "Selecciona un proyecto para ver el balance de esta cuenta."}
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          <div className="p-4 border-b md:border-b-0 md:border-r border-border/50">
-            <p className="text-[11px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">Total ingresos</p>
-            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingBalance
-                ? "Cargando..."
-                : projectId
-                  ? balance
-                    ? `${paymentMethod.currency} ${formatAmount(balance.total_income, "0.00")}`
-                    : "--"
-                  : "--"}
-            </p>
-          </div>
-          <div className="p-4 border-b md:border-b-0 md:border-r border-border/50">
-            <p className="text-[11px] uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">Total gastos</p>
-            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingBalance
-                ? "Cargando..."
-                : projectId
-                  ? balance
-                    ? `${paymentMethod.currency} ${formatAmount(balance.total_expenses, "0.00")}`
-                    : "--"
-                  : "--"}
-            </p>
-          </div>
-          <div className="p-4">
-            <p className="text-[11px] uppercase tracking-wide text-foreground/70 font-medium">Balance</p>
-            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingBalance
-                ? "Cargando..."
-                : projectId
-                  ? balance
-                    ? `${paymentMethod.currency} ${formatAmount(balance.balance, "0.00")}`
-                    : "--"
-                  : "--"}
             </p>
           </div>
         </div>

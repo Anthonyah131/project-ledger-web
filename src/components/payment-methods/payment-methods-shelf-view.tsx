@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { User } from "lucide-react"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
 interface ShelfViewProps {
@@ -83,7 +84,7 @@ function PaymentMethodCard({
           </div>
 
           {/* Bottom: metadata */}
-          <div className="flex items-center gap-2 mt-auto">
+          <div className="flex flex-wrap items-center gap-2 mt-auto">
             <Badge className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
               {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
             </Badge>
@@ -94,6 +95,15 @@ function PaymentMethodCard({
                 <span className="text-border">{"/"}</span>
                 <span className="text-xs text-muted-foreground truncate">{pm.accountNumber}</span>
               </>
+            )}
+            {pm.partner && (
+              <Badge
+                variant="outline"
+                className="text-[10px] font-medium text-violet-600 dark:text-violet-400 border-violet-500/40 bg-violet-500/5 gap-1"
+              >
+                <User className="size-2.5 shrink-0" />
+                {pm.partner.name}
+              </Badge>
             )}
             <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
               {formatDate(pm.updatedAt, { withYear: false })}

@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { IncomeResponse } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { buildPaymentMethodLookup } from "@/lib/payment-method-utils"
+import { hasMultiPartnerSplits } from "@/lib/split-utils"
 
 interface IncomesListProps {
   incomes: IncomeResponse[]
@@ -18,6 +20,7 @@ interface IncomesListProps {
   onEdit: (income: IncomeResponse) => void
   onDelete: (income: IncomeResponse) => void
   onToggleActive: (income: IncomeResponse, isActive: boolean) => void | Promise<void>
+  onView?: (income: IncomeResponse) => void
 }
 
 function IncomesListComponent({
@@ -27,12 +30,13 @@ function IncomesListComponent({
   onEdit,
   onDelete,
   onToggleActive,
+  onView,
 }: IncomesListProps) {
   const activatingIdsRef = useRef<Set<string>>(new Set())
   const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
 
-  const paymentMethodNameById = useMemo(
-    () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
+  const paymentMethodInfoById = useMemo(
+    () => buildPaymentMethodLookup(paymentMethods),
     [paymentMethods]
   )
 
@@ -75,7 +79,8 @@ function IncomesListComponent({
         const isActivating = activatingIds.has(income.id)
         const showOriginal = income.originalCurrency !== projectCurrency
         const exchanges = income.currencyExchanges ?? []
-        const pmName = paymentMethodNameById.get(income.paymentMethodId) ?? "—"
+        const pmInfo = paymentMethodInfoById.get(income.paymentMethodId)
+        const showSplitBadge = hasMultiPartnerSplits(income.splits)
 
         return (
           <div
@@ -84,8 +89,10 @@ function IncomesListComponent({
             className={cn(
               "group flex items-center px-5 py-3.5",
               "border-b border-border/50 last:border-b-0",
-              "hover:bg-emerald-500/5 transition-colors duration-150"
+              "hover:bg-emerald-500/5 transition-colors duration-150",
+              onView && "cursor-pointer",
             )}
+            onClick={onView ? () => onView(income) : undefined}
           >
             <div className={cn("size-2.5 rounded-full shrink-0 mr-3.5 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
 
@@ -93,7 +100,7 @@ function IncomesListComponent({
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {income.title}
               </p>
-              {(!income.isActive || income.hasSplits) ? (
+              {(!income.isActive || showSplitBadge) ? (
                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                   {!income.isActive ? (
                     <Badge
@@ -103,7 +110,7 @@ function IncomesListComponent({
                       Recordatorio
                     </Badge>
                   ) : null}
-                  {income.hasSplits ? (
+                  {showSplitBadge ? (
                     <Badge
                       variant="outline"
                       className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
@@ -153,9 +160,14 @@ function IncomesListComponent({
               )}
             </div>
 
-            <span className="w-40 text-right text-xs text-muted-foreground hidden lg:block truncate">
-              {pmName}
-            </span>
+            <div className="w-40 text-right hidden lg:block">
+              <p className="text-xs text-muted-foreground truncate">{pmInfo?.name ?? "—"}</p>
+              {pmInfo && (
+                <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
+                  {pmInfo.currency}{pmInfo.partnerName ? ` · ${pmInfo.partnerName}` : ""}
+                </p>
+              )}
+            </div>
 
             <span className="w-36 text-right text-xs text-muted-foreground hidden xl:block truncate">
               {income.categoryName}
@@ -163,6 +175,8 @@ function IncomesListComponent({
 
             <ItemActionMenu
               ariaLabel="Acciones del ingreso"
+              onOpen={onView ? () => onView(income) : undefined}
+              openLabel="Ver detalle"
               onActivate={!income.isActive ? () => { void handleActivate(income) } : undefined}
               activateLabel="Activar movimiento"
               activatingLabel="Activando..."
@@ -170,6 +184,7 @@ function IncomesListComponent({
               disabled={isActivating}
               onEdit={() => onEdit(income)}
               onDelete={() => onDelete(income)}
+              stopPropagation
             />
           </div>
         )

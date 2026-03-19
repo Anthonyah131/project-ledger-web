@@ -84,7 +84,7 @@ export function ProjectDetailView({ projectId }: Props) {
   );
 
   const linkedPartnerIds = useMemo(
-    () => new Set(ppm.linkedPMs.map((pm) => pm.partner_id).filter((id): id is string => !!id)),
+    () => new Set(ppm.linkedPMs.map((pm) => pm.partnerId).filter((id): id is string => !!id)),
     [ppm.linkedPMs],
   );
 
@@ -323,6 +323,7 @@ export function ProjectDetailView({ projectId }: Props) {
           currenciesLoading={pac.loading}
           currenciesCatalogLoading={pac.catalogLoading}
           canManageCurrencies={!!canManageAlternativeCurrencies}
+          hasExistingMovements={(exp.total > 0 || inc.total > 0)}
           onAddCurrency={handleAddCurrency}
           onDeleteCurrency={mutateAlternativeCurrencyDelete}
           // Partners

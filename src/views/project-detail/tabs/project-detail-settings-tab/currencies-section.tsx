@@ -12,6 +12,7 @@ export function CurrenciesSection({
   loading,
   catalogLoading,
   canManage,
+  hasExistingMovements,
   onAdd,
   onDelete,
 }: {
@@ -21,6 +22,7 @@ export function CurrenciesSection({
   loading: boolean
   catalogLoading: boolean
   canManage: boolean
+  hasExistingMovements?: boolean
   onAdd: (currencyCode: string) => Promise<void> | void
   onDelete: (currency: ProjectAlternativeCurrencyResponse) => Promise<void> | void
 }) {
@@ -43,6 +45,7 @@ export function CurrenciesSection({
         loading={loading}
         catalogLoading={catalogLoading}
         canManage={canManage}
+        hasExistingMovements={hasExistingMovements}
         onAdd={onAdd}
         onDelete={onDelete}
       />

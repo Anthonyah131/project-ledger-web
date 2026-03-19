@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { ExpenseResponse } from "@/types/expense"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { buildPaymentMethodLookup } from "@/lib/payment-method-utils"
+import { hasMultiPartnerSplits } from "@/lib/split-utils"
 
 interface ExpensesListProps {
   expenses: ExpenseResponse[]
@@ -18,14 +20,15 @@ interface ExpensesListProps {
   onEdit: (expense: ExpenseResponse) => void
   onDelete: (expense: ExpenseResponse) => void
   onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void | Promise<void>
+  onView?: (expense: ExpenseResponse) => void
 }
 
-function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive }: ExpensesListProps) {
+function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive, onView }: ExpensesListProps) {
   const activatingIdsRef = useRef<Set<string>>(new Set())
   const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
 
-  const paymentMethodNameById = useMemo(
-    () => new Map(paymentMethods.map((pm) => [pm.id, pm.name])),
+  const paymentMethodInfoById = useMemo(
+    () => buildPaymentMethodLookup(paymentMethods),
     [paymentMethods]
   )
 
@@ -69,7 +72,8 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
         const isActivating = activatingIds.has(expense.id)
         const showOriginal = expense.originalCurrency !== projectCurrency
         const exchanges = expense.currencyExchanges ?? []
-        const pmName = paymentMethodNameById.get(expense.paymentMethodId) ?? "—"
+        const pmInfo = paymentMethodInfoById.get(expense.paymentMethodId)
+        const showSplitBadge = hasMultiPartnerSplits(expense.splits)
 
         return (
           <div
@@ -79,7 +83,9 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               "group flex items-center px-5 py-3.5",
               "border-b border-border/50 last:border-b-0",
               "hover:bg-rose-500/5 transition-colors duration-150",
+              onView && "cursor-pointer",
             )}
+            onClick={onView ? () => onView(expense) : undefined}
           >
             {/* Accent dot */}
             <div className={cn("size-2.5 rounded-full shrink-0 mr-3.5 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
@@ -89,7 +95,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {expense.title}
               </p>
-              {(!expense.isActive || expense.hasSplits) ? (
+              {(!expense.isActive || showSplitBadge) ? (
                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                   {!expense.isActive ? (
                     <Badge
@@ -99,7 +105,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
                       Recordatorio
                     </Badge>
                   ) : null}
-                  {expense.hasSplits ? (
+                  {showSplitBadge ? (
                     <Badge
                       variant="outline"
                       className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
@@ -160,9 +166,14 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
             </div>
 
             {/* Payment method */}
-            <span className="w-40 text-right text-xs text-muted-foreground hidden lg:block truncate">
-              {pmName}
-            </span>
+            <div className="w-40 text-right hidden lg:block">
+              <p className="text-xs text-muted-foreground truncate">{pmInfo?.name ?? "—"}</p>
+              {pmInfo && (
+                <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
+                  {pmInfo.currency}{pmInfo.partnerName ? ` · ${pmInfo.partnerName}` : ""}
+                </p>
+              )}
+            </div>
 
             {/* Category */}
             <span className="w-36 text-right text-xs text-muted-foreground hidden xl:block truncate">
@@ -172,6 +183,8 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
             {/* Menu */}
             <ItemActionMenu
               ariaLabel="Acciones del gasto"
+              onOpen={onView ? () => onView(expense) : undefined}
+              openLabel="Ver detalle"
               onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
               activateLabel="Activar movimiento"
               activatingLabel="Activando..."
@@ -179,6 +192,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
               disabled={isActivating}
               onEdit={() => onEdit(expense)}
               onDelete={() => onDelete(expense)}
+              stopPropagation
             />
           </div>
         )

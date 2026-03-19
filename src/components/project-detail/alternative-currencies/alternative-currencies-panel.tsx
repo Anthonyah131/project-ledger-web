@@ -1,9 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Plus, Trash2, Coins, Loader2 } from "lucide-react"
+import { Plus, Trash2, Coins, Loader2, TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ interface AlternativeCurrenciesPanelProps {
   loading: boolean
   catalogLoading: boolean
   canManage: boolean
+  hasExistingMovements?: boolean
   onAdd: (currencyCode: string) => Promise<void> | void
   onDelete: (currency: ProjectAlternativeCurrencyResponse) => Promise<void> | void
 }
@@ -32,6 +34,7 @@ export function AlternativeCurrenciesPanel({
   loading,
   catalogLoading,
   canManage,
+  hasExistingMovements = false,
   onAdd,
   onDelete,
 }: AlternativeCurrenciesPanelProps) {
@@ -107,6 +110,15 @@ export function AlternativeCurrenciesPanel({
           )}
         </div>
       </div>
+
+      {canManage && hasExistingMovements && (
+        <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400">
+          <TriangleAlert className="size-4" />
+          <AlertDescription className="text-xs">
+            Al agregar una nueva moneda alternativa, deberás asignar manualmente los datos de conversión en cada movimiento existente para que el balance se refleje correctamente.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {loading ? (
         <div className="rounded-lg border border-border bg-muted/20 p-8 flex items-center justify-center">
