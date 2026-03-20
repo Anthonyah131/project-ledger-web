@@ -11,7 +11,11 @@ import type {
   ReportDateRange,
   ReportFormat,
   ProjectExpenseReportResponse,
+  ProjectIncomeReportResponse,
+  PartnerBalancesReportResponse,
   PaymentMethodReportResponse,
+  WorkspaceReportResponse,
+  PartnerGeneralReportResponse,
 } from "@/types/report";
 
 // ─── Summary report ─────────────────────────────────────────────────────────
@@ -124,6 +128,137 @@ export async function getPaymentMethodReport(
 
   if (format === "json") {
     return api.get<PaymentMethodReportResponse>(path);
+  }
+
+  return downloadBlobReport(path);
+}
+
+// ─── Detailed income report (JSON / Excel / PDF) ────────────────────────────
+
+export interface IncomeReportParams extends ReportDateRange {
+  format?: ReportFormat;
+}
+
+/**
+ * GET /api/projects/{projectId}/reports/incomes
+ *
+ * When format=json, returns the parsed JSON response.
+ * When format=excel or pdf, triggers a browser download.
+ */
+export async function getIncomeReport(
+  projectId: string,
+  params: IncomeReportParams = {},
+): Promise<ProjectIncomeReportResponse | void> {
+  const format = params.format ?? "json";
+
+  const query = new URLSearchParams();
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
+  query.set("format", format);
+
+  const path = `/projects/${projectId}/reports/incomes?${query.toString()}`;
+
+  if (format === "json") {
+    return api.get<ProjectIncomeReportResponse>(path);
+  }
+
+  return downloadBlobReport(path);
+}
+
+// ─── Partner balances report (JSON / Excel / PDF) ───────────────────────────
+
+export interface PartnerBalancesReportParams extends ReportDateRange {
+  format?: ReportFormat;
+}
+
+/**
+ * GET /api/projects/{projectId}/reports/partner-balances
+ *
+ * When format=json, returns the parsed JSON response.
+ * When format=excel or pdf, triggers a browser download.
+ */
+export async function getPartnerBalancesReport(
+  projectId: string,
+  params: PartnerBalancesReportParams = {},
+): Promise<PartnerBalancesReportResponse | void> {
+  const format = params.format ?? "json";
+
+  const query = new URLSearchParams();
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
+  query.set("format", format);
+
+  const path = `/projects/${projectId}/reports/partner-balances?${query.toString()}`;
+
+  if (format === "json") {
+    return api.get<PartnerBalancesReportResponse>(path);
+  }
+
+  return downloadBlobReport(path);
+}
+
+// ─── Partner general report (JSON / Excel) ──────────────────────────────────
+
+export interface PartnerGeneralReportParams extends ReportDateRange {
+  format?: "json" | "excel";
+}
+
+/**
+ * GET /api/partners/{partnerId}/reports/general
+ *
+ * When format=json, returns the parsed JSON response.
+ * When format=excel, triggers a browser download (.xlsx).
+ */
+export async function getPartnerGeneralReport(
+  partnerId: string,
+  params: PartnerGeneralReportParams = {},
+): Promise<PartnerGeneralReportResponse | void> {
+  const format = params.format ?? "json";
+
+  const query = new URLSearchParams();
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
+  query.set("format", format);
+
+  const path = `/partners/${partnerId}/reports/general?${query.toString()}`;
+
+  if (format === "json") {
+    return api.get<PartnerGeneralReportResponse>(path);
+  }
+
+  return downloadBlobReport(path);
+}
+
+// ─── Workspace report (JSON / Excel / PDF) ──────────────────────────────────
+
+export interface WorkspaceReportParams extends ReportDateRange {
+  currency?: string;
+  format?: ReportFormat;
+}
+
+/**
+ * GET /api/workspaces/{workspaceId}/reports/summary
+ *
+ * When format=json, returns the parsed JSON response.
+ * When format=excel or pdf, triggers a browser download.
+ * Pass `currency` to enable consolidated totals across projects.
+ */
+export async function getWorkspaceReport(
+  workspaceId: string,
+  params: WorkspaceReportParams = {},
+): Promise<WorkspaceReportResponse | void> {
+  const format = params.format ?? "json";
+
+  const query = new URLSearchParams();
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
+  if (params.currency) query.set("currency", params.currency);
+  query.set("format", format);
+
+  const path = `/workspaces/${workspaceId}/reports/summary?${query.toString()}`;
+
+  if (format === "json") {
+    return api.get<WorkspaceReportResponse>(path);
   }
 
   return downloadBlobReport(path);

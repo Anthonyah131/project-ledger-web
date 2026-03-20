@@ -1,4 +1,4 @@
-import { WorkspaceDetailView } from "@/views/workspaces/workspace-detail-view"
+import { redirect } from "next/navigation"
 
 interface WorkspaceDetailPageProps {
   params: Promise<{ workspaceId: string }>
@@ -6,5 +6,5 @@ interface WorkspaceDetailPageProps {
 
 export default async function WorkspaceDetailPage({ params }: WorkspaceDetailPageProps) {
   const { workspaceId } = await params
-  return <WorkspaceDetailView workspaceId={workspaceId} />
+  redirect(`/projects?tab=workspaces&ws=${workspaceId}`)
 }

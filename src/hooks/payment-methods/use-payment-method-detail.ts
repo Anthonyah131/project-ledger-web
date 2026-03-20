@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import * as pmService from "@/services/payment-method-service"
 import { getPartners } from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { ApiClientError } from "@/lib/api-client"
 import { getDateRangeError } from "@/lib/date-utils"
 import type {
   PaymentMethodIncomesResponse,
@@ -84,6 +85,7 @@ interface UsePaymentMethodDetailReturn {
 
 const INITIAL_EXPENSES: PaymentMethodExpensesResponse = {
   items: [],
+  totalActiveAmount: 0,
   page: 1,
   pageSize: 10,
   totalCount: 0,
@@ -107,6 +109,7 @@ const INITIAL_SUMMARY: PaymentMethodSummaryResponse = {
 
 const INITIAL_INCOMES: PaymentMethodIncomesResponse = {
   items: [],
+  totalActiveAmount: 0,
   page: 1,
   pageSize: 10,
   totalCount: 0,
@@ -381,7 +384,7 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
   const fetchPartners = useCallback(async () => {
     try {
       setLoadingPartners(true)
-      const data = await getPartners({ take: 200 })
+      const data = await getPartners({ pageSize: 200 })
       setPartners(data.items)
     } catch {
       // non-critical
@@ -416,6 +419,13 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
         description: "El partner fue desvinculado del método de pago.",
       })
     } catch (err) {
+      if (err instanceof ApiClientError && err.status === 409) {
+        toast.error("No se puede desenlazar el partner", {
+          description:
+            "Este método de pago está vinculado a uno o más proyectos. Primero desvinculalo de todos los proyectos.",
+        })
+        return
+      }
       toastApiError(err, "Error al quitar partner")
     }
   }, [id])

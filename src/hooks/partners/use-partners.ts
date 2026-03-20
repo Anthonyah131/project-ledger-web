@@ -13,6 +13,7 @@ import type {
   CreatePartnerRequest,
   UpdatePartnerRequest,
 } from "@/types/partner"
+import type { ViewMode } from "@/types/project"
 
 export function usePartners() {
   const [partners, setPartners] = useState<PartnerResponse[]>([])
@@ -20,13 +21,25 @@ export function usePartners() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [viewMode, setViewMode] = useState<ViewMode>("shelf")
   const [query, setQuery] = useState("")
+  const [sort, setSort] = useState("name:asc")
   const [page, setPage] = useState(1)
-  const [pageSize] = useState(50)
+  const [pageSize, setPageSizeState] = useState(12)
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<PartnerResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<PartnerResponse | null>(null)
+
+  const handlePageSizeChange = useCallback((size: number) => {
+    setPageSizeState(size)
+    setPage(1)
+  }, [])
+
+  const handleSortChange = useCallback((s: string) => {
+    setSort(s)
+    setPage(1)
+  }, [])
 
   const resetPage = useCallback(() => setPage(1), [])
   const debouncedQuery = useDebouncedValue(query, 350, resetPage)
@@ -35,10 +48,13 @@ export function usePartners() {
     try {
       setError(null)
       setLoading(true)
+      const [sortBy, sortDirection] = sort.split(":") as [string, "asc" | "desc"]
       const data = await partnerService.getPartners({
         search: debouncedQuery || undefined,
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        page,
+        pageSize,
+        sortBy,
+        sortDirection,
       })
       setPartners(data.items)
       setTotalCount(data.totalCount)
@@ -49,7 +65,7 @@ export function usePartners() {
     } finally {
       setLoading(false)
     }
-  }, [debouncedQuery, page, pageSize])
+  }, [debouncedQuery, page, pageSize, sort])
 
   useEffect(() => {
     fetchPartners()
@@ -107,20 +123,19 @@ export function usePartners() {
     error,
     hasSearch,
     globalIndex,
-    page,
-    setPage,
+    viewMode, setViewMode,
+    page, setPage,
     pageSize,
-    query,
-    setQuery,
-    createOpen,
-    setCreateOpen,
-    editTarget,
-    setEditTarget,
-    deleteTarget,
-    setDeleteTarget,
+    sort,
+    query, setQuery,
+    createOpen, setCreateOpen,
+    editTarget, setEditTarget,
+    deleteTarget, setDeleteTarget,
     mutateCreate,
     mutateUpdate,
     mutateDelete,
+    handlePageSizeChange,
+    handleSortChange,
     refetch: fetchPartners,
   }
 }

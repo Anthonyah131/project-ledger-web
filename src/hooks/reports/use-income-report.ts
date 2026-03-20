@@ -1,0 +1,114 @@
+"use client"
+
+// hooks/reports/use-income-report.ts
+// State management + API orchestration for the project income report view.
+
+import { useState, useCallback } from "react"
+import { toast } from "sonner"
+import * as reportService from "@/services/report-service"
+import { toastApiError } from "@/lib/error-utils"
+import { getDateRangeError } from "@/lib/date-utils"
+import type { ProjectIncomeReportResponse, ReportFormat } from "@/types/report"
+
+export interface IncomeReportFilters {
+  projectId: string
+  from: string
+  to: string
+  format: ReportFormat
+}
+
+export function useIncomeReport() {
+  const [report, setReport] = useState<ProjectIncomeReportResponse | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  const [filters, setFilters] = useState<IncomeReportFilters>({
+    projectId: "",
+    from: "",
+    to: "",
+    format: "json",
+  })
+
+  const dateRangeError = getDateRangeError(filters.from, filters.to)
+
+  const updateFilter = useCallback(
+    <K extends keyof IncomeReportFilters>(key: K, value: IncomeReportFilters[K]) => {
+      setFilters((prev) => ({ ...prev, [key]: value }))
+    },
+    [],
+  )
+
+  const fetchReport = useCallback(async () => {
+    const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+    if (currentDateRangeError) {
+      toast.warning(currentDateRangeError)
+      return
+    }
+
+    if (!filters.projectId) {
+      toast.warning("Selecciona un proyecto para generar el reporte.")
+      return
+    }
+
+    setLoading(true)
+    setReport(null)
+
+    try {
+      const data = await reportService.getIncomeReport(filters.projectId, {
+        from: filters.from || undefined,
+        to: filters.to || undefined,
+        format: "json",
+      })
+      if (data) setReport(data)
+    } catch (err) {
+      toastApiError(err, "Error al generar reporte de ingresos")
+    } finally {
+      setLoading(false)
+    }
+  }, [filters.projectId, filters.from, filters.to])
+
+  const exportReport = useCallback(
+    async (format: "excel" | "pdf") => {
+      const currentDateRangeError = getDateRangeError(filters.from, filters.to)
+      if (currentDateRangeError) {
+        toast.warning(currentDateRangeError)
+        return
+      }
+
+      if (!filters.projectId) {
+        toast.warning("Selecciona un proyecto para exportar.")
+        return
+      }
+
+      setExporting(true)
+
+      try {
+        await reportService.getIncomeReport(filters.projectId, {
+          from: filters.from || undefined,
+          to: filters.to || undefined,
+          format,
+        })
+        toast.success(
+          format === "excel" ? "Archivo Excel descargado" : "Archivo PDF descargado",
+        )
+      } catch (err) {
+        toastApiError(err, `Error al exportar como ${format.toUpperCase()}`)
+      } finally {
+        setExporting(false)
+      }
+    },
+    [filters.projectId, filters.from, filters.to],
+  )
+
+  return {
+    report,
+    loading,
+    exporting,
+    filters,
+    dateRangeError,
+    updateFilter,
+    setFilters,
+    fetchReport,
+    exportReport,
+  }
+}

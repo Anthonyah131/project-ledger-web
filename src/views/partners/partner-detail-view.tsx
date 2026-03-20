@@ -2,7 +2,7 @@
 
 // views/partners/partner-detail-view.tsx
 
-import { PartnerDetailPanel } from "@/components/partners/partner-detail-panel"
+import { PartnerDetailPanel } from "@/components/partners/detail/partner-detail-panel"
 
 interface PartnerDetailViewProps {
   partnerId: string

@@ -1,5 +1,5 @@
-import { WorkspacesView } from "@/views/workspaces/workspaces-view"
+import { redirect } from "next/navigation"
 
 export default function WorkspacesPage() {
-  return <WorkspacesView />
+  redirect("/projects?tab=workspaces")
 }

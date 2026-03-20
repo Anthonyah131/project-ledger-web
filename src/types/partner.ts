@@ -13,7 +13,7 @@ export interface PartnerPaymentMethodItem {
   bankName: string | null
 }
 
-/** Project linked to a partner via payment methods — returned in GET /partners/{id} */
+/** Project linked to a partner via payment methods */
 export interface PartnerProjectResponse {
   id: string
   name: string
@@ -33,15 +33,39 @@ export interface PartnerResponse {
   updatedAt: string
 }
 
-export interface PartnerDetailResponse extends PartnerResponse {
-  paymentMethods: PartnerPaymentMethodItem[]
-  /** Proyectos donde algún método de pago del partner está vinculado */
-  projects: PartnerProjectResponse[]
-}
+/** GET /api/partners/{id} — solo datos básicos, sin listas embebidas */
+export type PartnerDetailResponse = PartnerResponse
 
 export interface PartnersListResponse {
   items: PartnerResponse[]
   totalCount: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}
+
+/** GET /api/partners/{id}/payment-methods — respuesta paginada */
+export interface PartnerPaymentMethodsPagedResponse {
+  items: PartnerPaymentMethodItem[]
+  totalCount: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}
+
+/** GET /api/partners/{id}/projects — respuesta paginada */
+export interface PartnerProjectsPagedResponse {
+  items: PartnerProjectResponse[]
+  totalCount: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
 }
 
 // ─── Request bodies ────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ import {
   ReceiptText,
   User,
   Wallet,
+  ArrowRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,9 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
-import {
-  InfoCard,
-} from "./detail/payment-method-detail-blocks"
 import { PaymentMethodDetailFilters } from "./detail/payment-method-detail-filters"
 import { PaymentMethodDetailTabs } from "./detail/payment-method-detail-tabs"
 import {
@@ -246,39 +244,103 @@ function PaymentMethodDetailPanelComponent({
         </DropdownMenu>
       </div>
 
-      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${paymentMethod.partner ? "lg:grid-cols-7" : "lg:grid-cols-6"}`}>
-        {paymentMethod.partner && (
-          <InfoCard icon={User} label="Partner" value={paymentMethod.partner.name} />
-        )}
-        <InfoCard icon={Building} label="Banco / emisor" value={paymentMethod.bankName ?? "-"} />
-        <InfoCard icon={Hash} label="Cuenta" value={paymentMethod.accountNumber ?? "-"} />
-        <InfoCard icon={FolderKanban} label="Proyectos" value={String(relatedProjectsCount)} />
-        <InfoCard icon={ReceiptText} label="Gastos" value={String(relatedExpensesCount)} />
-        <InfoCard icon={Wallet} label="Ingresos" value={String(relatedIncomesCount)} />
-        <InfoCard
-          icon={Calendar}
-          label="Ultima actualizacion"
-          value={formatDate(paymentMethod.updatedAt, { withYear: true })}
-        />
+      {/* Summary card — account details + activity stats */}
+      <div className="rounded-xl border border-cyan-500/15 bg-card overflow-hidden shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10">
+          {/* Left: account details */}
+          <div className="p-5 space-y-3">
+            <p className="text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest">
+              Cuenta
+            </p>
+            <div className="space-y-2">
+              {paymentMethod.partner && (
+                <div
+                  className="flex items-center gap-2 group cursor-pointer"
+                  onClick={() => router.push(`/partners/${paymentMethod.partner!.id}`)}
+                >
+                  <User className="size-3.5 text-violet-500 shrink-0" />
+                  <span className="text-xs text-muted-foreground">Partner</span>
+                  <span className="ml-auto text-xs font-medium text-violet-600 dark:text-violet-400 truncate group-hover:underline">
+                    {paymentMethod.partner.name}
+                  </span>
+                  <ArrowRight className="size-3 text-muted-foreground/30 group-hover:text-muted-foreground shrink-0 transition-colors" />
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <Building className="size-3.5 text-muted-foreground/60 shrink-0" />
+                <span className="text-xs text-muted-foreground">Banco / emisor</span>
+                <span className="ml-auto text-xs font-medium text-foreground truncate">
+                  {paymentMethod.bankName ?? <span className="text-muted-foreground/40">—</span>}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Hash className="size-3.5 text-muted-foreground/60 shrink-0" />
+                <span className="text-xs text-muted-foreground">Cuenta</span>
+                <span className="ml-auto text-xs font-medium text-foreground truncate font-mono">
+                  {paymentMethod.accountNumber ?? <span className="text-muted-foreground/40">—</span>}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="size-3.5 text-muted-foreground/60 shrink-0" />
+                <span className="text-xs text-muted-foreground">Actualizado</span>
+                <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+                  {formatDate(paymentMethod.updatedAt, { withYear: true })}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: activity stats */}
+          <div className="p-5 space-y-3">
+            <p className="text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest">
+              Actividad
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col gap-1 rounded-lg bg-cyan-500/5 border border-cyan-500/10 p-3">
+                <FolderKanban className="size-3.5 text-cyan-600 dark:text-cyan-400" />
+                <span className="text-lg font-bold text-foreground tabular-nums leading-none mt-1">
+                  {relatedProjectsCount}
+                </span>
+                <span className="text-[10px] text-muted-foreground">Proyectos</span>
+              </div>
+              <div className="flex flex-col gap-1 rounded-lg bg-rose-500/5 border border-rose-500/10 p-3">
+                <ReceiptText className="size-3.5 text-rose-500 dark:text-rose-400" />
+                <span className="text-lg font-bold text-foreground tabular-nums leading-none mt-1">
+                  {relatedExpensesCount}
+                </span>
+                <span className="text-[10px] text-muted-foreground">Gastos</span>
+              </div>
+              <div className="flex flex-col gap-1 rounded-lg bg-emerald-500/5 border border-emerald-500/10 p-3">
+                <Wallet className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-lg font-bold text-foreground tabular-nums leading-none mt-1">
+                  {relatedIncomesCount}
+                </span>
+                <span className="text-[10px] text-muted-foreground">Ingresos</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-xl border border-cyan-500/15 bg-card overflow-hidden shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="p-4 bg-gradient-to-br from-rose-500/5 to-transparent border-b md:border-b-0 md:border-r border-rose-500/15">
-            <p className="text-xs uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">Total gasto relacionado</p>
+            <p className="text-xs uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">Total gastos filtrados</p>
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingSummary
+              {loadingExpenses
                 ? "Cargando..."
-                : `${summary?.currency ?? paymentMethod.currency} ${formatAmount(summary?.totalExpenseAmount, "0.00")}`}
+                : `${paymentMethod.currency} ${formatAmount(expenses.totalActiveAmount, "0.00")}`}
             </p>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5">{expenses.totalCount} movimientos</p>
           </div>
           <div className="p-4 bg-gradient-to-br from-emerald-500/5 to-transparent">
-            <p className="text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">Total ingreso relacionado</p>
+            <p className="text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">Total ingresos filtrados</p>
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingSummary
+              {loadingIncomes
                 ? "Cargando..."
-                : `${summary?.currency ?? paymentMethod.currency} ${formatAmount(summary?.totalIncomeAmount, "0.00")}`}
+                : `${paymentMethod.currency} ${formatAmount(incomes.totalActiveAmount, "0.00")}`}
             </p>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5">{incomes.totalCount} movimientos</p>
           </div>
         </div>
       </div>

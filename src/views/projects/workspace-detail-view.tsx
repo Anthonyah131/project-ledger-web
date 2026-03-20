@@ -1,6 +1,6 @@
 "use client"
 
-// views/workspaces/workspace-detail-view.tsx
+// views/projects/workspace-detail-view.tsx
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -59,7 +59,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
           variant="ghost"
           size="sm"
           className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
-          onClick={() => onBack ? onBack() : router.push("/workspaces")}
+          onClick={() => onBack ? onBack() : router.push("/projects?tab=workspaces")}
         >
           <ArrowLeft className="size-4" />
           Workspaces
@@ -110,6 +110,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
         workspaceId={workspaceId}
         projectIds={projectIds}
         onDisconnect={handleDisconnect}
+        onProjectMutated={fetchWorkspace}
       />
 
       {/* Assign projects modal */}

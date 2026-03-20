@@ -28,9 +28,10 @@ interface ProjectsShelfProps {
   workspaceId?: string
   projectIds?: string[]
   onDisconnect?: (projectId: string) => Promise<void>
+  onProjectMutated?: () => void
 }
 
-export function ProjectsShelf({ workspaceId, projectIds, onDisconnect }: ProjectsShelfProps = {}) {
+export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProjectMutated }: ProjectsShelfProps = {}) {
   const router = useRouter()
   const {
     projects,
@@ -53,7 +54,7 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect }: Project
     handlePageSizeChange,
     handleCurrencyChange,
     handleSortChange,
-  } = useProjects({ workspaceId, projectIds })
+  } = useProjects({ workspaceId, projectIds, onProjectMutated })
 
   const handleOpenCreate = useCallback(() => {
     setCreateOpen(true)

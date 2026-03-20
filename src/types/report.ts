@@ -36,6 +36,25 @@ export interface SummaryTopExpense {
   expenseDate: string;
 }
 
+/** Partner breakdown in summary report (premium + PrjPartnersEnabled) */
+export interface SummaryPartnerBreakdown {
+  partnerId: string;
+  partnerName: string;
+  totalExpenseSplits: number;
+  totalIncomeSplits: number;
+  totalSettlementsPaid: number;
+  totalSettlementsReceived: number;
+  netBalance: number;
+}
+
+/** Totals in an alternative currency configured on the project */
+export interface AlternativeCurrencyTotal {
+  currencyCode: string;
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+}
+
 /** GET /api/projects/{projectId}/reports/summary */
 export interface ProjectReportResponse {
   projectId: string;
@@ -62,6 +81,10 @@ export interface ProjectReportResponse {
   topExpense?: SummaryTopExpense | null;
   byCategory: CategoryBreakdown[];
   byPaymentMethod: PaymentMethodBreakdown[];
+  /** Partner breakdown — null if Free or PrjPartnersEnabled = false */
+  byPartner?: SummaryPartnerBreakdown[] | null;
+  /** Totals in alternative currencies — null if Free */
+  alternativeCurrencyTotals?: AlternativeCurrencyTotal[] | null;
 }
 
 // ─── Month comparison report ─────────────────────────────────────────────────
@@ -421,6 +444,327 @@ export interface PaymentMethodReportResponse {
   insights?: ExpenseReportInsight[] | null;
   paymentMethods: PaymentMethodReportMethod[];
   monthlyTrend: PaymentMethodReportMonthlyTrend[];
+}
+
+// ─── Detailed income report (exportable) ─────────────────────────────────────
+
+/** Single income row in the income report */
+export interface IncomeReportIncomeItem {
+  id: string;
+  title: string;
+  incomeDate: string;
+  categoryName: string;
+  paymentMethodName: string;
+  paymentMethodType: string;
+  originalAmount: number;
+  originalCurrency: string;
+  exchangeRate: number;
+  convertedAmount: number;
+  accountAmount?: number | null;
+  accountCurrency?: string | null;
+  description?: string | null;
+  receiptNumber?: string | null;
+  notes?: string | null;
+  splits?: IncomeReportSplitRow[] | null;
+}
+
+export interface IncomeReportSplitRow {
+  partnerName: string;
+  splitType: string;
+  splitValue: number;
+  resolvedAmount: number;
+}
+
+export interface IncomeReportSection {
+  year: number;
+  month: number;
+  monthLabel: string;
+  sectionTotal: number;
+  sectionCount: number;
+  percentageOfTotal?: number | null;
+  averageIncomeAmount?: number | null;
+  topIncome?: { title: string; amount: number } | null;
+  incomes: IncomeReportIncomeItem[];
+}
+
+export interface IncomeReportTopIncome {
+  incomeId: string;
+  title: string;
+  amount: number;
+  incomeDate: string;
+  categoryName: string;
+  paymentMethodName: string;
+}
+
+export interface IncomeReportCategoryAnalysis {
+  categoryName: string;
+  totalAmount: number;
+  incomeCount: number;
+  percentage: number;
+  averageAmount?: number | null;
+}
+
+export interface IncomeReportPaymentMethodAnalysis {
+  paymentMethodName: string;
+  type: string;
+  totalAmount: number;
+  incomeCount: number;
+  percentage: number;
+  averageAmount: number;
+}
+
+export interface IncomeReportPartnerSummaryItem {
+  partnerId: string;
+  partnerName: string;
+  totalSplitAmount: number;
+  incomeCount: number;
+  percentage: number;
+}
+
+/** GET /api/projects/{projectId}/reports/incomes */
+export interface ProjectIncomeReportResponse {
+  projectId: string;
+  projectName: string;
+  currencyCode: string;
+  dateFrom: string | null;
+  dateTo: string | null;
+  generatedAt: string;
+  totalIncome: number;
+  totalIncomeCount: number;
+  averageIncomeAmount?: number | null;
+  averageMonthlyIncome?: number | null;
+  peakMonth?: { monthLabel: string; total: number } | null;
+  largestIncome?: IncomeReportTopIncome | null;
+  sections: IncomeReportSection[];
+  categoryAnalysis?: IncomeReportCategoryAnalysis[] | null;
+  paymentMethodAnalysis?: IncomeReportPaymentMethodAnalysis[] | null;
+  partnerSummary?: { partners: IncomeReportPartnerSummaryItem[] } | null;
+}
+
+// ─── Partner balances report ─────────────────────────────────────────────────
+
+export interface PartnerCurrencyTotal {
+  currencyCode: string;
+  othersOweHim: number;
+  heOwesOthers: number;
+  settlementsPaid: number;
+  settlementsReceived: number;
+  netBalance: number;
+}
+
+export interface PartnerBalanceItem {
+  partnerId: string;
+  partnerName: string;
+  paidPhysically: number;
+  othersOweHim: number;
+  heOwesOthers: number;
+  settlementsReceived: number;
+  settlementsPaid: number;
+  netBalance: number;
+  currencyTotals?: PartnerCurrencyTotal[] | null;
+}
+
+export interface PartnerSettlementItem {
+  settlementId: string;
+  fromPartnerId: string;
+  fromPartnerName: string;
+  toPartnerId: string;
+  toPartnerName: string;
+  amount: number;
+  currency: string;
+  exchangeRate: number;
+  convertedAmount: number;
+  settlementDate: string;
+  description?: string | null;
+  notes?: string | null;
+}
+
+export interface PairwiseCurrencyTotal {
+  currencyCode: string;
+  aOwesB: number;
+  bOwesA: number;
+  settlementsAToB: number;
+  settlementsBToA: number;
+  netBalance: number;
+}
+
+export interface PairwiseBalanceItem {
+  partnerAId: string;
+  partnerAName: string;
+  partnerBId: string;
+  partnerBName: string;
+  aOwesB: number;
+  bOwesA: number;
+  settlementsAToB: number;
+  settlementsBToA: number;
+  netBalance: number;
+  currencyTotals?: PairwiseCurrencyTotal[] | null;
+}
+
+export interface MissingCurrencyExchangeWarning {
+  transactionType: string;
+  transactionId: string;
+  title: string;
+  date: string;
+  convertedAmount: number;
+}
+
+/** GET /api/projects/{projectId}/reports/partner-balances */
+export interface PartnerBalancesReportResponse {
+  projectId: string;
+  projectName: string;
+  currencyCode: string;
+  dateFrom: string | null;
+  dateTo: string | null;
+  generatedAt: string;
+  partners: PartnerBalanceItem[];
+  settlements: PartnerSettlementItem[];
+  pairwiseBalances: PairwiseBalanceItem[];
+  warnings?: MissingCurrencyExchangeWarning[] | null;
+}
+
+// ─── Partner general report ─────────────────────────────────────────────────
+
+export interface PartnerGeneralReportCurrencyExchange {
+  currencyCode: string;
+  exchangeRate: number;
+  convertedAmount: number;
+}
+
+export interface PartnerGeneralReportTransaction {
+  transactionId: string;
+  type: "expense" | "income";
+  title: string;
+  date: string;
+  category: string;
+  paymentMethodName: string;
+  payingPartnerName: string;
+  splitAmount: number;
+  splitType: string;
+  splitValue: number;
+  currencyExchanges?: PartnerGeneralReportCurrencyExchange[] | null;
+}
+
+export interface PartnerGeneralReportSettlementExchange {
+  id: string;
+  currencyCode: string;
+  exchangeRate: number;
+  convertedAmount: number;
+}
+
+export interface PartnerGeneralReportSettlement {
+  settlementId: string;
+  date: string;
+  direction: "paid_to" | "received_from";
+  otherPartnerName: string;
+  amount: number;
+  currency: string;
+  convertedAmount: number;
+  currencyExchanges?: PartnerGeneralReportSettlementExchange[] | null;
+}
+
+export interface PartnerGeneralReportProject {
+  projectId: string;
+  projectName: string;
+  currencyCode: string;
+  paidPhysically: number;
+  othersOweHim: number;
+  heOwesOthers: number;
+  settlementsReceived: number;
+  settlementsPaid: number;
+  netBalance: number;
+  currencyTotals?: PartnerCurrencyTotal[] | null;
+  transactions: PartnerGeneralReportTransaction[];
+  settlements: PartnerGeneralReportSettlement[];
+}
+
+export interface PartnerGeneralReportPaymentMethod {
+  paymentMethodId: string;
+  paymentMethodName: string;
+  currency: string;
+  bankName: string | null;
+  totalExpenses: number;
+  totalIncomes: number;
+  netFlow: number;
+  transactionCount: number;
+}
+
+/** GET /api/partners/{partnerId}/reports/general */
+export interface PartnerGeneralReportResponse {
+  partnerId: string;
+  partnerName: string;
+  partnerEmail: string | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  generatedAt: string;
+  projects: PartnerGeneralReportProject[];
+  paymentMethods: PartnerGeneralReportPaymentMethod[];
+}
+
+// ─── Workspace report ────────────────────────────────────────────────────────
+
+export interface WorkspaceReportConsolidatedTotals {
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+  totalExpenseCount: number;
+  totalIncomeCount: number;
+}
+
+export interface WorkspaceReportProject {
+  projectId: string;
+  projectName: string;
+  currencyCode: string;
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+  expenseCount: number;
+  incomeCount: number;
+  percentage: number;
+}
+
+export interface WorkspaceReportCategoryItem {
+  categoryName: string;
+  totalAmount: number;
+  percentage: number;
+  projectCount: number;
+  expenseCount: number;
+}
+
+export interface WorkspaceReportMonthlyByProject {
+  projectId: string;
+  projectName: string;
+  currencyCode: string;
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+}
+
+export interface WorkspaceReportMonthlyTrend {
+  year: number;
+  month: number;
+  monthLabel: string;
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+  expenseCount: number;
+  incomeCount: number;
+  byProject: WorkspaceReportMonthlyByProject[];
+}
+
+/** GET /api/workspaces/{workspaceId}/reports/summary */
+export interface WorkspaceReportResponse {
+  workspaceId: string;
+  workspaceName: string;
+  dateFrom: string | null;
+  dateTo: string | null;
+  generatedAt: string;
+  referenceCurrency: string | null;
+  consolidatedTotals: WorkspaceReportConsolidatedTotals | null;
+  projectCount: number;
+  projects: WorkspaceReportProject[];
+  consolidatedByCategory?: WorkspaceReportCategoryItem[] | null;
+  monthlyTrend?: WorkspaceReportMonthlyTrend[] | null;
 }
 
 // ─── Export format ───────────────────────────────────────────────────────────

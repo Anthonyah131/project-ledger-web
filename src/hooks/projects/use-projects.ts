@@ -33,8 +33,8 @@ function comparator(sort: string) {
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
-export function useProjects(options: { workspaceId?: string; projectIds?: string[] } = {}) {
-  const { workspaceId, projectIds } = options
+export function useProjects(options: { workspaceId?: string; projectIds?: string[]; onProjectMutated?: () => void } = {}) {
+  const { workspaceId, projectIds, onProjectMutated } = options
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,11 +113,12 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
         setProjects((prev) => [created, ...prev]);
         setPage(1);
         toast.success("Proyecto creado", { description: `"${created.name}" se agregó correctamente.` });
+        onProjectMutated?.();
       } catch (err) {
         toastApiError(err, "Error al crear proyecto");
       }
     },
-    [workspaceId]
+    [workspaceId, onProjectMutated]
   );
 
   const mutateUpdate = useCallback(
@@ -126,11 +127,12 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
         const updated = await projectService.updateProject(id, data);
         setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
         toast.success("Proyecto actualizado", { description: `"${updated.name}" se guardó correctamente.` });
+        onProjectMutated?.();
       } catch (err) {
         toastApiError(err, "Error al actualizar proyecto");
       }
     },
-    []
+    [onProjectMutated]
   );
 
   const mutateDelete = useCallback(
@@ -139,11 +141,12 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
         await projectService.deleteProject(project.id);
         setProjects((prev) => prev.filter((p) => p.id !== project.id));
         toast.success("Proyecto eliminado", { description: `"${project.name}" fue desactivado.` });
+        onProjectMutated?.();
       } catch (err) {
         toastApiError(err, "Error al eliminar proyecto");
       }
     },
-    []
+    [onProjectMutated]
   );
 
   // ── Page/filter handlers ──────────────────────────────────────────

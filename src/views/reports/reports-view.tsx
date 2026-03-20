@@ -1,9 +1,13 @@
 "use client"
 
 // views/reports/reports-view.tsx
-// Orchestrator for the reports page — two report tabs:
+// Orchestrator for the reports page — six report tabs:
 // 1) Project expense report (per project)
 // 2) Payment method report (user-level)
+// 3) Project income report (per project)
+// 4) Partner balances report (per project, partners-enabled only)
+// 5) Partner general report (per partner)
+// 6) Workspace report (per workspace, admin only)
 
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useSearchParams } from "next/navigation"
@@ -12,14 +16,24 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useReportsCatalogs } from "@/hooks/reports/use-reports-catalogs"
 import { useExpenseReport } from "@/hooks/reports/use-expense-report"
 import { usePaymentMethodReport } from "@/hooks/reports/use-payment-method-report"
+import { useIncomeReport } from "@/hooks/reports/use-income-report"
+import { usePartnerBalancesReport } from "@/hooks/reports/use-partner-balances-report"
+import { usePartnerGeneralReport } from "@/hooks/reports/use-partner-general-report"
+import { useWorkspaceReport } from "@/hooks/reports/use-workspace-report"
 import { isIsoDateString } from "@/lib/date-utils"
 
 import { ReportsExpensesTab } from "@/views/reports/tabs/reports-expenses-tab"
 import { ReportsPaymentMethodsTab } from "@/views/reports/tabs/reports-payment-methods-tab"
+import { ReportsIncomesTab } from "@/views/reports/tabs/reports-incomes-tab"
+import { ReportsPartnerBalancesTab } from "@/views/reports/tabs/reports-partner-balances-tab"
+import { ReportsPartnerGeneralTab } from "@/views/reports/tabs/reports-partner-general-tab"
+import { ReportsWorkspaceTab } from "@/views/reports/tabs/reports-workspace-tab"
+
+const VALID_TABS = ["expenses", "payment-methods", "incomes", "partner-balances", "partner-general", "workspace"] as const
 
 export function ReportsView() {
   const searchParams = useSearchParams()
-  const { projects, paymentMethods, loading: catalogsLoading } = useReportsCatalogs()
+  const { projects, paymentMethods, workspaces, partners, loading: catalogsLoading } = useReportsCatalogs()
 
   // ── Hooks ──────────────────────────────────────────────────────────────
   const {
@@ -45,13 +59,57 @@ export function ReportsView() {
     exportReport: exportPaymentMethodReport,
   } = usePaymentMethodReport()
 
+  const {
+    report: incomeReport,
+    loading: incomeLoading,
+    exporting: incomeExporting,
+    filters: incomeFilters,
+    dateRangeError: incomeDateRangeError,
+    updateFilter: updateIncomeFilter,
+    fetchReport: fetchIncomeReport,
+    exportReport: exportIncomeReport,
+  } = useIncomeReport()
+
+  const {
+    report: partnerBalancesReport,
+    loading: partnerBalancesLoading,
+    exporting: partnerBalancesExporting,
+    filters: partnerBalancesFilters,
+    dateRangeError: partnerBalancesDateRangeError,
+    updateFilter: updatePartnerBalancesFilter,
+    fetchReport: fetchPartnerBalancesReport,
+    exportReport: exportPartnerBalancesReport,
+  } = usePartnerBalancesReport()
+
+  const {
+    report: partnerGeneralReport,
+    loading: partnerGeneralLoading,
+    exporting: partnerGeneralExporting,
+    filters: partnerGeneralFilters,
+    dateRangeError: partnerGeneralDateRangeError,
+    updateFilter: updatePartnerGeneralFilter,
+    fetchReport: fetchPartnerGeneralReport,
+    exportReport: exportPartnerGeneralReport,
+  } = usePartnerGeneralReport()
+
+  const {
+    report: workspaceReport,
+    loading: workspaceLoading,
+    exporting: workspaceExporting,
+    filters: workspaceFilters,
+    dateRangeError: workspaceDateRangeError,
+    updateFilter: updateWorkspaceFilter,
+    fetchReport: fetchWorkspaceReport,
+    exportReport: exportWorkspaceReport,
+  } = useWorkspaceReport()
+
   const prefillAppliedRef = useRef(false)
   const autoGeneratePendingRef = useRef(false)
 
-  const initialTab = useMemo(
-    () => (searchParams.get("tab") === "payment-methods" ? "payment-methods" : "expenses"),
-    [searchParams],
-  )
+  const initialTab = useMemo(() => {
+    const tab = searchParams.get("tab") ?? ""
+    return (VALID_TABS as readonly string[]).includes(tab) ? tab : "expenses"
+  }, [searchParams])
 
   const expensePrefill = useMemo(() => {
     const fromRaw = (searchParams.get("from") ?? "").trim()
@@ -133,6 +191,36 @@ export function ReportsView() {
     [updatePaymentMethodFilter],
   )
 
+  const handleIncomeProjectChange = useCallback(
+    (value: string) => updateIncomeFilter("projectId", value),
+    [updateIncomeFilter],
+  )
+
+  const handlePartnerBalancesProjectChange = useCallback(
+    (value: string) => updatePartnerBalancesFilter("projectId", value),
+    [updatePartnerBalancesFilter],
+  )
+
+  const handlePartnerGeneralChange = useCallback(
+    (value: string) => updatePartnerGeneralFilter("partnerId", value),
+    [updatePartnerGeneralFilter],
+  )
+
+  const handlePartnerGeneralExport = useCallback(
+    (format: "excel" | "pdf") => exportPartnerGeneralReport(format as "excel"),
+    [exportPartnerGeneralReport],
+  )
+
+  const handleWorkspaceChange = useCallback(
+    (value: string) => updateWorkspaceFilter("workspaceId", value),
+    [updateWorkspaceFilter],
+  )
+
+  const handleWorkspaceCurrencyChange = useCallback(
+    (value: string) => updateWorkspaceFilter("currency", value),
+    [updateWorkspaceFilter],
+  )
+
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
       {/* Page heading */}
@@ -141,14 +229,18 @@ export function ReportsView() {
           Reportes
         </h1>
         <p className="text-sm text-muted-foreground">
-          Genera reportes detallados por proyecto o método de pago. Las exportaciones en Excel y PDF incluyen ingresos y balance neto.
+          Genera reportes detallados por proyecto, método de pago, ingresos, partners o workspace.
         </p>
       </div>
 
       <Tabs defaultValue={initialTab}>
         <TabsList variant="line">
-          <TabsTrigger value="expenses">Gastos por proyecto</TabsTrigger>
+          <TabsTrigger value="expenses">Gastos</TabsTrigger>
+          <TabsTrigger value="incomes">Ingresos</TabsTrigger>
           <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
+          <TabsTrigger value="partner-balances">Balance partners</TabsTrigger>
+          <TabsTrigger value="partner-general">Partner general</TabsTrigger>
+          <TabsTrigger value="workspace">Workspace</TabsTrigger>
         </TabsList>
 
         <ReportsExpensesTab
@@ -167,6 +259,22 @@ export function ReportsView() {
           onExport={exportExpenseReport}
         />
 
+        <ReportsIncomesTab
+          projects={projects}
+          from={incomeFilters.from}
+          to={incomeFilters.to}
+          projectId={incomeFilters.projectId}
+          dateRangeError={incomeDateRangeError}
+          loading={incomeLoading}
+          exporting={incomeExporting}
+          report={incomeReport}
+          onFromChange={(value) => updateIncomeFilter("from", value)}
+          onToChange={(value) => updateIncomeFilter("to", value)}
+          onProjectChange={handleIncomeProjectChange}
+          onGenerate={fetchIncomeReport}
+          onExport={exportIncomeReport}
+        />
+
         <ReportsPaymentMethodsTab
           paymentMethods={paymentMethods}
           from={paymentMethodFilters.from}
@@ -181,6 +289,56 @@ export function ReportsView() {
           onPaymentMethodChange={handlePaymentMethodFilterChange}
           onGenerate={fetchPaymentMethodReport}
           onExport={exportPaymentMethodReport}
+        />
+
+        <ReportsPartnerBalancesTab
+          projects={projects}
+          from={partnerBalancesFilters.from}
+          to={partnerBalancesFilters.to}
+          projectId={partnerBalancesFilters.projectId}
+          dateRangeError={partnerBalancesDateRangeError}
+          loading={partnerBalancesLoading}
+          exporting={partnerBalancesExporting}
+          report={partnerBalancesReport}
+          onFromChange={(value) => updatePartnerBalancesFilter("from", value)}
+          onToChange={(value) => updatePartnerBalancesFilter("to", value)}
+          onProjectChange={handlePartnerBalancesProjectChange}
+          onGenerate={fetchPartnerBalancesReport}
+          onExport={exportPartnerBalancesReport}
+        />
+
+        <ReportsPartnerGeneralTab
+          partners={partners}
+          from={partnerGeneralFilters.from}
+          to={partnerGeneralFilters.to}
+          partnerId={partnerGeneralFilters.partnerId}
+          dateRangeError={partnerGeneralDateRangeError}
+          loading={partnerGeneralLoading}
+          exporting={partnerGeneralExporting}
+          report={partnerGeneralReport}
+          onFromChange={(value) => updatePartnerGeneralFilter("from", value)}
+          onToChange={(value) => updatePartnerGeneralFilter("to", value)}
+          onPartnerChange={handlePartnerGeneralChange}
+          onGenerate={fetchPartnerGeneralReport}
+          onExport={handlePartnerGeneralExport}
+        />
+
+        <ReportsWorkspaceTab
+          workspaces={workspaces}
+          from={workspaceFilters.from}
+          to={workspaceFilters.to}
+          workspaceId={workspaceFilters.workspaceId}
+          currency={workspaceFilters.currency}
+          dateRangeError={workspaceDateRangeError}
+          loading={workspaceLoading}
+          exporting={workspaceExporting}
+          report={workspaceReport}
+          onFromChange={(value) => updateWorkspaceFilter("from", value)}
+          onToChange={(value) => updateWorkspaceFilter("to", value)}
+          onWorkspaceChange={handleWorkspaceChange}
+          onCurrencyChange={handleWorkspaceCurrencyChange}
+          onGenerate={fetchWorkspaceReport}
+          onExport={exportWorkspaceReport}
         />
       </Tabs>
     </div>

@@ -80,6 +80,8 @@ export interface PaymentMethodExpenseItem {
 
 export interface PaymentMethodExpensesResponse {
   items: PaymentMethodExpenseItem[];
+  /** Suma de accountAmount (en moneda del PM) de todos los gastos filtrados (no solo la página). */
+  totalActiveAmount: number;
   page: number;
   pageSize: number;
   totalCount: number;
@@ -119,6 +121,8 @@ export interface PaymentMethodIncomeItem {
 
 export interface PaymentMethodIncomesResponse {
   items: PaymentMethodIncomeItem[];
+  /** Suma de accountAmount (en moneda del PM) de todos los ingresos filtrados (no solo la página). */
+  totalActiveAmount: number;
   page: number;
   pageSize: number;
   totalCount: number;

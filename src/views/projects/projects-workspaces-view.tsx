@@ -7,7 +7,7 @@ import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ProjectsShelf } from "@/components/projects/projects-shelf"
 import { WorkspacesPanel } from "@/components/workspaces/workspaces-panel"
-import { WorkspaceDetailView } from "@/views/workspaces/workspace-detail-view"
+import { WorkspaceDetailView } from "@/views/projects/workspace-detail-view"
 
 type Tab = "projects" | "workspaces"
 

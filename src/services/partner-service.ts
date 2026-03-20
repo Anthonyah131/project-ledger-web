@@ -6,24 +6,29 @@ import type {
   PartnerResponse,
   PartnerDetailResponse,
   PartnersListResponse,
+  PartnerPaymentMethodsPagedResponse,
+  PartnerProjectsPagedResponse,
   CreatePartnerRequest,
   UpdatePartnerRequest,
 } from "@/types/partner"
-import type { PaymentMethodResponse } from "@/types/payment-method"
 
 // ─── Partners ──────────────────────────────────────────────────────────────────
 
 export interface GetPartnersParams {
   search?: string
-  skip?: number
-  take?: number
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDirection?: "asc" | "desc"
 }
 
 export function getPartners(params: GetPartnersParams = {}) {
   const query = new URLSearchParams()
   if (params.search) query.set("search", params.search)
-  if (params.skip !== undefined) query.set("skip", String(params.skip))
-  if (params.take !== undefined) query.set("take", String(params.take))
+  if (params.page !== undefined) query.set("page", String(params.page))
+  if (params.pageSize !== undefined) query.set("pageSize", String(params.pageSize))
+  if (params.sortBy) query.set("sortBy", params.sortBy)
+  if (params.sortDirection) query.set("sortDirection", params.sortDirection)
   const qs = query.toString()
   return api.get<PartnersListResponse>(qs ? `/partners?${qs}` : "/partners")
 }
@@ -46,6 +51,38 @@ export function deletePartner(id: string) {
 
 // ─── Partner payment methods ───────────────────────────────────────────────────
 
-export function getPartnerPaymentMethods(id: string) {
-  return api.get<PaymentMethodResponse[]>(`/partners/${id}/payment-methods`)
+export interface GetPartnerPaymentMethodsParams {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDirection?: "asc" | "desc"
+}
+
+export function getPartnerPaymentMethods(id: string, params: GetPartnerPaymentMethodsParams = {}) {
+  const query = new URLSearchParams()
+  if (params.page !== undefined) query.set("page", String(params.page))
+  if (params.pageSize !== undefined) query.set("pageSize", String(params.pageSize))
+  if (params.sortBy) query.set("sortBy", params.sortBy)
+  if (params.sortDirection) query.set("sortDirection", params.sortDirection)
+  const qs = query.toString()
+  return api.get<PartnerPaymentMethodsPagedResponse>(qs ? `/partners/${id}/payment-methods?${qs}` : `/partners/${id}/payment-methods`)
+}
+
+// ─── Partner projects ──────────────────────────────────────────────────────────
+
+export interface GetPartnerProjectsParams {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDirection?: "asc" | "desc"
+}
+
+export function getPartnerProjects(id: string, params: GetPartnerProjectsParams = {}) {
+  const query = new URLSearchParams()
+  if (params.page !== undefined) query.set("page", String(params.page))
+  if (params.pageSize !== undefined) query.set("pageSize", String(params.pageSize))
+  if (params.sortBy) query.set("sortBy", params.sortBy)
+  if (params.sortDirection) query.set("sortDirection", params.sortDirection)
+  const qs = query.toString()
+  return api.get<PartnerProjectsPagedResponse>(qs ? `/partners/${id}/projects?${qs}` : `/partners/${id}/projects`)
 }

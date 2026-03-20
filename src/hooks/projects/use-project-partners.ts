@@ -48,7 +48,7 @@ export function useProjectPartners(projectId: string) {
   const fetchAvailable = useCallback(async () => {
     try {
       setAvailableLoading(true)
-      const data = await partnerService.getPartners({ take: 100 })
+      const data = await partnerService.getPartners({ pageSize: 100 })
       setAvailablePartners(data.items)
     } catch {
       // non-critical
