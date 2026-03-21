@@ -4,7 +4,6 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 import { ThemeProvider } from "@/context/theme-context";
-import N8nChat from "@/components/shared/n8n-chat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +35,6 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <Toaster position="bottom-right" richColors closeButton />
-            <N8nChat />
           </AuthProvider>
         </ThemeProvider>
       </body>

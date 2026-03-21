@@ -7,6 +7,7 @@ import { AuthGuard } from "@/components/auth/auth-guard";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SiteHeader } from "@/components/dashboard/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import Chatbot from "@/components/shared/chatbot";
 
 export default function DashboardLayout({
   children,
@@ -22,6 +23,7 @@ export default function DashboardLayout({
           <main className="flex flex-1 flex-col gap-0 px-4 py-6 lg:px-6">{children}</main>
         </SidebarInset>
       </SidebarProvider>
+      <Chatbot />
     </AuthGuard>
   );
 }

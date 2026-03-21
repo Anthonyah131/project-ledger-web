@@ -9,16 +9,5 @@ declare namespace NodeJS {
 
     // Backend API
     NEXT_PUBLIC_API_URL: string;
-
-    // N8N Chat Widget
-    NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL: string;
   }
-}
-
-// Extend Window with the n8nChat global injected by @n8n/chat
-interface Window {
-  n8nChat?: {
-    open?: () => void;
-    close?: () => void;
-  };
 }
