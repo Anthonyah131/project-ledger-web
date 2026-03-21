@@ -206,7 +206,19 @@ export interface ExpenseReportSection {
   averageExpenseAmount?: number | null;
   /** Largest single expense in this month */
   topExpense?: { title: string; amount: number } | null;
+  /** Totals in alternative currencies for this section */
+  alternativeCurrencies?: ExpenseReportAlternativeCurrencyTotals[] | null;
   expenses: ExpenseReportExpenseItem[];
+}
+
+/** Totals in an alternative currency for the expense report (global + per-section) */
+export interface ExpenseReportAlternativeCurrencyTotals {
+  currencyCode: string;
+  totalSpent: number;
+  totalIncome: number;
+  netBalance: number;
+  averageExpenseAmount: number;
+  averageMonthlySpend: number;
 }
 
 export interface ExpenseReportCategoryAnalysis {
@@ -275,6 +287,8 @@ export interface ProjectExpenseReportResponse {
   largestExpense?: ExpenseReportTopExpense | null;
   /** Month with highest spending */
   peakMonth?: { monthLabel: string; total: number } | null;
+  /** Totals in alternative currencies — null when none configured */
+  alternativeCurrencies?: ExpenseReportAlternativeCurrencyTotals[] | null;
   sections: ExpenseReportSection[];
   categoryAnalysis: ExpenseReportCategoryAnalysis[] | null;
   /** Available when plan has CanUseAdvancedReports */
@@ -301,20 +315,12 @@ export interface PaymentMethodReportExpense {
   projectId: string;
   projectName: string;
   title: string;
-  /** Amount converted to the **project's** base currency. This is NOT necessarily in the
-   *  payment method's own currency — use `originalAmount` / `originalCurrency` for the
-   *  amount actually debited from the account. */
-  convertedAmount: number;
-  /** Amount as originally debited from this payment method account, in `originalCurrency`.
-   *  This is the authoritative field to display in the payment-method-report money column. */
-  originalAmount?: number | null;
-  /** ISO 4217 code of the original expense currency — typically matches the payment method's `currency`. */
-  originalCurrency?: string | null;
-  /** Currency of the project this expense belongs to (= moneda base del proyecto). */
-  projectCurrency: string;
+  /** Amount in the payment method's currency */
+  amount: number;
   expenseDate: string;
+  categoryId: string;
   categoryName: string;
-  currencyExchanges?: CurrencyExchangeResponse[] | null;
+  description?: string | null;
 }
 
 export interface PaymentMethodReportIncome {
@@ -325,14 +331,9 @@ export interface PaymentMethodReportIncome {
   incomeDate: string;
   categoryId?: string | null;
   categoryName: string;
-  originalAmount: number;
-  originalCurrency: string;
-  convertedAmount: number;
-  accountAmount?: number | null;
-  accountCurrency?: string | null;
-  projectCurrency: string;
+  /** Amount in the payment method's currency */
+  amount: number;
   description?: string | null;
-  currencyExchanges?: CurrencyExchangeResponse[] | null;
 }
 
 /** Top category usage breakdown per payment method */
@@ -364,7 +365,6 @@ export interface PaymentMethodReportMethod {
   totalIncome?: number | null;
   incomeCount?: number | null;
   netFlow?: number | null;
-  percentage: number;
   averageExpenseAmount: number;
   averageIncomeAmount?: number | null;
   firstUseDate: string | null;
@@ -378,7 +378,7 @@ export interface PaymentMethodReportMethod {
   /** Top 3–5 categories by spend through this method */
   topCategories?: PaymentMethodTopCategory[] | null;
   projects: PaymentMethodReportProject[];
-  /** Capped list — see expensesShown / totalExpensesInPeriod for full count */
+  /** Capped list — JSON returns max 10; see expensesShown / totalExpensesInPeriod for full count */
   expenses: PaymentMethodReportExpense[];
   incomes?: PaymentMethodReportIncome[];
   /** Total number of expenses in the period (even if expenses[] is capped) */
@@ -392,31 +392,19 @@ export interface PaymentMethodReportMethod {
 export interface PaymentMethodReportMonthByMethod {
   paymentMethodId: string;
   name: string;
+  currency: string;
   totalSpent: number;
   expenseCount: number;
   totalIncome?: number | null;
   incomeCount?: number | null;
   netFlow?: number | null;
-  /** This method's share of total spend in this month */
-  percentage?: number | null;
 }
 
 export interface PaymentMethodReportMonthlyTrend {
   year: number;
   month: number;
   monthLabel: string;
-  totalSpent: number;
-  expenseCount: number;
-  totalIncome?: number | null;
-  incomeCount?: number | null;
-  netBalance?: number | null;
   byMethod: PaymentMethodReportMonthByMethod[];
-}
-
-/** Reference to a payment method used in aggregate fields */
-export interface MethodReference {
-  paymentMethodId: string;
-  name: string;
 }
 
 export interface PaymentMethodReportResponse {
@@ -424,24 +412,6 @@ export interface PaymentMethodReportResponse {
   dateFrom: string | null;
   dateTo: string | null;
   generatedAt: string;
-  grandTotalSpent: number;
-  grandTotalExpenseCount: number;
-  grandTotalIncome?: number | null;
-  grandTotalIncomeCount?: number | null;
-  grandNetFlow?: number | null;
-  /** grandTotalSpent / grandTotalExpenseCount */
-  grandAverageExpenseAmount?: number | null;
-  grandAverageIncomeAmount?: number | null;
-  /** Average spend per month over the period */
-  averageMonthlySpend?: number | null;
-  /** Month with the highest totalSpent */
-  peakMonth?: { monthLabel: string; total: number } | null;
-  /** Method with the highest expenseCount */
-  mostUsedMethod?: MethodReference | null;
-  /** Method with the highest totalSpent */
-  highestSpendMethod?: MethodReference | null;
-  /** Text insights (advanced plan) */
-  insights?: ExpenseReportInsight[] | null;
   paymentMethods: PaymentMethodReportMethod[];
   monthlyTrend: PaymentMethodReportMonthlyTrend[];
 }
@@ -465,14 +435,6 @@ export interface IncomeReportIncomeItem {
   description?: string | null;
   receiptNumber?: string | null;
   notes?: string | null;
-  splits?: IncomeReportSplitRow[] | null;
-}
-
-export interface IncomeReportSplitRow {
-  partnerName: string;
-  splitType: string;
-  splitValue: number;
-  resolvedAmount: number;
 }
 
 export interface IncomeReportSection {
@@ -484,6 +446,8 @@ export interface IncomeReportSection {
   percentageOfTotal?: number | null;
   averageIncomeAmount?: number | null;
   topIncome?: { title: string; amount: number } | null;
+  /** Totals in alternative currencies for this section */
+  alternativeCurrencies?: ExpenseReportAlternativeCurrencyTotals[] | null;
   incomes: IncomeReportIncomeItem[];
 }
 
@@ -513,14 +477,6 @@ export interface IncomeReportPaymentMethodAnalysis {
   averageAmount: number;
 }
 
-export interface IncomeReportPartnerSummaryItem {
-  partnerId: string;
-  partnerName: string;
-  totalSplitAmount: number;
-  incomeCount: number;
-  percentage: number;
-}
-
 /** GET /api/projects/{projectId}/reports/incomes */
 export interface ProjectIncomeReportResponse {
   projectId: string;
@@ -535,10 +491,11 @@ export interface ProjectIncomeReportResponse {
   averageMonthlyIncome?: number | null;
   peakMonth?: { monthLabel: string; total: number } | null;
   largestIncome?: IncomeReportTopIncome | null;
+  /** Totals in alternative currencies — null when none configured */
+  alternativeCurrencies?: ExpenseReportAlternativeCurrencyTotals[] | null;
   sections: IncomeReportSection[];
   categoryAnalysis?: IncomeReportCategoryAnalysis[] | null;
   paymentMethodAnalysis?: IncomeReportPaymentMethodAnalysis[] | null;
-  partnerSummary?: { partners: IncomeReportPartnerSummaryItem[] } | null;
 }
 
 // ─── Partner balances report ─────────────────────────────────────────────────
@@ -577,6 +534,7 @@ export interface PartnerSettlementItem {
   settlementDate: string;
   description?: string | null;
   notes?: string | null;
+  currencyExchanges?: CurrencyExchangeResponse[] | null;
 }
 
 export interface PairwiseCurrencyTotal {

@@ -4,20 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type {
-  PaymentMethodReportExpense,
-  PaymentMethodReportIncome,
   PaymentMethodReportMethod,
 } from "@/types/report"
-
-/** Resolves amount from a payment method expense — handles both new `convertedAmount`
- * and the legacy `amount` field until the backend migration is complete. */
-function resolveExpenseAmount(expense: PaymentMethodReportExpense): number | undefined {
-  return expense.convertedAmount ?? (expense as unknown as { amount?: number }).amount
-}
-
-function resolveIncomeAmount(income: PaymentMethodReportIncome): number | undefined {
-  return income.originalAmount ?? income.convertedAmount
-}
 
 interface PaymentMethodReportMethodCardProps {
   method: PaymentMethodReportMethod
@@ -50,10 +38,9 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3 text-xs">
         <StatItem label="Gastos" value={String(method.expenseCount)} />
         <StatItem label="Ingresos" value={String(method.incomeCount ?? 0)} />
-        <StatItem label="% del total" value={`${method.percentage.toFixed(1)}%`} />
         <StatItem
           label="Prom. gasto"
           value={`${method.currency} ${formatAmount(method.averageExpenseAmount)}`}
@@ -62,10 +49,6 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
           label="Prom. ingreso"
           value={`${method.currency} ${formatAmount(method.averageIncomeAmount ?? null, "—")}`}
         />
-        <StatItem
-          label="Flujo neto"
-          value={`${method.currency} ${formatAmount(method.netFlow ?? (method.totalIncome ?? 0) - method.totalSpent)}`}
-        />
         <StatItem label="Banco" value={method.bankName ?? "—"} />
       </div>
 
@@ -73,12 +56,12 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
         <div className="flex gap-4 text-xs text-muted-foreground mb-3 flex-wrap">
           {method.firstUseDate && (
             <span>
-              Primer uso: {formatDate(method.firstUseDate, { fixTimezone: true })}
+              Primer uso: {formatDate(method.firstUseDate)}
             </span>
           )}
           {method.lastUseDate && (
             <span>
-              Último uso: {formatDate(method.lastUseDate, { fixTimezone: true })}
+              Último uso: {formatDate(method.lastUseDate)}
               {method.daysSinceLastUse != null && method.daysSinceLastUse > 0 && (
                 <> ({method.daysSinceLastUse} días)</>
               )}
@@ -86,13 +69,6 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
           )}
         </div>
       )}
-
-      <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-3">
-        <div
-          className="h-full rounded-full bg-primary"
-          style={{ width: `${Math.min(method.percentage, 100)}%` }}
-        />
-      </div>
 
       {method.topExpense && (
         <div className="mb-3 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs">
@@ -144,7 +120,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
           <div className="flex flex-wrap gap-2">
             {method.projects.map((project) => (
               <Badge key={project.projectId} variant="secondary" className="text-[10px]">
-                {project.projectName} — {project.currencyCode ?? method.currency}{" "}
+                {project.projectName} — {method.currency}{" "}
                 {formatAmount(project.totalSpent)} ({project.expenseCount})
               </Badge>
             ))}
@@ -160,7 +136,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
               method.expensesShown != null &&
               method.totalExpensesInPeriod > method.expensesShown && (
                 <span className="text-xs text-muted-foreground">
-                  Mostrando {method.expensesShown} de {method.totalExpensesInPeriod}
+                  Mostrando {method.expensesShown} de {method.totalExpensesInPeriod} — exporta a Excel/PDF para ver todos
                 </span>
               )}
           </div>
@@ -176,47 +152,22 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
                 </tr>
               </thead>
               <tbody>
-                {method.expenses.map((expense) => {
-                  const primaryAmount = expense.originalAmount ?? resolveExpenseAmount(expense)
-                  const primaryCurrency = expense.originalCurrency ?? method.currency
-                  const projectCurrency = expense.projectCurrency ?? method.currency
-                  const showConverted =
-                    expense.convertedAmount != null && projectCurrency !== primaryCurrency
-
-                  return (
-                    <tr
-                      key={expense.expenseId}
-                      className="border-b border-border/50 last:border-0"
-                    >
-                      <td className="py-1.5 pr-3 tabular-nums text-muted-foreground">
-                        {formatDate(expense.expenseDate, { fixTimezone: true })}
-                      </td>
-                      <td className="py-1.5 pr-3 font-medium text-foreground">{expense.title}</td>
-                      <td className="py-1.5 pr-3">{expense.projectName}</td>
-                      <td className="py-1.5 pr-3">{expense.categoryName}</td>
-                      <td className="py-1.5 text-right tabular-nums font-medium">
-                        <div className="flex flex-col items-end gap-0.5">
-                          <span>{primaryCurrency} {formatAmount(primaryAmount, "—")}</span>
-                          {showConverted && (
-                            <span className="text-[10px] text-muted-foreground font-normal">
-                              = {projectCurrency} {formatAmount(expense.convertedAmount)}
-                            </span>
-                          )}
-                          {expense.currencyExchanges && expense.currencyExchanges.length > 0 && (
-                            <span className="text-[10px] text-muted-foreground font-normal text-right">
-                              {expense.currencyExchanges
-                                .slice(0, 2)
-                                .map(
-                                  (item) => `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
-                                )
-                                .join(" · ")}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
+                {method.expenses.map((expense) => (
+                  <tr
+                    key={expense.expenseId}
+                    className="border-b border-border/50 last:border-0"
+                  >
+                    <td className="py-1.5 pr-3 tabular-nums text-muted-foreground">
+                      {formatDate(expense.expenseDate)}
+                    </td>
+                    <td className="py-1.5 pr-3 font-medium text-foreground">{expense.title}</td>
+                    <td className="py-1.5 pr-3">{expense.projectName}</td>
+                    <td className="py-1.5 pr-3">{expense.categoryName}</td>
+                    <td className="py-1.5 text-right tabular-nums font-medium">
+                      {method.currency} {formatAmount(expense.amount)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -231,7 +182,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
               method.incomesShown != null &&
               method.totalIncomesInPeriod > method.incomesShown && (
                 <span className="text-xs text-muted-foreground">
-                  Mostrando {method.incomesShown} de {method.totalIncomesInPeriod}
+                  Mostrando {method.incomesShown} de {method.totalIncomesInPeriod} — exporta a Excel/PDF para ver todos
                 </span>
               )}
           </div>
@@ -243,57 +194,26 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
                   <th className="text-left py-1.5 pr-3 font-medium">Título</th>
                   <th className="text-left py-1.5 pr-3 font-medium">Proyecto</th>
                   <th className="text-left py-1.5 pr-3 font-medium">Categoría</th>
-                  <th className="text-right py-1.5 pr-3 font-medium">Monto cuenta</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Mon. cuenta</th>
-                  <th className="text-right py-1.5 font-medium">Monto proyecto</th>
+                  <th className="text-right py-1.5 font-medium">Monto</th>
                 </tr>
               </thead>
               <tbody>
-                {method.incomes.map((income) => {
-                  const accountAmount = income.accountAmount ?? resolveIncomeAmount(income)
-                  const accountCurrency = income.accountCurrency ?? income.originalCurrency ?? method.currency
-                  const projectCurrency = income.projectCurrency ?? accountCurrency
-                  const showProjectEquivalent =
-                    income.convertedAmount != null && projectCurrency !== accountCurrency
-
-                  return (
-                    <tr
-                      key={income.incomeId}
-                      className="border-b border-border/50 last:border-0"
-                    >
-                      <td className="py-1.5 pr-3 tabular-nums text-muted-foreground">
-                        {formatDate(income.incomeDate, { fixTimezone: true })}
-                      </td>
-                      <td className="py-1.5 pr-3 font-medium text-foreground">{income.title}</td>
-                      <td className="py-1.5 pr-3">{income.projectName}</td>
-                      <td className="py-1.5 pr-3">{income.categoryName}</td>
-                      <td className="py-1.5 pr-3 text-right tabular-nums font-medium">
-                        {formatAmount(accountAmount, "—")}
-                      </td>
-                      <td className="py-1.5 pr-3 font-medium">{accountCurrency || "—"}</td>
-                      <td className="py-1.5 text-right tabular-nums font-medium">
-                        <div className="flex flex-col items-end gap-0.5">
-                          <span>{projectCurrency} {formatAmount(income.convertedAmount, "—")}</span>
-                          {showProjectEquivalent && (
-                            <span className="text-[10px] text-muted-foreground font-normal">
-                              = {accountCurrency} {formatAmount(accountAmount, "—")}
-                            </span>
-                          )}
-                          {income.currencyExchanges && income.currencyExchanges.length > 0 && (
-                            <span className="text-[10px] text-muted-foreground font-normal text-right">
-                              {income.currencyExchanges
-                                .slice(0, 2)
-                                .map(
-                                  (item) => `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
-                                )
-                                .join(" · ")}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
+                {method.incomes.map((income) => (
+                  <tr
+                    key={income.incomeId}
+                    className="border-b border-border/50 last:border-0"
+                  >
+                    <td className="py-1.5 pr-3 tabular-nums text-muted-foreground">
+                      {formatDate(income.incomeDate)}
+                    </td>
+                    <td className="py-1.5 pr-3 font-medium text-foreground">{income.title}</td>
+                    <td className="py-1.5 pr-3">{income.projectName}</td>
+                    <td className="py-1.5 pr-3">{income.categoryName}</td>
+                    <td className="py-1.5 text-right tabular-nums font-medium">
+                      {method.currency} {formatAmount(income.amount)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -11,14 +11,85 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, ArrowRight } from "lucide-react"
 import { formatDate } from "@/lib/date-utils"
-import { formatAmount } from "@/lib/format-utils"
-import type { PartnerBalancesReportResponse } from "@/types/report"
+import { formatAmount, formatCurrencyAmount } from "@/lib/format-utils"
+import type {
+  PartnerBalancesReportResponse,
+  PartnerCurrencyTotal,
+  PairwiseCurrencyTotal,
+} from "@/types/report"
+import type { CurrencyExchangeResponse } from "@/types/expense"
 
 interface Props {
   report: PartnerBalancesReportResponse
 }
+
+// ── Alt-currency helpers ─────────────────────────────────────────────────────
+
+type PartnerCurrencyField = "othersOweHim" | "heOwesOthers" | "settlementsPaid" | "settlementsReceived" | "netBalance"
+type PairwiseCurrencyField = "aOwesB" | "bOwesA" | "settlementsAToB" | "settlementsBToA" | "netBalance"
+
+function PartnerAltAmounts({
+  totals,
+  field,
+  signed = false,
+}: {
+  totals: PartnerCurrencyTotal[]
+  field: PartnerCurrencyField
+  signed?: boolean
+}) {
+  const filtered = totals.filter((ct) => ct[field] !== 0)
+  if (filtered.length === 0) return null
+  return (
+    <>
+      {filtered.map((ct) => {
+        const val = ct[field]
+        return (
+          <span key={ct.currencyCode} className="tabular-nums text-[10px] text-muted-foreground/80">
+            {signed && val > 0 ? "+" : ""}
+            {formatCurrencyAmount(val, ct.currencyCode)}
+          </span>
+        )
+      })}
+    </>
+  )
+}
+
+function PairwiseAltAmounts({
+  totals,
+  field,
+}: {
+  totals: PairwiseCurrencyTotal[]
+  field: PairwiseCurrencyField
+}) {
+  const filtered = totals.filter((ct) => ct[field] !== 0)
+  if (filtered.length === 0) return null
+  return (
+    <>
+      {filtered.map((ct) => (
+        <span key={ct.currencyCode} className="tabular-nums text-[10px] text-muted-foreground/80">
+          {formatCurrencyAmount(ct[field], ct.currencyCode)}
+        </span>
+      ))}
+    </>
+  )
+}
+
+function SettlementExchanges({ exchanges }: { exchanges: CurrencyExchangeResponse[] }) {
+  if (exchanges.length === 0) return null
+  return (
+    <>
+      {exchanges.map((ex) => (
+        <span key={ex.currencyCode} className="tabular-nums text-[10px] text-muted-foreground/80">
+          {formatCurrencyAmount(ex.convertedAmount, ex.currencyCode)}
+        </span>
+      ))}
+    </>
+  )
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
 
 export function PartnerBalancesReportResults({ report }: Props) {
   const hasSettlements = report.settlements.length > 0
@@ -31,28 +102,29 @@ export function PartnerBalancesReportResults({ report }: Props) {
       {hasWarnings && (
         <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
           <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-700 dark:text-amber-400">
-            {report.warnings!.length} transacción(es) no tienen tipos de cambio
-            configurados para todas las monedas. Los totales en monedas
-            alternativas pueden estar incompletos.
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
+              {report.warnings!.length} transacción(es) sin tipos de cambio configurados
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Los totales en monedas alternativas pueden estar incompletos.
+            </span>
+            <div className="flex flex-col gap-0.5 mt-1">
+              {report.warnings!.map((w) => (
+                <span key={w.transactionId} className="text-xs text-muted-foreground">
+                  · {w.title} — {formatDate(w.date)} ({formatCurrencyAmount(w.convertedAmount, report.currencyCode)})
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {/* ── Summary cards ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard
-          label="Partners"
-          value={String(report.partners.length)}
-        />
-        <SummaryCard
-          label="Settlements"
-          value={String(report.settlements.length)}
-        />
-        <SummaryCard
-          label="Moneda"
-          value={report.currencyCode}
-        />
+        <SummaryCard label="Partners" value={String(report.partners.length)} />
+        <SummaryCard label="Settlements" value={String(report.settlements.length)} />
+        <SummaryCard label="Moneda" value={report.currencyCode} />
         <SummaryCard
           label="Periodo"
           value={
@@ -76,6 +148,8 @@ export function PartnerBalancesReportResults({ report }: Props) {
             <div className="flex flex-col gap-3">
               {report.partners.map((partner) => {
                 const isPositive = partner.netBalance >= 0
+                const altTotals = partner.currencyTotals ?? []
+
                 return (
                   <div
                     key={partner.partnerId}
@@ -100,17 +174,20 @@ export function PartnerBalancesReportResults({ report }: Props) {
                               ? "Le deben"
                               : "Debe"}
                         </Badge>
-                        <span
-                          className={`text-sm tabular-nums font-semibold ${
-                            partner.netBalance === 0
-                              ? "text-muted-foreground"
-                              : isPositive
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-rose-600 dark:text-rose-400"
-                          }`}
-                        >
-                          {report.currencyCode} {formatAmount(partner.netBalance)}
-                        </span>
+                        <div className="flex flex-col items-end">
+                          <span
+                            className={`text-sm tabular-nums font-semibold ${
+                              partner.netBalance === 0
+                                ? "text-muted-foreground"
+                                : isPositive
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
+                            }`}
+                          >
+                            {report.currencyCode} {formatAmount(partner.netBalance)}
+                          </span>
+                          <PartnerAltAmounts totals={altTotals} field="netBalance" signed />
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs text-muted-foreground">
@@ -120,29 +197,33 @@ export function PartnerBalancesReportResults({ report }: Props) {
                           {report.currencyCode} {formatAmount(partner.paidPhysically)}
                         </span>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Le deben otros</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.othersOweHim)}
                         </span>
+                        <PartnerAltAmounts totals={altTotals} field="othersOweHim" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Debe a otros</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.heOwesOthers)}
                         </span>
+                        <PartnerAltAmounts totals={altTotals} field="heOwesOthers" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Settlements pagados</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.settlementsPaid)}
                         </span>
+                        <PartnerAltAmounts totals={altTotals} field="settlementsPaid" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Settlements recibidos</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.settlementsReceived)}
                         </span>
+                        <PartnerAltAmounts totals={altTotals} field="settlementsReceived" />
                       </div>
                     </div>
                   </div>
@@ -163,57 +244,50 @@ export function PartnerBalancesReportResults({ report }: Props) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b text-muted-foreground">
-                    <th className="text-left py-2 pr-4 font-medium">Fecha</th>
-                    <th className="text-left py-2 pr-4 font-medium">De</th>
-                    <th className="text-left py-2 pr-4 font-medium">Para</th>
-                    <th className="text-left py-2 pr-4 font-medium">Descripción</th>
-                    <th className="text-right py-2 font-medium">Monto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.settlements.map((settlement) => {
-                    const showConverted =
-                      settlement.currency !== report.currencyCode &&
-                      settlement.convertedAmount !== settlement.amount
+            <div className="flex flex-col gap-3">
+              {report.settlements.map((settlement) => {
+                const showConverted =
+                  settlement.currency !== report.currencyCode &&
+                  settlement.convertedAmount !== settlement.amount
+                const exchanges = settlement.currencyExchanges ?? []
 
-                    return (
-                      <tr
-                        key={settlement.settlementId}
-                        className="border-b border-border/50 last:border-0"
-                      >
-                        <td className="py-2 pr-4 tabular-nums text-muted-foreground">
-                          {formatDate(settlement.settlementDate)}
-                        </td>
-                        <td className="py-2 pr-4 font-medium text-foreground">
-                          {settlement.fromPartnerName}
-                        </td>
-                        <td className="py-2 pr-4 font-medium text-foreground">
-                          {settlement.toPartnerName}
-                        </td>
-                        <td className="py-2 pr-4 text-muted-foreground max-w-40 truncate">
-                          {settlement.description || "—"}
-                        </td>
-                        <td className="py-2 text-right tabular-nums font-medium">
-                          <div className="flex flex-col items-end gap-0.5">
-                            <span>
-                              {report.currencyCode} {formatAmount(settlement.convertedAmount)}
-                            </span>
-                            {showConverted && (
-                              <span className="text-[10px] text-muted-foreground font-normal">
-                                {settlement.currency} {formatAmount(settlement.amount)}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                return (
+                  <div
+                    key={settlement.settlementId}
+                    className="rounded-lg border bg-muted/30 px-4 py-3"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-semibold text-foreground">{settlement.fromPartnerName}</span>
+                          <ArrowRight className="size-3.5 text-muted-foreground shrink-0" />
+                          <span className="font-semibold text-foreground">{settlement.toPartnerName}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="tabular-nums">{formatDate(settlement.settlementDate)}</span>
+                          {settlement.description && (
+                            <>
+                              <span>·</span>
+                              <span className="truncate">{settlement.description}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-0.5 shrink-0">
+                        <span className="text-sm tabular-nums font-semibold text-foreground">
+                          {report.currencyCode} {formatAmount(settlement.convertedAmount)}
+                        </span>
+                        {showConverted && (
+                          <span className="text-[10px] tabular-nums text-muted-foreground/80">
+                            {settlement.currency} {formatAmount(settlement.amount)}
+                          </span>
+                        )}
+                        <SettlementExchanges exchanges={exchanges} />
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </CardContent>
         </Card>
@@ -234,6 +308,7 @@ export function PartnerBalancesReportResults({ report }: Props) {
                 const isPositive = pair.netBalance >= 0
                 const owes = isPositive ? pair.partnerAName : pair.partnerBName
                 const owed = isPositive ? pair.partnerBName : pair.partnerAName
+                const altTotals = pair.currencyTotals ?? []
 
                 return (
                   <div
@@ -251,47 +326,48 @@ export function PartnerBalancesReportResults({ report }: Props) {
                           </span>
                         )}
                       </div>
-                      <span
-                        className={`text-sm tabular-nums font-semibold ${
-                          pair.netBalance === 0
-                            ? "text-muted-foreground"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {pair.netBalance === 0 ? (
-                          <Badge variant="outline" className="font-mono border-border text-muted-foreground">
-                            Saldado
-                          </Badge>
-                        ) : (
-                          `${report.currencyCode} ${formatAmount(Math.abs(pair.netBalance))}`
-                        )}
-                      </span>
+                      {pair.netBalance === 0 ? (
+                        <Badge variant="outline" className="font-mono border-border text-muted-foreground">
+                          Saldado
+                        </Badge>
+                      ) : (
+                        <div className="flex flex-col items-end">
+                          <span className="text-sm tabular-nums font-semibold text-foreground">
+                            {report.currencyCode} {formatAmount(Math.abs(pair.netBalance))}
+                          </span>
+                          <PairwiseAltAmounts totals={altTotals.map((ct) => ({ ...ct, netBalance: Math.abs(ct.netBalance) }))} field="netBalance" />
+                        </div>
+                      )}
                     </div>
                     {/* Gross breakdown */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-muted-foreground">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>{pair.partnerAName} debe a {pair.partnerBName}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.aOwesB)}
                         </span>
+                        <PairwiseAltAmounts totals={altTotals} field="aOwesB" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>{pair.partnerBName} debe a {pair.partnerAName}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.bOwesA)}
                         </span>
+                        <PairwiseAltAmounts totals={altTotals} field="bOwesA" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Settlements {pair.partnerAName} → {pair.partnerBName}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.settlementsAToB)}
                         </span>
+                        <PairwiseAltAmounts totals={altTotals} field="settlementsAToB" />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-0.5">
                         <span>Settlements {pair.partnerBName} → {pair.partnerAName}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.settlementsBToA)}
                         </span>
+                        <PairwiseAltAmounts totals={altTotals} field="settlementsBToA" />
                       </div>
                     </div>
                   </div>

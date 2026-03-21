@@ -23,8 +23,8 @@ export function IncomeReportResults({ report }: Props) {
   const hasCategoryAnalysis = report.categoryAnalysis && report.categoryAnalysis.length > 0
   const hasPaymentMethodAnalysis =
     report.paymentMethodAnalysis && report.paymentMethodAnalysis.length > 0
-  const hasPartnerSummary =
-    report.partnerSummary?.partners && report.partnerSummary.partners.length > 0
+  const hasAltCurrencies =
+    report.alternativeCurrencies && report.alternativeCurrencies.length > 0
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,6 +55,36 @@ export function IncomeReportResults({ report }: Props) {
           value={formatDate(report.generatedAt)}
         />
       </div>
+
+      {/* ── Alternative currency totals ──────────────────────── */}
+      {hasAltCurrencies && (
+        <div className="flex flex-col gap-3">
+          {report.alternativeCurrencies!.map((alt) => (
+            <div
+              key={alt.currencyCode}
+              className="rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/[0.03] p-4"
+            >
+              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400/70 mb-2 block">
+                Totales en {alt.currencyCode}
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <AltCurrencyValue
+                  label="Total ingresos"
+                  value={`${alt.currencyCode} ${formatAmount(alt.totalIncome)}`}
+                />
+                <AltCurrencyValue
+                  label="Balance neto"
+                  value={`${alt.currencyCode} ${formatAmount(alt.netBalance)}`}
+                />
+                <AltCurrencyValue
+                  label="Prom. mensual"
+                  value={`${alt.currencyCode} ${formatAmount(alt.averageMonthlySpend)}`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Insight cards ─────────────────────────────────────── */}
       {(report.averageIncomeAmount != null ||
@@ -133,59 +163,83 @@ export function IncomeReportResults({ report }: Props) {
                   </div>
                 </div>
 
-                {section.incomes.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="border-b text-muted-foreground">
-                          <th className="text-left py-2 pr-4 font-medium">Fecha</th>
-                          <th className="text-left py-2 pr-4 font-medium">Título</th>
-                          <th className="text-left py-2 pr-4 font-medium">Categoría</th>
-                          <th className="text-left py-2 pr-4 font-medium">Método</th>
-                          <th className="text-right py-2 font-medium">Monto</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {section.incomes.map((income, index) => {
-                          const showOriginal =
-                            income.originalCurrency &&
-                            income.originalCurrency !== report.currencyCode &&
-                            income.originalAmount != null
-
-                          return (
-                            <tr
-                              key={`${section.year}-${section.month}-${income.id ?? index}`}
-                              className="border-b border-border/50 last:border-0"
-                            >
-                              <td className="py-2 pr-4 tabular-nums text-muted-foreground">
-                                {formatDate(income.incomeDate)}
-                              </td>
-                              <td className="py-2 pr-4 font-medium text-foreground max-w-45 truncate">
-                                {income.title}
-                              </td>
-                              <td className="py-2 pr-4">{income.categoryName}</td>
-                              <td className="py-2 pr-4">{income.paymentMethodName}</td>
-                              <td className="py-2 text-right tabular-nums font-medium">
-                                <div className="flex flex-col items-end gap-0.5">
-                                  <span>{formatAmount(income.convertedAmount)}</span>
-                                  {showOriginal && (
-                                    <span className="text-[10px] text-muted-foreground font-normal">
-                                      {income.originalCurrency} {formatAmount(income.originalAmount)}
-                                    </span>
-                                  )}
-                                  {income.accountAmount != null && income.accountCurrency && (
-                                    <span className="text-[10px] text-muted-foreground font-normal">
-                                      {income.accountCurrency} {formatAmount(income.accountAmount)}
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
+                {/* Alternative currency subtotals for this section */}
+                {section.alternativeCurrencies && section.alternativeCurrencies.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {section.alternativeCurrencies.map((alt) => (
+                      <Badge
+                        key={alt.currencyCode}
+                        variant="outline"
+                        className="font-mono text-[10px] border-emerald-500/20 text-emerald-600 dark:text-emerald-400/70"
+                      >
+                        {alt.currencyCode}: ingreso {formatAmount(alt.totalIncome)}
+                        {` · neto ${formatAmount(alt.netBalance)}`}
+                      </Badge>
+                    ))}
                   </div>
+                )}
+
+                {section.incomes.length > 0 ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b text-muted-foreground">
+                            <th className="text-left py-2 pr-4 font-medium">Fecha</th>
+                            <th className="text-left py-2 pr-4 font-medium">Título</th>
+                            <th className="text-left py-2 pr-4 font-medium">Categoría</th>
+                            <th className="text-left py-2 pr-4 font-medium">Método</th>
+                            <th className="text-right py-2 font-medium">Monto</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.incomes.map((income, index) => {
+                            const showOriginal =
+                              income.originalCurrency &&
+                              income.originalCurrency !== report.currencyCode &&
+                              income.originalAmount != null
+
+                            return (
+                              <tr
+                                key={`${section.year}-${section.month}-${income.id ?? index}`}
+                                className="border-b border-border/50 last:border-0"
+                              >
+                                <td className="py-2 pr-4 tabular-nums text-muted-foreground">
+                                  {formatDate(income.incomeDate)}
+                                </td>
+                                <td className="py-2 pr-4 font-medium text-foreground max-w-45 truncate">
+                                  {income.title}
+                                </td>
+                                <td className="py-2 pr-4">{income.categoryName}</td>
+                                <td className="py-2 pr-4">{income.paymentMethodName}</td>
+                                <td className="py-2 text-right tabular-nums font-medium">
+                                  <div className="flex flex-col items-end gap-0.5">
+                                    <span>{formatAmount(income.convertedAmount)}</span>
+                                    {showOriginal && (
+                                      <span className="text-[10px] text-muted-foreground font-normal">
+                                        {income.originalCurrency} {formatAmount(income.originalAmount)}
+                                      </span>
+                                    )}
+                                    {income.accountAmount != null && income.accountCurrency && (
+                                      <span className="text-[10px] text-muted-foreground font-normal">
+                                        {income.accountCurrency} {formatAmount(income.accountAmount)}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    {section.sectionCount > section.incomes.length && (
+                      <div className="mt-3 rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
+                        Mostrando {section.incomes.length} de {section.sectionCount} ingresos.
+                        {" "}Exporta el reporte completo en Excel o PDF para ver todos los ingresos.
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="text-xs text-muted-foreground">
                     Sin detalle de ingresos para este mes.
@@ -291,37 +345,17 @@ export function IncomeReportResults({ report }: Props) {
         </Card>
       )}
 
-      {/* ── Partner summary ───────────────────────────────────── */}
-      {hasPartnerSummary && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumen por partner</CardTitle>
-            <CardDescription>
-              Distribución de ingresos por partner (splits)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3">
-              {report.partnerSummary!.partners.map((partner) => (
-                <div
-                  key={partner.partnerId}
-                  className="flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-4 py-3"
-                >
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium">{partner.partnerName}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {partner.incomeCount} ingresos · {partner.percentage.toFixed(1)}%
-                    </span>
-                  </div>
-                  <span className="text-sm tabular-nums font-medium">
-                    {report.currencyCode} {formatAmount(partner.totalSplitAmount)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+    </div>
+  )
+}
+
+// ── Alt currency inline value ───────────────────────────────────────────────
+
+function AltCurrencyValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <span className="text-sm font-semibold tabular-nums tracking-tight">{value}</span>
     </div>
   )
 }

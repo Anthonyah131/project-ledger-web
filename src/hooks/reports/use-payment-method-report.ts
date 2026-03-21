@@ -13,7 +13,7 @@ import type { PaymentMethodReportResponse, ReportFormat } from "@/types/report"
 export interface PaymentMethodReportFilters {
   from: string
   to: string
-  paymentMethodId: string
+  paymentMethodIds: string[]
   format: ReportFormat
 }
 
@@ -25,7 +25,7 @@ export function usePaymentMethodReport() {
   const [filters, setFilters] = useState<PaymentMethodReportFilters>({
     from: "",
     to: "",
-    paymentMethodId: "",
+    paymentMethodIds: [],
     format: "json",
   })
 
@@ -53,7 +53,7 @@ export function usePaymentMethodReport() {
       const data = await reportService.getPaymentMethodReport({
         from: filters.from || undefined,
         to: filters.to || undefined,
-        paymentMethodId: filters.paymentMethodId || undefined,
+        paymentMethodIds: filters.paymentMethodIds.length > 0 ? filters.paymentMethodIds : undefined,
         format: "json",
       })
       if (data) setReport(data)
@@ -62,7 +62,7 @@ export function usePaymentMethodReport() {
     } finally {
       setLoading(false)
     }
-  }, [filters.from, filters.to, filters.paymentMethodId])
+  }, [filters.from, filters.to, filters.paymentMethodIds])
 
   // Export as Excel or PDF
   const exportReport = useCallback(
@@ -79,7 +79,7 @@ export function usePaymentMethodReport() {
         await reportService.getPaymentMethodReport({
           from: filters.from || undefined,
           to: filters.to || undefined,
-          paymentMethodId: filters.paymentMethodId || undefined,
+          paymentMethodIds: filters.paymentMethodIds.length > 0 ? filters.paymentMethodIds : undefined,
           format,
         })
         toast.success(
@@ -91,7 +91,7 @@ export function usePaymentMethodReport() {
         setExporting(false)
       }
     },
-    [filters.from, filters.to, filters.paymentMethodId],
+    [filters.from, filters.to, filters.paymentMethodIds],
   )
 
   return {

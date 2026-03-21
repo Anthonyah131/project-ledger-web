@@ -103,7 +103,7 @@ export async function getExpenseReport(
 // ─── Payment method report (user-level, JSON / Excel / PDF) ─────────────────
 
 export interface PaymentMethodReportParams extends ReportDateRange {
-  paymentMethodId?: string;
+  paymentMethodIds?: string[];
   format?: ReportFormat;
 }
 
@@ -121,7 +121,11 @@ export async function getPaymentMethodReport(
   const query = new URLSearchParams();
   if (params.from) query.set("from", params.from);
   if (params.to) query.set("to", params.to);
-  if (params.paymentMethodId) query.set("paymentMethodId", params.paymentMethodId);
+  if (params.paymentMethodIds && params.paymentMethodIds.length > 0) {
+    for (const id of params.paymentMethodIds) {
+      query.append("paymentMethodIds", id);
+    }
+  }
   query.set("format", format);
 
   const path = `/reports/payment-methods?${query.toString()}`;

@@ -25,6 +25,8 @@ export function ExpenseReportResults({ report }: Props) {
     report.paymentMethodAnalysis && report.paymentMethodAnalysis.length > 0
   const hasObligations = report.obligationSummary && report.obligationSummary.length > 0
   const hasInsights = report.insights && report.insights.length > 0
+  const hasAltCurrencies =
+    report.alternativeCurrencies && report.alternativeCurrencies.length > 0
   const totalIncome = report.totalIncome ?? 0
   const totalIncomeCount = report.totalIncomeCount ?? 0
   const netBalance = report.netBalance ?? totalIncome - report.totalSpent
@@ -67,6 +69,48 @@ export function ExpenseReportResults({ report }: Props) {
           value={`${report.sections.length} mes${report.sections.length !== 1 ? "es" : ""}`}
         />
       </div>
+
+      {/* ── Alternative currency totals ──────────────────────── */}
+      {hasAltCurrencies && (
+        <div className="flex flex-col gap-3">
+          {report.alternativeCurrencies!.map((alt) => {
+            const altNetLabel =
+              alt.netBalance >= 0 ? "Balance neto" : "Balance neto (negativo)"
+            return (
+              <div
+                key={alt.currencyCode}
+                className="rounded-xl border border-dashed border-primary/20 bg-primary/[0.03] p-4"
+              >
+                <span className="text-xs font-medium text-primary/70 mb-2 block">
+                  Totales en {alt.currencyCode}
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <AltCurrencyValue
+                    label="Total gastado"
+                    value={`${alt.currencyCode} ${formatAmount(alt.totalSpent)}`}
+                  />
+                  <AltCurrencyValue
+                    label="Total ingresos"
+                    value={`${alt.currencyCode} ${formatAmount(alt.totalIncome)}`}
+                  />
+                  <AltCurrencyValue
+                    label={altNetLabel}
+                    value={`${alt.currencyCode} ${formatAmount(alt.netBalance)}`}
+                  />
+                  <AltCurrencyValue
+                    label="Prom. por gasto"
+                    value={`${alt.currencyCode} ${formatAmount(alt.averageExpenseAmount)}`}
+                  />
+                  <AltCurrencyValue
+                    label="Prom. mensual"
+                    value={`${alt.currencyCode} ${formatAmount(alt.averageMonthlySpend)}`}
+                  />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* ── Insight cards (when backend provides enrichment) ───── */}
       {(report.averageExpenseAmount != null ||
@@ -257,6 +301,17 @@ export function ExpenseReportResults({ report }: Props) {
           </CardContent>
         </Card>
       )}
+    </div>
+  )
+}
+
+// ── Alt currency inline value ───────────────────────────────────────────────
+
+function AltCurrencyValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <span className="text-sm font-semibold tabular-nums tracking-tight">{value}</span>
     </div>
   )
 }

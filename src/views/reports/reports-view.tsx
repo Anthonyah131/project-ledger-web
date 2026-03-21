@@ -186,8 +186,8 @@ export function ReportsView() {
     [updateExpenseFilter],
   )
 
-  const handlePaymentMethodFilterChange = useCallback(
-    (value: string) => updatePaymentMethodFilter("paymentMethodId", value === "all" ? "" : value),
+  const handlePaymentMethodsFilterChange = useCallback(
+    (ids: string[]) => updatePaymentMethodFilter("paymentMethodIds", ids),
     [updatePaymentMethodFilter],
   )
 
@@ -279,14 +279,14 @@ export function ReportsView() {
           paymentMethods={paymentMethods}
           from={paymentMethodFilters.from}
           to={paymentMethodFilters.to}
-          paymentMethodId={paymentMethodFilters.paymentMethodId}
+          paymentMethodIds={paymentMethodFilters.paymentMethodIds}
           dateRangeError={paymentMethodDateRangeError}
           loading={paymentMethodLoading}
           exporting={paymentMethodExporting}
           report={paymentMethodReport}
           onFromChange={(value) => updatePaymentMethodFilter("from", value)}
           onToChange={(value) => updatePaymentMethodFilter("to", value)}
-          onPaymentMethodChange={handlePaymentMethodFilterChange}
+          onPaymentMethodsChange={handlePaymentMethodsFilterChange}
           onGenerate={fetchPaymentMethodReport}
           onExport={exportPaymentMethodReport}
         />

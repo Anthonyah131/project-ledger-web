@@ -80,74 +80,99 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
               </div>
             </div>
 
-            {section.expenses.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b text-muted-foreground">
-                      <th className="text-left py-2 pr-4 font-medium">Fecha</th>
-                      <th className="text-left py-2 pr-4 font-medium">Título</th>
-                      <th className="text-left py-2 pr-4 font-medium">Categoría</th>
-                      <th className="text-left py-2 pr-4 font-medium">Método</th>
-                      <th className="text-right py-2 font-medium">Monto</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {section.expenses.map((expense, index) => {
-                      const displayAmount = resolveAmount(expense)
-                      const showOriginal =
-                        expense.originalCurrency &&
-                        expense.originalCurrency !== report.currencyCode &&
-                        expense.originalAmount != null
-
-                      return (
-                        <tr
-                          key={`${section.year}-${section.month}-${expense.expenseId ?? index}`}
-                          className="border-b border-border/50 last:border-0"
-                        >
-                          <td className="py-2 pr-4 tabular-nums text-muted-foreground">
-                            {formatDate(expense.expenseDate, { fixTimezone: true })}
-                          </td>
-                          <td className="py-2 pr-4 font-medium text-foreground max-w-45 truncate">
-                            {expense.title}
-                            {expense.isObligationPayment && (
-                              <Badge
-                                variant="outline"
-                                className="ml-1.5 text-[10px] px-1 py-0 border-primary/40 text-primary"
-                              >
-                                Obligación
-                              </Badge>
-                            )}
-                          </td>
-                          <td className="py-2 pr-4">{expense.categoryName}</td>
-                          <td className="py-2 pr-4">{expense.paymentMethodName}</td>
-                          <td className="py-2 text-right tabular-nums font-medium">
-                            <div className="flex flex-col items-end gap-0.5">
-                              <span>{formatAmount(displayAmount, "—")}</span>
-                              {showOriginal && (
-                                <span className="text-[10px] text-muted-foreground font-normal">
-                                  {expense.originalCurrency} {formatAmount(expense.originalAmount, "—")}
-                                </span>
-                              )}
-                              {expense.currencyExchanges && expense.currencyExchanges.length > 0 && (
-                                <span className="text-[10px] text-muted-foreground font-normal text-right">
-                                  {expense.currencyExchanges
-                                    .slice(0, 2)
-                                    .map(
-                                      (item) =>
-                                        `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
-                                    )
-                                    .join(" · ")}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+            {/* Alternative currency subtotals for this section */}
+            {section.alternativeCurrencies && section.alternativeCurrencies.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {section.alternativeCurrencies.map((alt) => (
+                  <Badge
+                    key={alt.currencyCode}
+                    variant="outline"
+                    className="font-mono text-[10px] border-primary/20 text-primary/70"
+                  >
+                    {alt.currencyCode}: gasto {formatAmount(alt.totalSpent)}
+                    {alt.totalIncome > 0 && ` · ingreso ${formatAmount(alt.totalIncome)}`}
+                    {` · neto ${formatAmount(alt.netBalance)}`}
+                  </Badge>
+                ))}
               </div>
+            )}
+
+            {section.expenses.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b text-muted-foreground">
+                        <th className="text-left py-2 pr-4 font-medium">Fecha</th>
+                        <th className="text-left py-2 pr-4 font-medium">Título</th>
+                        <th className="text-left py-2 pr-4 font-medium">Categoría</th>
+                        <th className="text-left py-2 pr-4 font-medium">Método</th>
+                        <th className="text-right py-2 font-medium">Monto</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.expenses.map((expense, index) => {
+                        const displayAmount = resolveAmount(expense)
+                        const showOriginal =
+                          expense.originalCurrency &&
+                          expense.originalCurrency !== report.currencyCode &&
+                          expense.originalAmount != null
+
+                        return (
+                          <tr
+                            key={`${section.year}-${section.month}-${expense.expenseId ?? index}`}
+                            className="border-b border-border/50 last:border-0"
+                          >
+                            <td className="py-2 pr-4 tabular-nums text-muted-foreground">
+                              {formatDate(expense.expenseDate, { fixTimezone: true })}
+                            </td>
+                            <td className="py-2 pr-4 font-medium text-foreground max-w-45 truncate">
+                              {expense.title}
+                              {expense.isObligationPayment && (
+                                <Badge
+                                  variant="outline"
+                                  className="ml-1.5 text-[10px] px-1 py-0 border-primary/40 text-primary"
+                                >
+                                  Obligación
+                                </Badge>
+                              )}
+                            </td>
+                            <td className="py-2 pr-4">{expense.categoryName}</td>
+                            <td className="py-2 pr-4">{expense.paymentMethodName}</td>
+                            <td className="py-2 text-right tabular-nums font-medium">
+                              <div className="flex flex-col items-end gap-0.5">
+                                <span>{formatAmount(displayAmount, "—")}</span>
+                                {showOriginal && (
+                                  <span className="text-[10px] text-muted-foreground font-normal">
+                                    {expense.originalCurrency} {formatAmount(expense.originalAmount, "—")}
+                                  </span>
+                                )}
+                                {expense.currencyExchanges && expense.currencyExchanges.length > 0 && (
+                                  <span className="text-[10px] text-muted-foreground font-normal text-right">
+                                    {expense.currencyExchanges
+                                      .slice(0, 2)
+                                      .map(
+                                        (item) =>
+                                          `${item.currencyCode} ${formatAmount(item.convertedAmount, "—")}`
+                                      )
+                                      .join(" · ")}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {section.sectionCount > section.expenses.length && (
+                  <div className="mt-3 rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
+                    Mostrando {section.expenses.length} de {section.sectionCount} gastos.
+                    {" "}Exporta el reporte completo en Excel o PDF para ver todos los gastos.
+                  </div>
+                )}
+              </>
             ) : (
               <p className="text-xs text-muted-foreground">
                 Sin detalle de gastos para este mes.
