@@ -110,7 +110,6 @@ export function PartnersSection({
         availablePartners={ppp.availablePartners}
         assignedPartners={ppp.assignedPartners}
         loading={ppp.availableLoading}
-        partnersEnabled={partnersEnabled}
         onAssign={onAssign}
       />
 

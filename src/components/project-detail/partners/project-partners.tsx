@@ -1,31 +1,30 @@
-"use client"
+"use client";
 
 // components/project-detail/partners/project-partners.tsx
 // Components for the project partners tab.
 
-import { useState } from "react"
-import { UserPlus, UserMinus, Loader2, Users } from "lucide-react"
+import { useState } from "react";
+import { UserPlus, UserMinus, Loader2, Users } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import type { ProjectPartnerResponse } from "@/types/project-partner"
-import type { PartnerResponse } from "@/types/partner"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import type { ProjectPartnerResponse } from "@/types/project-partner";
+import type { PartnerResponse } from "@/types/partner";
 
 // ─── Assign Partner Modal ──────────────────────────────────────────────────────
 
 interface AssignPartnerModalProps {
-  open: boolean
-  onClose: () => void
-  availablePartners: PartnerResponse[]
-  assignedPartners: ProjectPartnerResponse[]
-  loading: boolean
-  partnersEnabled: boolean
-  onAssign: (partnerId: string) => Promise<void>
+  open: boolean;
+  onClose: () => void;
+  availablePartners: PartnerResponse[];
+  assignedPartners: ProjectPartnerResponse[];
+  loading: boolean;
+  onAssign: (partnerId: string) => Promise<void>;
 }
 
 export function AssignPartnerModal({
@@ -34,22 +33,19 @@ export function AssignPartnerModal({
   availablePartners,
   assignedPartners,
   loading,
-  partnersEnabled,
   onAssign,
 }: AssignPartnerModalProps) {
-  const [assigningId, setAssigningId] = useState<string | null>(null)
+  const [assigningId, setAssigningId] = useState<string | null>(null);
 
-  const assignedIds = new Set(assignedPartners.map((p) => p.partnerId))
-  const unassigned = availablePartners.filter((p) => !assignedIds.has(p.id))
-  // When splits are disabled, limit to 1 partner
-  const limitReached = !partnersEnabled && assignedPartners.length >= 1
+  const assignedIds = new Set(assignedPartners.map((p) => p.partnerId));
+  const unassigned = availablePartners.filter((p) => !assignedIds.has(p.id));
 
   async function handleAssign(partnerId: string) {
-    setAssigningId(partnerId)
+    setAssigningId(partnerId);
     try {
-      await onAssign(partnerId)
+      await onAssign(partnerId);
     } finally {
-      setAssigningId(null)
+      setAssigningId(null);
     }
   }
 
@@ -59,21 +55,12 @@ export function AssignPartnerModal({
         <DialogHeader>
           <DialogTitle>Asignar partner</DialogTitle>
           <DialogDescription>
-            Selecciona un partner para asignarlo al proyecto. Sus cuentas quedarán disponibles automáticamente.
+            Selecciona un partner para asignarlo al proyecto. Sus cuentas
+            quedarán disponibles automáticamente.
           </DialogDescription>
         </DialogHeader>
 
-        {limitReached ? (
-          <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <Users className="size-8 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">
-              Solo se puede asignar un partner cuando los splits están desactivados.
-            </p>
-            <p className="text-xs text-muted-foreground/70">
-              Activa los splits por partners en la configuración del proyecto para añadir más.
-            </p>
-          </div>
-        ) : loading ? (
+        {loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
@@ -94,9 +81,13 @@ export function AssignPartnerModal({
                 className="flex items-center justify-between rounded-lg border border-border px-4 py-3 hover:bg-accent/30 transition-colors"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {p.name}
+                  </p>
                   {p.email ? (
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{p.email}</p>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {p.email}
+                    </p>
                   ) : null}
                 </div>
                 <Button
@@ -118,29 +109,34 @@ export function AssignPartnerModal({
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 // ─── Project Partners List ─────────────────────────────────────────────────────
 
 interface ProjectPartnersListProps {
-  partners: ProjectPartnerResponse[]
-  isOwner: boolean
-  linkedPartnerIds?: Set<string>
-  onRemove: (pp: ProjectPartnerResponse) => void
+  partners: ProjectPartnerResponse[];
+  isOwner: boolean;
+  linkedPartnerIds?: Set<string>;
+  onRemove: (pp: ProjectPartnerResponse) => void;
 }
 
-export function ProjectPartnersList({ partners, isOwner, linkedPartnerIds, onRemove }: ProjectPartnersListProps) {
+export function ProjectPartnersList({
+  partners,
+  isOwner,
+  linkedPartnerIds,
+  onRemove,
+}: ProjectPartnersListProps) {
   return (
     <div role="list" aria-label="Partners del proyecto">
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
+      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-linear-to-r from-violet-500/10 via-purple-500/5 to-transparent">
         <span className="flex-1">Partner</span>
         <span className="w-48 text-right hidden sm:block">Email</span>
         {isOwner && <span className="w-8" />}
       </div>
 
       {partners.map((pp) => {
-        const hasLinkedPMs = linkedPartnerIds?.has(pp.partnerId) ?? false
+        const hasLinkedPMs = linkedPartnerIds?.has(pp.partnerId) ?? false;
         return (
           <div
             key={pp.id}
@@ -148,7 +144,9 @@ export function ProjectPartnersList({ partners, isOwner, linkedPartnerIds, onRem
             className="group flex items-center px-5 py-3.5 border-b border-border/50 last:border-b-0 hover:bg-violet-500/5 transition-colors duration-150"
           >
             <div className="flex-1 min-w-0 mr-4">
-              <p className="text-sm font-semibold text-foreground truncate">{pp.partnerName}</p>
+              <p className="text-sm font-semibold text-foreground truncate">
+                {pp.partnerName}
+              </p>
             </div>
             <span className="w-48 text-right text-xs text-muted-foreground hidden sm:block truncate">
               {pp.partnerEmail ?? "—"}
@@ -160,15 +158,19 @@ export function ProjectPartnersList({ partners, isOwner, linkedPartnerIds, onRem
                   disabled={hasLinkedPMs}
                   className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
                   aria-label={`Quitar ${pp.partnerName}`}
-                  title={hasLinkedPMs ? "Tiene métodos de pago vinculados al proyecto. Desvincula primero." : "Quitar partner"}
+                  title={
+                    hasLinkedPMs
+                      ? "Tiene métodos de pago vinculados al proyecto. Desvincula primero."
+                      : "Quitar partner"
+                  }
                 >
                   <UserMinus className="size-3.5" />
                 </button>
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
