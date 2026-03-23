@@ -15,20 +15,29 @@ function getErrorMessage(err: unknown, fallback = "Error inesperado"): string {
 }
 
 /**
- * Show a toast for an API error, with special handling for plan-limit 403s.
+ * Show a toast for an API error with context-aware handling per error code.
  *
- * - Plan errors (403 with "plan" in message) → warning toast with upgrade hint.
- * - Other errors → standard error toast with the backend message.
+ * - `PLAN_LIMIT_EXCEEDED` → warning "Límite de plan alcanzado"
+ * - `PLAN_DENIED`         → warning "Función no disponible en tu plan"
+ * - `TOO_MANY_REQUESTS`   → warning "Demasiadas solicitudes"
+ * - 400 (business errors) → warning with label + backend message
+ * - everything else       → error toast with label + backend message
  *
  * @returns the extracted error message string.
  */
 export function toastApiError(err: unknown, label: string): string {
   const msg = getErrorMessage(err, label);
 
-  if (err instanceof ApiClientError && err.isPlanError) {
+  if (err instanceof ApiClientError && err.code === "PLAN_LIMIT_EXCEEDED") {
     toast.warning("Límite de plan alcanzado", {
-      description: msg,
+      description: err.feature ? `${msg} (${err.feature})` : msg,
     });
+  } else if (err instanceof ApiClientError && err.code === "PLAN_DENIED") {
+    toast.warning("Función no disponible en tu plan", {
+      description: err.feature ? `${msg} (${err.feature})` : msg,
+    });
+  } else if (err instanceof ApiClientError && err.status === 429) {
+    toast.warning("Demasiadas solicitudes", { description: msg });
   } else if (err instanceof ApiClientError && err.isBusinessError) {
     toast.warning(label, { description: msg });
   } else {

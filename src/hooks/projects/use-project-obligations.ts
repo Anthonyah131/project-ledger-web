@@ -46,8 +46,7 @@ export function useProjectObligations(projectId: string) {
       setObligations(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar obligaciones"
-      toast.error("Error al cargar obligaciones", { description: msg })
+      toastApiError(err, "Error al cargar obligaciones");
     } finally {
       setLoading(false)
     }

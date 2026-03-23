@@ -27,8 +27,7 @@ export function useProjectBudget(projectId: string) {
       if (err instanceof ApiClientError && err.status === 404) {
         setBudget(null)
       } else {
-        const msg = err instanceof Error ? err.message : "Error al cargar presupuesto"
-        toast.error("Error al cargar presupuesto", { description: msg })
+        toastApiError(err, "Error al cargar presupuesto");
       }
     } finally {
       setLoading(false)

@@ -60,9 +60,8 @@ export function useAdminUsers() {
       setUsers(result.items)
       setTotal(result.totalCount)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar usuarios"
+      const msg = toastApiError(err, "Error al cargar usuarios")
       setError(msg)
-      toast.error("Error al cargar usuarios", { description: msg })
     } finally {
       setLoading(false)
     }

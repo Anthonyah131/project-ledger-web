@@ -58,8 +58,7 @@ export function useProjectExpenses(projectId: string) {
       setExpenses(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar gastos"
-      toast.error("Error al cargar gastos", { description: msg })
+      toastApiError(err, "Error al cargar gastos");
     } finally {
       setLoading(false)
     }

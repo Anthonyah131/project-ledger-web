@@ -59,9 +59,8 @@ export function usePartners() {
       setPartners(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar partners"
+      const msg = toastApiError(err, "Error al cargar partners")
       setError(msg)
-      toast.error("Error al cargar partners", { description: msg })
     } finally {
       setLoading(false)
     }

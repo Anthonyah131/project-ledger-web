@@ -65,9 +65,9 @@ export function ProjectCurrencyConversionSection({
                   <div className="flex gap-2">
                     <Input
                       type="number"
-                      step="0.0001"
+                      step="0.000001"
                       min="0"
-                      placeholder="0.0000"
+                      placeholder="0.000000"
                       value={field.value}
                       onChange={(event) => {
                         field.onChange(event.target.value)

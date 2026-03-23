@@ -163,9 +163,8 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       const data = await pmService.getPaymentMethod(id)
       setPaymentMethod(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar método de pago"
+      const msg = toastApiError(err, "Error al cargar método de pago")
       setError(msg)
-      toast.error("Error al cargar método de pago", { description: msg })
     } finally {
       setLoadingDetail(false)
     }
@@ -419,13 +418,6 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
         description: "El partner fue desvinculado del método de pago.",
       })
     } catch (err) {
-      if (err instanceof ApiClientError && err.status === 409) {
-        toast.error("No se puede desenlazar el partner", {
-          description:
-            "Este método de pago está vinculado a uno o más proyectos. Primero desvinculalo de todos los proyectos.",
-        })
-        return
-      }
       toastApiError(err, "Error al quitar partner")
     }
   }, [id])

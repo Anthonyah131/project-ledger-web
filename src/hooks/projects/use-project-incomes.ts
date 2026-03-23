@@ -50,8 +50,7 @@ export function useProjectIncomes(projectId: string) {
       setIncomes(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar ingresos"
-      toast.error("Error al cargar ingresos", { description: msg })
+      toastApiError(err, "Error al cargar ingresos");
     } finally {
       setLoading(false)
     }

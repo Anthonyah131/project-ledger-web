@@ -1,13 +1,13 @@
 import { z } from "zod"
 import { isIsoDateString } from "@/lib/date-utils"
 
-// Helper: required positive numeric string
+// Monetary amount: 0.01 – 999,999,999,999.99
 const requiredPositiveNumeric = z
   .string()
   .min(1, "Campo requerido")
   .refine(
-    (v) => !isNaN(Number(v)) && Number(v) > 0,
-    { message: "Debe ser mayor a 0" },
+    (v) => !isNaN(Number(v)) && Number(v) >= 0.01 && Number(v) <= 999_999_999_999.99,
+    { message: "Debe ser entre 0.01 y 999,999,999,999.99" },
   )
 
 const optionalIsoDateString = z.string().refine(

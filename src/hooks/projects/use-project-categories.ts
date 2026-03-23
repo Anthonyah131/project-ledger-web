@@ -35,8 +35,7 @@ export function useProjectCategories(projectId: string) {
       const data = await categoryService.getCategories(projectId)
       setCategories(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar categorías"
-      toast.error("Error al cargar categorías", { description: msg })
+      toastApiError(err, "Error al cargar categorías");
     } finally {
       setLoading(false)
     }

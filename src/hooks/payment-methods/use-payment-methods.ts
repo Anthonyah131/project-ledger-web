@@ -65,9 +65,8 @@ export function usePaymentMethods() {
       const data = await pmService.getPaymentMethods();
       setPaymentMethods(data);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar métodos de pago";
+      const msg = toastApiError(err, "Error al cargar métodos de pago");
       setError(msg);
-      toast.error("Error al cargar métodos de pago", { description: msg });
     } finally {
       setLoading(false);
     }

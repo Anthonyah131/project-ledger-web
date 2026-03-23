@@ -21,3 +21,23 @@ export interface AuditableEntity extends Timestamps, SoftDelete {}
 export interface MutationOptions {
   refetch?: boolean;
 }
+
+// ─── API error response types (i18n) ──────────────────────────────────────────
+
+/** Standardized API error response format `{ code, message }` */
+export interface LocalizedError {
+  code: string;
+  message: string;
+}
+
+/** Plan count limit reached (e.g. max projects). Includes `feature` = the limit name. */
+export interface PlanLimitError extends LocalizedError {
+  code: "PLAN_LIMIT_EXCEEDED";
+  feature: string;
+}
+
+/** Feature not available on the user's current plan. Includes `feature` = the permission name. */
+export interface PlanDeniedError extends LocalizedError {
+  code: "PLAN_DENIED";
+  feature: string;
+}

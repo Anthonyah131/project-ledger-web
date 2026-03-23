@@ -259,12 +259,8 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     } catch (err) {
       if (isAbortError(err)) return
 
-      if (err instanceof ApiClientError && err.status === 403) {
-        setError("No tienes acceso al proyecto seleccionado. Es posible que se haya eliminado o tu sesion haya expirado.")
-      } else {
-        const message = toastApiError(err, "Error al cargar dashboard mensual")
-        setError(message)
-      }
+      const message = toastApiError(err, "Error al cargar dashboard mensual")
+      setError(message)
     } finally {
       if (abortRef.current === controller) {
         setLoading(false)

@@ -49,6 +49,27 @@ export function clearTokens() {
   setRefreshToken(null);
 }
 
+// ─── Language preference ──────────────────────────────────────────────────────
+// Stores the user's preferred API language in localStorage.
+// Used to send Accept-Language on every request.
+// Default: "es" (Spanish). Supported: "en", "es".
+
+const DEFAULT_LANGUAGE = "es";
+
+export function getLanguage(): string {
+  if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+  return localStorage.getItem("language") ?? DEFAULT_LANGUAGE;
+}
+
+export function setLanguage(lang: string | null) {
+  if (typeof window === "undefined") return;
+  if (lang) {
+    localStorage.setItem("language", lang);
+  } else {
+    localStorage.removeItem("language");
+  }
+}
+
 // ─── Dev logger (interceptor) ──────────────────────────────────────────────────
 
 function logRequest(method: string, url: string, body?: unknown) {
@@ -165,18 +186,35 @@ export class ApiClientError extends Error {
     this.name = "ApiClientError";
   }
 
-  /**
-   * True when a 403 is caused by plan limits (PlanLimitExceededException).
-   * The backend message will contain "plan" (e.g. "Your plan does not allow …").
-   * Use this to show "upgrade" prompts instead of generic forbidden errors.
-   */
-  get isPlanError(): boolean {
-    return this.status === 403 && this.message.toLowerCase().includes("plan");
+  /** Machine-readable error code from the API (e.g. "PAYMENT_METHOD_NOT_FOUND") */
+  get code(): string | undefined {
+    if (typeof this.data === "object" && this.data !== null && "code" in this.data) {
+      return (this.data as { code: string }).code;
+    }
+    return undefined;
+  }
+
+  /** Feature name from plan errors — `PLAN_LIMIT_EXCEEDED` or `PLAN_DENIED` (e.g. "MaxProjects", "CanShareProjects") */
+  get feature(): string | undefined {
+    if (typeof this.data === "object" && this.data !== null && "feature" in this.data) {
+      return (this.data as { feature: string }).feature;
+    }
+    return undefined;
   }
 
   /**
-   * True when a 400 carries a business-rule message (e.g. obligation overpayment).
-   * These should be shown as informational warnings, not generic error toasts.
+   * True when a 403 is caused by a plan restriction:
+   * - `PLAN_LIMIT_EXCEEDED` — user hit a count limit (e.g. max projects)
+   * - `PLAN_DENIED`         — feature is not available on the user's plan
+   * Both should trigger upgrade prompts instead of generic error toasts.
+   */
+  get isPlanError(): boolean {
+    return this.code === "PLAN_LIMIT_EXCEEDED" || this.code === "PLAN_DENIED";
+  }
+
+  /**
+   * True when a 400 carries a business-rule message (e.g. obligation overpayment,
+   * invalid OTP, validation error). Show as informational warning, not a generic error toast.
    */
   get isBusinessError(): boolean {
     return this.status === 400;
@@ -200,6 +238,7 @@ async function request<T>(
   const isFormDataBody = typeof FormData !== "undefined" && body instanceof FormData;
 
   const headers: Record<string, string> = { ...options.headers };
+  headers["Accept-Language"] = headers["Accept-Language"] ?? getLanguage();
   if (!isFormDataBody) {
     headers["Content-Type"] = headers["Content-Type"] ?? "application/json";
   }

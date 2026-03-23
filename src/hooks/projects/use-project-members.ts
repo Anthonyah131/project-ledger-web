@@ -31,8 +31,7 @@ export function useProjectMembers(projectId: string) {
       const data = await projectService.getMembers(projectId)
       setMembers(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar miembros"
-      toast.error("Error al cargar miembros", { description: msg })
+      toastApiError(err, "Error al cargar miembros");
     } finally {
       setLoading(false)
     }

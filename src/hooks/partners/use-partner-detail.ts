@@ -50,9 +50,8 @@ export function usePartnerDetail(partnerId: string) {
       const data = await partnerService.getPartner(partnerId)
       setPartner(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar partner"
+      const msg = toastApiError(err, "Error al cargar partner")
       setError(msg)
-      toast.error("Error al cargar partner", { description: msg })
     } finally {
       setLoading(false)
     }

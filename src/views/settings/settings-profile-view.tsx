@@ -19,21 +19,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
-import { ApiClientError } from "@/lib/api-client";
+import { ApiClientError, getLanguage, setLanguage } from "@/lib/api-client";
 import { updateProfileSchema, type UpdateProfileFormValues } from "@/lib/validations/auth";
 import * as userService from "@/services/user-service";
 import type { UpdateProfileRequest } from "@/types/user";
 
 function getProfileErrorMessage(err: unknown): string {
-  if (err instanceof ApiClientError) {
-    if (err.status === 400) return "Revisa los datos del perfil e intenta de nuevo.";
-    if (err.status === 401) return "Tu sesión expiró. Inicia sesión nuevamente.";
-    if (err.status === 403) return "No tienes permisos para editar el perfil.";
-    if (err.status === 404) return "No se encontró el usuario para actualizar perfil.";
-    return err.message;
-  }
-
+  if (err instanceof ApiClientError) return err.message;
   if (err instanceof Error) return err.message;
   return "No fue posible actualizar el perfil.";
 }
@@ -41,6 +41,7 @@ function getProfileErrorMessage(err: unknown): string {
 export function SettingsProfileView() {
   const { user, refreshUser } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(() => getLanguage());
 
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
@@ -98,6 +99,18 @@ export function SettingsProfileView() {
       setIsSaving(false);
     }
   });
+
+  function handleLanguageChange(locale: string) {
+    setLanguage(locale);
+    setCurrentLanguage(locale);
+    toast.success("Idioma actualizado", {
+      description: "Recargando la aplicación para aplicar el cambio...",
+    });
+    // Reload so all queries/swr caches use the new language for error responses
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
 
   if (!user) {
     return (
@@ -197,6 +210,35 @@ export function SettingsProfileView() {
           <p className="text-[11px] text-muted-foreground">Vista previa de tu perfil</p>
         </div>
       </div>
+
+      <div className="mt-10 mb-1">
+        <h2 className="text-base font-semibold">Preferencias de aplicación</h2>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Ajusta la configuración regional para tu experiencia.
+        </p>
+      </div>
+
+      <Separator className="my-4" />
+
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-1 md:w-1/2">
+            <h3 className="text-sm font-medium">Idioma de la API</h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Determina el idioma en el que el servidor devuelve los mensajes de error.
+            </p>
+            <Select value={currentLanguage} onValueChange={handleLanguageChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona un idioma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

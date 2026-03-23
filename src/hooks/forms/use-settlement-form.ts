@@ -82,8 +82,8 @@ export function useCreateSettlementForm({
       fromPartnerId: values.fromPartnerId,
       toPartnerId: values.toPartnerId,
       amount: Number(values.amount),
-      currency: values.currency,
-      exchangeRate: Number(values.exchangeRate),
+      currency: values.currency.toUpperCase(),
+      exchangeRate: parseFloat(Number(values.exchangeRate).toFixed(6)),
       settlementDate: values.settlementDate,
     }
     if (values.description) payload.description = values.description
@@ -141,8 +141,8 @@ export function useUpdateSettlementForm({
     if (!settlement) return
     const payload: UpdateSettlementRequest = {
       amount: Number(values.amount),
-      currency: values.currency,
-      exchangeRate: Number(values.exchangeRate),
+      currency: values.currency.toUpperCase(),
+      exchangeRate: parseFloat(Number(values.exchangeRate).toFixed(6)),
       settlementDate: values.settlementDate,
       description: values.description,
       notes: values.notes,
@@ -175,7 +175,7 @@ function buildExchangePayload(
     )
     .map((item) => ({
       currencyCode: item.currencyCode,
-      exchangeRate: Number(item.exchangeRate),
+      exchangeRate: parseFloat(Number(item.exchangeRate).toFixed(6)),
       convertedAmount: Number(item.convertedAmount),
     }))
 }

@@ -32,8 +32,7 @@ export function useProjectPartners(projectId: string) {
       const data = await ppService.getProjectPartners(projectId)
       setAssignedPartners(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar partners del proyecto"
-      toast.error("Error al cargar partners", { description: msg })
+      toastApiError(err, "Error al cargar partners del proyecto");
     } finally {
       setLoading(false)
     }
@@ -91,9 +90,9 @@ export function useProjectPartners(projectId: string) {
         })
         return true
       } catch (err) {
-        if (err instanceof ApiClientError && err.status === 409) {
+        if (err instanceof ApiClientError && err.code === "CONFLICT") {
           toast.warning("No se puede quitar el partner", {
-            description: `"${pp.partnerName}" tiene métodos de pago vinculados al proyecto. Desvincula primero esos métodos de pago.`,
+            description: err.message,
           })
         } else {
           toastApiError(err, "Error al quitar partner")

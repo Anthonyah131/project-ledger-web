@@ -136,9 +136,9 @@ export function AlternativeCurrencyExchangesSection({
                         <div className="flex gap-2">
                           <Input
                             type="number"
-                            step="0.0001"
+                            step="0.000001"
                             min="0"
-                            placeholder="0.0000"
+                            placeholder="0.000000"
                             value={rateField.value}
                             onChange={(event) => {
                               rateField.onChange(event.target.value)
@@ -146,7 +146,7 @@ export function AlternativeCurrencyExchangesSection({
                               if (rate > 0 && projectAmount > 0) {
                                 form.setValue(
                                   `currencyExchanges.${index}.convertedAmount`,
-                                  (projectAmount * rate).toFixed(2),
+                                  (projectAmount * rate).toFixed(4),
                                   { shouldValidate: true }
                                 )
                               }
@@ -181,9 +181,9 @@ export function AlternativeCurrencyExchangesSection({
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
+                          step="0.0001"
                           min="0"
-                          placeholder="0.00"
+                          placeholder="0.0000"
                           value={amountField.value}
                           onChange={(event) => amountField.onChange(event.target.value)}
                         />

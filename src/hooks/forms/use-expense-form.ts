@@ -87,7 +87,7 @@ export function useCreateExpenseForm({
 
   function onSubmit(values: CreateExpenseFormValues) {
     const amount = Number(values.originalAmount)
-    const effectiveRate = Number(values.exchangeRate) || 1
+    const effectiveRate = parseFloat((Number(values.exchangeRate) || 1).toFixed(6))
     const convertedAmount = Number(values.convertedAmount)
     const finalConvertedAmount =
       Number.isFinite(convertedAmount) && convertedAmount > 0
@@ -107,7 +107,7 @@ export function useCreateExpenseForm({
     const currencyExchanges = values.currencyExchanges
       .map((item) => ({
         currencyCode: item.currencyCode.trim(),
-        exchangeRate: Number(item.exchangeRate),
+        exchangeRate: parseFloat(Number(item.exchangeRate).toFixed(6)),
         convertedAmount: Number(item.convertedAmount),
       }))
       .filter(
@@ -159,8 +159,8 @@ export function useCreateExpenseForm({
             exchangeRate: ce.exchangeRate,
             convertedAmount: parseFloat(
               splitType === "percentage"
-                ? (ce.convertedAmount * splitValue / 100).toFixed(2)
-                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(2) : "0"
+                ? (ce.convertedAmount * splitValue / 100).toFixed(4)
+                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(4) : "0"
             ),
           }))
         }
@@ -254,7 +254,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
   function onSubmit(values: UpdateExpenseFormValues) {
     if (!expense) return
     const amount = Number(values.originalAmount)
-    const effectiveRate = Number(values.exchangeRate) || 1
+    const effectiveRate = parseFloat((Number(values.exchangeRate) || 1).toFixed(6))
     const convertedAmount = Number(values.convertedAmount)
     const finalConvertedAmount =
       Number.isFinite(convertedAmount) && convertedAmount > 0
@@ -282,7 +282,7 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
     const currencyExchanges = values.currencyExchanges
       .map((item) => ({
         currencyCode: item.currencyCode.trim(),
-        exchangeRate: Number(item.exchangeRate),
+        exchangeRate: parseFloat(Number(item.exchangeRate).toFixed(6)),
         convertedAmount: Number(item.convertedAmount),
       }))
       .filter(
@@ -336,8 +336,8 @@ export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpe
             exchangeRate: ce.exchangeRate,
             convertedAmount: parseFloat(
               splitType === "percentage"
-                ? (ce.convertedAmount * splitValue / 100).toFixed(2)
-                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(2) : "0"
+                ? (ce.convertedAmount * splitValue / 100).toFixed(4)
+                : finalConvertedAmount > 0 ? (ce.convertedAmount * splitValue / finalConvertedAmount).toFixed(4) : "0"
             ),
           }))
         }

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -59,13 +59,7 @@ export function useLogin() {
       await login(data.email, data.password)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        if (err.status === 401) {
-          setServerError("Correo o contraseña incorrectos.")
-        } else if (err.status === 429) {
-          setServerError("Demasiados intentos. Espera un momento.")
-        } else {
-          setServerError(err.message || "Error al iniciar sesión.")
-        }
+        setServerError(err.message || "Error al iniciar sesión.")
       } else {
         setServerError("Error de conexión. Intenta de nuevo.")
       }

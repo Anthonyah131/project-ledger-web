@@ -133,7 +133,7 @@ export function EditSettlementModal({
             <FormItem>
               <FormLabel>Tipo de cambio a {projectCurrency} *</FormLabel>
               <FormControl>
-                <Input type="number" step="0.0001" min="0" placeholder="1.00" {...field} />
+                <Input type="number" step="0.000001" min="0" placeholder="1.000000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -281,9 +281,9 @@ function EditSettlementCurrencyExchangeRow({
               <FormControl>
                 <Input
                   type="number"
-                  step="0.0001"
+                  step="0.000001"
                   min="0"
-                  placeholder="0.0000"
+                  placeholder="0.000000"
                   {...field}
                   onChange={(e) => {
                     field.onChange(e.target.value)
@@ -291,7 +291,7 @@ function EditSettlementCurrencyExchangeRow({
                     if (rate > 0 && baseAmount > 0) {
                       form.setValue(
                         `currencyExchanges.${index}.convertedAmount`,
-                        (baseAmount * rate).toFixed(2),
+                        (baseAmount * rate).toFixed(4),
                         { shouldValidate: true },
                       )
                     }
@@ -309,7 +309,7 @@ function EditSettlementCurrencyExchangeRow({
             <FormItem>
               <FormLabel className="text-xs">Monto {currencyCode}</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
+                <Input type="number" step="0.0001" min="0" placeholder="0.0000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

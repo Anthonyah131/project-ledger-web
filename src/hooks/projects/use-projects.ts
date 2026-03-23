@@ -58,9 +58,8 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
       const data = await projectService.getProjects({ pageSize: 200 });
       setProjects(data.items);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar proyectos";
+      const msg = toastApiError(err, "Error al cargar proyectos");
       setError(msg);
-      toast.error("Error al cargar proyectos", { description: msg });
     } finally {
       setLoading(false);
     }

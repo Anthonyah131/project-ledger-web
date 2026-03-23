@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -46,13 +46,7 @@ export function useRegister() {
       router.push(resolveRedirect("/dashboard"))
     } catch (err) {
       if (err instanceof ApiClientError) {
-        if (err.status === 409) {
-          setServerError("Ya existe una cuenta con ese correo.")
-        } else if (err.status === 429) {
-          setServerError("Demasiados intentos. Espera un momento.")
-        } else {
-          setServerError(err.message || "No se pudo crear la cuenta.")
-        }
+        setServerError(err.message || "No se pudo crear la cuenta.")
       } else {
         setServerError("Error de conexión. Intenta de nuevo.")
       }

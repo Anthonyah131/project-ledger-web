@@ -19,8 +19,7 @@ export function useProjectDetail(projectId: string) {
       const data = await projectService.getProject(projectId)
       setProject(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar proyecto"
-      toast.error("Error al cargar proyecto", { description: msg })
+      toastApiError(err, "Error al cargar proyecto");
     } finally {
       setLoading(false)
     }
@@ -39,8 +38,7 @@ export function useProjectDetail(projectId: string) {
           description: `"${updated.name}" se guardó correctamente.`,
         })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Error al actualizar proyecto"
-        toast.error("Error al actualizar", { description: msg })
+        toastApiError(err, "Error al actualizar proyecto");
       }
     },
     [projectId]
@@ -52,8 +50,7 @@ export function useProjectDetail(projectId: string) {
       toast.success("Proyecto eliminado")
       return true
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al eliminar proyecto"
-      toast.error("Error al eliminar", { description: msg })
+      toastApiError(err, "Error al eliminar proyecto");
       return false
     }
   }, [projectId])

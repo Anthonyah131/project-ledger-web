@@ -95,11 +95,7 @@ export function useForgotPassword() {
       }, 1000)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        if (err.status === 400) {
-          setServerError("Código incorrecto o expirado.")
-        } else {
-          setServerError(err.message || "Error al verificar el código.")
-        }
+        setServerError(err.message || "Error al verificar el código.")
       } else {
         setServerError("Error de conexión. Intenta de nuevo.")
       }
@@ -127,17 +123,12 @@ export function useForgotPassword() {
       }, 2000)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        if (err.status === 400 && err.message.includes("OTP")) {
-          // OTP expired between step 2 and 3
-          setServerError(
-            "El código expiró o ya fue usado. Solicita un código nuevo."
-          )
-          // Reset to step 1 after delay
+        setServerError(err.message || "Error al actualizar la contraseña.")
+        if (err.status === 400) {
+          // Restart flow (e.g., OTP expired between step 2 and 3)
           setTimeout(() => {
             resetToStart()
           }, 3000)
-        } else {
-          setServerError(err.message || "Error al actualizar la contraseña.")
         }
       } else {
         setServerError("Error de conexión. Intenta de nuevo.")

@@ -23,8 +23,7 @@ export function useProjectAlternativeCurrencies(projectId: string) {
       const data = await alternativeCurrencyService.getAlternativeCurrencies(projectId)
       setCurrencies(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar monedas alternativas"
-      toast.error("Error al cargar monedas alternativas", { description: msg })
+      toastApiError(err, "Error al cargar monedas alternativas");
     } finally {
       setLoading(false)
     }

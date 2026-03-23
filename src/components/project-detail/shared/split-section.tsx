@@ -57,9 +57,9 @@ function computeSplitCEs(
   return valid.map((pce) => {
     const parentConverted = Number(pce.convertedAmount)
     const splitConverted = isPercentage
-      ? parseFloat((parentConverted * splitValue / 100).toFixed(2))
+      ? parseFloat((parentConverted * splitValue / 100).toFixed(4))
       : convertedAmount > 0
-        ? parseFloat((parentConverted * splitValue / convertedAmount).toFixed(2))
+        ? parseFloat((parentConverted * splitValue / convertedAmount).toFixed(4))
         : 0
     return {
       currencyCode: pce.currencyCode ?? "",

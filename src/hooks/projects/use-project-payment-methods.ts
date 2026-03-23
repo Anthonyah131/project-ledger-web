@@ -32,8 +32,7 @@ export function useProjectPaymentMethods(projectId: string) {
       const data = await ppService.getProjectPaymentMethods(projectId)
       setLinkedPMs(Array.isArray(data) ? data : (data.items ?? []))
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar métodos de pago"
-      toast.error("Error al cargar métodos de pago", { description: msg })
+      toastApiError(err, "Error al cargar métodos de pago");
     } finally {
       setLoading(false)
     }

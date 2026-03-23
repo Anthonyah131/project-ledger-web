@@ -3,11 +3,12 @@ import { z } from "zod"
 // Helper: budgetAmount comes from an <input type="number"> as a string,
 // but is optional.  We validate the string representation and leave
 // the number conversion to the form-hook submit handler.
+// budgetAmount: optional, 0.01 – 999,999,999,999.99
 const budgetAmountField = z
   .string()
   .refine(
-    (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
-    { message: "Debe ser un número positivo" },
+    (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0.01 && Number(v) <= 999_999_999_999.99),
+    { message: "Debe ser entre 0.01 y 999,999,999,999.99" },
   )
 
 // ─── Create ───────────────────────────────────────────────────────────────────

@@ -29,9 +29,8 @@ export function useWorkspaces() {
       const data = await workspaceService.getWorkspaces()
       setWorkspaces(data)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al cargar workspaces"
+      const msg = toastApiError(err, "Error al cargar workspaces")
       setError(msg)
-      toast.error("Error al cargar workspaces", { description: msg })
     } finally {
       setLoading(false)
     }

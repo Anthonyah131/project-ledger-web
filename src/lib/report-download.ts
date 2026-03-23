@@ -2,7 +2,7 @@
 // Binary report download helper.
 // Fetches a blob from the API (Excel/PDF) and triggers a browser download.
 
-import { getAccessToken, ApiClientError } from "@/lib/api-client";
+import { getAccessToken, getLanguage, ApiClientError } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5192/api";
 
@@ -14,7 +14,9 @@ export async function downloadBlobReport(path: string): Promise<void> {
   const url = `${API_BASE_URL}${path}`;
   const token = getAccessToken();
 
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    "Accept-Language": getLanguage(),
+  };
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
