@@ -1,0 +1,18 @@
+{
+  "landing": {
+    "badge": "AI OCR + integrated financial chatbot",
+    "heroTitle": "Frictionless project financial control",
+    "heroSubtitle": "Project Ledger lets you record expenses and income, manage payment methods, collaborate as a team, and analyze your cash flow — all in one place, with AI that reads your receipts",
+    "ctaPrimary": "Start for free — no card",
+    "ctaSecondary": "See features",
+    "freePlanBadge": "Free plan available forever",
+    "noTimeLimit": "No time limit",
+    "upgradeAnytime": "Upgrade whenever you need",
+    "featuresTitle": "Features",
+    "featuresSubtitle": "Project finances, under control",
+    "featuresDescription": "Every tool you need to record, understand, and optimize the flow of money in your projects",
+    "previous": "Previous",
+    "next": "Next",
+    "goToFeature": "Go to {feature}"
+  }
+}

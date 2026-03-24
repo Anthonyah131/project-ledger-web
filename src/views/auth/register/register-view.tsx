@@ -17,8 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useRegister } from "@/hooks/auth/use-register"
+import { useLanguage } from "@/context/language-context"
 
 export function RegisterView() {
+  const { t } = useLanguage()
   const router = useRouter()
   const {
     form,
@@ -46,9 +48,9 @@ export function RegisterView() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Crear cuenta</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("auth.registerTitle")}</h1>
         <p className="text-sm text-muted-foreground">
-          Completa tus datos para empezar a usar Project Ledger.
+          {t("auth.registerSubtitle")}
         </p>
       </div>
 
@@ -60,10 +62,10 @@ export function RegisterView() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre completo</FormLabel>
+                <FormLabel>{t("auth.fullNameLabel")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Juan Perez"
+                    placeholder={t("auth.fullNamePlaceholder")}
                     autoComplete="name"
                     disabled={isLoading}
                     {...field}
@@ -79,11 +81,11 @@ export function RegisterView() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Correo electronico</FormLabel>
+                <FormLabel>{t("auth.emailLabel")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={t("auth.emailPlaceholder")}
                     autoComplete="email"
                     disabled={isLoading}
                     {...field}
@@ -99,12 +101,12 @@ export function RegisterView() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contrasena</FormLabel>
+                <FormLabel>{t("auth.passwordLabel")}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Minimo 8 caracteres"
+                      placeholder={t("auth.passwordMinLength")}
                       autoComplete="new-password"
                       disabled={isLoading}
                       className="pr-10"
@@ -134,11 +136,11 @@ export function RegisterView() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirmar contrasena</FormLabel>
+                <FormLabel>{t("auth.confirmPasswordLabel")}</FormLabel>
                 <FormControl>
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Repite tu contrasena"
+                    placeholder={t("auth.confirmPasswordPlaceholder")}
                     autoComplete="new-password"
                     disabled={isLoading}
                     {...field}
@@ -155,10 +157,10 @@ export function RegisterView() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creando cuenta...
+                {t("auth.creatingAccount")}
               </>
             ) : (
-              "Crear cuenta"
+              t("auth.registerTitle")
             )}
           </Button>
         </form>
@@ -171,7 +173,7 @@ export function RegisterView() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            O continua con Google
+            {t("auth.continueWithGoogle")}
           </span>
         </div>
       </div>
@@ -189,26 +191,26 @@ export function RegisterView() {
 
       {/* Terms */}
       <p className="text-center text-xs text-muted-foreground">
-        Al registrarte, aceptas nuestros{" "}
+        {t("auth.acceptTerms")}{" "}
         <Link href="#" className="underline underline-offset-4 hover:text-foreground">
-          Terminos de Servicio
+          {t("auth.termsOfService")}
         </Link>{" "}
-        y{" "}
+        {t("auth.and")}{" "}
         <Link href="#" className="underline underline-offset-4 hover:text-foreground">
-          Politica de Privacidad
+          {t("auth.privacyPolicy")}
         </Link>
         .
       </p>
 
       {/* Footer link */}
       <p className="text-center text-sm text-muted-foreground">
-        Ya tienes cuenta?{" "}
+        {t("auth.alreadyHaveAccount")}{" "}
         <Link
           href="/login"
           onClick={handleLoginNavigation}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
-          Iniciar sesion
+          {t("auth.loginTitle")}
         </Link>
       </p>
     </div>

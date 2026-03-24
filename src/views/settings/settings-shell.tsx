@@ -6,39 +6,41 @@ import { CreditCard, Palette, Shield, UserRound } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-
-const SECTIONS = [
-  {
-    title: "Perfil",
-    href: "/settings/profile",
-    icon: UserRound,
-  },
-  {
-    title: "Apariencia",
-    href: "/settings/appearance",
-    icon: Palette,
-  },
-  {
-    title: "Seguridad",
-    href: "/settings/security",
-    icon: Shield,
-  },
-  {
-    title: "Facturación",
-    href: "/settings/billing",
-    icon: CreditCard,
-  },
-] as const;
+import { useLanguage } from "@/context/language-context";
 
 export function SettingsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const SECTIONS = [
+    {
+      title: t("settings.shell.profile"),
+      href: "/settings/profile",
+      icon: UserRound,
+    },
+    {
+      title: t("settings.shell.appearance"),
+      href: "/settings/appearance",
+      icon: Palette,
+    },
+    {
+      title: t("settings.shell.security"),
+      href: "/settings/security",
+      icon: Shield,
+    },
+    {
+      title: t("settings.shell.billing"),
+      href: "/settings/billing",
+      icon: CreditCard,
+    },
+  ];
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Configuración</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Administra perfil, apariencia, seguridad y facturación desde un solo lugar.
+          {t("settings.shell.subtitle")}
         </p>
       </div>
 
@@ -47,7 +49,7 @@ export function SettingsShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col gap-8 md:flex-row">
         {/* Sidebar */}
         <aside className="shrink-0 md:w-52">
-          <nav className="flex flex-col" aria-label="Secciones de configuración">
+          <nav className="flex flex-col" aria-label={t("settings.shell.sectionsLabel")}>
             {SECTIONS.map((section) => {
               const isActive =
                 pathname === section.href || pathname.startsWith(`${section.href}/`);

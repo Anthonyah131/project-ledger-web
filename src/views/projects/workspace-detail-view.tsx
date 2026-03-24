@@ -12,6 +12,7 @@ import { ProjectsShelf } from "@/components/projects/projects-shelf"
 import { AssignProjectsModal } from "@/components/workspaces/assign-projects-modal"
 import * as workspaceService from "@/services/workspace-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type { WorkspaceDetailResponse } from "@/types/workspace"
 
 interface WorkspaceDetailViewProps {
@@ -20,6 +21,7 @@ interface WorkspaceDetailViewProps {
 }
 
 export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailViewProps) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [workspace, setWorkspace] = useState<WorkspaceDetailResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -39,15 +41,13 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
   const handleDisconnect = useCallback(async (projectId: string) => {
     try {
       await workspaceService.removeProjectFromWorkspace(workspaceId, projectId)
-      toast.success("Proyecto desconectado del workspace")
+      toast.success(t("workspaces.projectDisconnectedToast"))
       // Refresh workspace data so projectIds list updates
-      workspaceService.getWorkspace(workspaceId)
-        .then(setWorkspace)
-        .catch(() => {})
+      fetchWorkspace()
     } catch (err) {
-      toastApiError(err, "Error al desconectar proyecto")
+      toastApiError(err, t("workspaces.errorDisconnectingToast"))
     }
-  }, [workspaceId])
+  }, [workspaceId, t, fetchWorkspace])
 
   const projectIds = workspace?.projects.map((p) => p.id)
 
@@ -62,7 +62,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
           onClick={() => onBack ? onBack() : router.push("/projects?tab=workspaces")}
         >
           <ArrowLeft className="size-4" />
-          Workspaces
+          {t("nav.workspaces")}
         </Button>
       </div>
 
@@ -88,7 +88,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
               </div>
             )}
             <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Workspace</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{t("workspaces.workspaceLabel")}</p>
               <h2 className="text-base font-semibold text-foreground leading-tight">{workspace.name}</h2>
             </div>
           </div>
@@ -100,7 +100,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
             onClick={() => setAssignOpen(true)}
           >
             <FolderPlus className="size-3.5" />
-            Asociar proyecto
+            {t("workspaces.associateProject")}
           </Button>
         </div>
       ) : null}

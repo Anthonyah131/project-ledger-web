@@ -1,0 +1,29 @@
+{
+  "admin": {
+    "title": "Administration",
+    "usersTab": "Users",
+    "columnUser": "User",
+    "columnPlan": "Plan",
+    "columnStatus": "Status",
+    "columnRole": "Role",
+    "columnRegistered": "Registered",
+    "columnLastAccess": "Last access",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "statusDeleted": "Deleted",
+    "roleAdmin": "Admin",
+    "roleUser": "User",
+    "makeAdmin": "Make admin",
+    "removeAdmin": "Remove admin",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "searchUsers": "Search users...",
+    "noUsers": "No users",
+    "never": "Never",
+    "singular": "user",
+    "plural": "users",
+    "deleteConfirmTitle": "Delete user",
+    "deleteConfirmDescription": "This action cannot be undone. The user will be permanently deactivated.",
+    "deleteConfirmDescriptionNamed": "Delete \"{name}\" ({email})?"
+  }
+}

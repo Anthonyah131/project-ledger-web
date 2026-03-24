@@ -1,0 +1,21 @@
+{
+  "partners": {
+    "title": "Partners",
+    "new": "New partner",
+    "createTitle": "New partner",
+    "createSubtitle": "Add a financial contact to assign to projects",
+    "editTitle": "Edit partner",
+    "namePlaceholder": "e.g. Harold Vargas",
+    "emailPlaceholder": "harold@example.com",
+    "phonePlaceholder": "+1 555 123 4567",
+    "notesPlaceholder": "Additional notes...",
+    "phonelabel": "Phone",
+    "empty": "No partners",
+    "emptyDescription": "Add partners to assign them to expenses and income",
+    "deleteConfirmTitle": "Delete partner?",
+    "deleteConfirmDescription": "This action cannot be undone.",
+    "totalPaid": "Total paid",
+    "totalReceived": "Total received",
+    "balance": "Balance"
+  }
+}

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { PAYMENT_METHOD_TYPE_LABEL } from "@/lib/constants"
+import { useLanguage } from "@/context/language-context"
 import type {
   ProjectPaymentMethodItem,
   LinkablePaymentMethodItem,
@@ -47,24 +48,24 @@ function PMEmptyState({
   isOwner: boolean
   onAdd: () => void
 }) {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border py-16 px-4 text-center">
       <CreditCard className="size-10 text-muted-foreground/40" />
-      <p className="text-sm font-medium">Sin métodos de pago vinculados</p>
+      <p className="text-sm font-medium">{t("projects.settingsTab.noLinkedPaymentMethods")}</p>
       {isOwner ? (
         <>
           <p className="max-w-xs text-xs text-muted-foreground">
-            Vincula métodos de pago para usarlos en gastos e ingresos del
-            proyecto.
+            {t("projects.settingsTab.noLinkedPaymentMethodsDescription")}
           </p>
           <Button size="sm" variant="outline" onClick={onAdd}>
             <Plus className="size-3.5" />
-            Agregar método de pago
+            {t("projects.settingsTab.addPaymentMethod")}
           </Button>
         </>
       ) : (
         <p className="max-w-xs text-xs text-muted-foreground">
-          No hay métodos de pago vinculados a este proyecto.
+          {t("projects.settingsTab.noLinkedPaymentMethodsViewer")}
         </p>
       )}
     </div>
@@ -132,6 +133,7 @@ function AddPMDialog({
   loading: boolean
   onLink: (pmId: string, pmName: string) => Promise<void>
 }) {
+  const { t } = useLanguage()
   const [pendingId, setPendingId] = useState<string | null>(null)
 
   async function handleLinkClick(pmId: string, pmName: string) {
@@ -160,10 +162,9 @@ function AddPMDialog({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="flex max-h-[80vh] max-w-md flex-col">
         <DialogHeader>
-          <DialogTitle>Agregar método de pago</DialogTitle>
+          <DialogTitle>{t("projects.settingsTab.addPMDialogTitle")}</DialogTitle>
           <DialogDescription>
-            Métodos de pago de partners asignados al proyecto que aún no están
-            vinculados.
+            {t("projects.settingsTab.addPMDialogDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -184,7 +185,7 @@ function AddPMDialog({
             <div className="flex flex-col items-center gap-2 py-10 text-center">
               <CreditCard className="size-8 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground">
-                No hay métodos de pago disponibles para vincular.
+                {t("projects.settingsTab.noAvailableToLink")}
               </p>
             </div>
           ) : (
@@ -220,7 +221,7 @@ function AddPMDialog({
                           disabled={pendingId === pm.id}
                           onClick={() => handleLinkClick(pm.id, pm.name)}
                         >
-                          {pendingId === pm.id ? "..." : "Agregar"}
+                          {pendingId === pm.id ? "..." : t("projects.settingsTab.add")}
                         </Button>
                       </div>
                     ))}
@@ -265,20 +266,20 @@ export function PaymentMethodsSection({
   onRemoveClose: () => void
   onUnlink: (pm: ProjectPaymentMethodItem) => Promise<boolean> | void
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold">Métodos de pago</h3>
+          <h3 className="text-base font-semibold">{t("projects.settingsTab.paymentMethodsTitle")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Vincula métodos de pago de partners para usarlos en gastos e
-            ingresos.
+            {t("projects.settingsTab.paymentMethodsSubtitle")}
           </p>
         </div>
         {isOwner && (
           <Button onClick={onAddOpen} size="sm">
             <Plus className="size-3.5" />
-            Agregar
+            {t("projects.settingsTab.add")}
           </Button>
         )}
       </div>
@@ -310,9 +311,9 @@ export function PaymentMethodsSection({
         open={!!ppm.removeTarget}
         onClose={onRemoveClose}
         onConfirm={onUnlink}
-        title="Quitar método de pago"
-        description="El método de pago ya no estará disponible en este proyecto para nuevos gastos e ingresos."
-        getMessage={(pm) => `¿Quitar "${pm.paymentMethodName}" del proyecto?`}
+        title={t("projects.settingsTab.removePaymentMethodTitle")}
+        description={t("projects.settingsTab.removePaymentMethodDescription")}
+        getMessage={(pm) => t("projects.settingsTab.removePaymentMethodNamed", { name: pm.paymentMethodName })}
       />
     </div>
   )

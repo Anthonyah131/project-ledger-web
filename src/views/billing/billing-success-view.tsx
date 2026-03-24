@@ -11,6 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ApiClientError } from "@/lib/api-client";
 import { getBillingStatusMeta } from "@/lib/billing-utils";
 import * as billingService from "@/services/billing-service";
+import { useLanguage } from "@/context/language-context";
 import type { BillingSubscriptionResponse } from "@/types/subscription";
 
 const POLLING_EVERY_MS = 3_000;
@@ -18,19 +19,19 @@ const POLLING_TIMEOUT_MS = 60_000;
 
 type PollState = "polling" | "success" | "timeout" | "error" | "disabled";
 
-function getBillingErrorMessage(err: unknown): string {
+function getBillingErrorMessage(err: unknown, t: (key: string) => string): string {
   if (billingService.isStripeDisabledError(err)) {
-    return "La facturación con Stripe está deshabilitada por configuración.";
+    return t("billing.stripeDisabled");
   }
 
   if (err instanceof ApiClientError) {
-    if (err.status === 401) return "Tu sesión expiró. Inicia sesión nuevamente.";
-    if (err.status === 403) return "No tienes permisos para consultar esta suscripción.";
+    if (err.status === 401) return t("billing.errors.sessionExpired");
+    if (err.status === 403) return t("billing.errors.subscriptionForbidden");
     return err.message;
   }
 
   if (err instanceof Error) return err.message;
-  return "No fue posible consultar el estado de la suscripción.";
+  return t("billing.errors.subscriptionFailed");
 }
 
 function getBadgeToneClass(tone: "success" | "warning" | "danger" | "muted"): string {
@@ -47,6 +48,7 @@ function getBadgeToneClass(tone: "success" | "warning" | "danger" | "muted"): st
 }
 
 export function BillingSuccessView() {
+  const { t } = useLanguage();
   const [pollState, setPollState] = useState<PollState>("polling");
   const [attempts, setAttempts] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -85,14 +87,14 @@ export function BillingSuccessView() {
 
         if (billingService.isStripeDisabledError(err)) {
           if (!cancelled) {
-            setError(getBillingErrorMessage(err));
+            setError(getBillingErrorMessage(err, t));
             setPollState("disabled");
           }
           return "error";
         }
 
         if (!cancelled) {
-          setError(getBillingErrorMessage(err));
+          setError(getBillingErrorMessage(err, t));
           setPollState("error");
         }
         return "error";
@@ -132,7 +134,7 @@ export function BillingSuccessView() {
         window.clearInterval(timerId);
       }
     };
-  }, [pollSeed]);
+  }, [pollSeed, t]);
 
   const statusMeta = useMemo(
     () => (subscription ? getBillingStatusMeta(subscription.status) : null),
@@ -145,7 +147,7 @@ export function BillingSuccessView() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
-            {pollState === "disabled" ? "Facturación no disponible" : "Pago confirmado"}
+            {pollState === "disabled" ? t("billing.successPage.titleDisabled") : t("billing.successPage.titleConfirmed")}
           </CardTitle>
         </CardHeader>
 
@@ -154,10 +156,10 @@ export function BillingSuccessView() {
             <div className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Confirmando suscripción en Project Ledger...
+                {t("billing.successPage.confirming")}
               </div>
               <p className="mt-2 text-xs">
-                Intentos: {attempts} · Tiempo: {elapsedSeconds}s
+                {t("billing.successPage.attemptsAndTime", { attempts, seconds: elapsedSeconds })}
               </p>
             </div>
           )}
@@ -165,9 +167,9 @@ export function BillingSuccessView() {
           {pollState === "success" && subscription && statusMeta && (
             <>
               <Alert>
-                <AlertTitle>Suscripción sincronizada</AlertTitle>
+                <AlertTitle>{t("billing.successPage.syncedTitle")}</AlertTitle>
                 <AlertDescription>
-                  Tu plan ya está actualizado y listo para usarse.
+                  {t("billing.successPage.syncedDescription")}
                 </AlertDescription>
               </Alert>
 
@@ -184,25 +186,25 @@ export function BillingSuccessView() {
 
           {pollState === "timeout" && (
             <Alert>
-              <AlertTitle>Seguimos procesando tu pago</AlertTitle>
+              <AlertTitle>{t("billing.successPage.processingTitle")}</AlertTitle>
               <AlertDescription>
-                El webhook puede tardar unos segundos más. Reintenta para consultar de nuevo.
+                {t("billing.successPage.processingDescription")}
               </AlertDescription>
             </Alert>
           )}
 
           {pollState === "error" && (
             <Alert variant="destructive">
-              <AlertTitle>No se pudo confirmar la suscripción</AlertTitle>
-              <AlertDescription>{error ?? "Error desconocido."}</AlertDescription>
+              <AlertTitle>{t("billing.successPage.errorTitle")}</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           {pollState === "disabled" && (
             <Alert>
-              <AlertTitle>Stripe deshabilitado</AlertTitle>
+              <AlertTitle>{t("billing.successPage.stripeDisabledTitle")}</AlertTitle>
               <AlertDescription>
-                {error ?? "La facturación con Stripe está deshabilitada por configuración."}
+                {error ?? t("billing.stripeDisabled")}
               </AlertDescription>
             </Alert>
           )}
@@ -212,18 +214,18 @@ export function BillingSuccessView() {
           {(pollState === "polling" || pollState === "timeout" || pollState === "error") && (
             <Button type="button" onClick={restartPolling}>
               <RefreshCw className="size-4" />
-              Reintentar
+              {t("billing.successPage.retry")}
             </Button>
           )}
 
           {(pollState === "success" || pollState === "timeout" || pollState === "error" || pollState === "disabled") && (
             <Button asChild variant="outline">
-              <Link href="/settings/billing">Ver facturación</Link>
+              <Link href="/settings/billing">{t("billing.successPage.viewBilling")}</Link>
             </Button>
           )}
 
           <Button asChild variant="ghost">
-            <Link href="/dashboard">Ir al dashboard</Link>
+            <Link href="/dashboard">{t("billing.cancelPage.goToDashboard")}</Link>
           </Button>
         </CardFooter>
       </Card>

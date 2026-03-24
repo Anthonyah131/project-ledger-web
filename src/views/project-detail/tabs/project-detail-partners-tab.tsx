@@ -25,6 +25,7 @@ import type {
   PartnerBalanceItem,
 } from "@/types/partner-settlement"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
+import { useLanguage } from "@/context/language-context"
 
 const CreateSettlementModal = dynamic(() =>
   import("@/components/project-detail/partner-settlements/create-settlement-modal").then(
@@ -96,6 +97,7 @@ export function ProjectDetailPartnersTab({
   onSave,
   onDelete,
 }: ProjectDetailPartnersTabProps) {
+  const { t } = useLanguage()
   const hasPartners = (sel.balance?.partners.length ?? 0) > 0 || assignedPartners.length > 0
 
   // Prefill state for create modal from suggestion
@@ -121,7 +123,7 @@ export function ProjectDetailPartnersTab({
     <TabsContent value="partners" className="flex flex-col gap-6">
       {/* ── Balance cards ── */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-foreground">Balance por partner</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("partnerSettlements.balanceByPartner")}</h2>
 
         {sel.balanceLoading ? (
           <BalanceCardsSkeleton />
@@ -140,11 +142,11 @@ export function ProjectDetailPartnersTab({
       {hasPartners && (
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">Liquidaciones</h2>
+            <h2 className="text-sm font-semibold text-foreground">{t("partnerSettlements.settlementsSection")}</h2>
             {canEdit && (
               <Button size="sm" onClick={() => sel.setCreateOpen(true)}>
                 <Plus className="size-4" />
-                Nueva liquidación
+                {t("partnerSettlements.new")}
               </Button>
             )}
           </div>
@@ -202,11 +204,9 @@ export function ProjectDetailPartnersTab({
         open={!!sel.deleteTarget}
         onClose={() => sel.setDeleteTarget(null)}
         onConfirm={onDelete}
-        title="Eliminar liquidación"
-        description="Esta acción revertirá el efecto de la liquidación en el balance."
-        getMessage={(s) =>
-          `¿Eliminar liquidación de ${s.fromPartnerName} a ${s.toPartnerName}?`
-        }
+        title={t("partnerSettlements.deleteTitle")}
+        description={t("partnerSettlements.revertWarning")}
+        getMessage={(s) => t("partnerSettlements.deleteConfirmDescriptionNamed", { from: s.fromPartnerName, to: s.toPartnerName })}
       />
 
       {!!sel.historyPartnerId && (

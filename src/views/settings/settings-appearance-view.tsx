@@ -4,44 +4,46 @@ import { Laptop, Moon, Sun } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/context/theme-context";
+import { useLanguage } from "@/context/language-context";
 import { cn } from "@/lib/utils";
-
-const OPTIONS = [
-  {
-    value: "light" as const,
-    title: "Claro",
-    description: "Para espacios iluminados.",
-    icon: Sun,
-    preview: "bg-white border-gray-200",
-    previewInner: "bg-gray-100",
-  },
-  {
-    value: "dark" as const,
-    title: "Oscuro",
-    description: "Reduce fatiga visual.",
-    icon: Moon,
-    preview: "bg-zinc-900 border-zinc-700",
-    previewInner: "bg-zinc-800",
-  },
-  {
-    value: "system" as const,
-    title: "Sistema",
-    description: "Se adapta automáticamente.",
-    icon: Laptop,
-    preview: "bg-gradient-to-br from-white to-zinc-900 border-zinc-400",
-    previewInner: "bg-gradient-to-br from-gray-100 to-zinc-800",
-  },
-];
 
 export function SettingsAppearanceView() {
   const { theme, setTheme } = useTheme();
+  const { t } = useLanguage();
+
+  const OPTIONS = [
+    {
+      value: "light" as const,
+      title: t("settings.appearance.lightTitle"),
+      description: t("settings.appearance.lightDescription"),
+      icon: Sun,
+      preview: "bg-white border-gray-200",
+      previewInner: "bg-gray-100",
+    },
+    {
+      value: "dark" as const,
+      title: t("settings.appearance.darkTitle"),
+      description: t("settings.appearance.darkDescription"),
+      icon: Moon,
+      preview: "bg-zinc-900 border-zinc-700",
+      previewInner: "bg-zinc-800",
+    },
+    {
+      value: "system" as const,
+      title: t("settings.appearance.systemTitle"),
+      description: t("settings.appearance.systemDescription"),
+      icon: Laptop,
+      preview: "bg-gradient-to-br from-white to-zinc-900 border-zinc-400",
+      previewInner: "bg-gradient-to-br from-gray-100 to-zinc-800",
+    },
+  ];
 
   return (
     <section>
       <div className="mb-1">
-        <h2 className="text-base font-semibold">Apariencia</h2>
+        <h2 className="text-base font-semibold">{t("settings.appearance.title")}</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Elige cómo se ve la aplicación en tu dispositivo.
+          {t("settings.appearance.subtitle")}
         </p>
       </div>
 

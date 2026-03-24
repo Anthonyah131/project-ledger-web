@@ -14,6 +14,7 @@ import { PartnerGeneralReportResults } from "@/components/reports/partner-genera
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
 import type { PartnerResponse } from "@/types/partner"
 import type { PartnerGeneralReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface ReportsPartnerGeneralTabProps {
   partners: PartnerResponse[]
@@ -46,6 +47,7 @@ export function ReportsPartnerGeneralTab({
   onGenerate,
   onExport,
 }: ReportsPartnerGeneralTabProps) {
+  const { t } = useLanguage()
   return (
     <TabsContent value="partner-general" className="flex flex-col gap-6 mt-4">
       <ReportFilters
@@ -60,15 +62,15 @@ export function ReportsPartnerGeneralTab({
         dateRangeError={dateRangeError}
       >
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Partner</Label>
+          <Label className="text-xs text-muted-foreground">{t("reports.partnerLabel")}</Label>
           <Select value={partnerId} onValueChange={onPartnerChange}>
             <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder="Selecciona partner" />
+              <SelectValue placeholder={t("reports.selectPartnerPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {partners.length === 0 ? (
                 <SelectItem value="__none" disabled>
-                  Sin partners registrados
+                  {t("reports.noPartnersRegistered")}
                 </SelectItem>
               ) : (
                 partners.map((partner) => (

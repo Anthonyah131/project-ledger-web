@@ -12,6 +12,7 @@ import { useProjectMembers } from "@/hooks/projects/use-project-members"
 import { MembersList } from "@/components/members/members-list"
 import { MembersSkeleton, MembersEmptyState } from "@/components/members/member-states"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
+import { useLanguage } from "@/context/language-context"
 
 const AddMemberModal = dynamic(() =>
   import("@/components/members/add-member-modal").then((mod) => mod.AddMemberModal)
@@ -23,6 +24,7 @@ interface Props {
 
 export function MembersView({ projectId }: Props) {
   const router = useRouter()
+  const { t } = useLanguage()
   const {
     members,
     loading,
@@ -61,22 +63,22 @@ export function MembersView({ projectId }: Props) {
           <button
             onClick={handleBack}
             className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            aria-label="Volver al proyecto"
+            aria-label={t("members.backToProject")}
           >
             <ArrowLeft className="size-4" />
           </button>
           <div>
             <h1 className="text-xl font-semibold text-foreground tracking-tight">
-              Gestionar accesos
+              {t("members.manageTitle")}
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {members.length} {members.length === 1 ? "miembro" : "miembros"}
+              {members.length} {members.length === 1 ? t("members.singular") : t("members.plural")}
             </p>
           </div>
         </div>
         <Button onClick={handleOpenAdd} size="sm">
           <Plus className="size-3.5" />
-          Agregar
+          {t("members.add")}
         </Button>
       </div>
 
@@ -106,9 +108,9 @@ export function MembersView({ projectId }: Props) {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateRemove}
-        title="Remover miembro"
-        description="El usuario perderá acceso a este proyecto."
-        getMessage={(m) => `¿Remover a "${m.userFullName}" del proyecto?`}
+        title={t("members.removeConfirmTitle")}
+        description={t("members.removeConfirmDescription")}
+        getMessage={(m) => t("members.removeConfirmDescriptionNamed", { name: m.userFullName })}
       />
     </div>
   )

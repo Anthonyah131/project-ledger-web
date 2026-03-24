@@ -28,6 +28,14 @@ function getCurrentMonthKey() {
   return `${year}-${month}`
 }
 
+function offsetMonth(monthKey: string, delta: number): string {
+  const [year, month] = monthKey.split("-").map(Number)
+  const date = new Date(year, month - 1 + delta, 1)
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, "0")
+  return `${y}-${m}`
+}
+
 function isAbortError(err: unknown): boolean {
   return err instanceof DOMException && err.name === "AbortError"
 }
@@ -253,9 +261,8 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
       setTopCategories(categories.top_categories)
       setPaymentMethodSplit(paymentMethods.payment_method_split)
 
-      if (summary.month !== month) {
-        setSelectedMonth(summary.month)
-      }
+      // Do not override selectedMonth with the API response's month —
+      // that would fight against the user's navigation intent.
     } catch (err) {
       if (isAbortError(err)) return
 
@@ -314,15 +321,23 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     return projects.find((project) => project.id === selectedProjectId)?.name ?? "Proyecto"
   }, [projects, selectedProjectId])
 
+  const currentMonthKey = getCurrentMonthKey()
+
+  const canGoPrevious = !loading
+
+  const canGoNext = !loading && selectedMonth < currentMonthKey
+
   const goPreviousMonth = useCallback(() => {
-    if (!data?.navigation.has_previous_data || !data.navigation.previous_month) return
-    setSelectedMonth(data.navigation.previous_month)
-  }, [data])
+    setSelectedMonth((prev) => offsetMonth(prev, -1))
+  }, [])
 
   const goNextMonth = useCallback(() => {
-    if (!data?.navigation.has_next_data || data.navigation.is_current_month || !data.navigation.next_month) return
-    setSelectedMonth(data.navigation.next_month)
-  }, [data])
+    setSelectedMonth((prev) => {
+      const next = offsetMonth(prev, 1)
+      // Never go past the current month
+      return next <= currentMonthKey ? next : prev
+    })
+  }, [currentMonthKey])
 
   const reload = useCallback(async () => {
     if (!enabled) return
@@ -381,6 +396,8 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     projectsLoading,
     loading,
     error,
+    canGoPrevious,
+    canGoNext,
     setSelectedMonth,
     setSelectedProjectId: handleSelectProjectId,
     goPreviousMonth,

@@ -1,0 +1,25 @@
+{
+  "dashboard": {
+    "title": "Monthly dashboard",
+    "greeting": "Welcome, {name}",
+    "activeAccount": "Active account",
+    "pendingAccount": "Account pending activation",
+    "financialSummary": "Consolidated financial summary for",
+    "updatedAt": "Updated: {date}",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "monthlyIncome": "Monthly income",
+    "monthlyExpenses": "Monthly expenses",
+    "netBalance": "Net balance",
+    "recentMovements": "Recent movements",
+    "monthlyExpensesChart": "Expenses / month",
+    "noActivity": "No activity recorded",
+    "noActivityDescription": "Record income or expenses in your projects to see the summary here",
+    "projectAnalyzed": "Analyzed project",
+    "selectProject": "Select a project",
+    "noProjects": "No projects yet",
+    "noProjectsWorkspaceRequired": "To create a project you need a workspace. Create your first workspace to get started.",
+    "createWorkspace": "Create workspace",
+    "selectProjectDescription": "Select a project to load the monthly dashboard."
+  }
+}

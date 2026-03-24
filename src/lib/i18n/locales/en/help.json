@@ -1,0 +1,9 @@
+{
+  "help": {
+    "title": "Help Center",
+    "heroText": "Find answers to the most frequently asked questions about {name}, or contact us directly through any of the available channels.",
+    "contactUs": "Contact us",
+    "faq": "Frequently asked questions",
+    "questions": "questions"
+  }
+}

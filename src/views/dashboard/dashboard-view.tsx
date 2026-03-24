@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -21,10 +21,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 import { useMonthlyOverview } from "@/hooks/dashboard/use-monthly-overview"
 import type { DashboardAlert, DashboardTrendDay } from "@/types/dashboard"
 
 export function DashboardView() {
+  const { t } = useLanguage()
   const router = useRouter()
   const { user } = useAuth()
 
@@ -37,6 +39,9 @@ export function DashboardView() {
     projectsLoading,
     loading,
     error,
+    canGoPrevious,
+    canGoNext,
+    setSelectedMonth,
     goPreviousMonth,
     goNextMonth,
     reload,
@@ -84,7 +89,6 @@ export function DashboardView() {
   }, [router])
 
   if (!user) return null
-  if ((loading || projectsLoading) && !data) return <DashboardMonthlyLoading />
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -92,13 +96,15 @@ export function DashboardView() {
         userFirstName={userFirstName}
         isActive={user.isActive}
         monthLabel={monthLabel}
+        selectedMonth={selectedMonth}
         generatedAt={data?.generated_at}
         alerts={data?.alerts ?? []}
         loading={loading}
-        canGoPrevious={Boolean(data?.navigation.has_previous_data)}
-        canGoNext={Boolean(data?.navigation.has_next_data && !data?.navigation.is_current_month)}
+        canGoPrevious={canGoPrevious}
+        canGoNext={canGoNext}
         onGoPreviousMonth={goPreviousMonth}
         onGoNextMonth={goNextMonth}
+        onSelectMonth={setSelectedMonth}
         onReload={reload}
         onOpenAlert={handleOpenAlert}
       />
@@ -106,11 +112,11 @@ export function DashboardView() {
       {projects.length > 0 && (
         <section className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Proyecto analizado
+            {t("dashboard.projectAnalyzed")}
           </p>
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
             <SelectTrigger className="w-full bg-background/80 sm:w-72">
-              <SelectValue placeholder="Selecciona un proyecto" />
+              <SelectValue placeholder={t("dashboard.selectProject")} />
             </SelectTrigger>
             <SelectContent>
               {projects.map((project) => (
@@ -126,24 +132,28 @@ export function DashboardView() {
           <EmptyState
             hasSearch={false}
             onCreate={() => router.push("/workspaces")}
-            title="Aun no tienes proyectos"
-            description="Para crear un proyecto necesitas un workspace. Crea tu primer workspace para comenzar."
-            createLabel="Crear workspace"
+            title={t("dashboard.noProjects")}
+            description={t("dashboard.noProjectsWorkspaceRequired")}
+            createLabel={t("dashboard.createWorkspace")}
           />
         </div>
       )}
 
       {projects.length > 0 && !selectedProjectId && (
         <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">
-          Selecciona un proyecto para cargar el dashboard mensual.
+          {t("dashboard.selectProjectDescription")}
         </div>
       )}
 
-      {error && (
+      {(loading || projectsLoading) && (
+        <DashboardMonthlyLoading />
+      )}
+
+      {!loading && !projectsLoading && error && (
         <DashboardMonthlyErrorCard error={error} onRetry={reload} />
       )}
 
-      {data && (
+      {!loading && !projectsLoading && data && (
         <>
           <section>
             <DashboardMonthlySummaryCards

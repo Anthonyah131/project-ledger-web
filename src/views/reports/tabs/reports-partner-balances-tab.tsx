@@ -15,6 +15,7 @@ import { PartnerBalancesReportResults } from "@/components/reports/partner-balan
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
 import type { ProjectResponse } from "@/types/project"
 import type { PartnerBalancesReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface ReportsPartnerBalancesTabProps {
   projects: ProjectResponse[]
@@ -47,6 +48,7 @@ export function ReportsPartnerBalancesTab({
   onGenerate,
   onExport,
 }: ReportsPartnerBalancesTabProps) {
+  const { t } = useLanguage()
   const partnerProjects = useMemo(
     () => projects.filter((p) => p.partnersEnabled),
     [projects],
@@ -66,15 +68,15 @@ export function ReportsPartnerBalancesTab({
         dateRangeError={dateRangeError}
       >
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Proyecto</Label>
+          <Label className="text-xs text-muted-foreground">{t("reports.projectLabel")}</Label>
           <Select value={projectId} onValueChange={onProjectChange}>
             <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder="Selecciona proyecto" />
+              <SelectValue placeholder={t("reports.selectProjectPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {partnerProjects.length === 0 ? (
                 <SelectItem value="__none" disabled>
-                  Sin proyectos con partners
+                  {t("reports.noProjectsWithPartners")}
                 </SelectItem>
               ) : (
                 partnerProjects.map((project) => (

@@ -21,6 +21,7 @@ import type {
 import type { ObligationResponse } from "@/types/obligation"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
+import { useLanguage } from "@/context/language-context"
 
 const CreateExpenseModal = dynamic(() =>
   import("@/components/project-detail/expenses/create-expense-modal").then((mod) => mod.CreateExpenseModal)
@@ -98,6 +99,7 @@ export function ProjectDetailExpensesTab({
   onDelete,
   onToggleActive,
 }: ProjectDetailExpensesTabProps) {
+  const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<ExpenseResponse | null>(null)
 
   return (
@@ -182,9 +184,9 @@ export function ProjectDetailExpensesTab({
         open={!!exp.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title="Eliminar gasto"
-        description="Esta accion no se puede deshacer."
-        getMessage={(expense) => `¿Eliminar gasto "${expense.title}"?`}
+        title={t("expenses.deleteTitle")}
+        description={t("expenses.deleteConfirmDescription")}
+        getMessage={(expense) => t("expenses.deleteConfirmDescriptionNamed", { name: expense.title })}
       />
 
       <MovementDetailSheet

@@ -1,0 +1,29 @@
+{
+  "admin": {
+    "title": "Administración",
+    "usersTab": "Usuarios",
+    "columnUser": "Usuario",
+    "columnPlan": "Plan",
+    "columnStatus": "Estado",
+    "columnRole": "Rol",
+    "columnRegistered": "Registro",
+    "columnLastAccess": "Último acceso",
+    "statusActive": "Activo",
+    "statusInactive": "Inactivo",
+    "statusDeleted": "Eliminado",
+    "roleAdmin": "Admin",
+    "roleUser": "Usuario",
+    "makeAdmin": "Hacer admin",
+    "removeAdmin": "Quitar admin",
+    "deactivate": "Desactivar",
+    "activate": "Activar",
+    "searchUsers": "Buscar usuarios...",
+    "noUsers": "No hay usuarios",
+    "never": "Nunca",
+    "singular": "usuario",
+    "plural": "usuarios",
+    "deleteConfirmTitle": "Eliminar usuario",
+    "deleteConfirmDescription": "Esta acción no se puede deshacer. El usuario será desactivado permanentemente.",
+    "deleteConfirmDescriptionNamed": "¿Eliminar a \"{name}\" ({email})?"
+  }
+}

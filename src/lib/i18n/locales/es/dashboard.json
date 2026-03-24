@@ -1,0 +1,25 @@
+{
+  "dashboard": {
+    "title": "Dashboard mensual",
+    "greeting": "Bienvenido, {name}",
+    "activeAccount": "Cuenta activa",
+    "pendingAccount": "Cuenta pendiente de activación",
+    "financialSummary": "Resumen financiero consolidado para",
+    "updatedAt": "Actualizado: {date}",
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "monthlyIncome": "Ingresos del mes",
+    "monthlyExpenses": "Gastos del mes",
+    "netBalance": "Balance neto",
+    "recentMovements": "Últimos movimientos",
+    "monthlyExpensesChart": "Gastos / mes",
+    "noActivity": "Sin actividad registrada",
+    "noActivityDescription": "Registra ingresos o gastos en tus proyectos para ver el resumen aquí",
+    "projectAnalyzed": "Proyecto analizado",
+    "selectProject": "Selecciona un proyecto",
+    "noProjects": "Aún no tienes proyectos",
+    "noProjectsWorkspaceRequired": "Para crear un proyecto necesitas un workspace. Crea tu primer workspace para comenzar.",
+    "createWorkspace": "Crear workspace",
+    "selectProjectDescription": "Selecciona un proyecto para cargar el dashboard mensual."
+  }
+}

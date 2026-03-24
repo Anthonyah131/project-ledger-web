@@ -33,6 +33,7 @@ import {
   ProjectDetailSettingsTab,
   type ProjectSettingsSection,
 } from "@/views/project-detail/tabs/project-detail-settings-tab";
+import { useLanguage } from "@/context/language-context";
 
 interface Props {
   projectId: string;
@@ -41,6 +42,7 @@ interface Props {
 type CreateEntryMode = "manual" | "ai";
 
 export function ProjectDetailView({ projectId }: Props) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
   const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
@@ -197,15 +199,15 @@ export function ProjectDetailView({ projectId }: Props) {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList variant="line">
-          <TabsTrigger value="expenses">Gastos</TabsTrigger>
-          <TabsTrigger value="incomes">Ingresos</TabsTrigger>
-          <TabsTrigger value="obligations">Obligaciones</TabsTrigger>
-          <TabsTrigger value="categories">Categorías</TabsTrigger>
-          <TabsTrigger value="budget">Presupuesto</TabsTrigger>
+          <TabsTrigger value="expenses">{t("projects.tabs.expenses")}</TabsTrigger>
+          <TabsTrigger value="incomes">{t("projects.tabs.incomes")}</TabsTrigger>
+          <TabsTrigger value="obligations">{t("projects.tabs.obligations")}</TabsTrigger>
+          <TabsTrigger value="categories">{t("projects.tabs.categories")}</TabsTrigger>
+          <TabsTrigger value="budget">{t("projects.tabs.budget")}</TabsTrigger>
           {partnersEnabled && (
-            <TabsTrigger value="partners">Socios</TabsTrigger>
+            <TabsTrigger value="partners">{t("projects.tabs.partners")}</TabsTrigger>
           )}
-          <TabsTrigger value="settings">Configuración</TabsTrigger>
+          <TabsTrigger value="settings">{t("projects.tabs.settings")}</TabsTrigger>
         </TabsList>
 
         <ProjectDetailExpensesTab
@@ -355,9 +357,9 @@ export function ProjectDetailView({ projectId }: Props) {
           open={deleteProjectOpen}
           onClose={handleDeleteProjectClose}
           onConfirm={mutateProjectDelete}
-          title="Eliminar proyecto"
-          description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
-          getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
+          title={t("projects.deleteConfirmTitle")}
+          description={t("projects.deleteConfirmDescription")}
+          getMessage={(p) => t("projects.deleteConfirmDescriptionNamed", { name: p.name })}
         />
       )}
     </div>

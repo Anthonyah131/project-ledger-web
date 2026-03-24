@@ -1,0 +1,23 @@
+{
+  "paymentMethods": {
+    "title": "Métodos de pago",
+    "new": "Nuevo método de pago",
+    "createTitle": "Nuevo método de pago",
+    "createSubtitle": "Agrega una cuenta bancaria, tarjeta o efectivo",
+    "editTitle": "Editar método de pago",
+    "namePlaceholder": "Ej: Cuenta BAC Principal",
+    "bankPlaceholder": "BAC Credomatic...",
+    "accountNumberPlaceholder": "001-123456-7",
+    "issuerPlaceholder": "Visa / Mastercard...",
+    "lastFourPlaceholder": "4321",
+    "notesPlaceholder": "Notas adicionales...",
+    "bankLabel": "Banco",
+    "accountNumberLabel": "N. cuenta",
+    "issuerLabel": "Emisor",
+    "lastFourLabel": "Últimos 4 dígitos",
+    "empty": "No hay métodos de pago",
+    "emptyDescription": "Agrega tu primera cuenta, tarjeta o efectivo",
+    "deleteConfirmTitle": "¿Eliminar método de pago?",
+    "deleteConfirmDescription": "Esta acción no se puede deshacer."
+  }
+}

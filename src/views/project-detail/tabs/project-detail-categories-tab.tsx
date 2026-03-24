@@ -14,6 +14,7 @@ import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
 } from "@/types/category"
+import { useLanguage } from "@/context/language-context"
 
 const CreateCategoryModal = dynamic(() =>
   import("@/components/project-detail/categories/create-category-modal").then((mod) => mod.CreateCategoryModal)
@@ -58,6 +59,7 @@ export function ProjectDetailCategoriesTab({
   onSave,
   onDelete,
 }: ProjectDetailCategoriesTabProps) {
+  const { t } = useLanguage()
   return (
     <TabsContent value="categories" className="flex flex-col gap-4">
       <CategoriesToolbar
@@ -103,9 +105,9 @@ export function ProjectDetailCategoriesTab({
         open={!!cat.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title="Eliminar categoria"
-        description="Esta accion no se puede deshacer."
-        getMessage={(category) => `¿Eliminar categoría "${category.name}"? Los gastos de esta categoría se moverán a la categoría General.`}
+        title={t("categories.deleteTitle")}
+        description={t("categories.deleteConfirmDescription")}
+        getMessage={(category) => t("categories.deleteConfirmDescriptionNamed", { name: category.name })}
       />
     </TabsContent>
   )

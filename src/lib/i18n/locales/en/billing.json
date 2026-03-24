@@ -1,0 +1,73 @@
+{
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Manage your plan, upgrades/downgrades and real subscription status.",
+    "update": "Refresh",
+    "errorTitle": "Billing error",
+    "unavailable": "Billing unavailable",
+    "stripeDisabled": "Stripe is disabled by environment configuration. Subscription and checkout actions are not available.",
+    "noPaymentRequired": "No payment required",
+    "subscribe": "Subscribe",
+    "switchToPlan": "Switch to this plan",
+    "switchToFree": "Switch to Free",
+    "billingDisabled": "Billing disabled",
+    "currentPlan": "Current plan",
+    "redirecting": "Redirecting...",
+    "updatingPlan": "Updating plan...",
+    "schedulingCancellation": "Scheduling cancellation...",
+    "current": "Current",
+    "perMonth": "/month",
+    "pricingTitle": "Plans for every stage",
+    "pricingSubtitle": "Start free and scale when you need to. No surprises",
+    "loadingPlans": "Loading plans...",
+    "mostPopular": "Most popular",
+    "forever": "forever",
+    "perMonthLabel": "per month",
+    "limits": "Limits",
+    "includes": "Includes",
+    "startFree": "Start for free",
+    "ctaTitle": "Ready for real control?",
+    "ctaSubtitle": "Start today with the Free plan — no card, no expiration date",
+    "createFreeAccount": "Create free account",
+    "seeAllPlans": "See all plans →",
+    "planCancelledAt": "Cancels on {date}",
+    "manageBilling": "Manage billing",
+    "errors": {
+      "sessionExpired": "Your session expired. Please sign in again.",
+      "forbidden": "You don't have permission to access billing.",
+      "subscriptionForbidden": "You don't have permission to access this subscription.",
+      "loadFailed": "Could not load billing information.",
+      "subscriptionFailed": "Could not check subscription status."
+    },
+    "features": {
+      "ocr": "AI OCR",
+      "multiCurrency": "Multi-currency",
+      "teamCollaboration": "Team collaboration",
+      "reports": "Reports",
+      "chatbot": "Financial chatbot"
+    },
+    "cancelPage": {
+      "title": "Payment cancelled",
+      "subtitle": "Subscription not completed",
+      "description": "You cancelled the Stripe process. No charge was made.",
+      "hint": "You can try again anytime from the billing section.",
+      "backToBilling": "Back to billing",
+      "goToDashboard": "Go to dashboard"
+    },
+    "successPage": {
+      "titleDisabled": "Billing unavailable",
+      "titleConfirmed": "Payment confirmed",
+      "confirming": "Confirming subscription in Project Ledger...",
+      "attemptsAndTime": "Attempts: {attempts} · Time: {seconds}s",
+      "syncedTitle": "Subscription synced",
+      "syncedDescription": "Your plan is updated and ready to use.",
+      "processingTitle": "Still processing your payment",
+      "processingDescription": "The webhook may take a few more seconds. Retry to check again.",
+      "errorTitle": "Could not confirm subscription",
+      "stripeDisabledTitle": "Stripe disabled",
+      "retry": "Retry",
+      "viewBilling": "View billing",
+      "goToDashboard": "Go to dashboard"
+    }
+  }
+}

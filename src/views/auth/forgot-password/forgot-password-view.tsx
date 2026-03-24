@@ -17,8 +17,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useForgotPassword } from "@/hooks/auth/use-forgot-password"
 import { useState } from "react"
+import { useLanguage } from "@/context/language-context"
 
 export function ForgotPasswordView() {
+  const { t } = useLanguage()
   const {
     currentStep,
     email,
@@ -49,7 +51,7 @@ export function ForgotPasswordView() {
           disabled={isLoading}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Atrás
+          {t("auth.forgotPasswordFlow.back")}
         </Button>
       )}
 
@@ -58,11 +60,10 @@ export function ForgotPasswordView() {
         <>
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight">
-              Restablecer contraseña
+              {t("auth.forgotPasswordFlow.requestTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Ingresa tu correo electrónico y te enviaremos un código de
-              verificación.
+              {t("auth.forgotPasswordFlow.requestSubtitle")}
             </p>
           </div>
 
@@ -73,7 +74,7 @@ export function ForgotPasswordView() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Correo electrónico</FormLabel>
+                    <FormLabel>{t("auth.emailLabel")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -105,10 +106,10 @@ export function ForgotPasswordView() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enviando...
+                    {t("auth.forgotPasswordFlow.sending")}
                   </>
                 ) : (
-                  "Enviar código"
+                  t("auth.forgotPasswordFlow.sendCode")
                 )}
               </Button>
             </form>
@@ -119,7 +120,7 @@ export function ForgotPasswordView() {
               href="/login"
               className="text-sm text-muted-foreground underline-offset-4 hover:underline"
             >
-              Volver a iniciar sesión
+              {t("auth.forgotPasswordFlow.backToLogin")}
             </Link>
           </div>
         </>
@@ -130,10 +131,10 @@ export function ForgotPasswordView() {
         <>
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight">
-              Verificar código
+              {t("auth.forgotPasswordFlow.verifyTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Ingresa el código de 6 dígitos que enviamos a{" "}
+              {t("auth.forgotPasswordFlow.verifySubtitle")}{" "}
               <span className="font-medium text-foreground">{email}</span>
             </p>
           </div>
@@ -145,11 +146,11 @@ export function ForgotPasswordView() {
                 name="otpCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Código de verificación</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.codeLabel")}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="123456"
+                        placeholder={t("auth.forgotPasswordFlow.codePlaceholder")}
                         maxLength={6}
                         autoComplete="one-time-code"
                         disabled={isLoading}
@@ -158,7 +159,7 @@ export function ForgotPasswordView() {
                       />
                     </FormControl>
                     <FormDescription>
-                      El código expira en 15 minutos
+                      {t("auth.forgotPasswordFlow.codeExpiry")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -182,10 +183,10 @@ export function ForgotPasswordView() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verificando...
+                    {t("auth.forgotPasswordFlow.verifying")}
                   </>
                 ) : (
-                  "Verificar código"
+                  t("auth.forgotPasswordFlow.verifyCode")
                 )}
               </Button>
             </form>
@@ -198,10 +199,10 @@ export function ForgotPasswordView() {
         <>
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight">
-              Nueva contraseña
+              {t("auth.forgotPasswordFlow.resetTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Ingresa tu nueva contraseña. Debe tener al menos 8 caracteres.
+              {t("auth.forgotPasswordFlow.resetSubtitle")}
             </p>
           </div>
 
@@ -212,7 +213,7 @@ export function ForgotPasswordView() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nueva contraseña</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.newPasswordLabel")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -247,7 +248,7 @@ export function ForgotPasswordView() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar contraseña</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.confirmPasswordLabel")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -296,10 +297,10 @@ export function ForgotPasswordView() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Actualizando...
+                    {t("auth.forgotPasswordFlow.updating")}
                   </>
                 ) : (
-                  "Cambiar contraseña"
+                  t("auth.forgotPasswordFlow.changePassword")
                 )}
               </Button>
             </form>

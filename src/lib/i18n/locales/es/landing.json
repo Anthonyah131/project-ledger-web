@@ -1,0 +1,18 @@
+{
+  "landing": {
+    "badge": "OCR con IA + chatbot financiero integrado",
+    "heroTitle": "Control financiero de proyectos sin fricción",
+    "heroSubtitle": "Project Ledger te permite registrar gastos e ingresos, gestionar métodos de pago, colaborar en equipo y analizar tu flujo de caja — todo en un solo lugar, con IA que lee tus comprobantes",
+    "ctaPrimary": "Empezar gratis — sin tarjeta",
+    "ctaSecondary": "Ver características",
+    "freePlanBadge": "Plan Free disponible para siempre",
+    "noTimeLimit": "Sin límite de tiempo",
+    "upgradeAnytime": "Actualiza cuando lo necesites",
+    "featuresTitle": "Características",
+    "featuresSubtitle": "Finanzas de proyectos, bajo control",
+    "featuresDescription": "Cada herramienta que necesitas para registrar, entender y optimizar el flujo de dinero de tus proyectos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "goToFeature": "Ir a {feature}"
+  }
+}

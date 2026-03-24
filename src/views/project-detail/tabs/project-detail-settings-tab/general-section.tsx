@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form"
 import { useUpdateProjectForm } from "@/hooks/forms/use-project-form"
 import type { ProjectResponse, UpdateProjectRequest } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 
 export function GeneralSection({
   project,
@@ -26,6 +27,7 @@ export function GeneralSection({
   isOwner: boolean
   onSave: (id: string, data: UpdateProjectRequest) => void
 }) {
+  const { t } = useLanguage()
   const { form, onSubmit } = useUpdateProjectForm({
     project,
     onSave,
@@ -35,9 +37,9 @@ export function GeneralSection({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-semibold">Información del proyecto</h3>
+        <h3 className="text-base font-semibold">{t("projects.settingsTab.generalTitle")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Actualiza el nombre y la descripción del proyecto.
+          {t("projects.settingsTab.generalSubtitle")}
         </p>
       </div>
 
@@ -62,7 +64,7 @@ export function GeneralSection({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre del proyecto</FormLabel>
+                  <FormLabel>{t("projects.settingsTab.nameLabel")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -79,7 +81,7 @@ export function GeneralSection({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel>{t("projects.settingsTab.descriptionLabel")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={3}
@@ -94,7 +96,7 @@ export function GeneralSection({
             />
             {isOwner && (
               <Button type="submit" size="sm">
-                Guardar cambios
+                {t("common.save")}
               </Button>
             )}
           </form>

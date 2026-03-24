@@ -15,6 +15,7 @@ import type {
   ObligationResponse,
   UpdateObligationRequest,
 } from "@/types/obligation"
+import { useLanguage } from "@/context/language-context"
 
 const CreateObligationModal = dynamic(() =>
   import("@/components/project-detail/obligations/create-obligation-modal").then((mod) => mod.CreateObligationModal)
@@ -66,6 +67,7 @@ export function ProjectDetailObligationsTab({
   onSave,
   onDelete,
 }: ProjectDetailObligationsTabProps) {
+  const { t } = useLanguage()
   return (
     <TabsContent value="obligations" className="flex flex-col gap-4">
       <ObligationsToolbar
@@ -125,9 +127,9 @@ export function ProjectDetailObligationsTab({
         open={!!obl.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title="Eliminar obligacion"
-        description="Esta accion no se puede deshacer."
-        getMessage={(obligation) => `¿Eliminar obligación "${obligation.title}"?`}
+        title={t("obligations.deleteTitle")}
+        description={t("obligations.deleteConfirmDescription")}
+        getMessage={(obligation) => t("obligations.deleteConfirmDescriptionNamed", { name: obligation.title })}
       />
     </TabsContent>
   )

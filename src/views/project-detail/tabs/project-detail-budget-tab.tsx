@@ -9,6 +9,7 @@ import type {
   ProjectBudgetResponse,
   SetProjectBudgetRequest,
 } from "@/types/project-budget"
+import { useLanguage } from "@/context/language-context"
 
 const SetProjectBudgetModal = dynamic(() =>
   import("@/components/project-detail/budget/set-budget-modal").then((mod) => mod.SetProjectBudgetModal)
@@ -46,6 +47,7 @@ export function ProjectDetailBudgetTab({
   onSave,
   onDelete,
 }: ProjectDetailBudgetTabProps) {
+  const { t } = useLanguage()
   return (
     <TabsContent value="budget" className="flex flex-col gap-4">
       {bud.loading ? (
@@ -76,9 +78,9 @@ export function ProjectDetailBudgetTab({
         open={!!bud.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title="Eliminar presupuesto"
-        description="El proyecto quedará sin un límite general de gastos."
-        getMessage={() => "¿Eliminar el presupuesto configurado para este proyecto?"}
+        title={t("budget.deleteTitle")}
+        description={t("budget.deleteDescription")}
+        getMessage={() => t("budget.deleteConfirm")}
       />
     </TabsContent>
   )

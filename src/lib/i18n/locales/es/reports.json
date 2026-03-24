@@ -1,0 +1,42 @@
+{
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Genera reportes detallados por proyecto, método de pago, ingresos, partners o workspace.",
+    "from": "Desde",
+    "to": "Hasta",
+    "generate": "Generar",
+    "format": "Formato",
+    "excel": "Excel (.xlsx)",
+    "pdf": "PDF",
+    "download": "Descargar",
+    "exportHint": "Las exportaciones incluyen desglose de ingresos y balance neto para facilitar el análisis de flujo",
+    "generating": "Generando...",
+    "empty": "No hay datos para el período seleccionado",
+    "selectProject": "Selecciona un proyecto",
+    "selectProjectDescription": "Elige un proyecto para generar su reporte",
+    "alternativeCurrencyTotals": "Totales en monedas alternativas",
+    "tabs": {
+      "expenses": "Gastos",
+      "incomes": "Ingresos",
+      "paymentMethods": "Métodos de pago",
+      "partnerBalances": "Balance partners",
+      "partnerGeneral": "Partner general",
+      "workspace": "Workspace"
+    },
+    "projectLabel": "Proyecto",
+    "partnerLabel": "Partner",
+    "workspaceLabel": "Workspace",
+    "selectProjectPlaceholder": "Selecciona proyecto",
+    "selectPartnerPlaceholder": "Selecciona partner",
+    "selectWorkspacePlaceholder": "Selecciona workspace",
+    "referenceCurrency": "Moneda de referencia",
+    "referenceCurrencyPlaceholder": "ej. USD",
+    "paymentMethodsLabel": "Métodos de pago",
+    "paymentMethodsAll": "Todos",
+    "paymentMethodsAllLabel": "Todos los métodos",
+    "selectedOne": "1 seleccionado",
+    "selectedMany": "{count} seleccionados",
+    "noProjectsWithPartners": "Sin proyectos con partners",
+    "noPartnersRegistered": "Sin partners registrados"
+  }
+}

@@ -28,10 +28,12 @@ import { ReportsIncomesTab } from "@/views/reports/tabs/reports-incomes-tab"
 import { ReportsPartnerBalancesTab } from "@/views/reports/tabs/reports-partner-balances-tab"
 import { ReportsPartnerGeneralTab } from "@/views/reports/tabs/reports-partner-general-tab"
 import { ReportsWorkspaceTab } from "@/views/reports/tabs/reports-workspace-tab"
+import { useLanguage } from "@/context/language-context"
 
 const VALID_TABS = ["expenses", "payment-methods", "incomes", "partner-balances", "partner-general", "workspace"] as const
 
 export function ReportsView() {
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const { projects, paymentMethods, workspaces, partners, loading: catalogsLoading } = useReportsCatalogs()
 
@@ -226,21 +228,21 @@ export function ReportsView() {
       {/* Page heading */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">
-          Reportes
+          {t("reports.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Genera reportes detallados por proyecto, método de pago, ingresos, partners o workspace.
+          {t("reports.subtitle")}
         </p>
       </div>
 
       <Tabs defaultValue={initialTab}>
         <TabsList variant="line">
-          <TabsTrigger value="expenses">Gastos</TabsTrigger>
-          <TabsTrigger value="incomes">Ingresos</TabsTrigger>
-          <TabsTrigger value="payment-methods">Métodos de pago</TabsTrigger>
-          <TabsTrigger value="partner-balances">Balance partners</TabsTrigger>
-          <TabsTrigger value="partner-general">Partner general</TabsTrigger>
-          <TabsTrigger value="workspace">Workspace</TabsTrigger>
+          <TabsTrigger value="expenses">{t("reports.tabs.expenses")}</TabsTrigger>
+          <TabsTrigger value="incomes">{t("reports.tabs.incomes")}</TabsTrigger>
+          <TabsTrigger value="payment-methods">{t("reports.tabs.paymentMethods")}</TabsTrigger>
+          <TabsTrigger value="partner-balances">{t("reports.tabs.partnerBalances")}</TabsTrigger>
+          <TabsTrigger value="partner-general">{t("reports.tabs.partnerGeneral")}</TabsTrigger>
+          <TabsTrigger value="workspace">{t("reports.tabs.workspace")}</TabsTrigger>
         </TabsList>
 
         <ReportsExpensesTab

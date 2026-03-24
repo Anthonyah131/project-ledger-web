@@ -15,6 +15,7 @@ import { WorkspaceReportResults } from "@/components/reports/workspace-report-re
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
 import type { WorkspaceResponse } from "@/types/workspace"
 import type { WorkspaceReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface ReportsWorkspaceTabProps {
   workspaces: WorkspaceResponse[]
@@ -51,6 +52,7 @@ export function ReportsWorkspaceTab({
   onGenerate,
   onExport,
 }: ReportsWorkspaceTabProps) {
+  const { t } = useLanguage()
   return (
     <TabsContent value="workspace" className="flex flex-col gap-6 mt-4">
       <ReportFilters
@@ -65,10 +67,10 @@ export function ReportsWorkspaceTab({
         dateRangeError={dateRangeError}
       >
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Workspace</Label>
+          <Label className="text-xs text-muted-foreground">{t("reports.workspaceLabel")}</Label>
           <Select value={workspaceId} onValueChange={onWorkspaceChange}>
             <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder="Selecciona workspace" />
+              <SelectValue placeholder={t("reports.selectWorkspacePlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {workspaces.map((ws) => (
@@ -81,12 +83,12 @@ export function ReportsWorkspaceTab({
         </div>
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">
-            Moneda de referencia
+            {t("reports.referenceCurrency")}
           </Label>
           <Input
             value={currency}
             onChange={(e) => onCurrencyChange(e.target.value.toUpperCase())}
-            placeholder="ej. USD"
+            placeholder={t("reports.referenceCurrencyPlaceholder")}
             className="w-24 h-8 text-xs"
             maxLength={3}
           />

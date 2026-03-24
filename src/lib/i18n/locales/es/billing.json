@@ -1,0 +1,73 @@
+{
+  "billing": {
+    "title": "Facturación",
+    "subtitle": "Gestiona tu plan, upgrades/downgrades y estado real de tu suscripción.",
+    "update": "Actualizar",
+    "errorTitle": "Error de facturación",
+    "unavailable": "Facturación no disponible",
+    "stripeDisabled": "Stripe está deshabilitado por configuración del entorno. Las acciones de suscripción y checkout no están disponibles.",
+    "noPaymentRequired": "No requiere pago",
+    "subscribe": "Suscribirse",
+    "switchToPlan": "Cambiar a este plan",
+    "switchToFree": "Cambiar a Free",
+    "billingDisabled": "Facturación deshabilitada",
+    "currentPlan": "Plan actual",
+    "redirecting": "Redirigiendo...",
+    "updatingPlan": "Actualizando plan...",
+    "schedulingCancellation": "Programando cancelación...",
+    "current": "Actual",
+    "perMonth": "/mes",
+    "pricingTitle": "Planes para cada etapa",
+    "pricingSubtitle": "Empieza gratis y escala cuando lo necesites. Sin sorpresas",
+    "loadingPlans": "Cargando planes...",
+    "mostPopular": "Más popular",
+    "forever": "para siempre",
+    "perMonthLabel": "por mes",
+    "limits": "Límites",
+    "includes": "Incluye",
+    "startFree": "Empezar gratis",
+    "ctaTitle": "¿Listo para tener control real?",
+    "ctaSubtitle": "Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración",
+    "createFreeAccount": "Crear cuenta gratis",
+    "seeAllPlans": "Ver todos los planes →",
+    "planCancelledAt": "Cancela el {date}",
+    "manageBilling": "Gestionar facturación",
+    "errors": {
+      "sessionExpired": "Tu sesión expiró. Inicia sesión nuevamente.",
+      "forbidden": "No tienes permisos para consultar la facturación.",
+      "subscriptionForbidden": "No tienes permisos para consultar esta suscripción.",
+      "loadFailed": "No fue posible cargar la información de facturación.",
+      "subscriptionFailed": "No fue posible consultar el estado de la suscripción."
+    },
+    "features": {
+      "ocr": "OCR con IA",
+      "multiCurrency": "Multi-moneda",
+      "teamCollaboration": "Colaboración en equipo",
+      "reports": "Reportes",
+      "chatbot": "Chatbot financiero"
+    },
+    "cancelPage": {
+      "title": "Pago cancelado",
+      "subtitle": "No se completó la suscripción",
+      "description": "Cancelaste el proceso en Stripe. No se realizó ningún cobro.",
+      "hint": "Puedes volver a intentarlo cuando quieras desde la sección de facturación.",
+      "backToBilling": "Volver a facturación",
+      "goToDashboard": "Ir al dashboard"
+    },
+    "successPage": {
+      "titleDisabled": "Facturación no disponible",
+      "titleConfirmed": "Pago confirmado",
+      "confirming": "Confirmando suscripción en Project Ledger...",
+      "attemptsAndTime": "Intentos: {attempts} · Tiempo: {seconds}s",
+      "syncedTitle": "Suscripción sincronizada",
+      "syncedDescription": "Tu plan ya está actualizado y listo para usarse.",
+      "processingTitle": "Seguimos procesando tu pago",
+      "processingDescription": "El webhook puede tardar unos segundos más. Reintenta para consultar de nuevo.",
+      "errorTitle": "No se pudo confirmar la suscripción",
+      "stripeDisabledTitle": "Stripe deshabilitado",
+      "retry": "Reintentar",
+      "viewBilling": "Ver facturación",
+      "goToDashboard": "Ir al dashboard"
+    }
+  }
+}

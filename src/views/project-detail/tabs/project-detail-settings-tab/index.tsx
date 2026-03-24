@@ -8,6 +8,7 @@ import { CurrenciesSection } from "./currencies-section"
 import { PartnersSection } from "./partners-section"
 import { PaymentMethodsSection } from "./payment-methods-section"
 import type { ProjectResponse, UpdateProjectRequest } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 import type { CurrencyResponse } from "@/types/currency"
 import type { ProjectAlternativeCurrencyResponse } from "@/types/project-alternative-currency"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
@@ -25,16 +26,6 @@ export type ProjectSettingsSection =
   | "partners"
   | "payment-methods"
 
-const SECTIONS = [
-  { key: "general" as ProjectSettingsSection, title: "General", icon: Pencil },
-  { key: "currencies" as ProjectSettingsSection, title: "Monedas", icon: Globe },
-  { key: "partners" as ProjectSettingsSection, title: "Partners", icon: Users },
-  {
-    key: "payment-methods" as ProjectSettingsSection,
-    title: "Métodos de pago",
-    icon: CreditCard,
-  },
-] as const
 
 // ── Prop interfaces ───────────────────────────────────────────────────────────
 
@@ -130,6 +121,15 @@ export function ProjectDetailSettingsTab({
   onRemoveClosePM,
   onUnlink,
 }: ProjectDetailSettingsTabProps) {
+  const { t } = useLanguage()
+
+  const SECTIONS = [
+    { key: "general" as ProjectSettingsSection, title: t("projects.settingsTab.general"), icon: Pencil },
+    { key: "currencies" as ProjectSettingsSection, title: t("projects.settingsTab.currencies"), icon: Globe },
+    { key: "partners" as ProjectSettingsSection, title: t("projects.settingsTab.partners"), icon: Users },
+    { key: "payment-methods" as ProjectSettingsSection, title: t("projects.settingsTab.paymentMethods"), icon: CreditCard },
+  ]
+
   return (
     <TabsContent value="settings" className="mt-0">
       <div className="flex flex-col gap-6 pt-4 md:flex-row md:gap-8">
@@ -137,7 +137,7 @@ export function ProjectDetailSettingsTab({
         <aside className="shrink-0 md:w-52">
           <nav
             className="flex flex-row gap-1 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0"
-            aria-label="Secciones de configuración del proyecto"
+            aria-label={t("projects.settingsTab.sectionLabel")}
           >
             {SECTIONS.map((section) => {
               const isActive = activeSection === section.key

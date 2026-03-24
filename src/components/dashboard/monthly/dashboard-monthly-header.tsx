@@ -7,6 +7,7 @@ import {
 } from "@tabler/icons-react"
 
 import { DashboardMonthlyAlertsIndicator } from "@/components/dashboard/monthly/dashboard-monthly-alerts-indicator"
+import { DashboardMonthlyPicker } from "@/components/dashboard/monthly/dashboard-monthly-picker"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { DashboardAlert } from "@/types/dashboard"
@@ -15,6 +16,7 @@ interface DashboardMonthlyHeaderProps {
   userFirstName: string
   isActive: boolean
   monthLabel: string
+  selectedMonth: string
   generatedAt?: string
   alerts: DashboardAlert[]
   loading: boolean
@@ -22,6 +24,7 @@ interface DashboardMonthlyHeaderProps {
   canGoNext: boolean
   onGoPreviousMonth: () => void
   onGoNextMonth: () => void
+  onSelectMonth: (monthKey: string) => void
   onReload: () => void
   onOpenAlert?: (alert: DashboardAlert) => void
 }
@@ -30,6 +33,7 @@ export function DashboardMonthlyHeader({
   userFirstName,
   isActive,
   monthLabel,
+  selectedMonth,
   generatedAt,
   alerts,
   loading,
@@ -37,6 +41,7 @@ export function DashboardMonthlyHeader({
   canGoNext,
   onGoPreviousMonth,
   onGoNextMonth,
+  onSelectMonth,
   onReload,
   onOpenAlert,
 }: DashboardMonthlyHeaderProps) {
@@ -82,9 +87,11 @@ export function DashboardMonthlyHeader({
             <IconChevronLeft className="size-4" />
           </Button>
 
-          <Badge variant="outline" className="min-w-40 justify-center bg-primary/10 text-primary">
-            {monthLabel}
-          </Badge>
+          <DashboardMonthlyPicker
+            selectedMonth={selectedMonth}
+            onSelectMonth={onSelectMonth}
+            loading={loading}
+          />
 
           {canGoNext && (
             <Button

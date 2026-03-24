@@ -1,0 +1,25 @@
+{
+  "workspaces": {
+    "title": "Workspaces",
+    "new": "Nuevo workspace",
+    "createTitle": "Nuevo workspace",
+    "createSubtitle": "Agrupa proyectos relacionados en un workspace",
+    "editTitle": "Editar workspace",
+    "namePlaceholder": "Ej: Casa Miravalles",
+    "descriptionPlaceholder": "Descripción del workspace...",
+    "colorLabel": "Color",
+    "colorPlaceholder": "#4CAF50",
+    "iconLabel": "Ícono",
+    "iconPlaceholder": "home, briefcase...",
+    "empty": "No hay workspaces",
+    "emptyDescription": "Crea un workspace para agrupar proyectos relacionados",
+    "disconnectFromWorkspace": "Desconectar del workspace",
+    "deleteConfirmTitle": "¿Eliminar workspace?",
+    "deleteConfirmDescription": "Esta acción no se puede deshacer. Los proyectos no se eliminarán.",
+    "projectCount": "{count} proyecto(s)",
+    "workspaceLabel": "Workspace",
+    "associateProject": "Asociar proyecto",
+    "projectDisconnectedToast": "Proyecto desconectado del workspace",
+    "errorDisconnectingToast": "Error al desconectar proyecto"
+  }
+}

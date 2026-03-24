@@ -8,6 +8,7 @@ import { AdminUsersToolbar } from "@/components/admin/users-toolbar"
 import { AdminUsersSkeleton, AdminUsersEmptyState } from "@/components/admin/user-states"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { Pagination } from "@/components/shared/pagination"
+import { useLanguage } from "@/context/language-context"
 import type { AdminUserResponse } from "@/types/admin-user"
 
 const EditUserModal = dynamic(() =>
@@ -15,6 +16,7 @@ const EditUserModal = dynamic(() =>
 )
 
 export function AdminUsersView() {
+  const { t } = useLanguage()
   const {
     users,
     total,
@@ -64,10 +66,10 @@ export function AdminUsersView() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-xl font-semibold text-foreground tracking-tight">
-            Usuarios
+            {t("admin.usersTab")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} {total === 1 ? "usuario" : "usuarios"}
+            {total} {total === 1 ? t("admin.singular") : t("admin.plural")}
           </p>
         </div>
       </div>
@@ -128,9 +130,9 @@ export function AdminUsersView() {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title="Eliminar usuario"
-        description="Esta acción no se puede deshacer. El usuario será desactivado permanentemente."
-        getMessage={(u) => `¿Eliminar a "${u.fullName}" (${u.email})?`}
+        title={t("admin.deleteConfirmTitle")}
+        description={t("admin.deleteConfirmDescription")}
+        getMessage={(u) => t("admin.deleteConfirmDescriptionNamed", { name: u.fullName, email: u.email })}
       />
     </div>
   )

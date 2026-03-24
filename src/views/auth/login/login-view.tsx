@@ -17,8 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useLogin } from "@/hooks/auth/use-login"
+import { useLanguage } from "@/context/language-context"
 
 export function LoginView() {
+  const { t } = useLanguage()
   const router = useRouter()
   const {
     form,
@@ -50,10 +52,10 @@ export function LoginView() {
         <Loader2 className="size-5 animate-spin text-primary" />
         <div className="space-y-1">
           <p className="text-sm font-medium text-foreground">
-            {isSessionLoading ? "Verificando sesion activa..." : "Redirigiendo al dashboard..."}
+            {isSessionLoading ? t("auth.checkingSession") : t("auth.redirectingDashboard")}
           </p>
           <p className="text-xs text-muted-foreground">
-            Si tu sesion sigue vigente, no necesitas iniciar sesion otra vez.
+            {t("auth.activeSessionMessage")}
           </p>
         </div>
       </div>
@@ -64,9 +66,9 @@ export function LoginView() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Iniciar sesion</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("auth.loginTitle")}</h1>
         <p className="text-sm text-muted-foreground">
-          Ingresa tus credenciales para acceder a tu cuenta.
+          {t("auth.loginSubtitle")}
         </p>
       </div>
 
@@ -78,11 +80,11 @@ export function LoginView() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Correo electronico</FormLabel>
+                <FormLabel>{t("auth.emailLabel")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={t("auth.emailPlaceholder")}
                     autoComplete="email"
                     disabled={isLoading}
                     {...field}
@@ -99,12 +101,12 @@ export function LoginView() {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Contrasena</FormLabel>
+                  <FormLabel>{t("auth.passwordLabel")}</FormLabel>
                   <Link
                     href="/forgot-password"
                     className="text-xs text-muted-foreground underline-offset-4 hover:underline"
                   >
-                    Olvidaste tu contrasena?
+                    {t("auth.forgotPassword")}
                   </Link>
                 </div>
                 <FormControl>
@@ -142,10 +144,10 @@ export function LoginView() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Ingresando...
+                {t("auth.loggingIn")}
               </>
             ) : (
-              "Iniciar sesion"
+              t("auth.loginTitle")
             )}
           </Button>
         </form>
@@ -158,7 +160,7 @@ export function LoginView() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            O continua con Google
+            {t("auth.continueWithGoogle")}
           </span>
         </div>
       </div>
@@ -176,13 +178,13 @@ export function LoginView() {
 
       {/* Footer link */}
       <p className="text-center text-sm text-muted-foreground">
-        No tienes cuenta?{" "}
+        {t("auth.noAccount")}{" "}
         <Link
           href="/register"
           onClick={handleRegisterNavigation}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
-          Crear una cuenta
+          {t("auth.createAccount")}
         </Link>
       </p>
     </div>

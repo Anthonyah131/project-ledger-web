@@ -8,10 +8,12 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { ProjectsShelf } from "@/components/projects/projects-shelf"
 import { WorkspacesPanel } from "@/components/workspaces/workspaces-panel"
 import { WorkspaceDetailView } from "@/views/projects/workspace-detail-view"
+import { useLanguage } from "@/context/language-context"
 
 type Tab = "projects" | "workspaces"
 
 function ProjectsWorkspacesViewInner() {
+  const { t } = useLanguage()
   const router = useRouter()
   const params = useSearchParams()
 
@@ -39,10 +41,10 @@ function ProjectsWorkspacesViewInner() {
       {/* Tab bar */}
       <div className="flex items-center gap-1 border-b border-border mb-8">
         <TabButton active={tab === "projects"} onClick={() => switchTab("projects")}>
-          Proyectos
+          {t("nav.projects")}
         </TabButton>
         <TabButton active={tab === "workspaces" || !!wsId} onClick={() => switchTab("workspaces")}>
-          Workspaces
+          {t("nav.workspaces")}
         </TabButton>
       </div>
 

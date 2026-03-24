@@ -1,0 +1,23 @@
+{
+  "paymentMethods": {
+    "title": "Payment methods",
+    "new": "New payment method",
+    "createTitle": "New payment method",
+    "createSubtitle": "Add a bank account, card, or cash",
+    "editTitle": "Edit payment method",
+    "namePlaceholder": "e.g. Main BAC Account",
+    "bankPlaceholder": "BAC Credomatic...",
+    "accountNumberPlaceholder": "001-123456-7",
+    "issuerPlaceholder": "Visa / Mastercard...",
+    "lastFourPlaceholder": "4321",
+    "notesPlaceholder": "Additional notes...",
+    "bankLabel": "Bank",
+    "accountNumberLabel": "Account number",
+    "issuerLabel": "Issuer",
+    "lastFourLabel": "Last 4 digits",
+    "empty": "No payment methods",
+    "emptyDescription": "Add your first account, card, or cash",
+    "deleteConfirmTitle": "Delete payment method?",
+    "deleteConfirmDescription": "This action cannot be undone."
+  }
+}

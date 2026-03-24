@@ -1,0 +1,21 @@
+{
+  "partners": {
+    "title": "Partners",
+    "new": "Nuevo partner",
+    "createTitle": "Nuevo partner",
+    "createSubtitle": "Agrega un contacto financiero para asignar a proyectos",
+    "editTitle": "Editar partner",
+    "namePlaceholder": "Ej: Harold Vargas",
+    "emailPlaceholder": "harold@example.com",
+    "phonePlaceholder": "+506 8888-1234",
+    "notesPlaceholder": "Notas adicionales...",
+    "phonelabel": "Teléfono",
+    "empty": "No hay partners",
+    "emptyDescription": "Agrega partners para asignarlos a gastos e ingresos",
+    "deleteConfirmTitle": "¿Eliminar partner?",
+    "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+    "totalPaid": "Total pagado",
+    "totalReceived": "Total recibido",
+    "balance": "Balance"
+  }
+}

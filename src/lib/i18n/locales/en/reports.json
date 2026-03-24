@@ -1,0 +1,42 @@
+{
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Generate detailed reports by project, payment method, income, partners, or workspace.",
+    "from": "From",
+    "to": "To",
+    "generate": "Generate",
+    "format": "Format",
+    "excel": "Excel (.xlsx)",
+    "pdf": "PDF",
+    "download": "Download",
+    "exportHint": "Exports include income breakdown and net balance to facilitate cash flow analysis",
+    "generating": "Generating...",
+    "empty": "No data for the selected period",
+    "selectProject": "Select a project",
+    "selectProjectDescription": "Choose a project to generate its report",
+    "alternativeCurrencyTotals": "Totals in alternative currencies",
+    "tabs": {
+      "expenses": "Expenses",
+      "incomes": "Income",
+      "paymentMethods": "Payment methods",
+      "partnerBalances": "Partner balances",
+      "partnerGeneral": "General partner",
+      "workspace": "Workspace"
+    },
+    "projectLabel": "Project",
+    "partnerLabel": "Partner",
+    "workspaceLabel": "Workspace",
+    "selectProjectPlaceholder": "Select project",
+    "selectPartnerPlaceholder": "Select partner",
+    "selectWorkspacePlaceholder": "Select workspace",
+    "referenceCurrency": "Reference currency",
+    "referenceCurrencyPlaceholder": "e.g. USD",
+    "paymentMethodsLabel": "Payment methods",
+    "paymentMethodsAll": "All",
+    "paymentMethodsAllLabel": "All methods",
+    "selectedOne": "1 selected",
+    "selectedMany": "{count} selected",
+    "noProjectsWithPartners": "No projects with partners",
+    "noPartnersRegistered": "No partners registered"
+  }
+}

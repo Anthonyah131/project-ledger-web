@@ -16,6 +16,7 @@ import {
 } from "@/components/project-detail/partners/project-partner-states";
 import type { ProjectPartnerResponse } from "@/types/project-partner";
 import type { PartnerResponse } from "@/types/partner";
+import { useLanguage } from "@/context/language-context";
 
 interface PartnersState {
   loading: boolean;
@@ -51,12 +52,13 @@ export function PartnersSection({
   onAssign: (partnerId: string) => Promise<void>;
   onRemove: (pp: ProjectPartnerResponse) => Promise<boolean> | void;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-semibold">Partners del proyecto</h3>
+        <h3 className="text-base font-semibold">{t("projects.settingsTab.partnersTitle")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Asigna partners y controla la distribución de gastos e ingresos.
+          {t("projects.settingsTab.partnersSubtitle")}
         </p>
       </div>
 
@@ -74,7 +76,7 @@ export function PartnersSection({
               htmlFor="partners-enabled-settings"
               className="cursor-pointer select-none text-sm"
             >
-              Splits por partners
+              {t("projects.settingsTab.partnersSplits")}
             </Label>
           </div>
         ) : (
@@ -85,7 +87,7 @@ export function PartnersSection({
           <div className="flex items-center gap-3">
             <Button onClick={onAssignOpen} size="sm">
               <Plus className="size-3.5" />
-              Asignar partner
+              {t("projects.settingsTab.assignPartner")}
             </Button>
           </div>
         )}
@@ -118,11 +120,9 @@ export function PartnersSection({
         open={!!ppp.removeTarget}
         onClose={onRemoveClose}
         onConfirm={onRemove}
-        title="Quitar partner del proyecto"
-        description="Sus cuentas ya no estarán disponibles para nuevos gastos e ingresos en este proyecto."
-        getMessage={(pp) =>
-          `¿Quitar el partner "${pp.partnerName}" del proyecto?`
-        }
+        title={t("projects.settingsTab.removePartnerTitle")}
+        description={t("projects.settingsTab.removePartnerDescription")}
+        getMessage={(pp) => t("projects.settingsTab.removePartnerNamed", { name: pp.partnerName })}
       />
     </div>
   );

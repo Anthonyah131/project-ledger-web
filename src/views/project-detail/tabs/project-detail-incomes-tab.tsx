@@ -21,6 +21,7 @@ import type {
 } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
+import { useLanguage } from "@/context/language-context"
 
 const CreateIncomeModal = dynamic(() =>
   import("@/components/project-detail/incomes/create-income-modal").then((mod) => mod.CreateIncomeModal)
@@ -98,6 +99,7 @@ export function ProjectDetailIncomesTab({
   onDelete,
   onToggleActive,
 }: ProjectDetailIncomesTabProps) {
+  const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<IncomeResponse | null>(null)
 
   return (
@@ -182,9 +184,9 @@ export function ProjectDetailIncomesTab({
         open={!!inc.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title="Eliminar ingreso"
-        description="Esta accion no se puede deshacer."
-        getMessage={(income) => `¿Eliminar ingreso "${income.title}"?`}
+        title={t("incomes.deleteTitle")}
+        description={t("incomes.deleteConfirmDescription")}
+        getMessage={(income) => t("incomes.deleteConfirmDescriptionNamed", { name: income.title })}
       />
 
       <MovementDetailSheet

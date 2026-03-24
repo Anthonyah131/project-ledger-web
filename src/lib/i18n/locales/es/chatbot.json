@@ -1,0 +1,16 @@
+{
+  "chatbot": {
+    "title": "Aria",
+    "subtitle": "Tu asistente de Project Ledger",
+    "closeChat": "Cerrar chat",
+    "greeting": "¡Hola! Soy Aria",
+    "greetingSubtitle": "Tu asistente financiero. Pregúntame sobre tus proyectos, gastos o reportes",
+    "inputPlaceholder": "Escribe tu mensaje...",
+    "closeAssistant": "Cerrar asistente",
+    "openAssistant": "Abrir asistente",
+    "unavailable": "El asistente no está disponible en este momento. Inténtalo en unos minutos",
+    "errorMessage": "Ocurrió un error al procesar tu mensaje. Por favor intenta de nuevo",
+    "premiumRequired": "Esta función requiere un plan de pago",
+    "upgradeToPremium": "Mejorar plan"
+  }
+}

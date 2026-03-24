@@ -2,6 +2,7 @@
 
 import { Separator } from "@/components/ui/separator"
 import { AlternativeCurrenciesPanel } from "@/components/project-detail/alternative-currencies/alternative-currencies-panel"
+import { useLanguage } from "@/context/language-context"
 import type { CurrencyResponse } from "@/types/currency"
 import type { ProjectAlternativeCurrencyResponse } from "@/types/project-alternative-currency"
 
@@ -26,13 +27,13 @@ export function CurrenciesSection({
   onAdd: (currencyCode: string) => Promise<void> | void
   onDelete: (currency: ProjectAlternativeCurrencyResponse) => Promise<void> | void
 }) {
+  const { t } = useLanguage()
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-semibold">Monedas alternativas</h3>
+        <h3 className="text-base font-semibold">{t("projects.settingsTab.currenciesTitle")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gestiona las monedas en las que se registran equivalencias para este
-          proyecto.
+          {t("projects.settingsTab.currenciesSubtitle")}
         </p>
       </div>
 

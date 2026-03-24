@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/accordion";
 import { AppFooter } from "@/components/shared/app-footer";
 import { contactChannels, faqCategories, siteInfo } from "@/data/site-data";
+import { useLanguage } from "@/context/language-context";
 
 // ─── Icon map ──────────────────────────────────────────────────────────────────
 
@@ -66,10 +67,12 @@ const CHANNEL_STYLES: Record<string, { bg: string; icon: string; border: string 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 export function HelpPageClient() {
+  const { t } = useLanguage();
+
   return (
     <div className="flex min-h-full flex-col">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-xl border border-border bg-gradient-to-br from-primary/5 via-background to-background px-6 py-12 mb-8">
+      <section className="relative overflow-hidden rounded-xl border border-border bg-linear-to-br from-primary/5 via-background to-background px-6 py-12 mb-8">
         {/* decorative circle */}
         <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-primary/8 blur-2xl" />
@@ -80,12 +83,10 @@ export function HelpPageClient() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Centro de Ayuda
+              {t("help.title")}
             </h1>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Encuentra respuestas a las preguntas más frecuentes sobre{" "}
-              <span className="font-medium text-foreground">{siteInfo.name}</span>, o
-              contáctanos directamente por cualquiera de los canales disponibles.
+              {t("help.heroText", { name: siteInfo.name })}
             </p>
           </div>
         </div>
@@ -94,7 +95,7 @@ export function HelpPageClient() {
       {/* ── Contact Channels ──────────────────────────────────────────────── */}
       <section className="mb-10">
         <h2 className="mb-4 text-base font-semibold text-foreground">
-          Contáctanos
+          {t("help.contactUs")}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {contactChannels.map((ch) => {
@@ -137,7 +138,7 @@ export function HelpPageClient() {
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
       <section className="flex-1">
         <h2 className="mb-6 text-base font-semibold text-foreground">
-          Preguntas frecuentes
+          {t("help.faq")}
         </h2>
 
         <div className="space-y-6">
@@ -156,7 +157,7 @@ export function HelpPageClient() {
                     {cat.category}
                   </span>
                   <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                    {cat.faqs.length} preguntas
+                    {cat.faqs.length} {t("help.questions")}
                   </span>
                 </div>
 

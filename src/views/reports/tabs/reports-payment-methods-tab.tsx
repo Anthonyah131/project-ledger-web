@@ -17,6 +17,7 @@ import { PaymentMethodReportResults } from "@/components/reports/payment-method-
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { PaymentMethodReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface ReportsPaymentMethodsTabProps {
   paymentMethods: PaymentMethodResponse[]
@@ -49,6 +50,7 @@ export function ReportsPaymentMethodsTab({
   onGenerate,
   onExport,
 }: ReportsPaymentMethodsTabProps) {
+  const { t } = useLanguage()
   const hasData = report && report.paymentMethods.length > 0
   const allSelected = paymentMethodIds.length === 0
 
@@ -63,12 +65,12 @@ export function ReportsPaymentMethodsTab({
   const selectAll = () => onPaymentMethodsChange([])
 
   // Build trigger label
-  let triggerLabel = "Todos"
+  let triggerLabel = t("reports.paymentMethodsAll")
   if (paymentMethodIds.length === 1) {
     const pm = paymentMethods.find((m) => m.id === paymentMethodIds[0])
-    triggerLabel = pm ? pm.name : "1 seleccionado"
+    triggerLabel = pm ? pm.name : t("reports.selectedOne")
   } else if (paymentMethodIds.length > 1) {
-    triggerLabel = `${paymentMethodIds.length} seleccionados`
+    triggerLabel = t("reports.selectedMany", { count: paymentMethodIds.length })
   }
 
   return (
@@ -85,7 +87,7 @@ export function ReportsPaymentMethodsTab({
         dateRangeError={dateRangeError}
       >
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Métodos de pago</Label>
+          <Label className="text-xs text-muted-foreground">{t("reports.paymentMethodsLabel")}</Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="w-64 justify-between font-normal">
@@ -99,7 +101,7 @@ export function ReportsPaymentMethodsTab({
                 onCheckedChange={selectAll}
                 onSelect={(e) => e.preventDefault()}
               >
-                Todos los métodos
+                {t("reports.paymentMethodsAllLabel")}
               </DropdownMenuCheckboxItem>
               <DropdownMenuSeparator />
               {paymentMethods.map((pm) => (

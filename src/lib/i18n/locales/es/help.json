@@ -1,0 +1,9 @@
+{
+  "help": {
+    "title": "Centro de Ayuda",
+    "heroText": "Encuentra respuestas a las preguntas más frecuentes sobre {name}, o contáctanos directamente por cualquiera de los canales disponibles.",
+    "contactUs": "Contáctanos",
+    "faq": "Preguntas frecuentes",
+    "questions": "preguntas"
+  }
+}

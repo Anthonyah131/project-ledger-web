@@ -1,10 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,98 +22,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/context/auth-context";
-import { ApiClientError, getLanguage, setLanguage } from "@/lib/api-client";
-import { updateProfileSchema, type UpdateProfileFormValues } from "@/lib/validations/auth";
-import * as userService from "@/services/user-service";
-import type { UpdateProfileRequest } from "@/types/user";
-
-function getProfileErrorMessage(err: unknown): string {
-  if (err instanceof ApiClientError) return err.message;
-  if (err instanceof Error) return err.message;
-  return "No fue posible actualizar el perfil.";
-}
+import { useSettingsProfile } from "@/hooks/settings/use-settings-profile";
 
 export function SettingsProfileView() {
-  const { user, refreshUser } = useAuth();
-  const [isSaving, setIsSaving] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(() => getLanguage());
-
-  const form = useForm<UpdateProfileFormValues>({
-    resolver: zodResolver(updateProfileSchema),
-    defaultValues: {
-      fullName: "",
-      avatarUrl: "",
-    },
-  });
-
-  useEffect(() => {
-    if (!user) return;
-
-    form.reset({
-      fullName: user.fullName,
-      avatarUrl: user.avatarUrl ?? "",
-    });
-  }, [form, user]);
-
-  const previewName = form.watch("fullName") || user?.fullName || "Usuario";
-  const previewAvatar = form.watch("avatarUrl") || user?.avatarUrl || "";
-
-  const initials = useMemo(
-    () =>
-      previewName
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((segment) => segment[0])
-        .join("")
-        .toUpperCase() || "U",
-    [previewName],
-  );
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    setIsSaving(true);
-    try {
-      const payload: UpdateProfileRequest = {
-        fullName: values.fullName.trim(),
-      };
-
-      const normalizedAvatar = values.avatarUrl.trim();
-      payload.avatarUrl = normalizedAvatar.length > 0 ? normalizedAvatar : null;
-
-      await userService.updateUserProfile(payload);
-      await refreshUser();
-
-      toast.success("Perfil actualizado", {
-        description: "Tus cambios se guardaron correctamente.",
-      });
-    } catch (err) {
-      toast.error("No se pudo actualizar el perfil", {
-        description: getProfileErrorMessage(err),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  });
-
-  function handleLanguageChange(locale: string) {
-    setLanguage(locale);
-    setCurrentLanguage(locale);
-    toast.success("Idioma actualizado", {
-      description: "Recargando la aplicación para aplicar el cambio...",
-    });
-    // Reload so all queries/swr caches use the new language for error responses
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }
+  const {
+    user,
+    t,
+    form,
+    isSaving,
+    currentLanguage,
+    previewName,
+    previewAvatar,
+    initials,
+    onSubmit,
+    handleLanguageChange,
+  } = useSettingsProfile();
 
   if (!user) {
     return (
       <section>
         <div className="mb-4">
-          <h2 className="text-base font-semibold">Perfil</h2>
-          <p className="text-sm text-muted-foreground">No hay una sesión activa para mostrar el perfil.</p>
+          <h2 className="text-base font-semibold">{t("settings.profileTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("settings.noActiveSession")}</p>
         </div>
       </section>
     );
@@ -126,9 +52,9 @@ export function SettingsProfileView() {
   return (
     <section>
       <div className="mb-1">
-        <h2 className="text-base font-semibold">Perfil público</h2>
+        <h2 className="text-base font-semibold">{t("settings.profileSection")}</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Actualiza tu información personal visible en la aplicación.
+          {t("settings.profileSubtitle")}
         </p>
       </div>
 
@@ -145,7 +71,7 @@ export function SettingsProfileView() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre completo</FormLabel>
+                      <FormLabel>{t("settings.fullNameLabel")}</FormLabel>
                       <FormControl>
                         <Input disabled={isSaving} autoComplete="name" {...field} />
                       </FormControl>
@@ -155,7 +81,7 @@ export function SettingsProfileView() {
                 />
 
                 <FormItem>
-                  <FormLabel>Correo electrónico</FormLabel>
+                  <FormLabel>{t("settings.emailLabel")}</FormLabel>
                   <FormControl>
                     <Input value={user.email} readOnly disabled />
                   </FormControl>
@@ -166,10 +92,10 @@ export function SettingsProfileView() {
                   name="avatarUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>URL del avatar</FormLabel>
+                      <FormLabel>{t("settings.avatarUrlLabel")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="https://..."
+                          placeholder={t("settings.avatarUrlPlaceholder")}
                           disabled={isSaving}
                           autoComplete="url"
                           {...field}
@@ -186,10 +112,10 @@ export function SettingsProfileView() {
                   {isSaving ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      Guardando...
+                      {t("common.saving")}
                     </>
                   ) : (
-                    "Guardar cambios"
+                    t("common.save")
                   )}
                 </Button>
               </CardFooter>
@@ -207,14 +133,14 @@ export function SettingsProfileView() {
             <p className="text-sm font-medium leading-tight">{previewName}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">{user.email}</p>
           </div>
-          <p className="text-[11px] text-muted-foreground">Vista previa de tu perfil</p>
+          <p className="text-[11px] text-muted-foreground">{t("settings.avatarPreview")}</p>
         </div>
       </div>
 
       <div className="mt-10 mb-1">
-        <h2 className="text-base font-semibold">Preferencias de aplicación</h2>
+        <h2 className="text-base font-semibold">{t("settings.preferencesSection")}</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Ajusta la configuración regional para tu experiencia.
+          {t("settings.preferencesSubtitle")}
         </p>
       </div>
 
@@ -223,17 +149,17 @@ export function SettingsProfileView() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col gap-1 md:w-1/2">
-            <h3 className="text-sm font-medium">Idioma de la API</h3>
+            <h3 className="text-sm font-medium">{t("settings.apiLanguageLabel")}</h3>
             <p className="text-xs text-muted-foreground mb-3">
-              Determina el idioma en el que el servidor devuelve los mensajes de error.
+              {t("settings.apiLanguageHint")}
             </p>
             <Select value={currentLanguage} onValueChange={handleLanguageChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un idioma" />
+                <SelectValue placeholder={t("settings.languageSelect")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">{t("settings.languageEs")}</SelectItem>
+                <SelectItem value="en">{t("settings.languageEn")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
