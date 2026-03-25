@@ -16,6 +16,21 @@
     "deleteConfirmDescription": "This action cannot be undone.",
     "totalPaid": "Total paid",
     "totalReceived": "Total received",
-    "balance": "Balance"
+    "balance": "Balance",
+    "toast": {
+      "created": "Partner created",
+      "createdDesc": "\"{name}\" was added successfully.",
+      "updated": "Partner updated",
+      "updatedDesc": "\"{name}\" was saved successfully.",
+      "deleted": "Partner deleted",
+      "deletedDesc": "\"{name}\" was deleted."
+    },
+    "errors": {
+      "load": "Error loading partners",
+      "loadDetail": "Error loading partner",
+      "create": "Error creating partner",
+      "update": "Error updating partner",
+      "delete": "Error deleting partner"
+    }
   }
 }

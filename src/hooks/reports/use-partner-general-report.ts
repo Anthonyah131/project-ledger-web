@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { getDateRangeError } from "@/lib/date-utils"
 import type { PartnerGeneralReportResponse } from "@/types/report"
 
@@ -17,6 +18,7 @@ export interface PartnerGeneralReportFilters {
 }
 
 export function usePartnerGeneralReport() {
+  const { t } = useLanguage()
   const [report, setReport] = useState<PartnerGeneralReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -44,7 +46,7 @@ export function usePartnerGeneralReport() {
     }
 
     if (!filters.partnerId) {
-      toast.warning("Selecciona un partner para generar el reporte.")
+      toast.warning(t("reports.warnings.selectPartnerToGenerate"))
       return
     }
 
@@ -59,11 +61,11 @@ export function usePartnerGeneralReport() {
       })
       if (data) setReport(data)
     } catch (err) {
-      toastApiError(err, "Error al generar reporte del partner")
+      toastApiError(err, t("reports.errors.generate"))
     } finally {
       setLoading(false)
     }
-  }, [filters.partnerId, filters.from, filters.to])
+  }, [filters.partnerId, filters.from, filters.to, t])
 
   const exportReport = useCallback(
     async (format: "excel") => {
@@ -74,7 +76,7 @@ export function usePartnerGeneralReport() {
       }
 
       if (!filters.partnerId) {
-        toast.warning("Selecciona un partner para exportar.")
+        toast.warning(t("reports.warnings.selectPartnerToExport"))
         return
       }
 
@@ -86,14 +88,14 @@ export function usePartnerGeneralReport() {
           to: filters.to || undefined,
           format,
         })
-        toast.success("Archivo Excel descargado")
+        toast.success(t("reports.toast.excelDownloaded"))
       } catch (err) {
-        toastApiError(err, "Error al exportar como Excel")
+        toastApiError(err, t("reports.errors.export", { format: "EXCEL" }))
       } finally {
         setExporting(false)
       }
     },
-    [filters.partnerId, filters.from, filters.to],
+    [filters.partnerId, filters.from, filters.to, t],
   )
 
   return {

@@ -130,9 +130,9 @@ export function AdminUsersView() {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title={t("admin.deleteConfirmTitle")}
-        description={t("admin.deleteConfirmDescription")}
-        getMessage={(u) => t("admin.deleteConfirmDescriptionNamed", { name: u.fullName, email: u.email })}
+        title={t("admin.delete.title")}
+        description={t("admin.delete.description")}
+        getMessage={(u) => t("admin.delete.confirm", { name: u.fullName, email: u.email })}
       />
     </div>
   )

@@ -42,8 +42,8 @@ export function SettingsProfileView() {
     return (
       <section>
         <div className="mb-4">
-          <h2 className="text-base font-semibold">{t("settings.profileTitle")}</h2>
-          <p className="text-sm text-muted-foreground">{t("settings.noActiveSession")}</p>
+          <h2 className="text-base font-semibold">{t("settings.profile.title")}</h2>
+          <p className="text-sm text-muted-foreground">{t("settings.profile.noActiveSession")}</p>
         </div>
       </section>
     );
@@ -52,9 +52,9 @@ export function SettingsProfileView() {
   return (
     <section>
       <div className="mb-1">
-        <h2 className="text-base font-semibold">{t("settings.profileSection")}</h2>
+        <h2 className="text-base font-semibold">{t("settings.profile.section")}</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          {t("settings.profileSubtitle")}
+          {t("settings.profile.subtitle")}
         </p>
       </div>
 
@@ -71,7 +71,7 @@ export function SettingsProfileView() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("settings.fullNameLabel")}</FormLabel>
+                      <FormLabel>{t("settings.profile.fields.fullName.label")}</FormLabel>
                       <FormControl>
                         <Input disabled={isSaving} autoComplete="name" {...field} />
                       </FormControl>
@@ -81,7 +81,7 @@ export function SettingsProfileView() {
                 />
 
                 <FormItem>
-                  <FormLabel>{t("settings.emailLabel")}</FormLabel>
+                  <FormLabel>{t("settings.profile.fields.email.label")}</FormLabel>
                   <FormControl>
                     <Input value={user.email} readOnly disabled />
                   </FormControl>
@@ -92,10 +92,10 @@ export function SettingsProfileView() {
                   name="avatarUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("settings.avatarUrlLabel")}</FormLabel>
+                      <FormLabel>{t("settings.profile.fields.avatarUrl.label")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t("settings.avatarUrlPlaceholder")}
+                          placeholder={t("settings.profile.fields.avatarUrl.placeholder")}
                           disabled={isSaving}
                           autoComplete="url"
                           {...field}
@@ -133,14 +133,14 @@ export function SettingsProfileView() {
             <p className="text-sm font-medium leading-tight">{previewName}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">{user.email}</p>
           </div>
-          <p className="text-[11px] text-muted-foreground">{t("settings.avatarPreview")}</p>
+          <p className="text-[11px] text-muted-foreground">{t("settings.profile.avatarPreview")}</p>
         </div>
       </div>
 
       <div className="mt-10 mb-1">
-        <h2 className="text-base font-semibold">{t("settings.preferencesSection")}</h2>
+        <h2 className="text-base font-semibold">{t("settings.preferences.section")}</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          {t("settings.preferencesSubtitle")}
+          {t("settings.preferences.subtitle")}
         </p>
       </div>
 
@@ -149,17 +149,17 @@ export function SettingsProfileView() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col gap-1 md:w-1/2">
-            <h3 className="text-sm font-medium">{t("settings.apiLanguageLabel")}</h3>
+            <h3 className="text-sm font-medium">{t("settings.preferences.apiLanguage.label")}</h3>
             <p className="text-xs text-muted-foreground mb-3">
-              {t("settings.apiLanguageHint")}
+              {t("settings.preferences.apiLanguage.hint")}
             </p>
             <Select value={currentLanguage} onValueChange={handleLanguageChange}>
               <SelectTrigger>
-                <SelectValue placeholder={t("settings.languageSelect")} />
+                <SelectValue placeholder={t("settings.preferences.appLanguage.placeholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="es">{t("settings.languageEs")}</SelectItem>
-                <SelectItem value="en">{t("settings.languageEn")}</SelectItem>
+                <SelectItem value="es">{t("settings.preferences.appLanguage.es")}</SelectItem>
+                <SelectItem value="en">{t("settings.preferences.appLanguage.en")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

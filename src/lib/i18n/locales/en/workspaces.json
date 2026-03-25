@@ -20,6 +20,20 @@
     "workspaceLabel": "Workspace",
     "associateProject": "Associate project",
     "projectDisconnectedToast": "Project disconnected from workspace",
-    "errorDisconnectingToast": "Error disconnecting project"
+    "errorDisconnectingToast": "Error disconnecting project",
+    "toast": {
+      "created": "Workspace created",
+      "createdDesc": "\"{name}\" was created successfully.",
+      "updated": "Workspace updated",
+      "updatedDesc": "\"{name}\" was saved successfully.",
+      "deleted": "Workspace deleted",
+      "deletedDesc": "\"{name}\" was deleted."
+    },
+    "errors": {
+      "load": "Error loading workspaces",
+      "create": "Error creating workspace",
+      "update": "Error updating workspace",
+      "delete": "Error deleting workspace"
+    }
   }
 }

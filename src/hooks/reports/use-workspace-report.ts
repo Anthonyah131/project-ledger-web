@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { getDateRangeError } from "@/lib/date-utils"
 import type { WorkspaceReportResponse, ReportFormat } from "@/types/report"
 
@@ -19,6 +20,7 @@ export interface WorkspaceReportFilters {
 }
 
 export function useWorkspaceReport() {
+  const { t } = useLanguage()
   const [report, setReport] = useState<WorkspaceReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -48,7 +50,7 @@ export function useWorkspaceReport() {
     }
 
     if (!filters.workspaceId) {
-      toast.warning("Selecciona un workspace para generar el reporte.")
+      toast.warning(t("reports.warnings.selectWorkspaceToGenerate"))
       return
     }
 
@@ -64,11 +66,11 @@ export function useWorkspaceReport() {
       })
       if (data) setReport(data)
     } catch (err) {
-      toastApiError(err, "Error al generar reporte del workspace")
+      toastApiError(err, t("reports.errors.generate"))
     } finally {
       setLoading(false)
     }
-  }, [filters.workspaceId, filters.from, filters.to, filters.currency])
+  }, [filters.workspaceId, filters.from, filters.to, filters.currency, t])
 
   const exportReport = useCallback(
     async (format: "excel" | "pdf") => {
@@ -79,7 +81,7 @@ export function useWorkspaceReport() {
       }
 
       if (!filters.workspaceId) {
-        toast.warning("Selecciona un workspace para exportar.")
+        toast.warning(t("reports.warnings.selectWorkspaceToExport"))
         return
       }
 
@@ -93,15 +95,15 @@ export function useWorkspaceReport() {
           format,
         })
         toast.success(
-          format === "excel" ? "Archivo Excel descargado" : "Archivo PDF descargado",
+          format === "excel" ? t("reports.toast.excelDownloaded") : t("reports.toast.pdfDownloaded"),
         )
       } catch (err) {
-        toastApiError(err, `Error al exportar como ${format.toUpperCase()}`)
+        toastApiError(err, t("reports.errors.export", { format: format.toUpperCase() }))
       } finally {
         setExporting(false)
       }
     },
-    [filters.workspaceId, filters.from, filters.to, filters.currency],
+    [filters.workspaceId, filters.from, filters.to, filters.currency, t],
   )
 
   return {

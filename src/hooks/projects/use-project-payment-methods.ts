@@ -7,11 +7,13 @@ import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as ppService from "@/services/project-partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type { ProjectPaymentMethodItem } from "@/types/project-partner"
 import type { LinkablePaymentMethodItem } from "@/types/project-partner"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 
 export function useProjectPaymentMethods(projectId: string) {
+  const { t } = useLanguage()
   // ── Linked payment methods ───────────────────────────────
   const [linkedPMs, setLinkedPMs] = useState<ProjectPaymentMethodItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,11 +34,11 @@ export function useProjectPaymentMethods(projectId: string) {
       const data = await ppService.getProjectPaymentMethods(projectId)
       setLinkedPMs(Array.isArray(data) ? data : (data.items ?? []))
     } catch (err) {
-      toastApiError(err, "Error al cargar métodos de pago");
+      toastApiError(err, t("projectPaymentMethods.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   useEffect(() => {
     fetchLinked()
@@ -70,14 +72,14 @@ export function useProjectPaymentMethods(projectId: string) {
         // Remove linked item from local linkable list immediately
         setLinkableItems((prev) => prev.filter((pm) => pm.id !== pmId))
         await fetchLinked()
-        toast.success("Método de pago vinculado", {
-          description: `"${pmName}" fue vinculado al proyecto.`,
+        toast.success(t("projectPaymentMethods.toast.linked"), {
+          description: t("projectPaymentMethods.toast.linkedDesc", { name: pmName }),
         })
       } catch (err) {
-        toastApiError(err, "Error al vincular método de pago")
+        toastApiError(err, t("projectPaymentMethods.errors.link"))
       }
     },
-    [projectId, fetchLinked],
+    [projectId, fetchLinked, t],
   )
 
   // ── Unlink ───────────────────────────────────────────────
@@ -88,16 +90,16 @@ export function useProjectPaymentMethods(projectId: string) {
         await ppService.unlinkPaymentMethod(projectId, pm.id)
         setLinkedPMs((prev) => prev.filter((p) => p.id !== pm.id))
         setRemoveTarget(null)
-        toast.success("Método de pago quitado", {
-          description: `"${pm.paymentMethodName}" fue quitado del proyecto.`,
+        toast.success(t("projectPaymentMethods.toast.unlinked"), {
+          description: t("projectPaymentMethods.toast.unlinkedDesc", { name: pm.paymentMethodName }),
         })
         return true
       } catch (err) {
-        toastApiError(err, "Error al quitar método de pago")
+        toastApiError(err, t("projectPaymentMethods.errors.unlink"))
         return false
       }
     },
-    [projectId],
+    [projectId, t],
   )
 
   // ── Flat list for expense/income selectors ───────────────

@@ -8,11 +8,13 @@ import { toast } from "sonner"
 import * as ppService from "@/services/project-partner-service"
 import * as partnerService from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
 import type { PartnerResponse } from "@/types/partner"
 
 export function useProjectPartners(projectId: string) {
+  const { t } = useLanguage()
   const [assignedPartners, setAssignedPartners] = useState<ProjectPartnerResponse[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -32,11 +34,11 @@ export function useProjectPartners(projectId: string) {
       const data = await ppService.getProjectPartners(projectId)
       setAssignedPartners(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar partners del proyecto");
+      toastApiError(err, t("projectPartners.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   useEffect(() => {
     fetchAssigned()
@@ -68,14 +70,14 @@ export function useProjectPartners(projectId: string) {
       try {
         const created = await ppService.assignPartner(projectId, { partnerId })
         setAssignedPartners((prev) => [...prev, created])
-        toast.success("Partner asignado", {
-          description: `"${created.partnerName}" fue asignado al proyecto.`,
+        toast.success(t("projectPartners.toast.assigned"), {
+          description: t("projectPartners.toast.assignedDesc", { name: created.partnerName }),
         })
       } catch (err) {
-        toastApiError(err, "Error al asignar partner")
+        toastApiError(err, t("projectPartners.errors.assign"))
       }
     },
-    [projectId],
+    [projectId, t],
   )
 
   // ── Remove ─────────────────────────────────────────────────
@@ -85,22 +87,22 @@ export function useProjectPartners(projectId: string) {
       try {
         await ppService.removeProjectPartner(projectId, pp.partnerId)
         setAssignedPartners((prev) => prev.filter((p) => p.id !== pp.id))
-        toast.success("Partner quitado", {
-          description: `"${pp.partnerName}" fue quitado del proyecto.`,
+        toast.success(t("projectPartners.toast.removed"), {
+          description: t("projectPartners.toast.removedDesc", { name: pp.partnerName }),
         })
         return true
       } catch (err) {
         if (err instanceof ApiClientError && err.code === "CONFLICT") {
-          toast.warning("No se puede quitar el partner", {
+          toast.warning(t("projectPartners.toast.cannotRemove"), {
             description: err.message,
           })
         } else {
-          toastApiError(err, "Error al quitar partner")
+          toastApiError(err, t("projectPartners.errors.remove"))
         }
         return false
       }
     },
-    [projectId],
+    [projectId, t],
   )
 
   return {

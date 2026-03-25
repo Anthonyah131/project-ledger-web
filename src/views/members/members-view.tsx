@@ -108,9 +108,9 @@ export function MembersView({ projectId }: Props) {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateRemove}
-        title={t("members.removeConfirmTitle")}
-        description={t("members.removeConfirmDescription")}
-        getMessage={(m) => t("members.removeConfirmDescriptionNamed", { name: m.userFullName })}
+        title={t("members.remove.title")}
+        description={t("members.remove.description")}
+        getMessage={(m) => t("members.remove.confirm", { name: m.userFullName })}
       />
     </div>
   )

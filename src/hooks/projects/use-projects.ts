@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as projectService from "@/services/project-service";
 import { toastApiError } from "@/lib/error-utils";
+import { useLanguage } from "@/context/language-context";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { ProjectResponse, CreateProjectRequest, UpdateProjectRequest, ViewMode } from "@/types/project";
 
@@ -35,6 +36,7 @@ function comparator(sort: string) {
 
 export function useProjects(options: { workspaceId?: string; projectIds?: string[]; onProjectMutated?: () => void } = {}) {
   const { workspaceId, projectIds, onProjectMutated } = options
+  const { t } = useLanguage()
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,12 +60,12 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
       const data = await projectService.getProjects({ pageSize: 200 });
       setProjects(data.items);
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar proyectos");
+      const msg = toastApiError(err, t("projects.errors.load"));
       setError(msg);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchProjects();
@@ -111,13 +113,13 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
         const created = await projectService.createProject(payload);
         setProjects((prev) => [created, ...prev]);
         setPage(1);
-        toast.success("Proyecto creado", { description: `"${created.name}" se agregó correctamente.` });
+        toast.success(t("projects.toast.created"), { description: t("projects.toast.createdDesc", { name: created.name }) });
         onProjectMutated?.();
       } catch (err) {
-        toastApiError(err, "Error al crear proyecto");
+        toastApiError(err, t("projects.errors.create"));
       }
     },
-    [workspaceId, onProjectMutated]
+    [workspaceId, onProjectMutated, t]
   );
 
   const mutateUpdate = useCallback(
@@ -125,13 +127,13 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
       try {
         const updated = await projectService.updateProject(id, data);
         setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
-        toast.success("Proyecto actualizado", { description: `"${updated.name}" se guardó correctamente.` });
+        toast.success(t("projects.toast.updated"), { description: t("projects.toast.updatedDesc", { name: updated.name }) });
         onProjectMutated?.();
       } catch (err) {
-        toastApiError(err, "Error al actualizar proyecto");
+        toastApiError(err, t("projects.errors.update"));
       }
     },
-    [onProjectMutated]
+    [onProjectMutated, t]
   );
 
   const mutateDelete = useCallback(
@@ -139,13 +141,13 @@ export function useProjects(options: { workspaceId?: string; projectIds?: string
       try {
         await projectService.deleteProject(project.id);
         setProjects((prev) => prev.filter((p) => p.id !== project.id));
-        toast.success("Proyecto eliminado", { description: `"${project.name}" fue desactivado.` });
+        toast.success(t("projects.toast.deleted"), { description: t("projects.toast.deletedDesc", { name: project.name }) });
         onProjectMutated?.();
       } catch (err) {
-        toastApiError(err, "Error al eliminar proyecto");
+        toastApiError(err, t("projects.errors.delete"));
       }
     },
-    [onProjectMutated]
+    [onProjectMutated, t]
   );
 
   // ── Page/filter handlers ──────────────────────────────────────────

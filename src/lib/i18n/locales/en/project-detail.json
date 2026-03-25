@@ -20,11 +20,34 @@
     "deleteTitle": "Delete expense",
     "deleteConfirmDescription": "This action cannot be undone.",
     "deleteConfirmDescriptionNamed": "Delete expense \"{name}\"?",
+    "delete": {
+      "title": "Delete expense",
+      "description": "This action cannot be undone.",
+      "confirm": "Delete expense \"{name}\"?"
+    },
     "categoryLabel": "Category",
     "partnerLabel": "Partner",
     "paymentMethodLabel": "Payment method",
     "conceptLabel": "Concept",
-    "conceptPlaceholder": "e.g. Materials purchase"
+    "conceptPlaceholder": "e.g. Materials purchase",
+    "ocrQuotaError": "Could not load OCR quota",
+    "draftExtracted": "Draft extracted",
+    "draftExtractedDesc": "Review and adjust the data before creating the final expense.",
+    "toast": {
+      "created": "Expense created",
+      "updated": "Expense updated",
+      "deleted": "Expense deleted",
+      "deletedDesc": "\"{name}\" was deleted.",
+      "activated": "Expense activated",
+      "markedReminder": "Expense marked as reminder"
+    },
+    "errors": {
+      "load": "Error loading expenses",
+      "create": "Error creating expense",
+      "update": "Error updating expense",
+      "delete": "Error deleting expense",
+      "updateStatus": "Error updating expense status"
+    }
   },
   "incomes": {
     "title": "Income",
@@ -40,10 +63,43 @@
     "deleteTitle": "Delete income",
     "deleteConfirmDescription": "This action cannot be undone.",
     "deleteConfirmDescriptionNamed": "Delete income \"{name}\"?",
+    "delete": {
+      "title": "Delete income",
+      "description": "This action cannot be undone.",
+      "confirm": "Delete income \"{name}\"?"
+    },
     "conceptLabel": "Concept",
     "conceptPlaceholder": "e.g. ACME client payment",
     "partnerLabel": "Partner",
-    "paymentMethodLabel": "Payment method"
+    "paymentMethodLabel": "Payment method",
+    "ocrQuotaError": "Could not load OCR quota",
+    "draftExtracted": "Draft extracted",
+    "draftExtractedDesc": "Review and adjust the data before creating the final income.",
+    "accountAmountRequired": "Account amount required",
+    "fields": {
+      "paymentMethod": {
+        "required": "Payment method is required"
+      },
+      "accountAmount": {
+        "mustBePositive": "Account amount must be greater than 0.",
+        "required": "Account amount is required for selected account currency."
+      }
+    },
+    "toast": {
+      "created": "Income created",
+      "updated": "Income updated",
+      "deleted": "Income deleted",
+      "deletedDesc": "\"{name}\" was deleted.",
+      "activated": "Income activated",
+      "markedReminder": "Income marked as reminder"
+    },
+    "errors": {
+      "load": "Error loading income",
+      "create": "Error creating income",
+      "update": "Error updating income",
+      "delete": "Error deleting income",
+      "updateStatus": "Error updating income status"
+    }
   },
   "categories": {
     "title": "Categories",
@@ -59,8 +115,27 @@
     "deleteTitle": "Delete category",
     "deleteConfirmDescription": "This action cannot be undone.",
     "deleteConfirmDescriptionNamed": "Delete category \"{name}\"? Expenses in this category will move to General.",
+    "delete": {
+      "title": "Delete category",
+      "description": "This action cannot be undone.",
+      "confirm": "Delete category \"{name}\"? Expenses in this category will move to General."
+    },
     "totalExpenses": "Total expenses",
-    "budgetUsed": "Budget used"
+    "budgetUsed": "Budget used",
+    "toast": {
+      "created": "Category created",
+      "createdDesc": "\"{name}\" was added successfully.",
+      "updated": "Category updated",
+      "updatedDesc": "\"{name}\" was saved successfully.",
+      "deleted": "Category deleted",
+      "deletedDesc": "\"{name}\" was deleted."
+    },
+    "errors": {
+      "load": "Error loading categories",
+      "create": "Error creating category",
+      "update": "Error updating category",
+      "delete": "Error deleting category"
+    }
   },
   "obligations": {
     "title": "Obligations",
@@ -78,11 +153,28 @@
     "deleteTitle": "Delete obligation",
     "deleteConfirmDescription": "This action cannot be undone.",
     "deleteConfirmDescriptionNamed": "Delete obligation \"{name}\"?",
+    "delete": {
+      "title": "Delete obligation",
+      "description": "This action cannot be undone.",
+      "confirm": "Delete obligation \"{name}\"?"
+    },
     "totalPaid": "Total paid",
     "remaining": "Remaining",
     "overdue": "Overdue",
     "completed": "Completed",
-    "active": "Active"
+    "active": "Active",
+    "toast": {
+      "created": "Obligation created",
+      "updated": "Obligation updated",
+      "deleted": "Obligation deleted",
+      "deletedDesc": "\"{name}\" was deleted."
+    },
+    "errors": {
+      "load": "Error loading obligations",
+      "create": "Error creating obligation",
+      "update": "Error updating obligation",
+      "delete": "Error deleting obligation"
+    }
   },
   "budget": {
     "editTitle": "Edit budget",
@@ -98,7 +190,22 @@
     "budgetAlertReached": "Alert: {percent}% of budget consumed",
     "deleteTitle": "Delete budget",
     "deleteDescription": "The project will no longer have a general expense limit.",
-    "deleteConfirm": "Delete the budget configured for this project?"
+    "deleteConfirm": "Delete the budget configured for this project?",
+    "delete": {
+      "title": "Delete budget",
+      "description": "The project will no longer have a general expense limit.",
+      "confirm": "Delete the budget configured for this project?"
+    },
+    "toast": {
+      "updated": "Budget updated",
+      "set": "Budget configured",
+      "deleted": "Budget deleted"
+    },
+    "errors": {
+      "load": "Error loading budget",
+      "save": "Error saving budget",
+      "delete": "Error deleting budget"
+    }
   },
   "partnerSettlements": {
     "title": "Partner settlements",
@@ -118,7 +225,25 @@
     "deleteTitle": "Delete settlement",
     "revertWarning": "This action will revert the settlement's effect on the balance.",
     "deleteConfirmDescriptionNamed": "Delete settlement from {from} to {to}?",
+    "delete": {
+      "title": "Delete settlement",
+      "revertWarning": "This action will revert the settlement's effect on the balance.",
+      "confirm": "Delete settlement from {from} to {to}?"
+    },
     "empty": "No settlements",
-    "emptyDescription": "Record direct payments between project partners"
+    "emptyDescription": "Record direct payments between project partners",
+    "toast": {
+      "created": "Settlement recorded",
+      "updated": "Settlement updated",
+      "deleted": "Settlement deleted"
+    },
+    "errors": {
+      "load": "Error loading settlements",
+      "loadBalance": "Error loading balances",
+      "loadSuggestions": "Error calculating suggestions",
+      "create": "Error recording settlement",
+      "update": "Error updating settlement",
+      "delete": "Error deleting settlement"
+    }
   }
 }

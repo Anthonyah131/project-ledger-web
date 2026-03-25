@@ -53,6 +53,64 @@ Page (src/app/(dashboard)/...)
 - Use `toast` (Sonner) for user feedback; use `toastApiError` utility for API errors
 - Plan-limit errors (403) should trigger upgrade prompts, not generic error toasts
 
+### Internacionalización (i18n)
+
+El sistema de i18n usa un motor propio (`createT`, `useLanguage`) con archivos JSON por feature. **No usar librerías externas** (next-i18next, react-i18next, etc.).
+
+#### Estructura de archivos
+
+```
+src/lib/i18n/
+├── index.ts              ← motor + merge de todos los JSON
+├── types.ts              ← tipo Translations derivado de los JSON de ES
+└── locales/
+    ├── es/               ← fuente de verdad
+    │   ├── shared.json   ← common + nav
+    │   ├── auth.json
+    │   ├── project-detail.json  ← expenses, incomes, categories, obligations, budget, partnerSettlements
+    │   ├── projects.json        ← projects + members
+    │   └── ...
+    └── en/               ← misma estructura, strings en inglés
+```
+
+#### Cómo usar
+
+```tsx
+const { t } = useLanguage()
+t("expenses.delete.title")
+t("expenses.delete.confirm", { name: expense.title })  // interpolación con {variable}
+```
+
+#### Convención de keys (Phase 2)
+
+Las keys siguen el patrón `<namespace>.<grupo>.<variante>`:
+
+| Grupo | Uso | Ejemplo |
+|---|---|---|
+| `delete.title` | Título del modal de eliminación | `t("expenses.delete.title")` |
+| `delete.description` | Advertencia genérica | `t("expenses.delete.description")` |
+| `delete.confirm` | Texto con `{name}` | `t("expenses.delete.confirm", { name })` |
+| `remove.title` | Para miembros/partners | `t("members.remove.title")` |
+| `create.title` | Título de modal de creación | `t("projects.create.title")` |
+| `edit.title` | Título de modal de edición | `t("partners.edit.title")` |
+| `empty.title` | Estado vacío | `t("projects.empty.title")` |
+| `fields.<name>.label` | Label de campo | `t("auth.fields.email.label")` |
+| `fields.<name>.placeholder` | Placeholder | `t("auth.fields.email.placeholder")` |
+| `fields.<name>.hint` | Texto de ayuda | `t("auth.fields.password.hint")` |
+
+**Reglas:**
+- Usar `common.*` para strings reutilizables (`common.save`, `common.cancel`, `common.loading`, etc.)
+- Nunca duplicar strings que ya existen en `common`
+- Nuevos namespaces van en su propio archivo JSON (es + en)
+- Las keys de los JSON en `en/` deben cubrir todas las keys del archivo equivalente en `es/`
+- Las views usan keys normalizadas (grupos semánticos). Los componentes aún pueden usar keys legacy hasta que se migren
+
+#### Agregar un string nuevo
+
+1. Agregarlo en `es/<archivo>.json` siguiendo la convención de grupos
+2. Agregarlo en `en/<archivo>.json` con la traducción en inglés
+3. Usar `t("namespace.grupo.variante")` en el código
+
 ### Dates
 
 - **Never use `new Date(dateString)` directly** for display. Always use `formatDate()` from `src/lib/date-utils.ts`.

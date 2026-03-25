@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as settlementService from "@/services/partner-settlement-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   PartnerBalanceItem,
   PartnersBalanceResponse,
@@ -18,6 +19,7 @@ import type {
 import type { MutationOptions } from "@/types/common"
 
 export function useProjectPartnerSettlements(projectId: string, enabled: boolean) {
+  const { t } = useLanguage()
   // ── Balance ────────────────────────────────────────────────
   const [balance, setBalance] = useState<PartnersBalanceResponse | null>(null)
   const [balanceLoading, setBalanceLoading] = useState(false)
@@ -49,11 +51,11 @@ export function useProjectPartnerSettlements(projectId: string, enabled: boolean
       const data = await settlementService.getPartnersBalance(projectId)
       setBalance(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar balances")
+      toastApiError(err, t("partnerSettlements.errors.loadBalance"))
     } finally {
       setBalanceLoading(false)
     }
-  }, [projectId, enabled])
+  }, [projectId, enabled, t])
 
   useEffect(() => {
     fetchBalance()
@@ -67,11 +69,11 @@ export function useProjectPartnerSettlements(projectId: string, enabled: boolean
       const data = await settlementService.getSettlementSuggestions(projectId)
       setSuggestions(data)
     } catch (err) {
-      toastApiError(err, "Error al calcular sugerencias")
+      toastApiError(err, t("partnerSettlements.errors.loadSuggestions"))
     } finally {
       setSuggestionsLoading(false)
     }
-  }, [projectId, enabled])
+  }, [projectId, enabled, t])
 
   // ── Fetch settlements ─────────────────────────────────────
   const fetchSettlements = useCallback(async () => {
@@ -82,11 +84,11 @@ export function useProjectPartnerSettlements(projectId: string, enabled: boolean
       setSettlements(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      toastApiError(err, "Error al cargar liquidaciones")
+      toastApiError(err, t("partnerSettlements.errors.load"))
     } finally {
       setSettlementsLoading(false)
     }
-  }, [projectId, enabled, page, pageSize])
+  }, [projectId, enabled, page, pageSize, t])
 
   useEffect(() => {
     fetchSettlements()
@@ -97,45 +99,45 @@ export function useProjectPartnerSettlements(projectId: string, enabled: boolean
     async (data: CreateSettlementRequest, options?: MutationOptions) => {
       try {
         await settlementService.createSettlement(projectId, data)
-        toast.success("Liquidación registrada")
+        toast.success(t("partnerSettlements.toast.created"))
         if (options?.refetch ?? true) {
           await Promise.all([fetchBalance(), fetchSettlements()])
         }
       } catch (err) {
-        toastApiError(err, "Error al registrar liquidación")
+        toastApiError(err, t("partnerSettlements.errors.create"))
       }
     },
-    [projectId, fetchBalance, fetchSettlements],
+    [projectId, fetchBalance, fetchSettlements, t],
   )
 
   const mutateUpdate = useCallback(
     async (settlementId: string, data: UpdateSettlementRequest, options?: MutationOptions) => {
       try {
         await settlementService.updateSettlement(projectId, settlementId, data)
-        toast.success("Liquidación actualizada")
+        toast.success(t("partnerSettlements.toast.updated"))
         if (options?.refetch ?? true) {
           await Promise.all([fetchBalance(), fetchSettlements()])
         }
       } catch (err) {
-        toastApiError(err, "Error al actualizar liquidación")
+        toastApiError(err, t("partnerSettlements.errors.update"))
       }
     },
-    [projectId, fetchBalance, fetchSettlements],
+    [projectId, fetchBalance, fetchSettlements, t],
   )
 
   const mutateDelete = useCallback(
     async (settlement: PartnerSettlementResponse, options?: MutationOptions) => {
       try {
         await settlementService.deleteSettlement(projectId, settlement.id)
-        toast.success("Liquidación eliminada")
+        toast.success(t("partnerSettlements.toast.deleted"))
         if (options?.refetch ?? true) {
           await Promise.all([fetchBalance(), fetchSettlements()])
         }
       } catch (err) {
-        toastApiError(err, "Error al eliminar liquidación")
+        toastApiError(err, t("partnerSettlements.errors.delete"))
       }
     },
-    [projectId, fetchBalance, fetchSettlements],
+    [projectId, fetchBalance, fetchSettlements, t],
   )
 
   // ── History panel ─────────────────────────────────────────

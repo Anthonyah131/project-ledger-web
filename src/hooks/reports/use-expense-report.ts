@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { getDateRangeError } from "@/lib/date-utils"
 import type { ProjectExpenseReportResponse, ReportFormat } from "@/types/report"
 
@@ -18,6 +19,7 @@ export interface ExpenseReportFilters {
 }
 
 export function useExpenseReport() {
+  const { t } = useLanguage()
   const [report, setReport] = useState<ProjectExpenseReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -47,7 +49,7 @@ export function useExpenseReport() {
     }
 
     if (!filters.projectId) {
-      toast.warning("Selecciona un proyecto para generar el reporte.")
+      toast.warning(t("reports.warnings.selectProjectToGenerate"))
       return
     }
 
@@ -62,11 +64,11 @@ export function useExpenseReport() {
       })
       if (data) setReport(data)
     } catch (err) {
-      toastApiError(err, "Error al generar reporte")
+      toastApiError(err, t("reports.errors.generate"))
     } finally {
       setLoading(false)
     }
-  }, [filters.projectId, filters.from, filters.to])
+  }, [filters.projectId, filters.from, filters.to, t])
 
   // Export as Excel or PDF
   const exportReport = useCallback(
@@ -78,7 +80,7 @@ export function useExpenseReport() {
       }
 
       if (!filters.projectId) {
-        toast.warning("Selecciona un proyecto para exportar.")
+        toast.warning(t("reports.warnings.selectProjectToExport"))
         return
       }
 
@@ -91,15 +93,15 @@ export function useExpenseReport() {
           format,
         })
         toast.success(
-          format === "excel" ? "Archivo Excel descargado" : "Archivo PDF descargado",
+          format === "excel" ? t("reports.toast.excelDownloaded") : t("reports.toast.pdfDownloaded"),
         )
       } catch (err) {
-        toastApiError(err, `Error al exportar como ${format.toUpperCase()}`)
+        toastApiError(err, t("reports.errors.export", { format: format.toUpperCase() }))
       } finally {
         setExporting(false)
       }
     },
-    [filters.projectId, filters.from, filters.to],
+    [filters.projectId, filters.from, filters.to, t],
   )
 
   return {

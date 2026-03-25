@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as projectService from "@/services/project-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   ProjectMemberResponse,
   AddMemberRequest,
@@ -15,6 +16,7 @@ import type {
 import type { MutationOptions } from "@/types/common"
 
 export function useProjectMembers(projectId: string) {
+  const { t } = useLanguage()
   const [members, setMembers] = useState<ProjectMemberResponse[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -31,11 +33,11 @@ export function useProjectMembers(projectId: string) {
       const data = await projectService.getMembers(projectId)
       setMembers(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar miembros");
+      toastApiError(err, t("members.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   useEffect(() => {
     fetchMembers()
@@ -52,16 +54,16 @@ export function useProjectMembers(projectId: string) {
         } else {
           setMembers((prev) => [...prev, created])
         }
-        toast.success("Miembro agregado", {
-          description: `${created.userFullName} fue agregado como ${created.role}.`,
+        toast.success(t("members.toast.added"), {
+          description: t("members.toast.addedDesc", { name: created.userFullName, role: created.role }),
         })
         return true
       } catch (err) {
-        toastApiError(err, "Error al agregar miembro")
+        toastApiError(err, t("members.errors.add"))
         return false
       }
     },
-    [projectId, fetchMembers],
+    [projectId, fetchMembers, t],
   )
 
   // ── Change role ───────────────────────────────────────────
@@ -83,12 +85,12 @@ export function useProjectMembers(projectId: string) {
             ),
           )
         }
-        toast.success("Rol actualizado")
+        toast.success(t("members.toast.roleUpdated"))
       } catch (err) {
-        toastApiError(err, "Error al cambiar rol")
+        toastApiError(err, t("members.errors.changeRole"))
       }
     },
-    [projectId, fetchMembers],
+    [projectId, fetchMembers, t],
   )
 
   // ── Remove member ─────────────────────────────────────────
@@ -102,14 +104,14 @@ export function useProjectMembers(projectId: string) {
         } else {
           setMembers((prev) => prev.filter((m) => m.id !== member.id))
         }
-        toast.success("Miembro removido", {
-          description: `${member.userFullName} fue removido del proyecto.`,
+        toast.success(t("members.toast.removed"), {
+          description: t("members.toast.removedDesc", { name: member.userFullName }),
         })
       } catch (err) {
-        toastApiError(err, "Error al remover miembro")
+        toastApiError(err, t("members.errors.remove"))
       }
     },
-    [projectId, fetchMembers],
+    [projectId, fetchMembers, t],
   )
 
   return {

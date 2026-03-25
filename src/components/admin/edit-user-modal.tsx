@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
 import { useEditAdminUserForm } from "@/hooks/forms/use-admin-user-form"
+import { useLanguage } from "@/context/language-context"
 import type { AdminUserResponse, AdminUserPlanDto, UpdateAdminUserRequest } from "@/types/admin-user"
 
 interface EditUserModalProps {
@@ -30,24 +31,25 @@ interface EditUserModalProps {
 }
 
 export function EditUserModal({ user, open, onClose, onSave, plans }: EditUserModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useEditAdminUserForm({ user, onSave, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar usuario"
-      description="Modifica los datos del usuario."
+      title={t("admin.editModal.title")}
+      description={t("admin.editModal.description")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
     >
       <FormField
         control={form.control}
         name="fullName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre completo</FormLabel>
+            <FormLabel>{t("admin.editModal.fieldFullName")}</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -61,7 +63,7 @@ export function EditUserModal({ user, open, onClose, onSave, plans }: EditUserMo
         name="avatarUrl"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>URL del avatar</FormLabel>
+            <FormLabel>{t("admin.editModal.fieldAvatarUrl")}</FormLabel>
             <FormControl>
               <Input placeholder="https://..." {...field} />
             </FormControl>
@@ -75,11 +77,11 @@ export function EditUserModal({ user, open, onClose, onSave, plans }: EditUserMo
         name="planId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Plan</FormLabel>
+            <FormLabel>{t("admin.editModal.fieldPlan")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar plan" />
+                  <SelectValue placeholder={t("admin.editModal.planPlaceholder")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -107,9 +109,9 @@ export function EditUserModal({ user, open, onClose, onSave, plans }: EditUserMo
               />
             </FormControl>
             <div className="leading-none">
-              <FormLabel className="cursor-pointer">Administrador</FormLabel>
+              <FormLabel className="cursor-pointer">{t("admin.editModal.fieldAdmin")}</FormLabel>
               <p className="text-xs text-muted-foreground mt-1">
-                Otorga acceso completo al panel de administración.
+                {t("admin.editModal.adminHint")}
               </p>
             </div>
           </FormItem>

@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { useAuth } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -31,6 +32,7 @@ interface AuthGuardProps {
 export function AuthGuard({ children, requireAdmin = false, requireUser = false }: AuthGuardProps) {
   const router = useRouter();
   const { user, isLoading, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (isLoading) return;
@@ -56,7 +58,7 @@ export function AuthGuard({ children, requireAdmin = false, requireUser = false 
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          <span className="text-sm">Verificando sesión...</span>
+          <span className="text-sm">{t("auth.verifyingSession")}</span>
         </div>
       </div>
     );

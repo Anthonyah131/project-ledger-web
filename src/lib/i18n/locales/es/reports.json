@@ -37,6 +37,24 @@
     "selectedOne": "1 seleccionado",
     "selectedMany": "{count} seleccionados",
     "noProjectsWithPartners": "Sin proyectos con partners",
-    "noPartnersRegistered": "Sin partners registrados"
+    "noPartnersRegistered": "Sin partners registrados",
+    "toast": {
+      "excelDownloaded": "Archivo Excel descargado",
+      "pdfDownloaded": "Archivo PDF descargado"
+    },
+    "warnings": {
+      "selectProjectToGenerate": "Selecciona un proyecto para generar el reporte.",
+      "selectProjectToExport": "Selecciona un proyecto para exportar.",
+      "selectPartnerToGenerate": "Selecciona un partner para generar el reporte.",
+      "selectPartnerToExport": "Selecciona un partner para exportar.",
+      "selectWorkspaceToGenerate": "Selecciona un workspace para generar el reporte.",
+      "selectWorkspaceToExport": "Selecciona un workspace para exportar."
+    },
+    "errors": {
+      "generate": "Error al generar reporte",
+      "export": "Error al exportar como {format}",
+      "loadProjects": "No se pudieron cargar los proyectos",
+      "loadPaymentMethods": "No se pudieron cargar los métodos de pago"
+    }
   }
 }

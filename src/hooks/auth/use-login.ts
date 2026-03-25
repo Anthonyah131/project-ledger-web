@@ -6,12 +6,14 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
 import { getGoogleLoginUrl } from "@/services/auth-service"
 
 export function useLogin() {
   const router = useRouter()
+  const { t } = useLanguage()
   const {
     user,
     login,
@@ -59,9 +61,9 @@ export function useLogin() {
       await login(data.email, data.password)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setServerError(err.message || "Error al iniciar sesión.")
+        setServerError(err.message || t("auth.errors.login"))
       } else {
-        setServerError("Error de conexión. Intenta de nuevo.")
+        setServerError(t("common.errors.connection"))
       }
     }
   })

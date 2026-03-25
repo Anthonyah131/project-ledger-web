@@ -74,7 +74,7 @@ export function ForgotPasswordView() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("auth.emailLabel")}</FormLabel>
+                    <FormLabel>{t("auth.fields.email.label")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -146,11 +146,11 @@ export function ForgotPasswordView() {
                 name="otpCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("auth.forgotPasswordFlow.codeLabel")}</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.code.label")}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder={t("auth.forgotPasswordFlow.codePlaceholder")}
+                        placeholder={t("auth.forgotPasswordFlow.code.placeholder")}
                         maxLength={6}
                         autoComplete="one-time-code"
                         disabled={isLoading}
@@ -213,7 +213,7 @@ export function ForgotPasswordView() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("auth.forgotPasswordFlow.newPasswordLabel")}</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.newPassword.label")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -248,7 +248,7 @@ export function ForgotPasswordView() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("auth.forgotPasswordFlow.confirmPasswordLabel")}</FormLabel>
+                    <FormLabel>{t("auth.forgotPasswordFlow.confirmPassword.label")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input

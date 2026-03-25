@@ -184,9 +184,9 @@ export function ProjectDetailIncomesTab({
         open={!!inc.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title={t("incomes.deleteTitle")}
-        description={t("incomes.deleteConfirmDescription")}
-        getMessage={(income) => t("incomes.deleteConfirmDescriptionNamed", { name: income.title })}
+        title={t("incomes.delete.title")}
+        description={t("incomes.delete.description")}
+        getMessage={(income) => t("incomes.delete.confirm", { name: income.title })}
       />
 
       <MovementDetailSheet

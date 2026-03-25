@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as partnerService from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   PartnerResponse,
@@ -16,6 +17,7 @@ import type {
 import type { ViewMode } from "@/types/project"
 
 export function usePartners() {
+  const { t } = useLanguage()
   const [partners, setPartners] = useState<PartnerResponse[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -59,12 +61,12 @@ export function usePartners() {
       setPartners(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar partners")
+      const msg = toastApiError(err, t("partners.errors.load"))
       setError(msg)
     } finally {
       setLoading(false)
     }
-  }, [debouncedQuery, page, pageSize, sort])
+  }, [debouncedQuery, page, pageSize, sort, t])
 
   useEffect(() => {
     fetchPartners()
@@ -78,41 +80,41 @@ export function usePartners() {
     async (data: CreatePartnerRequest) => {
       try {
         const created = await partnerService.createPartner(data)
-        toast.success("Partner creado", { description: `"${created.name}" se agregó correctamente.` })
+        toast.success(t("partners.toast.created"), { description: t("partners.toast.createdDesc", { name: created.name }) })
         await fetchPartners()
       } catch (err) {
-        toastApiError(err, "Error al crear partner")
+        toastApiError(err, t("partners.errors.create"))
       }
     },
-    [fetchPartners],
+    [fetchPartners, t],
   )
 
   const mutateUpdate = useCallback(
     async (id: string, data: UpdatePartnerRequest) => {
       try {
         const updated = await partnerService.updatePartner(id, data)
-        toast.success("Partner actualizado", { description: `"${updated.name}" se guardó correctamente.` })
+        toast.success(t("partners.toast.updated"), { description: t("partners.toast.updatedDesc", { name: updated.name }) })
         await fetchPartners()
       } catch (err) {
-        toastApiError(err, "Error al actualizar partner")
+        toastApiError(err, t("partners.errors.update"))
       }
     },
-    [fetchPartners],
+    [fetchPartners, t],
   )
 
   const mutateDelete = useCallback(
     async (partner: PartnerResponse) => {
       try {
         await partnerService.deletePartner(partner.id)
-        toast.success("Partner eliminado", { description: `"${partner.name}" fue eliminado.` })
+        toast.success(t("partners.toast.deleted"), { description: t("partners.toast.deletedDesc", { name: partner.name }) })
         await fetchPartners()
         return true
       } catch (err) {
-        toastApiError(err, "Error al eliminar partner")
+        toastApiError(err, t("partners.errors.delete"))
         return false
       }
     },
-    [fetchPartners],
+    [fetchPartners, t],
   )
 
   return {

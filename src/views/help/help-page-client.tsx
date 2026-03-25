@@ -22,7 +22,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { AppFooter } from "@/components/shared/app-footer";
-import { contactChannels, faqCategories, siteInfo } from "@/data/site-data";
+import { getContactChannels, getFaqCategories, siteInfo } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 
 // ─── Icon map ──────────────────────────────────────────────────────────────────
@@ -68,6 +68,8 @@ const CHANNEL_STYLES: Record<string, { bg: string; icon: string; border: string 
 
 export function HelpPageClient() {
   const { t } = useLanguage();
+  const contactChannels = getContactChannels(t);
+  const faqCategories = getFaqCategories(t);
 
   return (
     <div className="flex min-h-full flex-col">

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import * as projectService from "@/services/project-service"
 import * as paymentMethodService from "@/services/payment-method-service"
 import * as workspaceService from "@/services/workspace-service"
@@ -12,6 +13,7 @@ import type { WorkspaceResponse } from "@/types/workspace"
 import type { PartnerResponse } from "@/types/partner"
 
 export function useReportsCatalogs() {
+  const { t } = useLanguage()
   const [projects, setProjects] = useState<ProjectResponse[]>([])
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>([])
   const [workspaces, setWorkspaces] = useState<WorkspaceResponse[]>([])
@@ -32,14 +34,14 @@ export function useReportsCatalogs() {
       setProjects(projectsResult.value.items)
     } else {
       setProjects([])
-      toastApiError(projectsResult.reason, "No se pudieron cargar los proyectos")
+      toastApiError(projectsResult.reason, t("reports.errors.loadProjects"))
     }
 
     if (paymentMethodsResult.status === "fulfilled") {
       setPaymentMethods(paymentMethodsResult.value)
     } else {
       setPaymentMethods([])
-      toastApiError(paymentMethodsResult.reason, "No se pudieron cargar los métodos de pago")
+      toastApiError(paymentMethodsResult.reason, t("reports.errors.loadPaymentMethods"))
     }
 
     if (workspacesResult.status === "fulfilled") {
@@ -55,7 +57,7 @@ export function useReportsCatalogs() {
     }
 
     setLoading(false)
-  }, [])
+  }, [t])
 
   useEffect(() => {
     Promise.resolve().then(() => {

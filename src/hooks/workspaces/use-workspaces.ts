@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as workspaceService from "@/services/workspace-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   WorkspaceResponse,
   CreateWorkspaceRequest,
@@ -14,6 +15,7 @@ import type {
 } from "@/types/workspace"
 
 export function useWorkspaces() {
+  const { t } = useLanguage()
   const [workspaces, setWorkspaces] = useState<WorkspaceResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,12 +31,12 @@ export function useWorkspaces() {
       const data = await workspaceService.getWorkspaces()
       setWorkspaces(data)
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar workspaces")
+      const msg = toastApiError(err, t("workspaces.errors.load"))
       setError(msg)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchWorkspaces()
@@ -44,41 +46,41 @@ export function useWorkspaces() {
     async (data: CreateWorkspaceRequest) => {
       try {
         const created = await workspaceService.createWorkspace(data)
-        toast.success("Workspace creado", { description: `"${created.name}" se creó correctamente.` })
+        toast.success(t("workspaces.toast.created"), { description: t("workspaces.toast.createdDesc", { name: created.name }) })
         await fetchWorkspaces()
       } catch (err) {
-        toastApiError(err, "Error al crear workspace")
+        toastApiError(err, t("workspaces.errors.create"))
       }
     },
-    [fetchWorkspaces],
+    [fetchWorkspaces, t],
   )
 
   const mutateUpdate = useCallback(
     async (id: string, data: UpdateWorkspaceRequest) => {
       try {
         const updated = await workspaceService.updateWorkspace(id, data)
-        toast.success("Workspace actualizado", { description: `"${updated.name}" se guardó correctamente.` })
+        toast.success(t("workspaces.toast.updated"), { description: t("workspaces.toast.updatedDesc", { name: updated.name }) })
         await fetchWorkspaces()
       } catch (err) {
-        toastApiError(err, "Error al actualizar workspace")
+        toastApiError(err, t("workspaces.errors.update"))
       }
     },
-    [fetchWorkspaces],
+    [fetchWorkspaces, t],
   )
 
   const mutateDelete = useCallback(
     async (workspace: WorkspaceResponse) => {
       try {
         await workspaceService.deleteWorkspace(workspace.id)
-        toast.success("Workspace eliminado", { description: `"${workspace.name}" fue eliminado.` })
+        toast.success(t("workspaces.toast.deleted"), { description: t("workspaces.toast.deletedDesc", { name: workspace.name }) })
         await fetchWorkspaces()
         return true
       } catch (err) {
-        toastApiError(err, "Error al eliminar workspace")
+        toastApiError(err, t("workspaces.errors.delete"))
         return false
       }
     },
-    [fetchWorkspaces],
+    [fetchWorkspaces, t],
   )
 
   return {

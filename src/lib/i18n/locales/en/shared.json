@@ -57,7 +57,10 @@
     "copiedToClipboard": "Copied to clipboard",
     "noLimit": "No limit",
     "auto": "Auto",
-    "add": "Add"
+    "add": "Add",
+    "errors": {
+      "connection": "Connection error. Please try again."
+    }
   },
   "nav": {
     "brand": "Project Ledger",

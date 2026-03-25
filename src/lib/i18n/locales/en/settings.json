@@ -28,6 +28,36 @@
     "themeSystem": "System",
     "noActiveSession": "No active session to show profile.",
     "profileTitle": "Profile",
+    "profile": {
+      "title": "Profile",
+      "section": "Public profile",
+      "subtitle": "Update your personal information visible in the application.",
+      "noActiveSession": "No active session to show profile.",
+      "avatarPreview": "Your profile preview",
+      "fields": {
+        "fullName": { "label": "Full name" },
+        "email": { "label": "Email" },
+        "avatarUrl": {
+          "label": "Avatar URL",
+          "placeholder": "https://..."
+        }
+      }
+    },
+    "preferences": {
+      "section": "Application preferences",
+      "subtitle": "Adjust regional settings for your experience.",
+      "apiLanguage": {
+        "label": "API language",
+        "hint": "Determines the language in which the server returns error messages."
+      },
+      "appLanguage": {
+        "label": "Application language",
+        "hint": "Change the user interface language",
+        "placeholder": "Select a language",
+        "es": "Spanish",
+        "en": "English"
+      }
+    },
     "errors": {
       "sessionExpired": "Your session expired. Please sign in again.",
       "accountForbidden": "You don't have permission to delete the account.",

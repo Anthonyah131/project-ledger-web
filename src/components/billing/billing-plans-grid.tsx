@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card"
 import { formatPlanPrice } from "@/lib/billing-utils"
 import { getPlanDescription, getPlanFeatures } from "@/lib/plan-presentation"
+import { useLanguage } from "@/context/language-context"
 import type { PlanResponse } from "@/types/plan"
 
 interface BillingPlansGridProps {
@@ -34,6 +35,8 @@ export function BillingPlansGrid({
   actionInProgressType,
   onPlanAction,
 }: BillingPlansGridProps) {
+  const { t } = useLanguage()
+
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {plans.map((plan) => {
@@ -54,24 +57,24 @@ export function BillingPlansGrid({
         }
 
         const ctaLabelByAction: Record<typeof actionType, string> = {
-          none: "No requiere pago",
-          checkout: "Suscribirse",
-          "change-plan": "Cambiar a este plan",
-          cancel: "Cambiar a Free",
+          none: t("billing.noPaymentRequired"),
+          checkout: t("billing.subscribe"),
+          "change-plan": t("billing.switchToPlan"),
+          cancel: t("billing.switchToFree"),
         }
 
         const ctaLabel = stripeDisabled && !isCurrentPlan
-          ? "Facturación deshabilitada"
+          ? t("billing.billingDisabled")
           : isCurrentPlan
-            ? "Plan actual"
+            ? t("billing.currentPlan")
             : ctaLabelByAction[actionType]
         const ctaDisabled = stripeDisabled || isCurrentPlan || actionType === "none"
 
         const isActionLoading = actionInProgressPlanId === plan.id
         const loadingLabelByAction: Record<Exclude<typeof actionType, "none">, string> = {
-          checkout: "Redirigiendo...",
-          "change-plan": "Actualizando plan...",
-          cancel: "Programando cancelación...",
+          checkout: t("billing.redirecting"),
+          "change-plan": t("billing.updatingPlan"),
+          cancel: t("billing.schedulingCancellation"),
         }
 
         return (
@@ -79,7 +82,7 @@ export function BillingPlansGrid({
             <CardHeader>
               <CardTitle className="flex items-center justify-between gap-2">
                 <span>{plan.name}</span>
-                {isCurrentPlan && <Badge variant="outline">Actual</Badge>}
+                {isCurrentPlan && <Badge variant="outline">{t("billing.current")}</Badge>}
               </CardTitle>
               <CardDescription>{planDescription}</CardDescription>
             </CardHeader>
@@ -87,7 +90,7 @@ export function BillingPlansGrid({
               <p className="text-3xl font-semibold tracking-tight">
                 {formatPlanPrice(plan.monthlyPrice, plan.currency)}
                 <span className="ml-1 text-sm font-normal text-muted-foreground">
-                  {plan.monthlyPrice > 0 ? "/ mes" : ""}
+                  {plan.monthlyPrice > 0 ? t("billing.perMonth") : ""}
                 </span>
               </p>
               <ul className="mt-4 space-y-2">

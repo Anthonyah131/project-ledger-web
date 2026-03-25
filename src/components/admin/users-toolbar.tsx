@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { useLanguage } from "@/context/language-context"
 
 interface AdminUsersToolbarProps {
   sort: string
@@ -27,6 +28,8 @@ export function AdminUsersToolbar({
   includeDeleted,
   onIncludeDeletedChange,
 }: AdminUsersToolbarProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Left: include deleted toggle */}
@@ -37,27 +40,27 @@ export function AdminUsersToolbar({
           onCheckedChange={(v) => onIncludeDeletedChange(v === true)}
         />
         <Label htmlFor="includeDeleted" className="text-sm font-normal cursor-pointer">
-          Incluir eliminados
+          {t("admin.toolbar.includeDeleted")}
         </Label>
       </div>
 
       {/* Right: sort + page size */}
       <div className="flex items-center gap-2">
         <Select value={sort} onValueChange={onSortChange}>
-          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label="Ordenar por">
+          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label={t("common.sortBy")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="createdAt:desc">Más recientes</SelectItem>
-            <SelectItem value="createdAt:asc">Más antiguos</SelectItem>
-            <SelectItem value="fullName:asc">Nombre A–Z</SelectItem>
-            <SelectItem value="fullName:desc">Nombre Z–A</SelectItem>
-            <SelectItem value="lastLoginAt:desc">Último acceso</SelectItem>
+            <SelectItem value="createdAt:desc">{t("admin.toolbar.sortNewest")}</SelectItem>
+            <SelectItem value="createdAt:asc">{t("admin.toolbar.sortOldest")}</SelectItem>
+            <SelectItem value="fullName:asc">{t("admin.toolbar.sortNameAZ")}</SelectItem>
+            <SelectItem value="fullName:desc">{t("admin.toolbar.sortNameZA")}</SelectItem>
+            <SelectItem value="lastLoginAt:desc">{t("admin.columnLastAccess")}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
-          <SelectTrigger className="w-auto min-w-20 h-8 text-sm" aria-label="Registros por página">
+          <SelectTrigger className="w-auto min-w-20 h-8 text-sm" aria-label={t("common.perPage")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

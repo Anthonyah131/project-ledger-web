@@ -1,7 +1,12 @@
+"use client";
+
 import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 export function Navbar() {
+  const { t } = useLanguage();
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -11,20 +16,20 @@ export function Navbar() {
             <FileText className="h-4 w-4" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
-            Project Ledger
+            {t("nav.brand")}
           </span>
         </Link>
 
         {/* Nav links */}
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <Link href="#features" className="transition-colors hover:text-foreground">
-            Características
+            {t("nav.features")}
           </Link>
           <Link href="#how-it-works" className="transition-colors hover:text-foreground">
-            Cómo funciona
+            {t("nav.howItWorks")}
           </Link>
           <Link href="#pricing" className="transition-colors hover:text-foreground">
-            Precios
+            {t("nav.pricing")}
           </Link>
         </nav>
 
@@ -34,13 +39,13 @@ export function Navbar() {
             href="/login"
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"
           >
-            Iniciar sesión
+            {t("nav.login")}
           </Link>
           <Link
             href="/register"
             className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-md shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/40"
           >
-            Comenzar gratis
+            {t("nav.startFree")}
             <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>

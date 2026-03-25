@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import {
   forgotPasswordSchema,
@@ -21,6 +22,7 @@ type ForgotPasswordStep = "request" | "verify" | "reset"
 
 export function useForgotPassword() {
   const router = useRouter()
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const emailFromQuery = (searchParams.get("email") ?? "").trim()
   const initialEmail = emailFromQuery.includes("@") ? emailFromQuery : ""
@@ -59,9 +61,7 @@ export function useForgotPassword() {
     try {
       await authService.forgotPassword({ email: data.email })
       setEmail(data.email)
-      setSuccessMessage(
-        "Si tu correo está registrado, recibirás un código en breve."
-      )
+      setSuccessMessage(t("auth.forgotPasswordFlow.requestSuccess"))
       // Advance to step 2 after a brief delay to show the message
       setTimeout(() => {
         setCurrentStep("verify")
@@ -69,9 +69,9 @@ export function useForgotPassword() {
       }, 2000)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setServerError(err.message || "Error al solicitar el código.")
+        setServerError(err.message || t("auth.errors.requestCode"))
       } else {
-        setServerError("Error de conexión. Intenta de nuevo.")
+        setServerError(t("common.errors.connection"))
       }
     } finally {
       setIsLoading(false)
@@ -87,7 +87,7 @@ export function useForgotPassword() {
     try {
       await authService.verifyOtp({ email, otpCode: data.otpCode })
       setOtpCode(data.otpCode)
-      setSuccessMessage("Código verificado correctamente.")
+      setSuccessMessage(t("auth.forgotPasswordFlow.verifySuccess"))
       // Advance to step 3 after brief delay
       setTimeout(() => {
         setCurrentStep("reset")
@@ -95,9 +95,9 @@ export function useForgotPassword() {
       }, 1000)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setServerError(err.message || "Error al verificar el código.")
+        setServerError(err.message || t("auth.errors.verifyCode"))
       } else {
-        setServerError("Error de conexión. Intenta de nuevo.")
+        setServerError(t("common.errors.connection"))
       }
     } finally {
       setIsLoading(false)
@@ -116,14 +116,14 @@ export function useForgotPassword() {
         otpCode,
         newPassword: data.newPassword,
       })
-      setSuccessMessage("¡Contraseña actualizada correctamente!")
+      setSuccessMessage(t("auth.forgotPasswordFlow.resetSuccess"))
       // Redirect to login after brief delay
       setTimeout(() => {
         router.push("/login?passwordReset=true")
       }, 2000)
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setServerError(err.message || "Error al actualizar la contraseña.")
+        setServerError(err.message || t("auth.errors.resetPassword"))
         if (err.status === 400) {
           // Restart flow (e.g., OTP expired between step 2 and 3)
           setTimeout(() => {
@@ -131,7 +131,7 @@ export function useForgotPassword() {
           }, 3000)
         }
       } else {
-        setServerError("Error de conexión. Intenta de nuevo.")
+        setServerError(t("common.errors.connection"))
       }
     } finally {
       setIsLoading(false)

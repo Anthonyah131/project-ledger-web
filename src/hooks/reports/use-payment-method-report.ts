@@ -7,6 +7,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import * as reportService from "@/services/report-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { getDateRangeError } from "@/lib/date-utils"
 import type { PaymentMethodReportResponse, ReportFormat } from "@/types/report"
 
@@ -18,6 +19,7 @@ export interface PaymentMethodReportFilters {
 }
 
 export function usePaymentMethodReport() {
+  const { t } = useLanguage()
   const [report, setReport] = useState<PaymentMethodReportResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -58,11 +60,11 @@ export function usePaymentMethodReport() {
       })
       if (data) setReport(data)
     } catch (err) {
-      toastApiError(err, "Error al generar reporte")
+      toastApiError(err, t("reports.errors.generate"))
     } finally {
       setLoading(false)
     }
-  }, [filters.from, filters.to, filters.paymentMethodIds])
+  }, [filters.from, filters.to, filters.paymentMethodIds, t])
 
   // Export as Excel or PDF
   const exportReport = useCallback(
@@ -83,15 +85,15 @@ export function usePaymentMethodReport() {
           format,
         })
         toast.success(
-          format === "excel" ? "Archivo Excel descargado" : "Archivo PDF descargado",
+          format === "excel" ? t("reports.toast.excelDownloaded") : t("reports.toast.pdfDownloaded"),
         )
       } catch (err) {
-        toastApiError(err, `Error al exportar como ${format.toUpperCase()}`)
+        toastApiError(err, t("reports.errors.export", { format: format.toUpperCase() }))
       } finally {
         setExporting(false)
       }
     },
-    [filters.from, filters.to, filters.paymentMethodIds],
+    [filters.from, filters.to, filters.paymentMethodIds, t],
   )
 
   return {

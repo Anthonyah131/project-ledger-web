@@ -18,6 +18,33 @@
     "empty": "No payment methods",
     "emptyDescription": "Add your first account, card, or cash",
     "deleteConfirmTitle": "Delete payment method?",
-    "deleteConfirmDescription": "This action cannot be undone."
+    "deleteConfirmDescription": "This action cannot be undone.",
+    "toast": {
+      "created": "Payment method created",
+      "createdDesc": "\"{name}\" was added successfully.",
+      "updated": "Payment method updated",
+      "updatedDesc": "\"{name}\" was saved successfully.",
+      "deleted": "Payment method deleted",
+      "deletedDesc": "\"{name}\" was deactivated.",
+      "deletedDetailDesc": "The payment method was deactivated.",
+      "partnerLinked": "Partner linked",
+      "partnerLinkedDesc": "The partner was assigned to the payment method.",
+      "partnerUnlinked": "Partner removed",
+      "partnerUnlinkedDesc": "The partner was unlinked from the payment method."
+    },
+    "errors": {
+      "load": "Error loading payment methods",
+      "loadDetail": "Error loading payment method",
+      "loadProjects": "Error loading related projects",
+      "loadSummary": "Error loading summary",
+      "loadBalance": "Error loading balance by project",
+      "loadExpenses": "Error loading expenses",
+      "loadIncomes": "Error loading income",
+      "create": "Error creating payment method",
+      "update": "Error updating payment method",
+      "delete": "Error deleting payment method",
+      "linkPartner": "Error linking partner",
+      "unlinkPartner": "Error removing partner"
+    }
   }
 }

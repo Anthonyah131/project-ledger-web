@@ -127,9 +127,9 @@ export function ProjectDetailObligationsTab({
         open={!!obl.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title={t("obligations.deleteTitle")}
-        description={t("obligations.deleteConfirmDescription")}
-        getMessage={(obligation) => t("obligations.deleteConfirmDescriptionNamed", { name: obligation.title })}
+        title={t("obligations.delete.title")}
+        description={t("obligations.delete.description")}
+        getMessage={(obligation) => t("obligations.delete.confirm", { name: obligation.title })}
       />
     </TabsContent>
   )

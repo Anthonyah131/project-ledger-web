@@ -28,6 +28,36 @@
     "themeSystem": "Sistema",
     "noActiveSession": "No hay una sesión activa para mostrar el perfil.",
     "profileTitle": "Perfil",
+    "profile": {
+      "title": "Perfil",
+      "section": "Perfil público",
+      "subtitle": "Actualiza tu información personal visible en la aplicación.",
+      "noActiveSession": "No hay una sesión activa para mostrar el perfil.",
+      "avatarPreview": "Vista previa de tu perfil",
+      "fields": {
+        "fullName": { "label": "Nombre completo" },
+        "email": { "label": "Correo electrónico" },
+        "avatarUrl": {
+          "label": "URL del avatar",
+          "placeholder": "https://..."
+        }
+      }
+    },
+    "preferences": {
+      "section": "Preferencias de aplicación",
+      "subtitle": "Ajusta la configuración regional para tu experiencia.",
+      "apiLanguage": {
+        "label": "Idioma de la API",
+        "hint": "Determina el idioma en el que el servidor devuelve los mensajes de error."
+      },
+      "appLanguage": {
+        "label": "Idioma de la aplicación",
+        "hint": "Cambia el idioma de la interfaz de usuario",
+        "placeholder": "Selecciona un idioma",
+        "es": "Español",
+        "en": "English"
+      }
+    },
     "errors": {
       "sessionExpired": "Tu sesión expiró. Inicia sesión nuevamente.",
       "accountForbidden": "No tienes permisos para eliminar la cuenta.",

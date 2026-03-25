@@ -1,14 +1,14 @@
 // src/data/site-data.ts
 // ─── Single source of truth for all site-wide content ──────────────────────────
 // Update this file to change branding, links, FAQs, and contact info globally.
+// Translatable strings live in src/lib/i18n/locales/*/site.json.
+
+type TFn = (key: string) => string
 
 // ─── Site Info ─────────────────────────────────────────────────────────────────
 
 export const siteInfo = {
   name: "Project Ledger",
-  tagline: "Gestiona tus proyectos con inteligencia",
-  description:
-    "La plataforma todo-en-uno para gestionar proyectos, rastrear presupuestos y tomar decisiones estratégicas con IA.",
   year: 2026,
   author: "Anthony",
   authorHandle: "anthonyah131",
@@ -47,191 +47,133 @@ export const socialLinks = [
 
 // ─── Footer Links ──────────────────────────────────────────────────────────────
 
-export const footerLinks = [
-  {
-    group: "Producto",
-    links: [
-      { label: "Características", href: "/#features" },
-      { label: "Precios", href: "/#pricing" },
-      { label: "Cómo funciona", href: "/#how-it-works" },
-      { label: "Ayuda / FAQ", href: "/help" },
-    ],
-  },
-  {
-    group: "Empresa",
-    links: [
-      { label: "Sobre el proyecto", href: "/#about" },
-      { label: "GitHub del repo", href: "https://github.com/anthonyah131/project-ledger-web", newTab: true },
-      { label: "Contacto", href: `mailto:anthonyah131@gmail.com` },
-    ],
-  },
-  {
-    group: "Legal",
-    links: [
-      { label: "Privacidad", href: "#" },
-      { label: "Términos de uso", href: "#" },
-      { label: "Seguridad", href: "#" },
-    ],
-  },
-];
+export function getFooterLinks(t: TFn) {
+  return [
+    {
+      group: t("site.footer.groups.product"),
+      links: [
+        { label: t("site.footer.links.features"), href: "/#features" },
+        { label: t("site.footer.links.pricing"), href: "/#pricing" },
+        { label: t("site.footer.links.howItWorks"), href: "/#how-it-works" },
+        { label: t("site.footer.links.help"), href: "/help" },
+      ],
+    },
+    {
+      group: t("site.footer.groups.company"),
+      links: [
+        { label: t("site.footer.links.about"), href: "/#about" },
+        { label: t("site.footer.links.githubRepo"), href: "https://github.com/anthonyah131/project-ledger-web", newTab: true },
+        { label: t("site.footer.links.contact"), href: `mailto:anthonyah131@gmail.com` },
+      ],
+    },
+    {
+      group: t("site.footer.groups.legal"),
+      links: [
+        { label: t("site.footer.links.privacy"), href: "#" },
+        { label: t("site.footer.links.terms"), href: "#" },
+        { label: t("site.footer.links.security"), href: "#" },
+      ],
+    },
+  ];
+}
 
 // ─── Contact Channels (for Help page quick-actions) ────────────────────────────
 
-export const contactChannels = [
-  {
-    id: "gmail",
-    label: "Enviar email",
-    description: "Escríbenos directamente a nuestro correo de soporte.",
-    href: `https://mail.google.com/mail/?view=cm&fs=1&to=anthonyah131@gmail.com&su=Soporte%20Project%20Ledger`,
-    newTab: true,
-    icon: "mail",
-    cta: "Abrir Gmail",
-  },
-  {
-    id: "github",
-    label: "GitHub",
-    description: "Reporta bugs o consulta el código fuente del proyecto.",
-    href: "https://github.com/anthonyah131/project-ledger-web",
-    newTab: true,
-    icon: "github",
-    cta: "Ver repositorio",
-  },
-  {
-    id: "linkedin",
-    label: "LinkedIn",
-    description: "Conéctate conmigo en LinkedIn para hablar sobre el proyecto.",
-    href: "https://www.linkedin.com/in/anthonyah131",
-    newTab: true,
-    icon: "linkedin",
-    cta: "Ver perfil",
-  },
-  {
-    id: "instagram",
-    label: "Instagram",
-    description: "Sígueme en Instagram para actualizaciones del proyecto.",
-    href: "https://www.instagram.com/anthonyah131",
-    newTab: true,
-    icon: "instagram",
-    cta: "Ver perfil",
-  },
-];
+export function getContactChannels(t: TFn) {
+  return [
+    {
+      id: "gmail",
+      label: t("site.contact.gmail.label"),
+      description: t("site.contact.gmail.description"),
+      href: `https://mail.google.com/mail/?view=cm&fs=1&to=anthonyah131@gmail.com&su=Soporte%20Project%20Ledger`,
+      newTab: true,
+      icon: "mail",
+      cta: t("site.contact.gmail.cta"),
+    },
+    {
+      id: "github",
+      label: t("site.contact.github.label"),
+      description: t("site.contact.github.description"),
+      href: "https://github.com/anthonyah131/project-ledger-web",
+      newTab: true,
+      icon: "github",
+      cta: t("site.contact.github.cta"),
+    },
+    {
+      id: "linkedin",
+      label: t("site.contact.linkedin.label"),
+      description: t("site.contact.linkedin.description"),
+      href: "https://www.linkedin.com/in/anthonyah131",
+      newTab: true,
+      icon: "linkedin",
+      cta: t("site.contact.linkedin.cta"),
+    },
+    {
+      id: "instagram",
+      label: t("site.contact.instagram.label"),
+      description: t("site.contact.instagram.description"),
+      href: "https://www.instagram.com/anthonyah131",
+      newTab: true,
+      icon: "instagram",
+      cta: t("site.contact.instagram.cta"),
+    },
+  ];
+}
 
 // ─── FAQ Categories ────────────────────────────────────────────────────────────
 
-export const faqCategories = [
-  {
-    id: "general",
-    category: "General",
-    icon: "circle-help",
-    faqs: [
-      {
-        question: "¿Qué es Project Ledger?",
-        answer:
-          "Project Ledger es una plataforma SaaS para gestionar proyectos, rastrear presupuestos e integrar asistencia con inteligencia artificial. Fue diseñada como proyecto de portafolio con funcionalidades de nivel producción.",
-      },
-      {
-        question: "¿Es gratuito?",
-        answer:
-          "Sí, ofrecemos un plan Free permanente con hasta 2 proyectos y funcionalidades básicas. También tenemos planes Basic ($9.99/mes) y Premium ($19.99/mes) con límites más altos y funciones avanzadas.",
-      },
-      {
-        question: "¿Necesito tarjeta de crédito para registrarme?",
-        answer:
-          "No. Puedes crear tu cuenta y usar el plan Free sin ingresar datos de pago. Solo se requiere tarjeta si decides suscribirte a un plan de pago.",
-      },
-      {
-        question: "¿En qué tecnologías está construido?",
-        answer:
-          "El frontend usa Next.js 15, React 19, Tailwind CSS y shadcn/ui. El backend usa Node.js con Express, Supabase (PostgreSQL) para la base de datos y n8n para la automatización con IA.",
-      },
-    ],
-  },
-  {
-    id: "projects",
-    category: "Proyectos",
-    icon: "folder",
-    faqs: [
-      {
-        question: "¿Cómo creo un proyecto?",
-        answer:
-          'Ve a la sección "Proyectos" en el menú lateral y haz clic en "Nuevo proyecto". Completa el nombre, descripción, presupuesto y moneda, y tu proyecto estará listo.',
-      },
-      {
-        question: "¿Puedo invitar a otros miembros a mis proyectos?",
-        answer:
-          "Sí, desde el detalle de un proyecto puedes agregar miembros por email. Dependiendo de tu plan, puedes tener hasta 5 miembros (Basic) o ilimitados (Premium).",
-      },
-      {
-        question: "¿Qué tipos de gastos puedo registrar?",
-        answer:
-          "Puedes registrar cualquier gasto asociado al proyecto: materiales, servicios, honorarios, etc. Cada gasto lleva fecha, monto, categoría, método de pago y descripción opcional.",
-      },
-      {
-        question: "¿Puedo usar múltiples monedas?",
-        answer:
-          "Sí. El plan Free soporta hasta 3 divisas, mientras que los planes de pago permiten multi-moneda sin restricciones.",
-      },
-    ],
-  },
-  {
-    id: "billing",
-    category: "Facturación",
-    icon: "credit-card",
-    faqs: [
-      {
-        question: "¿Cómo cambio mi plan?",
-        answer:
-          'Ve a "Configuración" → "Facturación" y selecciona el plan deseado. El cambio se aplica inmediatamente y se prorratea al ciclo de facturación actual.',
-      },
-      {
-        question: "¿Puedo cancelar en cualquier momento?",
-        answer:
-          "Sí, puedes cancelar tu suscripción cuando quieras. Seguirás teniendo acceso a las funciones de tu plan hasta el final del período pagado.",
-      },
-      {
-        question: "¿Qué métodos de pago aceptan?",
-        answer:
-          "Actualmente el módulo de pagos es una simulación para el portafolio. En una versión de producción real se integraría Stripe o PayPal.",
-      },
-    ],
-  },
-  {
-    id: "security",
-    category: "Seguridad y privacidad",
-    icon: "shield-check",
-    faqs: [
-      {
-        question: "¿Mis datos están seguros?",
-        answer:
-          "Todos los datos se almacenan en Supabase con cifrado en tránsito (HTTPS/TLS) y en reposo. No compartimos tus datos con terceros.",
-      },
-      {
-        question: "¿Cómo funciona la autenticación?",
-        answer:
-          "Usamos JWT con tokens de acceso y refresco gestionados por Supabase Auth. Las sesiones expiran y se rotan automáticamente.",
-      },
-      {
-        question: "¿Puedo eliminar mi cuenta?",
-        answer:
-          "Sí. Desde Configuración puedes solicitar la eliminación de tu cuenta y todos tus datos asociados de forma permanente.",
-      },
-    ],
-  },
-  {
-    id: "ai",
-    category: "Asistente IA",
-    icon: "sparkles",
-    faqs: [
-      {
-        question: "¿Cómo funciona el asistente de IA?",
-        answer:
-          "El asistente está integrado mediante n8n y se conecta a modelos de lenguaje como GPT. Puedes hacerle preguntas sobre tus proyectos, pedir análisis financieros o consultar el historial.",
-      },
-      {
-        question: "¿El asistente tiene acceso a mis datos?",
-        answer:
-          "El asistente solo accede a los datos del proyecto activo en tu sesión. Nunca comparte información entre usuarios.",
-      },
-    ],
-  },
-];
+export function getFaqCategories(t: TFn) {
+  return [
+    {
+      id: "general",
+      category: t("site.faq.general.category"),
+      icon: "circle-help",
+      faqs: [
+        { question: t("site.faq.general.q1.question"), answer: t("site.faq.general.q1.answer") },
+        { question: t("site.faq.general.q2.question"), answer: t("site.faq.general.q2.answer") },
+        { question: t("site.faq.general.q3.question"), answer: t("site.faq.general.q3.answer") },
+        { question: t("site.faq.general.q4.question"), answer: t("site.faq.general.q4.answer") },
+      ],
+    },
+    {
+      id: "projects",
+      category: t("site.faq.projects.category"),
+      icon: "folder",
+      faqs: [
+        { question: t("site.faq.projects.q1.question"), answer: t("site.faq.projects.q1.answer") },
+        { question: t("site.faq.projects.q2.question"), answer: t("site.faq.projects.q2.answer") },
+        { question: t("site.faq.projects.q3.question"), answer: t("site.faq.projects.q3.answer") },
+        { question: t("site.faq.projects.q4.question"), answer: t("site.faq.projects.q4.answer") },
+      ],
+    },
+    {
+      id: "billing",
+      category: t("site.faq.billing.category"),
+      icon: "credit-card",
+      faqs: [
+        { question: t("site.faq.billing.q1.question"), answer: t("site.faq.billing.q1.answer") },
+        { question: t("site.faq.billing.q2.question"), answer: t("site.faq.billing.q2.answer") },
+        { question: t("site.faq.billing.q3.question"), answer: t("site.faq.billing.q3.answer") },
+      ],
+    },
+    {
+      id: "security",
+      category: t("site.faq.security.category"),
+      icon: "shield-check",
+      faqs: [
+        { question: t("site.faq.security.q1.question"), answer: t("site.faq.security.q1.answer") },
+        { question: t("site.faq.security.q2.question"), answer: t("site.faq.security.q2.answer") },
+        { question: t("site.faq.security.q3.question"), answer: t("site.faq.security.q3.answer") },
+      ],
+    },
+    {
+      id: "ai",
+      category: t("site.faq.ai.category"),
+      icon: "sparkles",
+      faqs: [
+        { question: t("site.faq.ai.q1.question"), answer: t("site.faq.ai.q1.answer") },
+        { question: t("site.faq.ai.q2.question"), answer: t("site.faq.ai.q2.answer") },
+      ],
+    },
+  ];
+}

@@ -20,6 +20,13 @@
     "noProjects": "Aún no tienes proyectos",
     "noProjectsWorkspaceRequired": "Para crear un proyecto necesitas un workspace. Crea tu primer workspace para comenzar.",
     "createWorkspace": "Crear workspace",
-    "selectProjectDescription": "Selecciona un proyecto para cargar el dashboard mensual."
+    "selectProjectDescription": "Selecciona un proyecto para cargar el dashboard mensual.",
+    "defaultProjectName": "Proyecto",
+    "errors": {
+      "invalidMonthFormat": "El formato de mes es inválido. Debe ser YYYY-MM.",
+      "noProjectSelected": "Selecciona un proyecto para cargar el dashboard.",
+      "loadMonthly": "Error al cargar dashboard mensual",
+      "loadProjects": "Error al cargar proyectos"
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createIncomeSchema,
   updateIncomeSchema,
@@ -75,6 +76,7 @@ export function useCreateIncomeForm({
   paymentMethods,
   projectCurrency,
 }: UseCreateIncomeFormOptions) {
+  const { t } = useLanguage()
   const defaultCategoryId =
     categories.find((c) => c.isDefault)?.id || categories[0]?.id || ""
   const defaultPaymentMethodId = paymentMethods[0]?.id || ""
@@ -114,7 +116,7 @@ export function useCreateIncomeForm({
     if (!selectedPaymentMethod) {
       form.setError("paymentMethodId", {
         type: "manual",
-        message: "Método de pago es requerido",
+        message: t("incomes.fields.paymentMethod.required"),
       })
       return
     }
@@ -134,7 +136,7 @@ export function useCreateIncomeForm({
     if (values.accountAmount.trim().length > 0 && !parsedAccountAmount) {
       form.setError("accountAmount", {
         type: "manual",
-        message: "Account amount must be greater than 0.",
+        message: t("incomes.fields.accountAmount.mustBePositive"),
       })
       return
     }
@@ -142,7 +144,7 @@ export function useCreateIncomeForm({
     if (manualAccountAmountRequired && !parsedAccountAmount) {
       form.setError("accountAmount", {
         type: "manual",
-        message: "Account amount is required for selected account currency.",
+        message: t("incomes.fields.accountAmount.required"),
       })
       return
     }
@@ -259,6 +261,7 @@ export function useUpdateIncomeForm({
   paymentMethods,
   projectCurrency,
 }: UseUpdateIncomeFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateIncomeFormValues>({
     resolver: zodResolver(updateIncomeSchema),
     defaultValues: {
@@ -318,7 +321,7 @@ export function useUpdateIncomeForm({
     if (!selectedPaymentMethod) {
       form.setError("paymentMethodId", {
         type: "manual",
-        message: "Método de pago es requerido",
+        message: t("incomes.fields.paymentMethod.required"),
       })
       return
     }
@@ -338,7 +341,7 @@ export function useUpdateIncomeForm({
     if (values.accountAmount.trim().length > 0 && !parsedAccountAmount) {
       form.setError("accountAmount", {
         type: "manual",
-        message: "Account amount must be greater than 0.",
+        message: t("incomes.fields.accountAmount.mustBePositive"),
       })
       return
     }
@@ -346,7 +349,7 @@ export function useUpdateIncomeForm({
     if (manualAccountAmountRequired && !parsedAccountAmount) {
       form.setError("accountAmount", {
         type: "manual",
-        message: "Account amount is required for selected account currency.",
+        message: t("incomes.fields.accountAmount.required"),
       })
       return
     }

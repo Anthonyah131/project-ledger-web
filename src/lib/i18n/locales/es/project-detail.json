@@ -20,11 +20,34 @@
     "deleteTitle": "Eliminar gasto",
     "deleteConfirmDescription": "Esta acción no se puede deshacer.",
     "deleteConfirmDescriptionNamed": "¿Eliminar gasto \"{name}\"?",
+    "delete": {
+      "title": "Eliminar gasto",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "¿Eliminar gasto \"{name}\"?"
+    },
     "categoryLabel": "Categoría",
     "partnerLabel": "Partner",
     "paymentMethodLabel": "Método de pago",
     "conceptLabel": "Concepto",
-    "conceptPlaceholder": "Ej: Compra de materiales"
+    "conceptPlaceholder": "Ej: Compra de materiales",
+    "ocrQuotaError": "No se pudo cargar la cuota OCR",
+    "draftExtracted": "Borrador extraído",
+    "draftExtractedDesc": "Revisa y ajusta los datos antes de crear el gasto definitivo.",
+    "toast": {
+      "created": "Gasto creado",
+      "updated": "Gasto actualizado",
+      "deleted": "Gasto eliminado",
+      "deletedDesc": "\"{name}\" fue eliminado.",
+      "activated": "Gasto activado",
+      "markedReminder": "Gasto marcado como recordatorio"
+    },
+    "errors": {
+      "load": "Error al cargar gastos",
+      "create": "Error al crear gasto",
+      "update": "Error al actualizar gasto",
+      "delete": "Error al eliminar gasto",
+      "updateStatus": "Error al actualizar estado del gasto"
+    }
   },
   "incomes": {
     "title": "Ingresos",
@@ -40,10 +63,43 @@
     "deleteTitle": "Eliminar ingreso",
     "deleteConfirmDescription": "Esta acción no se puede deshacer.",
     "deleteConfirmDescriptionNamed": "¿Eliminar ingreso \"{name}\"?",
+    "delete": {
+      "title": "Eliminar ingreso",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "¿Eliminar ingreso \"{name}\"?"
+    },
     "conceptLabel": "Concepto",
     "conceptPlaceholder": "Ej: Pago cliente ACME",
     "partnerLabel": "Partner",
-    "paymentMethodLabel": "Método de pago"
+    "paymentMethodLabel": "Método de pago",
+    "ocrQuotaError": "No se pudo cargar la cuota OCR",
+    "draftExtracted": "Borrador extraído",
+    "draftExtractedDesc": "Revisa y ajusta los datos antes de crear el ingreso definitivo.",
+    "accountAmountRequired": "Monto de cuenta requerido",
+    "fields": {
+      "paymentMethod": {
+        "required": "Método de pago es requerido"
+      },
+      "accountAmount": {
+        "mustBePositive": "El monto de cuenta debe ser mayor que 0.",
+        "required": "El monto de cuenta es requerido para la moneda de cuenta seleccionada."
+      }
+    },
+    "toast": {
+      "created": "Ingreso creado",
+      "updated": "Ingreso actualizado",
+      "deleted": "Ingreso eliminado",
+      "deletedDesc": "\"{name}\" fue eliminado.",
+      "activated": "Ingreso activado",
+      "markedReminder": "Ingreso marcado como recordatorio"
+    },
+    "errors": {
+      "load": "Error al cargar ingresos",
+      "create": "Error al crear ingreso",
+      "update": "Error al actualizar ingreso",
+      "delete": "Error al eliminar ingreso",
+      "updateStatus": "Error al actualizar estado del ingreso"
+    }
   },
   "categories": {
     "title": "Categorías",
@@ -59,8 +115,27 @@
     "deleteTitle": "Eliminar categoria",
     "deleteConfirmDescription": "Esta acción no se puede deshacer.",
     "deleteConfirmDescriptionNamed": "¿Eliminar categoría \"{name}\"? Los gastos de esta categoría se moverán a la categoría General.",
+    "delete": {
+      "title": "Eliminar categoria",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "¿Eliminar categoría \"{name}\"? Los gastos de esta categoría se moverán a la categoría General."
+    },
     "totalExpenses": "Total gastos",
-    "budgetUsed": "Presupuesto usado"
+    "budgetUsed": "Presupuesto usado",
+    "toast": {
+      "created": "Categoría creada",
+      "createdDesc": "\"{name}\" se agregó correctamente.",
+      "updated": "Categoría actualizada",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Categoría eliminada",
+      "deletedDesc": "\"{name}\" fue eliminada."
+    },
+    "errors": {
+      "load": "Error al cargar categorías",
+      "create": "Error al crear categoría",
+      "update": "Error al actualizar categoría",
+      "delete": "Error al eliminar categoría"
+    }
   },
   "obligations": {
     "title": "Obligaciones",
@@ -78,11 +153,28 @@
     "deleteTitle": "Eliminar obligacion",
     "deleteConfirmDescription": "Esta acción no se puede deshacer.",
     "deleteConfirmDescriptionNamed": "¿Eliminar obligación \"{name}\"?",
+    "delete": {
+      "title": "Eliminar obligacion",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "¿Eliminar obligación \"{name}\"?"
+    },
     "totalPaid": "Total pagado",
     "remaining": "Pendiente",
     "overdue": "Vencida",
     "completed": "Completada",
-    "active": "Activa"
+    "active": "Activa",
+    "toast": {
+      "created": "Obligación creada",
+      "updated": "Obligación actualizada",
+      "deleted": "Obligación eliminada",
+      "deletedDesc": "\"{name}\" fue eliminada."
+    },
+    "errors": {
+      "load": "Error al cargar obligaciones",
+      "create": "Error al crear obligación",
+      "update": "Error al actualizar obligación",
+      "delete": "Error al eliminar obligación"
+    }
   },
   "budget": {
     "editTitle": "Editar presupuesto",
@@ -98,7 +190,22 @@
     "budgetAlertReached": "Alerta: {percent}% del presupuesto consumido",
     "deleteTitle": "Eliminar presupuesto",
     "deleteDescription": "El proyecto quedará sin un límite general de gastos.",
-    "deleteConfirm": "¿Eliminar el presupuesto configurado para este proyecto?"
+    "deleteConfirm": "¿Eliminar el presupuesto configurado para este proyecto?",
+    "delete": {
+      "title": "Eliminar presupuesto",
+      "description": "El proyecto quedará sin un límite general de gastos.",
+      "confirm": "¿Eliminar el presupuesto configurado para este proyecto?"
+    },
+    "toast": {
+      "updated": "Presupuesto actualizado",
+      "set": "Presupuesto configurado",
+      "deleted": "Presupuesto eliminado"
+    },
+    "errors": {
+      "load": "Error al cargar presupuesto",
+      "save": "Error al guardar presupuesto",
+      "delete": "Error al eliminar presupuesto"
+    }
   },
   "partnerSettlements": {
     "title": "Liquidaciones entre partners",
@@ -118,7 +225,25 @@
     "deleteTitle": "Eliminar liquidación",
     "revertWarning": "Esta acción revertirá el efecto de la liquidación en el balance.",
     "deleteConfirmDescriptionNamed": "¿Eliminar liquidación de {from} a {to}?",
+    "delete": {
+      "title": "Eliminar liquidación",
+      "revertWarning": "Esta acción revertirá el efecto de la liquidación en el balance.",
+      "confirm": "¿Eliminar liquidación de {from} a {to}?"
+    },
     "empty": "No hay liquidaciones",
-    "emptyDescription": "Registra pagos directos entre partners del proyecto"
+    "emptyDescription": "Registra pagos directos entre partners del proyecto",
+    "toast": {
+      "created": "Liquidación registrada",
+      "updated": "Liquidación actualizada",
+      "deleted": "Liquidación eliminada"
+    },
+    "errors": {
+      "load": "Error al cargar liquidaciones",
+      "loadBalance": "Error al cargar balances",
+      "loadSuggestions": "Error al calcular sugerencias",
+      "create": "Error al registrar liquidación",
+      "update": "Error al actualizar liquidación",
+      "delete": "Error al eliminar liquidación"
+    }
   }
 }

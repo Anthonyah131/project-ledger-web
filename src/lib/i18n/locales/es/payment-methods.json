@@ -18,6 +18,33 @@
     "empty": "No hay métodos de pago",
     "emptyDescription": "Agrega tu primera cuenta, tarjeta o efectivo",
     "deleteConfirmTitle": "¿Eliminar método de pago?",
-    "deleteConfirmDescription": "Esta acción no se puede deshacer."
+    "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+    "toast": {
+      "created": "Método de pago creado",
+      "createdDesc": "\"{name}\" se agregó correctamente.",
+      "updated": "Método de pago actualizado",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Método de pago eliminado",
+      "deletedDesc": "\"{name}\" fue desactivado.",
+      "deletedDetailDesc": "El método de pago fue desactivado.",
+      "partnerLinked": "Partner vinculado",
+      "partnerLinkedDesc": "El partner fue asignado al método de pago.",
+      "partnerUnlinked": "Partner quitado",
+      "partnerUnlinkedDesc": "El partner fue desvinculado del método de pago."
+    },
+    "errors": {
+      "load": "Error al cargar métodos de pago",
+      "loadDetail": "Error al cargar método de pago",
+      "loadProjects": "Error al cargar proyectos relacionados",
+      "loadSummary": "Error al cargar resumen",
+      "loadBalance": "Error al cargar balance por proyecto",
+      "loadExpenses": "Error al cargar gastos",
+      "loadIncomes": "Error al cargar ingresos",
+      "create": "Error al crear método de pago",
+      "update": "Error al actualizar método de pago",
+      "delete": "Error al eliminar método de pago",
+      "linkPartner": "Error al vincular partner",
+      "unlinkPartner": "Error al quitar partner"
+    }
   }
 }

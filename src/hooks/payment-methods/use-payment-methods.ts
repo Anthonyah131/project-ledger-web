@@ -6,6 +6,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import * as pmService from "@/services/payment-method-service";
 import { toastApiError } from "@/lib/error-utils";
+import { useLanguage } from "@/context/language-context";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type {
   PaymentMethodResponse,
@@ -40,6 +41,7 @@ function comparator(sort: string) {
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
 export function usePaymentMethods() {
+  const { t } = useLanguage();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,12 +67,12 @@ export function usePaymentMethods() {
       const data = await pmService.getPaymentMethods();
       setPaymentMethods(data);
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar métodos de pago");
+      const msg = toastApiError(err, t("paymentMethods.errors.load"));
       setError(msg);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => { fetchPaymentMethods(); }, [fetchPaymentMethods]);
 
@@ -109,11 +111,11 @@ export function usePaymentMethods() {
         setPaymentMethods((prev) => [created, ...prev]);
         setPage(1);
       }
-      toast.success("Método de pago creado", { description: `"${created.name}" se agregó correctamente.` });
+      toast.success(t("paymentMethods.toast.created"), { description: t("paymentMethods.toast.createdDesc", { name: created.name }) });
     } catch (err) {
-      toastApiError(err, "Error al crear método de pago");
+      toastApiError(err, t("paymentMethods.errors.create"));
     }
-  }, [fetchPaymentMethods]);
+  }, [fetchPaymentMethods, t]);
 
   const mutateUpdate = useCallback(async (id: string, data: UpdatePaymentMethodRequest, options?: MutationOptions) => {
     try {
@@ -123,11 +125,11 @@ export function usePaymentMethods() {
       } else {
         setPaymentMethods((prev) => prev.map((pm) => (pm.id === id ? updated : pm)));
       }
-      toast.success("Método de pago actualizado", { description: `"${updated.name}" se guardó correctamente.` });
+      toast.success(t("paymentMethods.toast.updated"), { description: t("paymentMethods.toast.updatedDesc", { name: updated.name }) });
     } catch (err) {
-      toastApiError(err, "Error al actualizar método de pago");
+      toastApiError(err, t("paymentMethods.errors.update"));
     }
-  }, [fetchPaymentMethods]);
+  }, [fetchPaymentMethods, t]);
 
   const mutateDelete = useCallback(async (pm: PaymentMethodResponse, options?: MutationOptions) => {
     try {
@@ -137,13 +139,13 @@ export function usePaymentMethods() {
       } else {
         setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
       }
-      toast.success("Método de pago eliminado", { description: `"${pm.name}" fue desactivado.` });
+      toast.success(t("paymentMethods.toast.deleted"), { description: t("paymentMethods.toast.deletedDesc", { name: pm.name }) });
       return true;
     } catch (err) {
-      toastApiError(err, "Error al eliminar método de pago");
+      toastApiError(err, t("paymentMethods.errors.delete"));
       return false;
     }
-  }, [fetchPaymentMethods]);
+  }, [fetchPaymentMethods, t]);
 
   const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setPage(1); }, []);
   const handleSortChange = useCallback((s: string) => { setSort(s); setPage(1); }, []);

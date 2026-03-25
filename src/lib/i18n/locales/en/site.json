@@ -1,0 +1,129 @@
+{
+  "site": {
+    "description": "The all-in-one platform to manage projects, track budgets and make strategic decisions with AI.",
+    "footer": {
+      "madeBy": "Made by",
+      "encrypted": "Encrypted and secure data",
+      "groups": {
+        "product": "Product",
+        "company": "Company",
+        "legal": "Legal"
+      },
+      "links": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "howItWorks": "How it works",
+        "help": "Help / FAQ",
+        "about": "About the project",
+        "githubRepo": "GitHub repo",
+        "contact": "Contact",
+        "privacy": "Privacy",
+        "terms": "Terms of use",
+        "security": "Security"
+      }
+    },
+    "contact": {
+      "gmail": {
+        "label": "Send email",
+        "description": "Write to us directly at our support email.",
+        "cta": "Open Gmail"
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Report bugs or browse the project source code.",
+        "cta": "View repository"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "description": "Connect with me on LinkedIn to talk about the project.",
+        "cta": "View profile"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "description": "Follow me on Instagram for project updates.",
+        "cta": "View profile"
+      }
+    },
+    "faq": {
+      "general": {
+        "category": "General",
+        "q1": {
+          "question": "What is Project Ledger?",
+          "answer": "Project Ledger is a SaaS platform for managing projects, tracking budgets and integrating AI assistance. It was designed as a portfolio project with production-grade features."
+        },
+        "q2": {
+          "question": "Is it free?",
+          "answer": "Yes, we offer a permanent Free plan with up to 2 projects and basic features. We also have Basic ($9.99/month) and Premium ($19.99/month) plans with higher limits and advanced features."
+        },
+        "q3": {
+          "question": "Do I need a credit card to sign up?",
+          "answer": "No. You can create your account and use the Free plan without entering payment details. A card is only required if you decide to subscribe to a paid plan."
+        },
+        "q4": {
+          "question": "What technologies is it built with?",
+          "answer": "The frontend uses Next.js 15, React 19, Tailwind CSS and shadcn/ui. The backend uses Node.js with Express, Supabase (PostgreSQL) for the database and n8n for AI automation."
+        }
+      },
+      "projects": {
+        "category": "Projects",
+        "q1": {
+          "question": "How do I create a project?",
+          "answer": "Go to the \"Projects\" section in the sidebar and click \"New project\". Fill in the name, description, budget and currency, and your project will be ready."
+        },
+        "q2": {
+          "question": "Can I invite other members to my projects?",
+          "answer": "Yes, from the project detail you can add members by email. Depending on your plan, you can have up to 5 members (Basic) or unlimited (Premium)."
+        },
+        "q3": {
+          "question": "What types of expenses can I record?",
+          "answer": "You can record any expense associated with the project: materials, services, fees, etc. Each expense includes a date, amount, category, payment method and optional description."
+        },
+        "q4": {
+          "question": "Can I use multiple currencies?",
+          "answer": "Yes. The Free plan supports up to 3 currencies, while paid plans allow multi-currency without restrictions."
+        }
+      },
+      "billing": {
+        "category": "Billing",
+        "q1": {
+          "question": "How do I change my plan?",
+          "answer": "Go to \"Settings\" → \"Billing\" and select the desired plan. The change is applied immediately and prorated to the current billing cycle."
+        },
+        "q2": {
+          "question": "Can I cancel at any time?",
+          "answer": "Yes, you can cancel your subscription whenever you want. You will continue to have access to your plan's features until the end of the paid period."
+        },
+        "q3": {
+          "question": "What payment methods do you accept?",
+          "answer": "Currently the payments module is a simulation for the portfolio. In a real production version, Stripe or PayPal would be integrated."
+        }
+      },
+      "security": {
+        "category": "Security & privacy",
+        "q1": {
+          "question": "Is my data safe?",
+          "answer": "All data is stored in Supabase with encryption in transit (HTTPS/TLS) and at rest. We do not share your data with third parties."
+        },
+        "q2": {
+          "question": "How does authentication work?",
+          "answer": "We use JWT with access and refresh tokens managed by Supabase Auth. Sessions expire and rotate automatically."
+        },
+        "q3": {
+          "question": "Can I delete my account?",
+          "answer": "Yes. From Settings you can request the deletion of your account and all your associated data permanently."
+        }
+      },
+      "ai": {
+        "category": "AI Assistant",
+        "q1": {
+          "question": "How does the AI assistant work?",
+          "answer": "The assistant is integrated via n8n and connects to language models like GPT. You can ask it questions about your projects, request financial analysis or check the history."
+        },
+        "q2": {
+          "question": "Does the assistant have access to my data?",
+          "answer": "The assistant only accesses the data of the active project in your session. It never shares information between users."
+        }
+      }
+    }
+  }
+}

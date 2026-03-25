@@ -1,6 +1,12 @@
-import { stats } from "./landing-data";
+"use client";
+
+import { getStats } from "./landing-data";
+import { useLanguage } from "@/context/language-context";
 
 export function Stats() {
+  const { t } = useLanguage();
+  const stats = getStats(t);
+
   return (
     <section className="border-y border-border bg-muted/30">
       <div className="mx-auto max-w-5xl px-6 py-14">

@@ -24,6 +24,53 @@
     "plural": "usuarios",
     "deleteConfirmTitle": "Eliminar usuario",
     "deleteConfirmDescription": "Esta acción no se puede deshacer. El usuario será desactivado permanentemente.",
-    "deleteConfirmDescriptionNamed": "¿Eliminar a \"{name}\" ({email})?"
+    "deleteConfirmDescriptionNamed": "¿Eliminar a \"{name}\" ({email})?",
+    "delete": {
+      "title": "Eliminar usuario",
+      "description": "Esta acción no se puede deshacer. El usuario será desactivado permanentemente.",
+      "confirm": "¿Eliminar a \"{name}\" ({email})?"
+    },
+    "editModal": {
+      "title": "Editar usuario",
+      "description": "Modifica los datos del usuario.",
+      "fieldFullName": "Nombre completo",
+      "fieldAvatarUrl": "URL del avatar",
+      "fieldPlan": "Plan",
+      "planPlaceholder": "Seleccionar plan",
+      "fieldAdmin": "Administrador",
+      "adminHint": "Otorga acceso completo al panel de administración."
+    },
+    "empty": {
+      "title": "Sin usuarios",
+      "description": "No se encontraron usuarios registrados."
+    },
+    "toolbar": {
+      "includeDeleted": "Incluir eliminados",
+      "sortNewest": "Más recientes",
+      "sortOldest": "Más antiguos",
+      "sortNameAZ": "Nombre A–Z",
+      "sortNameZA": "Nombre Z–A"
+    },
+    "toast": {
+      "activated": "Usuario activado",
+      "activatedDesc": "\"{name}\" fue activado correctamente.",
+      "deactivated": "Usuario desactivado",
+      "deactivatedDesc": "\"{name}\" fue desactivado correctamente.",
+      "updated": "Usuario actualizado",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Usuario eliminado",
+      "deletedDesc": "\"{name}\" fue eliminado correctamente.",
+      "adminGranted": "Admin otorgado",
+      "adminRemoved": "Admin removido",
+      "roleUpdatedDesc": "\"{name}\" fue actualizado correctamente."
+    },
+    "errors": {
+      "loadUsers": "Error al cargar usuarios",
+      "activate": "Error al activar usuario",
+      "deactivate": "Error al desactivar usuario",
+      "update": "Error al actualizar usuario",
+      "delete": "Error al eliminar usuario",
+      "changeRole": "Error al cambiar rol"
+    }
   }
 }

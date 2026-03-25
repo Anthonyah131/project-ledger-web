@@ -6,12 +6,14 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import { registerSchema, type RegisterFormValues } from "@/lib/validations/auth"
 import { getGoogleLoginUrl } from "@/services/auth-service"
 
 export function useRegister() {
   const router = useRouter()
+  const { t } = useLanguage()
   const { register: registerUser, isActionLoading: isLoading } = useAuth()
 
   const [serverError, setServerError] = useState("")
@@ -46,9 +48,9 @@ export function useRegister() {
       router.push(resolveRedirect("/dashboard"))
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setServerError(err.message || "No se pudo crear la cuenta.")
+        setServerError(err.message || t("auth.errors.register"))
       } else {
-        setServerError("Error de conexión. Intenta de nuevo.")
+        setServerError(t("common.errors.connection"))
       }
     }
   })

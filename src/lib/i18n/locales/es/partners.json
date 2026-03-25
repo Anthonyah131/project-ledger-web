@@ -16,6 +16,21 @@
     "deleteConfirmDescription": "Esta acción no se puede deshacer.",
     "totalPaid": "Total pagado",
     "totalReceived": "Total recibido",
-    "balance": "Balance"
+    "balance": "Balance",
+    "toast": {
+      "created": "Partner creado",
+      "createdDesc": "\"{name}\" se agregó correctamente.",
+      "updated": "Partner actualizado",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Partner eliminado",
+      "deletedDesc": "\"{name}\" fue eliminado."
+    },
+    "errors": {
+      "load": "Error al cargar partners",
+      "loadDetail": "Error al cargar partner",
+      "create": "Error al crear partner",
+      "update": "Error al actualizar partner",
+      "delete": "Error al eliminar partner"
+    }
   }
 }

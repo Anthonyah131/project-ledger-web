@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import * as pmService from "@/services/payment-method-service"
 import { getPartners } from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import { getDateRangeError } from "@/lib/date-utils"
 import type {
@@ -119,6 +120,7 @@ const INITIAL_INCOMES: PaymentMethodIncomesResponse = {
 }
 
 export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn {
+  const { t } = useLanguage()
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodResponse | null>(null)
   const [expenses, setExpenses] = useState<PaymentMethodExpensesResponse>(INITIAL_EXPENSES)
   const [incomes, setIncomes] = useState<PaymentMethodIncomesResponse>(INITIAL_INCOMES)
@@ -163,12 +165,12 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       const data = await pmService.getPaymentMethod(id)
       setPaymentMethod(data)
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar método de pago")
+      const msg = toastApiError(err, t("paymentMethods.errors.loadDetail"))
       setError(msg)
     } finally {
       setLoadingDetail(false)
     }
-  }, [id])
+  }, [id, t])
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -176,11 +178,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       const data = await pmService.getPaymentMethodProjects(id)
       setProjects(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar proyectos relacionados")
+      toastApiError(err, t("paymentMethods.errors.loadProjects"))
     } finally {
       setLoadingProjects(false)
     }
-  }, [id])
+  }, [id, t])
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -190,11 +192,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     } catch (err) {
       // Fallback to computed values from paginated responses.
       setSummary(INITIAL_SUMMARY)
-      toastApiError(err, "Error al cargar resumen")
+      toastApiError(err, t("paymentMethods.errors.loadSummary"))
     } finally {
       setLoadingSummary(false)
     }
-  }, [id])
+  }, [id, t])
 
   const fetchBalance = useCallback(async () => {
     if (!projectId) {
@@ -209,11 +211,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       setBalance(data)
     } catch (err) {
       setBalance(null)
-      toastApiError(err, "Error al cargar balance por proyecto")
+      toastApiError(err, t("paymentMethods.errors.loadBalance"))
     } finally {
       setLoadingBalance(false)
     }
-  }, [id, projectId])
+  }, [id, projectId, t])
 
   // Fetch expenses
   const fetchExpenses = useCallback(async () => {
@@ -234,11 +236,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       })
       setExpenses(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar gastos")
+      toastApiError(err, t("paymentMethods.errors.loadExpenses"))
     } finally {
       setLoadingExpenses(false)
     }
-  }, [id, page, pageSize, sort, from, to, projectId, activeStatus, dateRangeError])
+  }, [id, page, pageSize, sort, from, to, projectId, activeStatus, dateRangeError, t])
 
   const fetchIncomes = useCallback(async () => {
     if (dateRangeError) return
@@ -258,11 +260,11 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       })
       setIncomes(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar ingresos")
+      toastApiError(err, t("paymentMethods.errors.loadIncomes"))
     } finally {
       setLoadingIncomes(false)
     }
-  }, [id, incomePage, incomePageSize, incomeSort, from, to, projectId, activeStatus, dateRangeError])
+  }, [id, incomePage, incomePageSize, incomeSort, from, to, projectId, activeStatus, dateRangeError, t])
 
   useEffect(() => {
     void fetchPaymentMethod()
@@ -287,29 +289,29 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
     try {
       const updated = await pmService.updatePaymentMethod(id, data)
       setPaymentMethod(updated)
-      toast.success("Método de pago actualizado", {
-        description: `"${updated.name}" se guardó correctamente.`,
+      toast.success(t("paymentMethods.toast.updated"), {
+        description: t("paymentMethods.toast.updatedDesc", { name: updated.name }),
       })
       setEditOpen(false)
     } catch (err) {
-      toastApiError(err, "Error al actualizar método de pago")
+      toastApiError(err, t("paymentMethods.errors.update"))
     }
-  }, [id])
+  }, [id, t])
 
   const mutateDelete = useCallback(async () => {
     try {
       await pmService.deletePaymentMethod(id)
-      toast.success("Método de pago eliminado", {
-        description: "El método de pago fue desactivado.",
+      toast.success(t("paymentMethods.toast.deleted"), {
+        description: t("paymentMethods.toast.deletedDetailDesc"),
       })
       setDeleteOpen(false)
       // Redirect handled by parent/view
       return true
     } catch (err) {
-      toastApiError(err, "Error al eliminar método de pago")
+      toastApiError(err, t("paymentMethods.errors.delete"))
       return false
     }
-  }, [id])
+  }, [id, t])
 
   const refetchDetail = useCallback(async () => {
     await fetchPaymentMethod()
@@ -402,25 +404,25 @@ export function usePaymentMethodDetail(id: string): UsePaymentMethodDetailReturn
       const updated = await pmService.linkPartner(id, { partnerId })
       setPaymentMethod(updated)
       setLinkPartnerOpen(false)
-      toast.success("Partner vinculado", {
-        description: "El partner fue asignado al método de pago.",
+      toast.success(t("paymentMethods.toast.partnerLinked"), {
+        description: t("paymentMethods.toast.partnerLinkedDesc"),
       })
     } catch (err) {
-      toastApiError(err, "Error al vincular partner")
+      toastApiError(err, t("paymentMethods.errors.linkPartner"))
     }
-  }, [id])
+  }, [id, t])
 
   const handleUnlinkPartner = useCallback(async () => {
     try {
       const updated = await pmService.unlinkPartner(id)
       setPaymentMethod(updated)
-      toast.success("Partner quitado", {
-        description: "El partner fue desvinculado del método de pago.",
+      toast.success(t("paymentMethods.toast.partnerUnlinked"), {
+        description: t("paymentMethods.toast.partnerUnlinkedDesc"),
       })
     } catch (err) {
-      toastApiError(err, "Error al quitar partner")
+      toastApiError(err, t("paymentMethods.errors.unlinkPartner"))
     }
-  }, [id])
+  }, [id, t])
 
   return {
     paymentMethod,

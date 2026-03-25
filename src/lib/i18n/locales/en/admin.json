@@ -24,6 +24,53 @@
     "plural": "users",
     "deleteConfirmTitle": "Delete user",
     "deleteConfirmDescription": "This action cannot be undone. The user will be permanently deactivated.",
-    "deleteConfirmDescriptionNamed": "Delete \"{name}\" ({email})?"
+    "deleteConfirmDescriptionNamed": "Delete \"{name}\" ({email})?",
+    "delete": {
+      "title": "Delete user",
+      "description": "This action cannot be undone. The user will be permanently deactivated.",
+      "confirm": "Delete \"{name}\" ({email})?"
+    },
+    "editModal": {
+      "title": "Edit user",
+      "description": "Modify the user's details.",
+      "fieldFullName": "Full name",
+      "fieldAvatarUrl": "Avatar URL",
+      "fieldPlan": "Plan",
+      "planPlaceholder": "Select plan",
+      "fieldAdmin": "Administrator",
+      "adminHint": "Grants full access to the administration panel."
+    },
+    "empty": {
+      "title": "No users",
+      "description": "No registered users were found."
+    },
+    "toolbar": {
+      "includeDeleted": "Include deleted",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest",
+      "sortNameAZ": "Name A–Z",
+      "sortNameZA": "Name Z–A"
+    },
+    "toast": {
+      "activated": "User activated",
+      "activatedDesc": "\"{name}\" was activated successfully.",
+      "deactivated": "User deactivated",
+      "deactivatedDesc": "\"{name}\" was deactivated successfully.",
+      "updated": "User updated",
+      "updatedDesc": "\"{name}\" was saved successfully.",
+      "deleted": "User deleted",
+      "deletedDesc": "\"{name}\" was deleted successfully.",
+      "adminGranted": "Admin granted",
+      "adminRemoved": "Admin removed",
+      "roleUpdatedDesc": "\"{name}\" was updated successfully."
+    },
+    "errors": {
+      "loadUsers": "Error loading users",
+      "activate": "Error activating user",
+      "deactivate": "Error deactivating user",
+      "update": "Error updating user",
+      "delete": "Error deleting user",
+      "changeRole": "Error changing role"
+    }
   }
 }

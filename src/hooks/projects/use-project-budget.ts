@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import * as budgetService from "@/services/budget-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import type { MutationOptions } from "@/types/common"
 import type {
@@ -12,6 +13,7 @@ import type {
 } from "@/types/project-budget"
 
 export function useProjectBudget(projectId: string) {
+  const { t } = useLanguage()
   const [budget, setBudget] = useState<ProjectBudgetResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -27,12 +29,12 @@ export function useProjectBudget(projectId: string) {
       if (err instanceof ApiClientError && err.status === 404) {
         setBudget(null)
       } else {
-        toastApiError(err, "Error al cargar presupuesto");
+        toastApiError(err, t("budget.errors.load"))
       }
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   useEffect(() => {
     fetchBudget()
@@ -49,12 +51,12 @@ export function useProjectBudget(projectId: string) {
           setBudget(saved)
         }
 
-        toast.success(budget ? "Presupuesto actualizado" : "Presupuesto configurado")
+        toast.success(budget ? t("budget.toast.updated") : t("budget.toast.set"))
       } catch (err) {
-        toastApiError(err, "Error al guardar presupuesto")
+        toastApiError(err, t("budget.errors.save"))
       }
     },
-    [projectId, fetchBudget, budget],
+    [projectId, fetchBudget, budget, t],
   )
 
   const mutateDelete = useCallback(
@@ -68,12 +70,12 @@ export function useProjectBudget(projectId: string) {
           setBudget(null)
         }
 
-        toast.success("Presupuesto eliminado")
+        toast.success(t("budget.toast.deleted"))
       } catch (err) {
-        toastApiError(err, "Error al eliminar presupuesto")
+        toastApiError(err, t("budget.errors.delete"))
       }
     },
-    [projectId, fetchBudget],
+    [projectId, fetchBudget, t],
   )
 
   return {

@@ -1,23 +1,29 @@
-import { steps } from "./landing-data";
+"use client";
+
+import { getSteps } from "./landing-data";
+import { useLanguage } from "@/context/language-context";
 
 export function HowItWorks() {
+  const { t } = useLanguage();
+  const steps = getSteps(t);
+
   return (
     <section id="how-it-works" className="bg-muted/30 px-6 py-28">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-            Cómo funciona
+            {t("nav.howItWorks")}
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
-            De cero a control total en minutos
+            {t("landing.howItWorks.title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Sin curvas de aprendizaje complicadas. Configura una vez, úsalo todos los días.
+            {t("landing.howItWorks.subtitle")}
           </p>
         </div>
 
-        {/* Steps — ahora son 4 */}
+        {/* Steps */}
         <div className="relative mt-16 grid gap-8 lg:grid-cols-4">
           {/* Connector line */}
           <div className="absolute left-0 right-0 top-12 hidden h-px bg-border lg:block" />

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical, Pencil, ShieldCheck, ShieldOff, Trash2, UserCheck, UserX } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 import type { AdminUserResponse } from "@/types/admin-user"
 
 interface AdminUsersListProps {
@@ -42,16 +43,18 @@ function AdminUsersListComponent({
   onDeactivate,
   onToggleAdmin,
 }: AdminUsersListProps) {
+  const { t } = useLanguage()
+
   return (
-    <div role="list" aria-label="Usuarios">
+    <div role="list" aria-label={t("admin.plural")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
-        <span className="flex-1">Usuario</span>
-        <span className="w-16 text-center hidden sm:block">Plan</span>
-        <span className="w-16 text-center hidden sm:block">Estado</span>
-        <span className="w-14 text-center hidden md:block">Rol</span>
-        <span className="w-28 text-right hidden lg:block">Registro</span>
-        <span className="w-28 text-right hidden lg:block">Último acceso</span>
+        <span className="flex-1">{t("admin.columnUser")}</span>
+        <span className="w-16 text-center hidden sm:block">{t("admin.columnPlan")}</span>
+        <span className="w-16 text-center hidden sm:block">{t("admin.columnStatus")}</span>
+        <span className="w-14 text-center hidden md:block">{t("admin.columnRole")}</span>
+        <span className="w-28 text-right hidden lg:block">{t("admin.columnRegistered")}</span>
+        <span className="w-28 text-right hidden lg:block">{t("admin.columnLastAccess")}</span>
         <span className="w-8" />
       </div>
 
@@ -85,37 +88,37 @@ function AdminUsersListComponent({
           </div>
 
           {/* Plan badge */}
-          <div className="w-16 flex justify-center hidden sm:flex">
+          <div className="w-16 flex justify-center sm:flex">
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
               {user.plan?.name ?? "—"}
             </Badge>
           </div>
 
           {/* Status badge */}
-          <div className="w-16 flex justify-center hidden sm:flex">
+          <div className="w-16 flex justify-center sm:flex">
             {user.isDeleted ? (
               <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 font-medium">
-                Eliminado
+                {t("admin.statusDeleted")}
               </Badge>
             ) : user.isActive ? (
               <Badge className="text-[10px] px-1.5 py-0 h-4 font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-0">
-                Activo
+                {t("admin.statusActive")}
               </Badge>
             ) : (
               <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 font-medium text-muted-foreground">
-                Inactivo
+                {t("admin.statusInactive")}
               </Badge>
             )}
           </div>
 
           {/* Role */}
-          <div className="w-14 flex justify-center hidden md:flex">
+          <div className="w-14 flex justify-center md:flex">
             {user.isAdmin ? (
               <Badge className="text-[10px] px-1.5 py-0 h-4 font-medium bg-amber-500/15 text-amber-700 dark:text-amber-400 border-0">
-                Admin
+                {t("admin.roleAdmin")}
               </Badge>
             ) : (
-              <span className="text-xs text-muted-foreground">Usuario</span>
+              <span className="text-xs text-muted-foreground">{t("admin.roleUser")}</span>
             )}
           </div>
 
@@ -134,7 +137,7 @@ function AdminUsersListComponent({
             <DropdownMenuTrigger asChild>
               <button
                 className="flex items-center justify-center size-7 rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-accent transition-all duration-150 ml-1"
-                aria-label="Acciones del usuario"
+                aria-label={t("common.actions")}
               >
                 <MoreVertical className="size-3.5" />
               </button>
@@ -142,7 +145,7 @@ function AdminUsersListComponent({
             <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem onClick={() => onEdit(user)}>
                 <Pencil className="size-3.5 mr-2" />
-                Editar
+                {t("common.edit")}
               </DropdownMenuItem>
 
               {!user.isDeleted && (
@@ -150,24 +153,24 @@ function AdminUsersListComponent({
                   {user.isActive ? (
                     <DropdownMenuItem onClick={() => onDeactivate(user)}>
                       <UserX className="size-3.5 mr-2" />
-                      Desactivar
+                      {t("admin.deactivate")}
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem onClick={() => onActivate(user)}>
                       <UserCheck className="size-3.5 mr-2" />
-                      Activar
+                      {t("admin.activate")}
                     </DropdownMenuItem>
                   )}
 
                   {user.isAdmin ? (
                     <DropdownMenuItem onClick={() => onToggleAdmin(user)}>
                       <ShieldOff className="size-3.5 mr-2" />
-                      Quitar admin
+                      {t("admin.removeAdmin")}
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem onClick={() => onToggleAdmin(user)}>
                       <ShieldCheck className="size-3.5 mr-2" />
-                      Hacer admin
+                      {t("admin.makeAdmin")}
                     </DropdownMenuItem>
                   )}
 
@@ -178,7 +181,7 @@ function AdminUsersListComponent({
                     className="text-destructive focus:text-destructive"
                   >
                     <Trash2 className="size-3.5 mr-2" />
-                    Eliminar
+                    {t("common.delete")}
                   </DropdownMenuItem>
                 </>
               )}

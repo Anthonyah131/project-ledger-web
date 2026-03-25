@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import * as partnerService from "@/services/partner-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   PartnerDetailResponse,
   PartnerPaymentMethodItem,
@@ -21,6 +22,7 @@ const EMPTY_PROJ_PAGE = { items: [] as PartnerProjectResponse[], totalCount: 0, 
 
 export function usePartnerDetail(partnerId: string) {
   const router = useRouter()
+  const { t } = useLanguage()
 
   const [partner, setPartner] = useState<PartnerDetailResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -50,12 +52,12 @@ export function usePartnerDetail(partnerId: string) {
       const data = await partnerService.getPartner(partnerId)
       setPartner(data)
     } catch (err) {
-      const msg = toastApiError(err, "Error al cargar partner")
+      const msg = toastApiError(err, t("partners.errors.loadDetail"))
       setError(msg)
     } finally {
       setLoading(false)
     }
-  }, [partnerId])
+  }, [partnerId, t])
 
   const fetchPaymentMethods = useCallback(async () => {
     try {
@@ -128,13 +130,13 @@ export function usePartnerDetail(partnerId: string) {
       try {
         const updated = await partnerService.updatePartner(id, data)
         setPartner((prev) => prev ? { ...prev, ...updated } : null)
-        toast.success("Partner actualizado", { description: `"${updated.name}" se guardó correctamente.` })
+        toast.success(t("partners.toast.updated"), { description: t("partners.toast.updatedDesc", { name: updated.name }) })
         setEditOpen(false)
       } catch (err) {
-        toastApiError(err, "Error al actualizar partner")
+        toastApiError(err, t("partners.errors.update"))
       }
     },
-    [],
+    [t],
   )
 
   const mutateDelete = useCallback(
@@ -142,13 +144,13 @@ export function usePartnerDetail(partnerId: string) {
       if (!partner) return
       try {
         await partnerService.deletePartner(partner.id)
-        toast.success("Partner eliminado", { description: `"${partner.name}" fue eliminado.` })
+        toast.success(t("partners.toast.deleted"), { description: t("partners.toast.deletedDesc", { name: partner.name }) })
         router.push("/partners")
       } catch (err) {
-        toastApiError(err, "Error al eliminar partner")
+        toastApiError(err, t("partners.errors.delete"))
       }
     },
-    [partner, router],
+    [partner, router, t],
   )
 
   return {

@@ -80,11 +80,11 @@ export function LoginView() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.emailLabel")}</FormLabel>
+                <FormLabel>{t("auth.fields.email.label")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder={t("auth.emailPlaceholder")}
+                    placeholder={t("auth.fields.email.placeholder")}
                     autoComplete="email"
                     disabled={isLoading}
                     {...field}
@@ -101,7 +101,7 @@ export function LoginView() {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>{t("auth.passwordLabel")}</FormLabel>
+                  <FormLabel>{t("auth.fields.password.label")}</FormLabel>
                   <Link
                     href="/forgot-password"
                     className="text-xs text-muted-foreground underline-offset-4 hover:underline"

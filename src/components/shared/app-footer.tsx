@@ -5,7 +5,8 @@
 
 import Link from "next/link";
 import { FileText, Github, Instagram, Linkedin, Lock, Mail } from "lucide-react";
-import { siteInfo, socialLinks, footerLinks } from "@/data/site-data";
+import { siteInfo, socialLinks, getFooterLinks } from "@/data/site-data";
+import { useLanguage } from "@/context/language-context";
 
 const SOCIAL_ICONS: Record<string, React.ElementType> = {
   github: Github,
@@ -15,6 +16,9 @@ const SOCIAL_ICONS: Record<string, React.ElementType> = {
 };
 
 export function AppFooter() {
+  const { t } = useLanguage();
+  const footerLinks = getFooterLinks(t);
+
   return (
     <footer className="border-t border-border bg-background px-6 py-12 mt-auto">
       <div className="mx-auto max-w-7xl">
@@ -28,7 +32,7 @@ export function AppFooter() {
               <span className="text-sm font-semibold">{siteInfo.name}</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-              {siteInfo.description}
+              {t("site.description")}
             </p>
 
             {/* Social Links */}
@@ -91,7 +95,7 @@ export function AppFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-8 text-xs text-muted-foreground sm:flex-row">
           <p>
-            © {siteInfo.year} {siteInfo.name}. Hecho por{" "}
+            © {siteInfo.year} {siteInfo.name}. {t("site.footer.madeBy")}{" "}
             <a
               href={`https://github.com/${siteInfo.authorHandle}`}
               target="_blank"
@@ -104,7 +108,7 @@ export function AppFooter() {
           </p>
           <div className="flex items-center gap-1.5">
             <Lock className="h-3 w-3" />
-            <span>Datos encriptados y seguros</span>
+            <span>{t("site.footer.encrypted")}</span>
           </div>
         </div>
       </div>

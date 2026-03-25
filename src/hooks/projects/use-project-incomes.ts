@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as incomeService from "@/services/income-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   IncomeResponse,
@@ -20,6 +21,7 @@ function toIsActiveParam(status: IncomeActiveStatusFilter): boolean | undefined 
 }
 
 export function useProjectIncomes(projectId: string) {
+  const { t } = useLanguage()
   const [incomes, setIncomes] = useState<IncomeResponse[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -50,11 +52,11 @@ export function useProjectIncomes(projectId: string) {
       setIncomes(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      toastApiError(err, "Error al cargar ingresos");
+      toastApiError(err, t("incomes.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort, activeStatus])
+  }, [projectId, page, pageSize, sort, activeStatus, t])
 
   useEffect(() => {
     fetchIncomes()
@@ -80,62 +82,62 @@ export function useProjectIncomes(projectId: string) {
     async (data: CreateIncomeRequest, options?: MutationOptions) => {
       try {
         await incomeService.createIncome(projectId, data)
-        toast.success("Ingreso creado")
+        toast.success(t("incomes.toast.created"))
         if (options?.refetch ?? true) {
           await fetchIncomes()
         }
       } catch (err) {
-        toastApiError(err, "Error al crear ingreso")
+        toastApiError(err, t("incomes.errors.create"))
       }
     },
-    [projectId, fetchIncomes]
+    [projectId, fetchIncomes, t]
   )
 
   const mutateUpdate = useCallback(
     async (incomeId: string, data: UpdateIncomeRequest, options?: MutationOptions) => {
       try {
         await incomeService.updateIncome(projectId, incomeId, data)
-        toast.success("Ingreso actualizado")
+        toast.success(t("incomes.toast.updated"))
         if (options?.refetch ?? true) {
           await fetchIncomes()
         }
       } catch (err) {
-        toastApiError(err, "Error al actualizar ingreso")
+        toastApiError(err, t("incomes.errors.update"))
       }
     },
-    [projectId, fetchIncomes]
+    [projectId, fetchIncomes, t]
   )
 
   const mutateDelete = useCallback(
     async (income: IncomeResponse, options?: MutationOptions) => {
       try {
         await incomeService.deleteIncome(projectId, income.id)
-        toast.success("Ingreso eliminado", {
-          description: `"${income.title}" fue eliminado.`,
+        toast.success(t("incomes.toast.deleted"), {
+          description: t("incomes.toast.deletedDesc", { name: income.title }),
         })
         if (options?.refetch ?? true) {
           await fetchIncomes()
         }
       } catch (err) {
-        toastApiError(err, "Error al eliminar ingreso")
+        toastApiError(err, t("incomes.errors.delete"))
       }
     },
-    [projectId, fetchIncomes]
+    [projectId, fetchIncomes, t]
   )
 
   const mutateActiveState = useCallback(
     async (income: IncomeResponse, isActive: boolean, options?: MutationOptions) => {
       try {
         await incomeService.updateIncomeActiveState(projectId, income.id, { isActive })
-        toast.success(isActive ? "Ingreso activado" : "Ingreso marcado como recordatorio")
+        toast.success(isActive ? t("incomes.toast.activated") : t("incomes.toast.markedReminder"))
         if (options?.refetch ?? true) {
           await fetchIncomes()
         }
       } catch (err) {
-        toastApiError(err, "Error al actualizar estado del ingreso")
+        toastApiError(err, t("incomes.errors.updateStatus"))
       }
     },
-    [projectId, fetchIncomes]
+    [projectId, fetchIncomes, t]
   )
 
   const handlePageSizeChange = useCallback((size: number) => {

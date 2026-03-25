@@ -1,0 +1,129 @@
+{
+  "site": {
+    "description": "La plataforma todo-en-uno para gestionar proyectos, rastrear presupuestos y tomar decisiones estratégicas con IA.",
+    "footer": {
+      "madeBy": "Hecho por",
+      "encrypted": "Datos encriptados y seguros",
+      "groups": {
+        "product": "Producto",
+        "company": "Empresa",
+        "legal": "Legal"
+      },
+      "links": {
+        "features": "Características",
+        "pricing": "Precios",
+        "howItWorks": "Cómo funciona",
+        "help": "Ayuda / FAQ",
+        "about": "Sobre el proyecto",
+        "githubRepo": "GitHub del repo",
+        "contact": "Contacto",
+        "privacy": "Privacidad",
+        "terms": "Términos de uso",
+        "security": "Seguridad"
+      }
+    },
+    "contact": {
+      "gmail": {
+        "label": "Enviar email",
+        "description": "Escríbenos directamente a nuestro correo de soporte.",
+        "cta": "Abrir Gmail"
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Reporta bugs o consulta el código fuente del proyecto.",
+        "cta": "Ver repositorio"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "description": "Conéctate conmigo en LinkedIn para hablar sobre el proyecto.",
+        "cta": "Ver perfil"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "description": "Sígueme en Instagram para actualizaciones del proyecto.",
+        "cta": "Ver perfil"
+      }
+    },
+    "faq": {
+      "general": {
+        "category": "General",
+        "q1": {
+          "question": "¿Qué es Project Ledger?",
+          "answer": "Project Ledger es una plataforma SaaS para gestionar proyectos, rastrear presupuestos e integrar asistencia con inteligencia artificial. Fue diseñada como proyecto de portafolio con funcionalidades de nivel producción."
+        },
+        "q2": {
+          "question": "¿Es gratuito?",
+          "answer": "Sí, ofrecemos un plan Free permanente con hasta 2 proyectos y funcionalidades básicas. También tenemos planes Basic ($9.99/mes) y Premium ($19.99/mes) con límites más altos y funciones avanzadas."
+        },
+        "q3": {
+          "question": "¿Necesito tarjeta de crédito para registrarme?",
+          "answer": "No. Puedes crear tu cuenta y usar el plan Free sin ingresar datos de pago. Solo se requiere tarjeta si decides suscribirte a un plan de pago."
+        },
+        "q4": {
+          "question": "¿En qué tecnologías está construido?",
+          "answer": "El frontend usa Next.js 15, React 19, Tailwind CSS y shadcn/ui. El backend usa Node.js con Express, Supabase (PostgreSQL) para la base de datos y n8n para la automatización con IA."
+        }
+      },
+      "projects": {
+        "category": "Proyectos",
+        "q1": {
+          "question": "¿Cómo creo un proyecto?",
+          "answer": "Ve a la sección \"Proyectos\" en el menú lateral y haz clic en \"Nuevo proyecto\". Completa el nombre, descripción, presupuesto y moneda, y tu proyecto estará listo."
+        },
+        "q2": {
+          "question": "¿Puedo invitar a otros miembros a mis proyectos?",
+          "answer": "Sí, desde el detalle de un proyecto puedes agregar miembros por email. Dependiendo de tu plan, puedes tener hasta 5 miembros (Basic) o ilimitados (Premium)."
+        },
+        "q3": {
+          "question": "¿Qué tipos de gastos puedo registrar?",
+          "answer": "Puedes registrar cualquier gasto asociado al proyecto: materiales, servicios, honorarios, etc. Cada gasto lleva fecha, monto, categoría, método de pago y descripción opcional."
+        },
+        "q4": {
+          "question": "¿Puedo usar múltiples monedas?",
+          "answer": "Sí. El plan Free soporta hasta 3 divisas, mientras que los planes de pago permiten multi-moneda sin restricciones."
+        }
+      },
+      "billing": {
+        "category": "Facturación",
+        "q1": {
+          "question": "¿Cómo cambio mi plan?",
+          "answer": "Ve a \"Configuración\" → \"Facturación\" y selecciona el plan deseado. El cambio se aplica inmediatamente y se prorratea al ciclo de facturación actual."
+        },
+        "q2": {
+          "question": "¿Puedo cancelar en cualquier momento?",
+          "answer": "Sí, puedes cancelar tu suscripción cuando quieras. Seguirás teniendo acceso a las funciones de tu plan hasta el final del período pagado."
+        },
+        "q3": {
+          "question": "¿Qué métodos de pago aceptan?",
+          "answer": "Actualmente el módulo de pagos es una simulación para el portafolio. En una versión de producción real se integraría Stripe o PayPal."
+        }
+      },
+      "security": {
+        "category": "Seguridad y privacidad",
+        "q1": {
+          "question": "¿Mis datos están seguros?",
+          "answer": "Todos los datos se almacenan en Supabase con cifrado en tránsito (HTTPS/TLS) y en reposo. No compartimos tus datos con terceros."
+        },
+        "q2": {
+          "question": "¿Cómo funciona la autenticación?",
+          "answer": "Usamos JWT con tokens de acceso y refresco gestionados por Supabase Auth. Las sesiones expiran y se rotan automáticamente."
+        },
+        "q3": {
+          "question": "¿Puedo eliminar mi cuenta?",
+          "answer": "Sí. Desde Configuración puedes solicitar la eliminación de tu cuenta y todos tus datos asociados de forma permanente."
+        }
+      },
+      "ai": {
+        "category": "Asistente IA",
+        "q1": {
+          "question": "¿Cómo funciona el asistente de IA?",
+          "answer": "El asistente está integrado mediante n8n y se conecta a modelos de lenguaje como GPT. Puedes hacerle preguntas sobre tus proyectos, pedir análisis financieros o consultar el historial."
+        },
+        "q2": {
+          "question": "¿El asistente tiene acceso a mis datos?",
+          "answer": "El asistente solo accede a los datos del proyecto activo en tu sesión. Nunca comparte información entre usuarios."
+        }
+      }
+    }
+  }
+}

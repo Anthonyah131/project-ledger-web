@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 import * as expenseService from "@/services/expense-service"
+import { useLanguage } from "@/context/language-context"
 import {
   getDocumentExtractionErrorMessage,
   getDocumentValidationError,
@@ -43,6 +44,7 @@ export function useExpenseDocumentExtraction({
   paymentMethods,
   obligations,
 }: UseExpenseDocumentExtractionOptions) {
+  const { t } = useLanguage()
   const [showFormStep, setShowFormStep] = useState(!isAiMode)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [documentKind, setDocumentKind] = useState<ExpenseDocumentKind>("receipt")
@@ -162,12 +164,12 @@ export function useExpenseDocumentExtraction({
       const result = await expenseService.getExpenseExtractionQuota(projectId)
       setQuota(result)
     } catch (err) {
-      const message = err instanceof Error ? err.message : "No se pudo cargar la cuota OCR"
+      const message = err instanceof Error ? err.message : t("expenses.ocrQuotaError")
       setQuotaError(message)
     } finally {
       setQuotaLoading(false)
     }
-  }, [isAiMode, projectId])
+  }, [isAiMode, projectId, t])
 
   const handleExtract = useCallback(async () => {
     const validationError = getDocumentValidationError(uploadFile)
@@ -190,15 +192,15 @@ export function useExpenseDocumentExtraction({
 
       applyExtractionToForm(result)
       setShowFormStep(true)
-      toast.success("Borrador extraido", {
-        description: "Revisa y ajusta los datos antes de crear el gasto definitivo.",
+      toast.success(t("expenses.draftExtracted"), {
+        description: t("expenses.draftExtractedDesc"),
       })
     } catch (err) {
       setExtractError(getDocumentExtractionErrorMessage(err))
     } finally {
       setExtracting(false)
     }
-  }, [applyExtractionToForm, documentKind, projectId, uploadFile])
+  }, [applyExtractionToForm, documentKind, projectId, t, uploadFile])
 
   const handleFileChange = useCallback((file: File | null) => {
     setUploadFile(file)

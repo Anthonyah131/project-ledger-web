@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toastApiError } from "@/lib/error-utils"
 import { ApiClientError } from "@/lib/api-client"
+import { useLanguage } from "@/context/language-context"
 import {
   getDashboardMonthlyPaymentMethods,
   getDashboardMonthlySummary,
@@ -198,6 +199,7 @@ interface UseMonthlyOverviewOptions {
 }
 
 export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions = {}) {
+  const { t } = useLanguage()
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonthKey)
   const [summaryData, setSummaryData] = useState<DashboardMonthlySummaryResponse | null>(null)
   const [trendByDay, setTrendByDay] = useState<DashboardTrendDay[]>([])
@@ -213,12 +215,12 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
 
   const loadMonth = useCallback(async (month: string, projectId: string) => {
     if (!isValidMonthKey(month)) {
-      setError("El formato de mes es invalido. Debe ser YYYY-MM.")
+      setError(t("dashboard.errors.invalidMonthFormat"))
       return
     }
 
     if (!projectId) {
-      setError("Selecciona un proyecto para cargar el dashboard.")
+      setError(t("dashboard.errors.noProjectSelected"))
       return
     }
 
@@ -266,14 +268,14 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     } catch (err) {
       if (isAbortError(err)) return
 
-      const message = toastApiError(err, "Error al cargar dashboard mensual")
+      const message = toastApiError(err, t("dashboard.errors.loadMonthly"))
       setError(message)
     } finally {
       if (abortRef.current === controller) {
         setLoading(false)
       }
     }
-  }, [])
+  }, [t])
 
   const loadProjects = useCallback(async () => {
     if (!enabled) return
@@ -299,11 +301,11 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
         return resolved
       })
     } catch (err) {
-      toastApiError(err, "Error al cargar proyectos")
+      toastApiError(err, t("dashboard.errors.loadProjects"))
     } finally {
       setProjectsLoading(false)
     }
-  }, [enabled])
+  }, [enabled, t])
 
   const data = useMemo(() => {
     if (!summaryData) return null
@@ -317,9 +319,9 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
   }, [paymentMethodSplit, summaryData, topCategories, trendByDay])
 
   const selectedProjectName = useMemo(() => {
-    if (!selectedProjectId) return "Proyecto"
-    return projects.find((project) => project.id === selectedProjectId)?.name ?? "Proyecto"
-  }, [projects, selectedProjectId])
+    if (!selectedProjectId) return t("dashboard.defaultProjectName")
+    return projects.find((project) => project.id === selectedProjectId)?.name ?? t("dashboard.defaultProjectName")
+  }, [projects, selectedProjectId, t])
 
   const currentMonthKey = getCurrentMonthKey()
 

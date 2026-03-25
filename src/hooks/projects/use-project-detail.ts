@@ -7,9 +7,11 @@ import { useState, useCallback, useEffect } from "react"
 import { toast } from "sonner"
 import * as projectService from "@/services/project-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type { ProjectResponse, UpdateProjectRequest, UpdateProjectSettingsRequest } from "@/types/project"
 
 export function useProjectDetail(projectId: string) {
+  const { t } = useLanguage()
   const [project, setProject] = useState<ProjectResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -19,11 +21,11 @@ export function useProjectDetail(projectId: string) {
       const data = await projectService.getProject(projectId)
       setProject(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar proyecto");
+      toastApiError(err, t("projects.errors.loadDetail"))
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   useEffect(() => {
     fetchProject()
@@ -34,26 +36,26 @@ export function useProjectDetail(projectId: string) {
       try {
         const updated = await projectService.updateProject(projectId, data)
         setProject(updated)
-        toast.success("Proyecto actualizado", {
-          description: `"${updated.name}" se guardó correctamente.`,
+        toast.success(t("projects.toast.updated"), {
+          description: t("projects.toast.updatedDesc", { name: updated.name }),
         })
       } catch (err) {
-        toastApiError(err, "Error al actualizar proyecto");
+        toastApiError(err, t("projects.errors.update"))
       }
     },
-    [projectId]
+    [projectId, t]
   )
 
   const mutateDelete = useCallback(async () => {
     try {
       await projectService.deleteProject(projectId)
-      toast.success("Proyecto eliminado")
+      toast.success(t("projects.toast.deleted"))
       return true
     } catch (err) {
-      toastApiError(err, "Error al eliminar proyecto");
+      toastApiError(err, t("projects.errors.delete"))
       return false
     }
-  }, [projectId])
+  }, [projectId, t])
 
   const mutateUpdateSettings = useCallback(
     async (data: UpdateProjectSettingsRequest) => {
@@ -64,16 +66,16 @@ export function useProjectDetail(projectId: string) {
         )
         toast.success(
           data.partnersEnabled
-            ? "Splits por partners activados"
-            : "Splits por partners desactivados",
+            ? t("projects.toast.partnersEnabled")
+            : t("projects.toast.partnersDisabled"),
         )
         return true
       } catch (err) {
-        toastApiError(err, "Error al actualizar configuración del proyecto")
+        toastApiError(err, t("projects.errors.updateSettings"))
         return false
       }
     },
-    [projectId],
+    [projectId, t],
   )
 
   return {

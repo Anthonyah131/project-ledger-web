@@ -9,24 +9,14 @@ import { ApiClientError } from "@/lib/api-client";
 import { formatPlanPrice } from "@/lib/billing-utils";
 import { getPlanDescription, getPlanFeatureGroups } from "@/lib/plan-presentation";
 import { useAuth } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 import * as planService from "@/services/plan-service";
 import type { PlanResponse } from "@/types/plan";
-
-function getPricingErrorMessage(err: unknown) {
-  if (err instanceof ApiClientError) {
-    if (err.status === 0) return "No se pudo conectar con el servidor para cargar los planes.";
-    if (err.status === 401) return "No se pudo validar la sesión para cargar los planes.";
-    if (err.status === 403) return "No tienes permisos para consultar los planes.";
-    return err.message;
-  }
-
-  if (err instanceof Error) return err.message;
-  return "No fue posible cargar los planes en este momento.";
-}
 
 export function Pricing() {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { t } = useLanguage();
 
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +33,16 @@ export function Pricing() {
         setPlans([...data].sort((a, b) => a.displayOrder - b.displayOrder));
       } catch (err) {
         if (!isMounted) return;
-        setError(getPricingErrorMessage(err));
+        if (err instanceof ApiClientError) {
+          if (err.status === 0) setError(t("landing.pricing.errors.noConnection"));
+          else if (err.status === 401) setError(t("landing.pricing.errors.unauthorized"));
+          else if (err.status === 403) setError(t("landing.pricing.errors.forbidden"));
+          else setError(err.message);
+        } else if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError(t("landing.pricing.errors.generic"));
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -54,7 +53,7 @@ export function Pricing() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [t]);
 
   const highlightedPlanId = useMemo(
     () => plans.find((plan) => plan.monthlyPrice > 0)?.id ?? null,
@@ -78,13 +77,13 @@ export function Pricing() {
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-            Precios
+            {t("nav.pricing")}
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
-            Planes para cada etapa
+            {t("billing.pricingTitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Empieza gratis y escala cuando lo necesites. Sin sorpresas.
+            {t("billing.pricingSubtitle")}
           </p>
         </div>
 
@@ -100,7 +99,7 @@ export function Pricing() {
           {loading && (
             <div className="col-span-full flex items-center justify-center rounded-2xl border border-border bg-card p-8 text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Cargando planes...
+              {t("billing.loadingPlans")}
             </div>
           )}
 
@@ -122,7 +121,7 @@ export function Pricing() {
                 {plan.id === highlightedPlanId && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/40">
-                      Más popular
+                      {t("billing.mostPopular")}
                     </span>
                   </div>
                 )}
@@ -136,7 +135,7 @@ export function Pricing() {
                       {formatPlanPrice(plan.monthlyPrice, plan.currency)}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {plan.monthlyPrice > 0 ? "por mes" : "para siempre"}
+                      {plan.monthlyPrice > 0 ? t("billing.perMonthLabel") : t("billing.forever")}
                     </span>
                   </div>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -148,7 +147,7 @@ export function Pricing() {
                   {hasPlanLimits && (
                     <div>
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Límites
+                        {t("billing.limits")}
                       </p>
                       <ul className="flex flex-col gap-2.5">
                         {planLimits.map((limit) => (
@@ -164,7 +163,7 @@ export function Pricing() {
                   {hasPlanCapabilities && (
                     <div>
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Incluye
+                        {t("billing.includes")}
                       </p>
                       <ul className="flex flex-col gap-2.5">
                         {planCapabilities.map((feature) => (
@@ -189,10 +188,8 @@ export function Pricing() {
                         : "border border-border bg-muted text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     }`}
                   >
-                    <>
-                      Suscribirse
-                      <ExternalLink className="h-4 w-4" />
-                    </>
+                    {t("billing.subscribe")}
+                    <ExternalLink className="h-4 w-4" />
                   </button>
                 ) : (
                   <Link
@@ -203,7 +200,7 @@ export function Pricing() {
                         : "border border-border bg-muted text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     }`}
                   >
-                    Empezar gratis
+                    {t("billing.startFree")}
                   </Link>
                 )}
               </div>

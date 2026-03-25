@@ -13,6 +13,7 @@ import type esAdmin from "./locales/es/admin.json"
 import type esChatbot from "./locales/es/chatbot.json"
 import type esLanding from "./locales/es/landing.json"
 import type esHelp from "./locales/es/help.json"
+import type esSite from "./locales/es/site.json"
 
 export type Translations =
   typeof esShared &
@@ -29,4 +30,5 @@ export type Translations =
   typeof esAdmin &
   typeof esChatbot &
   typeof esLanding &
-  typeof esHelp
+  typeof esHelp &
+  typeof esSite

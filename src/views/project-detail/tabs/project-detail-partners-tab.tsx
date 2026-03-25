@@ -204,9 +204,9 @@ export function ProjectDetailPartnersTab({
         open={!!sel.deleteTarget}
         onClose={() => sel.setDeleteTarget(null)}
         onConfirm={onDelete}
-        title={t("partnerSettlements.deleteTitle")}
-        description={t("partnerSettlements.revertWarning")}
-        getMessage={(s) => t("partnerSettlements.deleteConfirmDescriptionNamed", { from: s.fromPartnerName, to: s.toPartnerName })}
+        title={t("partnerSettlements.delete.title")}
+        description={t("partnerSettlements.delete.revertWarning")}
+        getMessage={(s) => t("partnerSettlements.delete.confirm", { from: s.fromPartnerName, to: s.toPartnerName })}
       />
 
       {!!sel.historyPartnerId && (

@@ -105,9 +105,9 @@ export function ProjectDetailCategoriesTab({
         open={!!cat.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title={t("categories.deleteTitle")}
-        description={t("categories.deleteConfirmDescription")}
-        getMessage={(category) => t("categories.deleteConfirmDescriptionNamed", { name: category.name })}
+        title={t("categories.delete.title")}
+        description={t("categories.delete.description")}
+        getMessage={(category) => t("categories.delete.confirm", { name: category.name })}
       />
     </TabsContent>
   )

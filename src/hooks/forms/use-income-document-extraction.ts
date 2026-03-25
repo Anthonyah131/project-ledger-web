@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 import * as incomeService from "@/services/income-service"
+import { useLanguage } from "@/context/language-context"
 import {
   getDocumentExtractionErrorMessage,
   getDocumentValidationError,
@@ -42,6 +43,7 @@ export function useIncomeDocumentExtraction({
   paymentMethods,
   projectCurrency,
 }: UseIncomeDocumentExtractionOptions) {
+  const { t } = useLanguage()
   const [showFormStep, setShowFormStep] = useState(!isAiMode)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [documentKind, setDocumentKind] = useState<IncomeDocumentKind>("invoice")
@@ -154,9 +156,9 @@ export function useIncomeDocumentExtraction({
       effectiveAccountCurrency !== normalizedProjectCurrency
 
     if (requiresManualAccountAmount && !(typeof draft.accountAmount === "number" && draft.accountAmount > 0)) {
-      const message = "Account amount is required for selected account currency."
+      const message = t("incomes.fields.accountAmount.required")
       form.setError("accountAmount", { type: "manual", message })
-      toast.warning("Monto de cuenta requerido", { description: message })
+      toast.warning(t("incomes.accountAmountRequired"), { description: message })
     }
 
     setExtractWarnings(result.warnings ?? [])
@@ -165,7 +167,7 @@ export function useIncomeDocumentExtraction({
       modelId: result.modelId,
       documentKind: result.documentKind,
     })
-  }, [categories, form, paymentMethods, projectCurrency])
+  }, [categories, form, paymentMethods, projectCurrency, t])
 
   const resetExtractionState = useCallback(() => {
     setShowFormStep(!isAiMode)
@@ -189,12 +191,12 @@ export function useIncomeDocumentExtraction({
       const result = await incomeService.getIncomeExtractionQuota(projectId)
       setQuota(result)
     } catch (err) {
-      const message = err instanceof Error ? err.message : "No se pudo cargar la cuota OCR"
+      const message = err instanceof Error ? err.message : t("incomes.ocrQuotaError")
       setQuotaError(message)
     } finally {
       setQuotaLoading(false)
     }
-  }, [isAiMode, projectId])
+  }, [isAiMode, projectId, t])
 
   const handleExtract = useCallback(async () => {
     const validationError = getDocumentValidationError(uploadFile)
@@ -217,15 +219,15 @@ export function useIncomeDocumentExtraction({
 
       applyExtractionToForm(result)
       setShowFormStep(true)
-      toast.success("Borrador extraido", {
-        description: "Revisa y ajusta los datos antes de crear el ingreso definitivo.",
+      toast.success(t("incomes.draftExtracted"), {
+        description: t("incomes.draftExtractedDesc"),
       })
     } catch (err) {
       setExtractError(getDocumentExtractionErrorMessage(err))
     } finally {
       setExtracting(false)
     }
-  }, [applyExtractionToForm, documentKind, projectId, uploadFile])
+  }, [applyExtractionToForm, documentKind, projectId, t, uploadFile])
 
   const handleFileChange = useCallback((file: File | null) => {
     setUploadFile(file)

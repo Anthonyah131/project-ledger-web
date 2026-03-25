@@ -37,6 +37,24 @@
     "selectedOne": "1 selected",
     "selectedMany": "{count} selected",
     "noProjectsWithPartners": "No projects with partners",
-    "noPartnersRegistered": "No partners registered"
+    "noPartnersRegistered": "No partners registered",
+    "toast": {
+      "excelDownloaded": "Excel file downloaded",
+      "pdfDownloaded": "PDF file downloaded"
+    },
+    "warnings": {
+      "selectProjectToGenerate": "Select a project to generate the report.",
+      "selectProjectToExport": "Select a project to export.",
+      "selectPartnerToGenerate": "Select a partner to generate the report.",
+      "selectPartnerToExport": "Select a partner to export.",
+      "selectWorkspaceToGenerate": "Select a workspace to generate the report.",
+      "selectWorkspaceToExport": "Select a workspace to export."
+    },
+    "errors": {
+      "generate": "Error generating report",
+      "export": "Error exporting as {format}",
+      "loadProjects": "Could not load projects",
+      "loadPaymentMethods": "Could not load payment methods"
+    }
   }
 }

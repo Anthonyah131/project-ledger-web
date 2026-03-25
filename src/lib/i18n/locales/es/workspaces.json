@@ -20,6 +20,20 @@
     "workspaceLabel": "Workspace",
     "associateProject": "Asociar proyecto",
     "projectDisconnectedToast": "Proyecto desconectado del workspace",
-    "errorDisconnectingToast": "Error al desconectar proyecto"
+    "errorDisconnectingToast": "Error al desconectar proyecto",
+    "toast": {
+      "created": "Workspace creado",
+      "createdDesc": "\"{name}\" se creó correctamente.",
+      "updated": "Workspace actualizado",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Workspace eliminado",
+      "deletedDesc": "\"{name}\" fue eliminado."
+    },
+    "errors": {
+      "load": "Error al cargar workspaces",
+      "create": "Error al crear workspace",
+      "update": "Error al actualizar workspace",
+      "delete": "Error al eliminar workspace"
+    }
   }
 }

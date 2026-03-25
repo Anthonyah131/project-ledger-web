@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import * as expenseService from "@/services/expense-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   ExpenseResponse,
@@ -23,6 +24,7 @@ function toIsActiveParam(status: ExpenseActiveStatusFilter): boolean | undefined
 }
 
 export function useProjectExpenses(projectId: string) {
+  const { t } = useLanguage()
   const [expenses, setExpenses] = useState<ExpenseResponse[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -58,11 +60,11 @@ export function useProjectExpenses(projectId: string) {
       setExpenses(data.items)
       setTotalCount(data.totalCount)
     } catch (err) {
-      toastApiError(err, "Error al cargar gastos");
+      toastApiError(err, t("expenses.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort, activeStatus])
+  }, [projectId, page, pageSize, sort, activeStatus, t])
 
   useEffect(() => {
     fetchExpenses()
@@ -94,15 +96,15 @@ export function useProjectExpenses(projectId: string) {
     async (data: CreateExpenseRequest, options?: MutationOptions) => {
       try {
         await expenseService.createExpense(projectId, data)
-        toast.success("Gasto creado")
+        toast.success(t("expenses.toast.created"))
         if (options?.refetch ?? true) {
           await fetchExpenses()
         }
       } catch (err) {
-        toastApiError(err, "Error al crear gasto")
+        toastApiError(err, t("expenses.errors.create"))
       }
     },
-    [projectId, fetchExpenses]
+    [projectId, fetchExpenses, t]
   )
 
   const mutateUpdate = useCallback(
@@ -113,32 +115,32 @@ export function useProjectExpenses(projectId: string) {
     ) => {
       try {
         await expenseService.updateExpense(projectId, expenseId, data)
-        toast.success("Gasto actualizado")
+        toast.success(t("expenses.toast.updated"))
         if (options?.refetch ?? true) {
           await fetchExpenses()
         }
       } catch (err) {
-        toastApiError(err, "Error al actualizar gasto")
+        toastApiError(err, t("expenses.errors.update"))
       }
     },
-    [projectId, fetchExpenses]
+    [projectId, fetchExpenses, t]
   )
 
   const mutateDelete = useCallback(
     async (expense: ExpenseResponse, options?: MutationOptions) => {
       try {
         await expenseService.deleteExpense(projectId, expense.id)
-        toast.success("Gasto eliminado", {
-          description: `"${expense.title}" fue eliminado.`,
+        toast.success(t("expenses.toast.deleted"), {
+          description: t("expenses.toast.deletedDesc", { name: expense.title }),
         })
         if (options?.refetch ?? true) {
           await fetchExpenses()
         }
       } catch (err) {
-        toastApiError(err, "Error al eliminar gasto")
+        toastApiError(err, t("expenses.errors.delete"))
       }
     },
-    [projectId, fetchExpenses]
+    [projectId, fetchExpenses, t]
   )
 
   const mutateActiveState = useCallback(
@@ -149,15 +151,15 @@ export function useProjectExpenses(projectId: string) {
     ) => {
       try {
         await expenseService.updateExpenseActiveState(projectId, expense.id, { isActive })
-        toast.success(isActive ? "Gasto activado" : "Gasto marcado como recordatorio")
+        toast.success(isActive ? t("expenses.toast.activated") : t("expenses.toast.markedReminder"))
         if (options?.refetch ?? true) {
           await fetchExpenses()
         }
       } catch (err) {
-        toastApiError(err, "Error al actualizar estado del gasto")
+        toastApiError(err, t("expenses.errors.updateStatus"))
       }
     },
-    [projectId, fetchExpenses]
+    [projectId, fetchExpenses, t]
   )
 
   // ── Page/sort handlers ────────────────────────────────────

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { formatDate } from "@/lib/date-utils"
+import { useLanguage } from "@/context/language-context"
 import type { BillingStatusMeta } from "@/lib/billing-utils"
 import type { PlanResponse } from "@/types/plan"
 import type { BillingSubscriptionResponse } from "@/types/subscription"
@@ -44,12 +45,14 @@ export function BillingSubscriptionCard({
   fallbackCurrentPlan,
   subscriptionMissing,
 }: BillingSubscriptionCardProps) {
+  const { t } = useLanguage()
+
   if (loading) {
     return (
       <Card>
         <CardContent className="flex items-center gap-2 pt-6 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Cargando estado de suscripción...
+          {t("billing.subscription.loading")}
         </CardContent>
       </Card>
     )
@@ -58,17 +61,17 @@ export function BillingSubscriptionCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Suscripción actual</CardTitle>
+        <CardTitle>{t("billing.subscription.title")}</CardTitle>
         <CardDescription>
           {stripeDisabled
-            ? "Stripe deshabilitado por configuración"
-            : "Estado sincronizado con Stripe"}
+            ? t("billing.subscription.stripeDisabledConfig")
+            : t("billing.subscription.stripeSync")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {stripeDisabled ? (
           <p className="text-sm text-muted-foreground">
-            La facturación de pago está temporalmente desactivada. Puedes seguir usando el producto, pero no se pueden iniciar checkouts ni modificar suscripciones hasta que Stripe vuelva a habilitarse.
+            {t("billing.subscription.stripeDisabledDesc")}
           </p>
         ) : subscription && currentStatusMeta ? (
           <>
@@ -77,13 +80,15 @@ export function BillingSubscriptionCard({
                 {currentStatusMeta.label}
               </Badge>
               <Badge variant="outline">
-                {subscription.autoRenews ? "Renovación automática activa" : "Renovación automática desactivada"}
+                {subscription.autoRenews
+                  ? t("billing.subscription.autoRenewOn")
+                  : t("billing.subscription.autoRenewOff")}
               </Badge>
               {subscription.cancelAtPeriodEnd && (
-                <Badge variant="outline">Cancelación al final del período</Badge>
+                <Badge variant="outline">{t("billing.subscription.cancelAtPeriod")}</Badge>
               )}
               {subscription.willDowngradeToFree && (
-                <Badge variant="outline">Bajará a Free al cierre del ciclo</Badge>
+                <Badge variant="outline">{t("billing.subscription.willDowngrade")}</Badge>
               )}
             </div>
 
@@ -91,48 +96,51 @@ export function BillingSubscriptionCard({
 
             {subscription.willDowngradeToFree && subscription.downgradeToFreeAt && (
               <p className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-700 dark:text-yellow-300">
-                Tu plan actual se mantendrá hasta el {formatDate(subscription.downgradeToFreeAt, { withYear: true })}.
-                Luego pasarás automáticamente a Free.
+                {t("billing.subscription.downgradeDateNote", {
+                  date: formatDate(subscription.downgradeToFreeAt, { withYear: true }),
+                })}
               </p>
             )}
 
             <div className="grid gap-3 text-sm md:grid-cols-2">
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldPlan")}</p>
                 <p className="mt-1 font-medium">{subscription.planName}</p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Renovación</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldRenewal")}</p>
                 <p className="mt-1 font-medium">
-                  {subscription.autoRenews ? "Se intentará cobrar automáticamente" : "Sin renovación automática"}
+                  {subscription.autoRenews
+                    ? t("billing.subscription.autoRenewDesc")
+                    : t("billing.subscription.noAutoRenew")}
                 </p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Actualizado</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldUpdated")}</p>
                 <p className="mt-1 font-medium">{formatDate(subscription.updatedAt, { withYear: true })}</p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Período actual inicia</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldPeriodStart")}</p>
                 <p className="mt-1 font-medium">
                   {subscription.currentPeriodStart
                     ? formatDate(subscription.currentPeriodStart, { withYear: true })
-                    : "Sin dato"}
+                    : t("billing.subscription.noData")}
                 </p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Período actual termina</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldPeriodEnd")}</p>
                 <p className="mt-1 font-medium">
                   {subscription.currentPeriodEnd
                     ? formatDate(subscription.currentPeriodEnd, { withYear: true })
-                    : "Sin dato"}
+                    : t("billing.subscription.noData")}
                 </p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Baja a Free</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldDowngradeDate")}</p>
                 <p className="mt-1 font-medium">
                   {subscription.willDowngradeToFree && subscription.downgradeToFreeAt
                     ? formatDate(subscription.downgradeToFreeAt, { withYear: true })
-                    : "No programada"}
+                    : t("billing.subscription.notScheduled")}
                 </p>
               </div>
             </div>
@@ -142,33 +150,33 @@ export function BillingSubscriptionCard({
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className={getBadgeToneClass("muted")}>
                 {subscriptionMissing
-                  ? "Plan Free (sin suscripción Stripe)"
-                  : "Plan sin suscripción activa"}
+                  ? t("billing.subscription.freePlanNoStripe")
+                  : t("billing.subscription.noPlanNoStripe")}
               </Badge>
             </div>
 
             <p className="text-sm text-muted-foreground">
               {subscriptionMissing
-                ? `Tu cuenta está en el plan ${fallbackCurrentPlan.name}. El endpoint de suscripción devolvió 404 (sin suscripción de pago).`
-                : `Tu cuenta está en el plan ${fallbackCurrentPlan.name}. No tienes una suscripción de pago registrada.`}
+                ? t("billing.subscription.freePlanDesc", { plan: fallbackCurrentPlan.name })
+                : t("billing.subscription.noSubscriptionDesc", { plan: fallbackCurrentPlan.name })}
             </p>
 
             <div className="grid gap-3 text-sm md:grid-cols-2">
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldPlan")}</p>
                 <p className="mt-1 font-medium">{fallbackCurrentPlan.name}</p>
               </div>
               <div className="rounded-lg border bg-card p-3">
-                <p className="text-xs text-muted-foreground">Estado</p>
-                <p className="mt-1 font-medium">Free / sin cobros</p>
+                <p className="text-xs text-muted-foreground">{t("billing.subscription.fieldStatus")}</p>
+                <p className="mt-1 font-medium">{t("billing.subscription.freeNoBilling")}</p>
               </div>
             </div>
           </>
         ) : (
           <p className="text-sm text-muted-foreground">
             {subscriptionMissing
-              ? "Aún no hay una suscripción registrada para tu usuario."
-              : "No hay información de suscripción disponible."}
+              ? t("billing.subscription.noSubscriptionYet")
+              : t("billing.subscription.noInfo")}
           </p>
         )}
       </CardContent>

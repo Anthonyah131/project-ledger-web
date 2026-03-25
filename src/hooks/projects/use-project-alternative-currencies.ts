@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import * as alternativeCurrencyService from "@/services/alternative-currency-service"
 import * as currencyService from "@/services/currency-service"
 import { toastApiError } from "@/lib/error-utils"
+import { useLanguage } from "@/context/language-context"
 import type { CurrencyResponse } from "@/types/currency"
 import type {
   AddAlternativeCurrencyRequest,
@@ -12,6 +13,7 @@ import type {
 } from "@/types/project-alternative-currency"
 
 export function useProjectAlternativeCurrencies(projectId: string) {
+  const { t } = useLanguage()
   const [currencies, setCurrencies] = useState<ProjectAlternativeCurrencyResponse[]>([])
   const [allCurrencies, setAllCurrencies] = useState<CurrencyResponse[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,11 +25,11 @@ export function useProjectAlternativeCurrencies(projectId: string) {
       const data = await alternativeCurrencyService.getAlternativeCurrencies(projectId)
       setCurrencies(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar monedas alternativas");
+      toastApiError(err, t("alternativeCurrencies.errors.load"))
     } finally {
       setLoading(false)
     }
-  }, [projectId])
+  }, [projectId, t])
 
   const fetchCatalog = useCallback(async () => {
     try {
@@ -50,14 +52,14 @@ export function useProjectAlternativeCurrencies(projectId: string) {
       try {
         const created = await alternativeCurrencyService.addAlternativeCurrency(projectId, data)
         setCurrencies((prev) => [...prev, created])
-        toast.success("Moneda alternativa agregada", {
-          description: `${created.currencyCode} fue agregada al proyecto.`,
+        toast.success(t("alternativeCurrencies.toast.added"), {
+          description: t("alternativeCurrencies.toast.addedDesc", { code: created.currencyCode }),
         })
       } catch (err) {
-        toastApiError(err, "Error al agregar moneda alternativa")
+        toastApiError(err, t("alternativeCurrencies.errors.add"))
       }
     },
-    [projectId]
+    [projectId, t]
   )
 
   const mutateDelete = useCallback(
@@ -65,16 +67,16 @@ export function useProjectAlternativeCurrencies(projectId: string) {
       try {
         await alternativeCurrencyService.deleteAlternativeCurrency(projectId, currency.currencyCode)
         setCurrencies((prev) => prev.filter((c) => c.id !== currency.id))
-        toast.success("Moneda alternativa eliminada", {
-          description: `${currency.currencyCode} fue removida del proyecto.`,
+        toast.success(t("alternativeCurrencies.toast.deleted"), {
+          description: t("alternativeCurrencies.toast.deletedDesc", { code: currency.currencyCode }),
         })
         return true
       } catch (err) {
-        toastApiError(err, "Error al eliminar moneda alternativa")
+        toastApiError(err, t("alternativeCurrencies.errors.delete"))
         return false
       }
     },
-    [projectId]
+    [projectId, t]
   )
 
   return {

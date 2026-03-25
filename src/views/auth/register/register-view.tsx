@@ -62,10 +62,10 @@ export function RegisterView() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.fullNameLabel")}</FormLabel>
+                <FormLabel>{t("auth.fields.fullName.label")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("auth.fullNamePlaceholder")}
+                    placeholder={t("auth.fields.fullName.placeholder")}
                     autoComplete="name"
                     disabled={isLoading}
                     {...field}
@@ -81,11 +81,11 @@ export function RegisterView() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.emailLabel")}</FormLabel>
+                <FormLabel>{t("auth.fields.email.label")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder={t("auth.emailPlaceholder")}
+                    placeholder={t("auth.fields.email.placeholder")}
                     autoComplete="email"
                     disabled={isLoading}
                     {...field}
@@ -101,12 +101,12 @@ export function RegisterView() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.passwordLabel")}</FormLabel>
+                <FormLabel>{t("auth.fields.password.label")}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder={t("auth.passwordMinLength")}
+                      placeholder={t("auth.fields.password.hint")}
                       autoComplete="new-password"
                       disabled={isLoading}
                       className="pr-10"
@@ -136,11 +136,11 @@ export function RegisterView() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.confirmPasswordLabel")}</FormLabel>
+                <FormLabel>{t("auth.fields.confirmPassword.label")}</FormLabel>
                 <FormControl>
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder={t("auth.confirmPasswordPlaceholder")}
+                    placeholder={t("auth.fields.confirmPassword.placeholder")}
                     autoComplete="new-password"
                     disabled={isLoading}
                     {...field}

@@ -22,6 +22,11 @@
     "deleteConfirmTitle": "Eliminar proyecto",
     "deleteConfirmDescription": "Esta acción puede desactivarlo, no eliminarlo definitivamente.",
     "deleteConfirmDescriptionNamed": "¿Eliminar proyecto \"{name}\"?",
+    "delete": {
+      "title": "Eliminar proyecto",
+      "description": "Esta acción puede desactivarlo, no eliminarlo definitivamente.",
+      "confirm": "¿Eliminar proyecto \"{name}\"?"
+    },
     "overview": "Resumen",
     "expenses": "Gastos",
     "incomes": "Ingresos",
@@ -78,6 +83,24 @@
       "removePaymentMethodTitle": "Quitar método de pago",
       "removePaymentMethodDescription": "El método de pago ya no estará disponible en este proyecto para nuevos gastos e ingresos.",
       "removePaymentMethodNamed": "¿Quitar \"{name}\" del proyecto?"
+    },
+    "toast": {
+      "created": "Proyecto creado",
+      "createdDesc": "\"{name}\" se agregó correctamente.",
+      "updated": "Proyecto actualizado",
+      "updatedDesc": "\"{name}\" se guardó correctamente.",
+      "deleted": "Proyecto eliminado",
+      "deletedDesc": "\"{name}\" fue desactivado.",
+      "partnersEnabled": "Splits por partners activados",
+      "partnersDisabled": "Splits por partners desactivados"
+    },
+    "errors": {
+      "load": "Error al cargar proyectos",
+      "loadDetail": "Error al cargar proyecto",
+      "create": "Error al crear proyecto",
+      "update": "Error al actualizar proyecto",
+      "delete": "Error al eliminar proyecto",
+      "updateSettings": "Error al actualizar configuración del proyecto"
     }
   },
   "members": {
@@ -100,6 +123,64 @@
     "removeMember": "Remover miembro",
     "removeConfirmTitle": "Remover miembro",
     "removeConfirmDescription": "El usuario perderá acceso a este proyecto.",
-    "removeConfirmDescriptionNamed": "¿Remover a \"{name}\" del proyecto?"
+    "removeConfirmDescriptionNamed": "¿Remover a \"{name}\" del proyecto?",
+    "remove": {
+      "title": "Remover miembro",
+      "description": "El usuario perderá acceso a este proyecto.",
+      "confirm": "¿Remover a \"{name}\" del proyecto?"
+    },
+    "toast": {
+      "added": "Miembro agregado",
+      "addedDesc": "{name} fue agregado como {role}.",
+      "roleUpdated": "Rol actualizado",
+      "removed": "Miembro removido",
+      "removedDesc": "{name} fue removido del proyecto."
+    },
+    "errors": {
+      "load": "Error al cargar miembros",
+      "add": "Error al agregar miembro",
+      "changeRole": "Error al cambiar rol",
+      "remove": "Error al remover miembro"
+    }
+  },
+  "projectPartners": {
+    "toast": {
+      "assigned": "Partner asignado",
+      "assignedDesc": "\"{name}\" fue asignado al proyecto.",
+      "removed": "Partner quitado",
+      "removedDesc": "\"{name}\" fue quitado del proyecto.",
+      "cannotRemove": "No se puede quitar el partner"
+    },
+    "errors": {
+      "load": "Error al cargar partners del proyecto",
+      "assign": "Error al asignar partner",
+      "remove": "Error al quitar partner"
+    }
+  },
+  "projectPaymentMethods": {
+    "toast": {
+      "linked": "Método de pago vinculado",
+      "linkedDesc": "\"{name}\" fue vinculado al proyecto.",
+      "unlinked": "Método de pago quitado",
+      "unlinkedDesc": "\"{name}\" fue quitado del proyecto."
+    },
+    "errors": {
+      "load": "Error al cargar métodos de pago",
+      "link": "Error al vincular método de pago",
+      "unlink": "Error al quitar método de pago"
+    }
+  },
+  "alternativeCurrencies": {
+    "toast": {
+      "added": "Moneda alternativa agregada",
+      "addedDesc": "{code} fue agregada al proyecto.",
+      "deleted": "Moneda alternativa eliminada",
+      "deletedDesc": "{code} fue removida del proyecto."
+    },
+    "errors": {
+      "load": "Error al cargar monedas alternativas",
+      "add": "Error al agregar moneda alternativa",
+      "delete": "Error al eliminar moneda alternativa"
+    }
   }
 }

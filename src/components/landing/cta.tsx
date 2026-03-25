@@ -1,7 +1,20 @@
+"use client";
+
 import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 export function CTA() {
+  const { t } = useLanguage();
+
+  const featurePills = [
+    t("billing.features.ocr"),
+    t("billing.features.multiCurrency"),
+    t("billing.features.teamCollaboration"),
+    t("billing.features.reports"),
+    t("billing.features.chatbot"),
+  ];
+
   return (
     <section className="px-6 py-20">
       <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-primary/30 bg-primary/10 px-8 py-16 text-center">
@@ -15,11 +28,10 @@ export function CTA() {
         </div>
 
         <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
-          ¿Listo para tener control real?
+          {t("billing.ctaTitle")}
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-          Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración.
-          Actualiza cuando tu proyecto lo necesite.
+          {t("landing.ctaSubtitleFull")}
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -27,20 +39,20 @@ export function CTA() {
             href="/register"
             className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/50"
           >
-            Crear cuenta gratis
+            {t("billing.createFreeAccount")}
             <ChevronRight className="h-4 w-4" />
           </Link>
           <Link
             href="#pricing"
             className="inline-flex h-12 items-center px-8 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
           >
-            Ver todos los planes →
+            {t("billing.seeAllPlans")}
           </Link>
         </div>
 
         {/* Feature pills */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          {["OCR con IA", "Multi-moneda", "Colaboración en equipo", "Reportes", "Chatbot financiero"].map((f) => (
+          {featurePills.map((f) => (
             <span
               key={f}
               className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary/80"

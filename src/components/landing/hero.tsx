@@ -1,30 +1,33 @@
+"use client";
+
 import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 export function Hero() {
+  const { t } = useLanguage();
+
   return (
     <section className="flex flex-col items-center px-6 pb-24 pt-40 text-center">
       {/* Badge */}
       <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary">
         <Sparkles className="h-3 w-3" />
-        OCR con IA + chatbot financiero integrado
+        {t("landing.badge")}
       </div>
 
       {/* Headline */}
       <h1 className="mx-auto max-w-4xl text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-        Control financiero de{" "}
+        {t("landing.heroTitlePart1")}{" "}
         <span className="relative inline-block">
-          <span className="relative z-10 text-primary">proyectos</span>
+          <span className="relative z-10 text-primary">{t("landing.heroTitleHighlight")}</span>
           <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-primary/15 transform-[skewX(-3deg)]" />
         </span>{" "}
-        sin fricción
+        {t("landing.heroTitlePart2")}
       </h1>
 
       {/* Subheadline */}
       <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
-        Project Ledger te permite registrar gastos e ingresos, gestionar métodos
-        de pago, colaborar en equipo y analizar tu flujo de caja — todo en un
-        solo lugar, con IA que lee tus comprobantes.
+        {t("landing.heroSubtitle")}
       </p>
 
       {/* CTAs */}
@@ -33,22 +36,22 @@ export function Hero() {
           href="/register"
           className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/50"
         >
-          Empezar gratis — sin tarjeta
+          {t("landing.ctaPrimary")}
           <ChevronRight className="h-4 w-4" />
         </Link>
         <Link
           href="#features"
           className="inline-flex h-12 items-center gap-2 rounded-xl border border-border px-8 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
         >
-          Ver características
+          {t("landing.ctaSecondary")}
         </Link>
       </div>
 
       {/* Social proof */}
       <p className="mt-8 text-xs text-muted-foreground">
-        Plan Free disponible para siempre ·{" "}
-        <span className="font-semibold text-primary">Sin límite de tiempo</span>{" "}
-        · Actualiza cuando lo necesites
+        {t("landing.freePlanBadge")} ·{" "}
+        <span className="font-semibold text-primary">{t("landing.noTimeLimit")}</span>{" "}
+        · {t("landing.upgradeAnytime")}
       </p>
 
       {/* Mock dashboard */}

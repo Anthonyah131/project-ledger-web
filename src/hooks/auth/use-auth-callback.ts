@@ -4,17 +4,9 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 import { ApiClientError } from "@/lib/api-client"
 import { getGoogleLoginUrl } from "@/services/auth-service"
-
-function resolveOAuthErrorMessage(errorCode: string) {
-  switch (errorCode) {
-    case "google_auth_failed":
-      return "No se pudo completar el inicio de sesion con Google. Intenta otra vez."
-    default:
-      return "No se pudo completar la autenticacion. Intenta nuevamente."
-  }
-}
 
 function resolveRedirect(redirectTo: string | null, fallbackRoute: string) {
   if (!redirectTo) return fallbackRoute
@@ -24,6 +16,7 @@ function resolveRedirect(redirectTo: string | null, fallbackRoute: string) {
 
 export function useAuthCallback() {
   const router = useRouter()
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const { loginWithAccessToken } = useAuth()
 
@@ -39,13 +32,17 @@ export function useAuthCallback() {
 
     async function completeOAuthFlow() {
       if (errorCode) {
-        setErrorMessage(resolveOAuthErrorMessage(errorCode))
+        setErrorMessage(
+          errorCode === "google_auth_failed"
+            ? t("auth.callback.errorGoogle")
+            : t("auth.callback.errorGeneric")
+        )
         setIsProcessing(false)
         return
       }
 
       if (!token) {
-        setErrorMessage("No se recibio el token de autenticacion. Intenta iniciar sesion de nuevo.")
+        setErrorMessage(t("auth.callback.errorNoToken"))
         setIsProcessing(false)
         return
       }
@@ -61,14 +58,14 @@ export function useAuthCallback() {
 
         if (err instanceof ApiClientError) {
           if (err.status === 401) {
-            setErrorMessage("Tu sesion de Google no es valida o ya expiro. Intenta nuevamente.")
+            setErrorMessage(t("auth.callback.errorInvalidSession"))
           } else if (err.status === 403) {
-            setErrorMessage("Tu cuenta no tiene acceso en este momento. Contacta a soporte.")
+            setErrorMessage(t("auth.callback.errorNoAccess"))
           } else {
-            setErrorMessage(err.message || "No pudimos validar tu sesion de Google.")
+            setErrorMessage(err.message || t("auth.callback.errorValidation"))
           }
         } else {
-          setErrorMessage("Error de conexion al validar tu sesion. Intenta nuevamente.")
+          setErrorMessage(t("auth.callback.errorConnection"))
         }
 
         setIsProcessing(false)
@@ -80,7 +77,7 @@ export function useAuthCallback() {
     return () => {
       cancelled = true
     }
-  }, [errorCode, loginWithAccessToken, redirectTo, router, token])
+  }, [errorCode, loginWithAccessToken, redirectTo, router, token, t])
 
   function retryWithGoogle() {
     if (typeof window === "undefined") return

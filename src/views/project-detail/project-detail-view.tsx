@@ -357,9 +357,9 @@ export function ProjectDetailView({ projectId }: Props) {
           open={deleteProjectOpen}
           onClose={handleDeleteProjectClose}
           onConfirm={mutateProjectDelete}
-          title={t("projects.deleteConfirmTitle")}
-          description={t("projects.deleteConfirmDescription")}
-          getMessage={(p) => t("projects.deleteConfirmDescriptionNamed", { name: p.name })}
+          title={t("projects.delete.title")}
+          description={t("projects.delete.description")}
+          getMessage={(p) => t("projects.delete.confirm", { name: p.name })}
         />
       )}
     </div>

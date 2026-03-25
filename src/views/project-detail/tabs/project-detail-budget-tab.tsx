@@ -78,9 +78,9 @@ export function ProjectDetailBudgetTab({
         open={!!bud.deleteTarget}
         onClose={onDeleteClose}
         onConfirm={onDelete}
-        title={t("budget.deleteTitle")}
-        description={t("budget.deleteDescription")}
-        getMessage={() => t("budget.deleteConfirm")}
+        title={t("budget.delete.title")}
+        description={t("budget.delete.description")}
+        getMessage={() => t("budget.delete.confirm")}
       />
     </TabsContent>
   )

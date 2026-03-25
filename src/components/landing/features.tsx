@@ -2,12 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { features } from "./landing-data";
+import { getFeatures } from "./landing-data";
+import { useLanguage } from "@/context/language-context";
 
 const AUTOPLAY_INTERVAL = 3500;
 const VISIBLE_SIDE = 2;
 
 export function Features() {
+  const { t } = useLanguage();
+  const features = getFeatures(t);
+
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -49,8 +53,6 @@ export function Features() {
     };
   }
 
-  const activeFeature = features[active]!;
-
   return (
     <section
       id="features"
@@ -62,14 +64,13 @@ export function Features() {
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-            Características
+            {t("landing.featuresTitle")}
           </p>
           <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
-            Finanzas de proyectos, bajo control
+            {t("landing.featuresSubtitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Cada herramienta que necesitas para registrar, entender y optimizar
-            el flujo de dinero de tus proyectos.
+            {t("landing.featuresDescription")}
           </p>
         </div>
 
@@ -81,7 +82,7 @@ export function Features() {
               <button
                 key={title}
                 type="button"
-                aria-label={`Ver ${title}`}
+                aria-label={t("landing.viewFeature", { feature: title })}
                 onClick={() => setActive(i)}
                 style={getCardStyle(i)}
                 className="absolute w-[300px] cursor-pointer rounded-2xl border bg-card text-left shadow-2xl transition-all"
@@ -120,7 +121,7 @@ export function Features() {
         <div className="mt-10 flex items-center justify-center gap-4">
           <button
             type="button"
-            aria-label="Anterior"
+            aria-label={t("landing.previous")}
             onClick={prev}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
           >
@@ -133,7 +134,7 @@ export function Features() {
               <button
                 key={f.title}
                 type="button"
-                aria-label={`Ir a ${f.title}`}
+                aria-label={t("landing.goToFeature", { feature: f.title })}
                 onClick={() => setActive(i)}
                 className={`h-2 rounded-full transition-all ${
                   i === active ? "w-6 bg-primary" : "w-2 bg-border hover:bg-primary/40"
@@ -144,7 +145,7 @@ export function Features() {
 
           <button
             type="button"
-            aria-label="Siguiente"
+            aria-label={t("landing.next")}
             onClick={next}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
           >

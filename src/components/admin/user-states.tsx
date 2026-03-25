@@ -3,17 +3,19 @@
 import { Users } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState as GenericEmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
 export function AdminUsersEmptyState() {
+  const { t } = useLanguage()
   return (
     <GenericEmptyState
       hasSearch={false}
       onCreate={() => {}}
       icon={Users}
-      title="Sin usuarios"
-      description="No se encontraron usuarios registrados."
+      title={t("admin.empty.title")}
+      description={t("admin.empty.description")}
     />
   )
 }
