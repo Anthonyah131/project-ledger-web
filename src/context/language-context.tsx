@@ -38,7 +38,15 @@ function resolveInitialLocale(): Locale {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(resolveInitialLocale);
+  // Start with DEFAULT_LOCALE so server and initial client render match,
+  // then apply the stored/browser locale after hydration to avoid mismatch.
+  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+
+  useEffect(() => {
+    const resolved = resolveInitialLocale();
+    setLocaleState(resolved);
+    document.documentElement.lang = resolved;
+  }, []);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
@@ -46,6 +54,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = next;
   }, []);
 
+  // Keep <html lang> in sync when locale changes via setLocale
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);

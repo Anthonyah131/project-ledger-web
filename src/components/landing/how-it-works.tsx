@@ -1,6 +1,6 @@
 "use client";
 
-import { getSteps } from "./landing-data";
+import { getSteps } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 
 export function HowItWorks() {

@@ -78,6 +78,27 @@
       "control": { "value": "100%", "label": "Control de tu flujo de caja" }
     },
     "ctaSubtitleFull": "Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración. Actualiza cuando tu proyecto lo necesite.",
+    "mockDashboard": {
+      "nav": {
+        "dashboard": "Dashboard",
+        "projects": "Proyectos",
+        "reports": "Reportes",
+        "paymentMethods": "Métodos de pago",
+        "settings": "Configuración"
+      },
+      "stats": {
+        "income": "Ingresos del mes",
+        "expenses": "Gastos del mes",
+        "balance": "Balance neto"
+      },
+      "recentMovements": "Últimos movimientos",
+      "expensesChart": "Gastos / mes",
+      "transactions": {
+        "t1": { "name": "Servicios en la nube", "cat": "Tecnología" },
+        "t2": { "name": "Pago cliente ACME", "cat": "Ingresos" },
+        "t3": { "name": "Almuerzo equipo", "cat": "Operativo" }
+      }
+    },
     "pricing": {
       "errors": {
         "noConnection": "No se pudo conectar con el servidor para cargar los planes.",

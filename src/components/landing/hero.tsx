@@ -7,6 +7,26 @@ import { useLanguage } from "@/context/language-context";
 export function Hero() {
   const { t } = useLanguage();
 
+  const navItems = [
+    t("landing.mockDashboard.nav.dashboard"),
+    t("landing.mockDashboard.nav.projects"),
+    t("landing.mockDashboard.nav.reports"),
+    t("landing.mockDashboard.nav.paymentMethods"),
+    t("landing.mockDashboard.nav.settings"),
+  ];
+
+  const stats = [
+    { label: t("landing.mockDashboard.stats.income"), val: "$12,400", up: true },
+    { label: t("landing.mockDashboard.stats.expenses"), val: "$8,310", up: false },
+    { label: t("landing.mockDashboard.stats.balance"), val: "$4,090", highlight: true },
+  ];
+
+  const transactions = [
+    { name: t("landing.mockDashboard.transactions.t1.name"), amt: "-$120", cat: t("landing.mockDashboard.transactions.t1.cat"), pending: false },
+    { name: t("landing.mockDashboard.transactions.t2.name"), amt: "+$3,200", cat: t("landing.mockDashboard.transactions.t2.cat"), pending: false },
+    { name: t("landing.mockDashboard.transactions.t3.name"), amt: "-$85", cat: t("landing.mockDashboard.transactions.t3.cat"), pending: true },
+  ];
+
   return (
     <section className="flex flex-col items-center px-6 pb-24 pt-40 text-center">
       {/* Badge */}
@@ -69,31 +89,25 @@ export function Hero() {
           <div className="flex h-80 gap-0">
             {/* Sidebar */}
             <div className="hidden w-48 flex-col gap-1.5 border-r border-border bg-sidebar p-4 sm:flex">
-              {["Dashboard", "Proyectos", "Reportes", "Métodos de pago", "Configuración"].map(
-                (item, i) => (
-                  <div
-                    key={item}
-                    className={`h-8 rounded-md px-3 flex items-center text-xs font-medium ${
-                      i === 0
-                        ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {item}
-                  </div>
-                )
-              )}
+              {navItems.map((item, i) => (
+                <div
+                  key={item}
+                  className={`h-8 rounded-md px-3 flex items-center text-xs font-medium ${
+                    i === 0
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {item}
+                </div>
+              ))}
             </div>
 
             {/* Main content */}
             <div className="flex flex-1 flex-col gap-3 p-5">
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: "Ingresos del mes", val: "$12,400", up: true },
-                  { label: "Gastos del mes", val: "$8,310", up: false },
-                  { label: "Balance neto", val: "$4,090", highlight: true },
-                ].map((s) => (
+                {stats.map((s) => (
                   <div
                     key={s.label}
                     className={`rounded-lg border p-3 ${s.highlight ? "border-primary/30 bg-primary/10" : "border-border bg-background"}`}
@@ -111,13 +125,9 @@ export function Hero() {
                 {/* Transactions list */}
                 <div className="flex-1 rounded-lg border border-border bg-background p-3">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Últimos movimientos
+                    {t("landing.mockDashboard.recentMovements")}
                   </p>
-                  {[
-                    { name: "Servicios en la nube", amt: "-$120", cat: "Tecnología", pending: false },
-                    { name: "Pago cliente ACME", amt: "+$3,200", cat: "Ingresos", pending: false },
-                    { name: "Almuerzo equipo", amt: "-$85", cat: "Operativo", pending: true },
-                  ].map((tx) => (
+                  {transactions.map((tx) => (
                     <div key={tx.name} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
                       <div>
                         <p className="text-[11px] font-medium text-foreground">{tx.name}</p>
@@ -133,7 +143,7 @@ export function Hero() {
                 {/* Bar chart */}
                 <div className="hidden w-40 rounded-lg border border-border bg-background p-3 md:block">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Gastos / mes
+                    {t("landing.mockDashboard.expensesChart")}
                   </p>
                   <div className="flex h-20 items-end gap-1">
                     {[50, 70, 45, 85, 60, 95].map((h, i) => (

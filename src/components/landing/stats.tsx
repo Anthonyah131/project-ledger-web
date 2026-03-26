@@ -1,6 +1,6 @@
 "use client";
 
-import { getStats } from "./landing-data";
+import { getStats } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 
 export function Stats() {

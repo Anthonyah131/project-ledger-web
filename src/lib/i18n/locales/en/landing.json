@@ -78,6 +78,27 @@
       "control": { "value": "100%", "label": "Control of your cash flow" }
     },
     "ctaSubtitleFull": "Start today with the Free plan — no card, no expiration date. Upgrade whenever your project needs it.",
+    "mockDashboard": {
+      "nav": {
+        "dashboard": "Dashboard",
+        "projects": "Projects",
+        "reports": "Reports",
+        "paymentMethods": "Payment methods",
+        "settings": "Settings"
+      },
+      "stats": {
+        "income": "Monthly income",
+        "expenses": "Monthly expenses",
+        "balance": "Net balance"
+      },
+      "recentMovements": "Recent movements",
+      "expensesChart": "Expenses / month",
+      "transactions": {
+        "t1": { "name": "Cloud services", "cat": "Technology" },
+        "t2": { "name": "ACME client payment", "cat": "Income" },
+        "t3": { "name": "Team lunch", "cat": "Operational" }
+      }
+    },
     "pricing": {
       "errors": {
         "noConnection": "Could not connect to the server to load plans.",

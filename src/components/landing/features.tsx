@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getFeatures } from "./landing-data";
+import { getFeatures } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 
 const AUTOPLAY_INTERVAL = 3500;
