@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { useLanguage } from "@/context/language-context"
 import { getProjects } from "@/services/project-service"
 import { assignProjectToWorkspace } from "@/services/workspace-service"
 import { toastApiError } from "@/lib/error-utils"
@@ -33,6 +34,7 @@ export function AssignProjectsModal({
   existingProjectIds,
   onAssigned,
 }: AssignProjectsModalProps) {
+  const { t } = useLanguage()
   const [allProjects, setAllProjects] = useState<ProjectResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
@@ -43,9 +45,9 @@ export function AssignProjectsModal({
     setLoading(true)
     getProjects({ pageSize: 200 })
       .then((data) => setAllProjects(data.items))
-      .catch(() => toast.error("Error al cargar proyectos"))
+      .catch(() => toast.error(t("workspaces.errors.loadProjects")))
       .finally(() => setLoading(false))
-  }, [open])
+  }, [open, t])
 
   const existingSet = useMemo(() => new Set(existingProjectIds), [existingProjectIds])
 
@@ -64,11 +66,11 @@ export function AssignProjectsModal({
     setAssigning(project.id)
     try {
       await assignProjectToWorkspace(workspaceId, project.id)
-      toast.success("Proyecto asociado", { description: `"${project.name}" se agregó al workspace.` })
+      toast.success(t("workspaces.toast.projectAssigned"), { description: t("workspaces.toast.projectAssignedDesc", { name: project.name }) })
       onAssigned()
       onClose()
     } catch (err) {
-      toastApiError(err, "Error al asociar proyecto")
+      toastApiError(err, t("workspaces.errors.assignProject"))
     } finally {
       setAssigning(null)
     }
@@ -78,13 +80,13 @@ export function AssignProjectsModal({
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Asociar proyecto al workspace</DialogTitle>
+          <DialogTitle>{t("workspaces.assignTitle")}</DialogTitle>
         </DialogHeader>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <Input
-            placeholder="Buscar proyecto..."
+            placeholder={t("workspaces.searchProject")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-8 h-8 text-sm"
@@ -98,7 +100,7 @@ export function AssignProjectsModal({
             ))
           ) : available.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              {query ? "Sin resultados" : "Todos los proyectos ya están en este workspace"}
+              {query ? t("common.noResults") : t("workspaces.allAssigned")}
             </div>
           ) : (
             available.map((project) => (
@@ -123,7 +125,7 @@ export function AssignProjectsModal({
                   disabled={assigning === project.id}
                 >
                   <FolderPlus className="size-3.5" />
-                  Asociar
+                  {t("workspaces.associate")}
                 </Button>
               </div>
             ))

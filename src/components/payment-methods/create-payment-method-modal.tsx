@@ -17,10 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
-import { PAYMENT_METHOD_FORM_TYPE_LABEL } from "@/lib/constants"
 import { ISO_CURRENCIES } from "@/types/project"
 import type { PaymentMethodType, CreatePaymentMethodRequest } from "@/types/payment-method"
 import { useCreatePaymentMethodForm } from "@/hooks/forms/use-payment-method-form"
+import { useLanguage } from "@/context/language-context"
 
 interface CreatePaymentMethodModalProps {
   open: boolean
@@ -35,25 +35,32 @@ export function CreatePaymentMethodModal({
 }: CreatePaymentMethodModalProps) {
   const { form, onSubmit, handleClose, watchType } =
     useCreatePaymentMethodForm({ onCreate, onClose })
+  const { t } = useLanguage()
+
+  const formTypeLabels: Record<PaymentMethodType, string> = {
+    bank: t("paymentMethods.formTypeBank"),
+    card: t("paymentMethods.typeCard"),
+    cash: t("paymentMethods.typeCash"),
+  }
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nuevo metodo de pago"
-      description="Agrega una cuenta bancaria, tarjeta o efectivo."
+      title={t("paymentMethods.createTitle")}
+      description={t("paymentMethods.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear"
+      submitLabel={t("common.create")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre</FormLabel>
+            <FormLabel>{t("common.name")}</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Cuenta BAC Principal" autoFocus {...field} />
+              <Input placeholder={t("paymentMethods.namePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -66,7 +73,7 @@ export function CreatePaymentMethodModal({
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo</FormLabel>
+              <FormLabel>{t("common.type")}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -74,9 +81,9 @@ export function CreatePaymentMethodModal({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {(Object.keys(PAYMENT_METHOD_FORM_TYPE_LABEL) as PaymentMethodType[]).map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {PAYMENT_METHOD_FORM_TYPE_LABEL[t]}
+                  {(Object.keys(formTypeLabels) as PaymentMethodType[]).map((typeKey) => (
+                    <SelectItem key={typeKey} value={typeKey}>
+                      {formTypeLabels[typeKey]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -90,7 +97,7 @@ export function CreatePaymentMethodModal({
           name="currency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Moneda</FormLabel>
+              <FormLabel>{t("common.currency")}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -119,12 +126,12 @@ export function CreatePaymentMethodModal({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {watchType === "card" ? "Emisor" : "Banco"}
-                  <span className="text-muted-foreground ml-1">(opcional)</span>
+                  {watchType === "card" ? t("paymentMethods.issuerLabel") : t("paymentMethods.bankLabel")}
+                  <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={watchType === "card" ? "Visa / Mastercard..." : "BAC Credomatic..."}
+                    placeholder={watchType === "card" ? t("paymentMethods.issuerPlaceholder") : t("paymentMethods.bankPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -138,12 +145,12 @@ export function CreatePaymentMethodModal({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {watchType === "card" ? "Ultimos 4 digitos" : "N. cuenta"}
-                  <span className="text-muted-foreground ml-1">(opcional)</span>
+                  {watchType === "card" ? t("paymentMethods.lastFourLabel") : t("paymentMethods.accountNumberLabel")}
+                  <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={watchType === "card" ? "4321" : "001-123456-7"}
+                    placeholder={watchType === "card" ? t("paymentMethods.lastFourPlaceholder") : t("paymentMethods.accountNumberPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -160,12 +167,12 @@ export function CreatePaymentMethodModal({
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Descripcion
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.description")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Notas adicionales..."
+                placeholder={t("paymentMethods.notesPlaceholder")}
                 rows={2}
                 className="resize-none"
                 {...field}

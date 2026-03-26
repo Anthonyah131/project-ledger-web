@@ -11,11 +11,29 @@
     "colorPlaceholder": "#4CAF50",
     "iconLabel": "Ícono",
     "iconPlaceholder": "home, briefcase...",
+    "editSubtitle": "Modifica los datos del workspace.",
+    "assignTitle": "Asociar proyecto al workspace",
+    "searchProject": "Buscar proyecto...",
+    "allAssigned": "Todos los proyectos ya están en este workspace",
+    "associate": "Asociar",
+    "workspace": "workspace",
+    "roleOwner": "propietario",
+    "roleMember": "miembro",
+    "project": "proyecto",
+    "projectPlural": "proyectos",
+    "emptyState": "Aún no tienes workspaces creados.",
+    "createWorkspace": "Crear workspace",
+    "newButton": "Nuevo",
     "empty": "No hay workspaces",
     "emptyDescription": "Crea un workspace para agrupar proyectos relacionados",
     "disconnectFromWorkspace": "Desconectar del workspace",
     "deleteConfirmTitle": "¿Eliminar workspace?",
     "deleteConfirmDescription": "Esta acción no se puede deshacer. Los proyectos no se eliminarán.",
+    "delete": {
+      "title": "Eliminar workspace",
+      "description": "Se eliminará el workspace. Esta acción no puede deshacerse si no tiene proyectos activos.",
+      "confirm": "¿Eliminar workspace \"{name}\"?"
+    },
     "projectCount": "{count} proyecto(s)",
     "workspaceLabel": "Workspace",
     "associateProject": "Asociar proyecto",
@@ -27,13 +45,17 @@
       "updated": "Workspace actualizado",
       "updatedDesc": "\"{name}\" se guardó correctamente.",
       "deleted": "Workspace eliminado",
-      "deletedDesc": "\"{name}\" fue eliminado."
+      "deletedDesc": "\"{name}\" fue eliminado.",
+      "projectAssigned": "Proyecto asociado",
+      "projectAssignedDesc": "\"{name}\" se agregó al workspace."
     },
     "errors": {
       "load": "Error al cargar workspaces",
       "create": "Error al crear workspace",
       "update": "Error al actualizar workspace",
-      "delete": "Error al eliminar workspace"
+      "delete": "Error al eliminar workspace",
+      "loadProjects": "Error al cargar proyectos",
+      "assignProject": "Error al asociar proyecto"
     }
   }
 }

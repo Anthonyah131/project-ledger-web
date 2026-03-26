@@ -3,6 +3,8 @@
 
 import type { BillingSubscriptionStatus } from "@/types/subscription";
 
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
 export interface BillingStatusMeta {
   label: string;
   description: string;
@@ -10,69 +12,25 @@ export interface BillingStatusMeta {
   isActive: boolean;
 }
 
-export function getBillingStatusMeta(status: BillingSubscriptionStatus): BillingStatusMeta {
-  switch (status) {
-    case "active":
-      return {
-        label: "Activa",
-        description: "Tu suscripción está al día.",
-        tone: "success",
-        isActive: true,
-      };
-    case "trialing":
-      return {
-        label: "En prueba",
-        description: "Tu suscripción está en período de prueba.",
-        tone: "success",
-        isActive: true,
-      };
-    case "past_due":
-      return {
-        label: "Pago pendiente",
-        description: "Tu suscripción sigue vigente, pero hay un pago pendiente.",
-        tone: "warning",
-        isActive: true,
-      };
-    case "canceled":
-      return {
-        label: "Cancelada",
-        description: "La suscripción fue cancelada.",
-        tone: "muted",
-        isActive: false,
-      };
-    case "incomplete":
-      return {
-        label: "Incompleta",
-        description: "El cobro inicial no terminó correctamente.",
-        tone: "warning",
-        isActive: false,
-      };
-    case "incomplete_expired":
-      return {
-        label: "Expirada",
-        description: "La suscripción incompleta expiró.",
-        tone: "danger",
-        isActive: false,
-      };
-    case "unpaid":
-      return {
-        label: "Impaga",
-        description: "No se logró cobrar la suscripción.",
-        tone: "danger",
-        isActive: false,
-      };
-    default:
-      return {
-        label: status,
-        description: "Estado recibido desde Stripe.",
-        tone: "muted",
-        isActive: false,
-      };
-  }
+const STATUS_TONE: Record<string, { tone: BillingStatusMeta["tone"]; isActive: boolean }> = {
+  active:             { tone: "success",  isActive: true  },
+  trialing:           { tone: "success",  isActive: true  },
+  past_due:           { tone: "warning",  isActive: true  },
+  canceled:           { tone: "muted",    isActive: false },
+  incomplete:         { tone: "warning",  isActive: false },
+  incomplete_expired: { tone: "danger",   isActive: false },
+  unpaid:             { tone: "danger",   isActive: false },
 }
 
-export function formatPlanPrice(monthlyPrice: number, currency: string): string {
-  return new Intl.NumberFormat("es", {
+export function getBillingStatusMeta(status: BillingSubscriptionStatus, t: TFn): BillingStatusMeta {
+  const toneData = STATUS_TONE[status] ?? { tone: "muted" as const, isActive: false }
+  const label = t(`billing.status.${status}.label`) || status
+  const description = t(`billing.status.${status}.description`)
+  return { label, description, tone: toneData.tone, isActive: toneData.isActive }
+}
+
+export function formatPlanPrice(monthlyPrice: number, currency: string, locale?: string): string {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currency.toUpperCase(),
     minimumFractionDigits: 0,

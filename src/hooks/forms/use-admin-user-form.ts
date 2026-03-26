@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   editAdminUserSchema,
   type EditAdminUserFormValues,
@@ -17,8 +18,9 @@ interface UseEditAdminUserFormOptions {
 }
 
 export function useEditAdminUserForm({ user, onSave, onClose }: UseEditAdminUserFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<EditAdminUserFormValues>({
-    resolver: zodResolver(editAdminUserSchema),
+    resolver: zodResolver(editAdminUserSchema(t)),
     values: user
       ? {
           fullName: user.fullName,

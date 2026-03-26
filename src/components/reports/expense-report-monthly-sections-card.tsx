@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type { ExpenseReportExpenseItem, ProjectExpenseReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 /** Resolves the display amount from a report expense item.
  * Handles both field names: new `convertedAmount` and legacy `amount`. */
@@ -23,13 +24,15 @@ interface ExpenseReportMonthlySectionsCardProps {
 }
 
 export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthlySectionsCardProps) {
+  const { t } = useLanguage()
+
   if (report.sections.length === 0) return null
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Detalle mensual</CardTitle>
-        <CardDescription>Gastos desglosados por mes</CardDescription>
+        <CardTitle>{t("reports.shared.monthlyDetailTitle")}</CardTitle>
+        <CardDescription>{t("reports.expense.monthlyDetailDesc")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {report.sections.map((section) => (
@@ -43,26 +46,28 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                 {section.topExpense && (
                   <span
                     className="text-xs text-muted-foreground hidden sm:inline"
-                    title={`Gasto mayor: ${section.topExpense.title}`}
+                    title={t("reports.expense.topExpenseTitle", { title: section.topExpense.title })}
                   >
                     · {section.topExpense.title}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap justify-end">
-                <span>{section.sectionCount} gastos</span>
-                {section.sectionIncomeCount != null && <span>{section.sectionIncomeCount} ingresos</span>}
+                <span>{t("reports.shared.expensesCount", { count: section.sectionCount })}</span>
+                {section.sectionIncomeCount != null && (
+                  <span>{t("reports.shared.incomesCount", { count: section.sectionIncomeCount })}</span>
+                )}
                 {section.percentageOfTotal != null && (
                   <span className="tabular-nums text-muted-foreground/70">
                     {section.percentageOfTotal.toFixed(1)}%
                   </span>
                 )}
                 <Badge variant="secondary" className="font-mono">
-                  Gastos: {report.currencyCode} {formatAmount(section.sectionTotal)}
+                  {t("reports.expense.sectionLabel")} {report.currencyCode} {formatAmount(section.sectionTotal)}
                 </Badge>
                 {section.sectionIncomeTotal != null && (
                   <Badge variant="outline" className="font-mono border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
-                    Ingresos: {report.currencyCode} {formatAmount(section.sectionIncomeTotal)}
+                    {t("reports.expense.sectionIncomeLabel")} {report.currencyCode} {formatAmount(section.sectionIncomeTotal)}
                   </Badge>
                 )}
                 {section.sectionNetBalance != null && (
@@ -74,7 +79,7 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                         : "border-rose-500/30 text-rose-600 dark:text-rose-400"
                     }`}
                   >
-                    Neto: {report.currencyCode} {formatAmount(section.sectionNetBalance)}
+                    {t("reports.expense.sectionNetLabel")} {report.currencyCode} {formatAmount(section.sectionNetBalance)}
                   </Badge>
                 )}
               </div>
@@ -89,9 +94,9 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                     variant="outline"
                     className="font-mono text-[10px] border-primary/20 text-primary/70"
                   >
-                    {alt.currencyCode}: gasto {formatAmount(alt.totalSpent)}
-                    {alt.totalIncome > 0 && ` · ingreso ${formatAmount(alt.totalIncome)}`}
-                    {` · neto ${formatAmount(alt.netBalance)}`}
+                    {alt.currencyCode}: {t("reports.expense.altSpent")} {formatAmount(alt.totalSpent)}
+                    {alt.totalIncome > 0 && ` · ${t("reports.expense.altIncome")} ${formatAmount(alt.totalIncome)}`}
+                    {` · ${t("reports.expense.altNet")} ${formatAmount(alt.netBalance)}`}
                   </Badge>
                 ))}
               </div>
@@ -103,11 +108,11 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b text-muted-foreground">
-                        <th className="text-left py-2 pr-4 font-medium">Fecha</th>
-                        <th className="text-left py-2 pr-4 font-medium">Título</th>
-                        <th className="text-left py-2 pr-4 font-medium">Categoría</th>
-                        <th className="text-left py-2 pr-4 font-medium">Método</th>
-                        <th className="text-right py-2 font-medium">Monto</th>
+                        <th className="text-left py-2 pr-4 font-medium">{t("reports.shared.colDate")}</th>
+                        <th className="text-left py-2 pr-4 font-medium">{t("reports.shared.colTitle")}</th>
+                        <th className="text-left py-2 pr-4 font-medium">{t("reports.shared.colCategory")}</th>
+                        <th className="text-left py-2 pr-4 font-medium">{t("reports.shared.colMethod")}</th>
+                        <th className="text-right py-2 font-medium">{t("reports.shared.colAmount")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -133,7 +138,7 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                                   variant="outline"
                                   className="ml-1.5 text-[10px] px-1 py-0 border-primary/40 text-primary"
                                 >
-                                  Obligación
+                                  {t("reports.expense.obligationBadge")}
                                 </Badge>
                               )}
                             </td>
@@ -168,14 +173,13 @@ export function ExpenseReportMonthlySectionsCard({ report }: ExpenseReportMonthl
                 </div>
                 {section.sectionCount > section.expenses.length && (
                   <div className="mt-3 rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
-                    Mostrando {section.expenses.length} de {section.sectionCount} gastos.
-                    {" "}Exporta el reporte completo en Excel o PDF para ver todos los gastos.
+                    {t("reports.expense.showingOf", { shown: section.expenses.length, total: section.sectionCount })}
                   </div>
                 )}
               </>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Sin detalle de gastos para este mes.
+                {t("reports.expense.noMonthDetail")}
               </p>
             )}
           </div>

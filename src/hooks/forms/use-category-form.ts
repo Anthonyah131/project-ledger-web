@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createCategorySchema,
   updateCategorySchema,
@@ -22,8 +23,9 @@ interface UseCreateCategoryFormOptions {
 }
 
 export function useCreateCategoryForm({ onCreate, onClose }: UseCreateCategoryFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreateCategoryFormValues>({
-    resolver: zodResolver(createCategorySchema),
+    resolver: zodResolver(createCategorySchema(t)),
     defaultValues: {
       name: "",
       description: "",
@@ -56,8 +58,9 @@ interface UseUpdateCategoryFormOptions {
 }
 
 export function useUpdateCategoryForm({ category, onSave, onClose }: UseUpdateCategoryFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateCategoryFormValues>({
-    resolver: zodResolver(updateCategorySchema),
+    resolver: zodResolver(updateCategorySchema(t)),
     values: category
       ? {
           name: category.name,

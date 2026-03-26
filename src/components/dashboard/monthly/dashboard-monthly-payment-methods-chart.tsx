@@ -1,12 +1,11 @@
+"use client"
+
 import { useMemo } from "react"
 import { Cell, Label, Pie, PieChart } from "recharts"
 
-import {
-  formatCompactCurrency,
-  formatCurrency,
-  formatPercent,
-} from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { formatCompactCurrency, formatCurrency, formatPercent } from "@/lib/format-utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useLanguage } from "@/context/language-context"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -36,6 +35,7 @@ export function DashboardMonthlyPaymentMethodsChart({
   onOpenPaymentMethod,
 }: DashboardMonthlyPaymentMethodsChartProps) {
   const isMobile = useIsMobile()
+  const { t } = useLanguage()
 
   const chartData = useMemo(
     () => paymentMethodSplit.map((method, index) => ({
@@ -90,7 +90,7 @@ export function DashboardMonthlyPaymentMethodsChart({
               style={{ backgroundColor: payload[0]?.color ?? "var(--chart-1)" }}
               aria-hidden
             />
-            <span className="text-muted-foreground">Monto</span>
+            <span className="text-muted-foreground">{t("dashboard.monthly.paymentMethodsChart.amountLabel")}</span>
           </div>
           <span className="font-medium tabular-nums text-foreground">
             {isMobile
@@ -99,8 +99,8 @@ export function DashboardMonthlyPaymentMethodsChart({
           </span>
         </div>
         <div className="border-t border-border/60 pt-1.5 text-[11px] text-muted-foreground">
-          <p>{point.expenseCount ?? 0} operaciones</p>
-          <p>{formatPercent(point.percentage ?? 0)} del total</p>
+          <p>{t("dashboard.monthly.paymentMethodsChart.operationsCount", { count: point.expenseCount ?? 0 })}</p>
+          <p>{t("dashboard.monthly.paymentMethodsChart.percentOfTotal", { value: formatPercent(point.percentage ?? 0) })}</p>
         </div>
       </div>
     )
@@ -109,14 +109,14 @@ export function DashboardMonthlyPaymentMethodsChart({
   return (
     <Card className="border-border/70 bg-card/80 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.18)]">
       <CardHeader className="pb-2 xl:pb-3">
-        <CardTitle className="text-base font-semibold tracking-tight">Metodos de pago</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-tight">{t("dashboard.monthly.paymentMethodsChart.title")}</CardTitle>
         <CardDescription>
-          Distribucion del gasto total del mes por cuenta, tarjeta o metodo registrado.
+          {t("dashboard.monthly.paymentMethodsChart.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
         {chartData.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sin movimientos en metodos de pago.</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.monthly.paymentMethodsChart.empty")}</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.9fr] lg:items-start">
             <div className="space-y-2 order-2 lg:order-1">
@@ -132,7 +132,9 @@ export function DashboardMonthlyPaymentMethodsChart({
                     <span className="size-2 rounded-[2px] shrink-0" style={{ backgroundColor: method.fill }} aria-hidden />
                     <div className="min-w-0">
                       <p className="truncate text-foreground">{method.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{method.expenseCount} gastos registrados</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {t("dashboard.monthly.paymentMethodsChart.registeredExpenses", { count: method.expenseCount })}
+                      </p>
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
@@ -147,7 +149,10 @@ export function DashboardMonthlyPaymentMethodsChart({
               ))}
 
               <div className="rounded-md border border-border/60 bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
-                {chartData.length} metodos con gasto en {totalOperations} gastos registrados.
+                {t("dashboard.monthly.paymentMethodsChart.methodsSummary", {
+                  methods: chartData.length,
+                  expenses: totalOperations,
+                })}
               </div>
             </div>
 
@@ -182,7 +187,7 @@ export function DashboardMonthlyPaymentMethodsChart({
                       return (
                         <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                           <tspan x={viewBox.cx} y={viewBox.cy - 6} className="fill-foreground text-xs font-semibold">
-                            Gasto total
+                            {t("dashboard.monthly.paymentMethodsChart.totalSpent")}
                           </tspan>
                           <tspan x={viewBox.cx} y={viewBox.cy + 13} className="fill-foreground text-lg font-semibold tabular-nums">
                             {isMobile
@@ -190,7 +195,7 @@ export function DashboardMonthlyPaymentMethodsChart({
                               : formatCurrency(totalAmount, currencyCode)}
                           </tspan>
                           <tspan x={viewBox.cx} y={viewBox.cy + 30} className="fill-muted-foreground text-[10px]">
-                            {totalOperations} gastos
+                            {t("dashboard.monthly.paymentMethodsChart.totalExpenses", { count: totalOperations })}
                           </tspan>
                         </text>
                       )
@@ -208,8 +213,10 @@ export function DashboardMonthlyPaymentMethodsChart({
       </CardContent>
       {chartData.length > 0 && (
         <CardFooter className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <span>{chartData.length} metodos con gasto</span>
-          <span className="font-medium tabular-nums text-foreground">{totalOperations} gastos</span>
+          <span>{t("dashboard.monthly.paymentMethodsChart.footerMethods", { count: chartData.length })}</span>
+          <span className="font-medium tabular-nums text-foreground">
+            {t("dashboard.monthly.paymentMethodsChart.footerExpenses", { count: totalOperations })}
+          </span>
         </CardFooter>
       )}
     </Card>

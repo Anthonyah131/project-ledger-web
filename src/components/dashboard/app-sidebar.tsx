@@ -15,6 +15,7 @@ import {
 } from "@tabler/icons-react"
 
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavSecondary } from "@/components/dashboard/nav-secondary"
 import { NavUser } from "@/components/dashboard/nav-user"
@@ -28,30 +29,31 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const userNavMain = [
-  { title: "Dashboard",        url: "/dashboard",        icon: IconDashboard },
-  { title: "Proyectos",        url: "/projects",         icon: IconFolder },
-  { title: "Partners",         url: "/partners",         icon: IconUsersGroup },
-  { title: "Métodos de pago",  url: "/payment-methods",  icon: IconCreditCard },
-  { title: "Reportes",         url: "/reports",          icon: IconChartBar },
-]
-
-const adminNavMain = [
-  { title: "Usuarios", url: "/admin/users", icon: IconUserShield },
-]
-
-const navSecondary = [
-  { title: "Configuración", url: "/settings", icon: IconSettings },
-  { title: "Ayuda",         url: "/help",     icon: IconHelp },
-]
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const homeUrl = user?.isAdmin ? "/admin/users" : "/dashboard"
 
   const navMain = useMemo(
-    () => (user?.isAdmin ? adminNavMain : userNavMain),
-    [user?.isAdmin],
+    () =>
+      user?.isAdmin
+        ? [{ title: t("nav.users"), url: "/admin/users", icon: IconUserShield }]
+        : [
+            { title: t("nav.dashboard"),      url: "/dashboard",       icon: IconDashboard },
+            { title: t("nav.projects"),        url: "/projects",        icon: IconFolder },
+            { title: t("nav.partners"),        url: "/partners",        icon: IconUsersGroup },
+            { title: t("nav.paymentMethods"),  url: "/payment-methods", icon: IconCreditCard },
+            { title: t("nav.reports"),         url: "/reports",         icon: IconChartBar },
+          ],
+    [user?.isAdmin, t],
+  )
+
+  const navSecondary = useMemo(
+    () => [
+      { title: t("nav.settings"), url: "/settings", icon: IconSettings },
+      { title: t("nav.help"),     url: "/help",     icon: IconHelp },
+    ],
+    [t],
   )
 
   return (

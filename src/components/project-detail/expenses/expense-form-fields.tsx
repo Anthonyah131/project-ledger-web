@@ -36,6 +36,7 @@ import { SplitSection } from "@/components/project-detail/shared/split-section"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
+import { useLanguage } from "@/context/language-context"
 import { getExchangeRate } from "@/services/exchange-rate-service"
 import { getTodayIsoDate } from "@/lib/date-utils"
 import { formatPaymentMethodLabel } from "@/lib/payment-method-utils"
@@ -71,6 +72,7 @@ export function ExpenseFormFields({
   partnersEnabled = false,
   assignedPartners = [],
 }: ExpenseFormFieldsProps) {
+  const { t } = useLanguage()
   const today = getTodayIsoDate()
 
   // Enforce originalCurrency from the selected payment method.
@@ -192,12 +194,12 @@ export function ExpenseFormFields({
 
   async function handleAutoRate(index: number, targetCurrency: string) {
     if (!targetCurrency) {
-      toast.warning("Selecciona una moneda alternativa primero.")
+      toast.warning(t("expenses.selectAltCurrencyFirst"))
       return
     }
 
     if (!Number.isFinite(projectAmount) || projectAmount <= 0) {
-      toast.warning("Ingresa monto y tasa base validos para calcular conversion.")
+      toast.warning(t("expenses.enterValidAmountForConversion"))
       return
     }
 
@@ -218,8 +220,8 @@ export function ExpenseFormFields({
         { shouldValidate: true }
       )
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "No se pudo obtener el tipo de cambio"
-      toast.error("Error al obtener tipo de cambio", { description: msg })
+      const msg = err instanceof Error ? err.message : t("expenses.noRateError")
+      toast.error(t("expenses.rateErrorTitle"), { description: msg })
     } finally {
       setAutoRateLoading((prev) => ({ ...prev, [index]: false }))
     }
@@ -230,7 +232,7 @@ export function ExpenseFormFields({
 
     const amount = Number(watchAmount)
     if (!Number.isFinite(amount) || amount <= 0) {
-      toast.warning("Ingresa un monto valido antes de calcular la conversion.")
+      toast.warning(t("expenses.enterValidAmountBeforeConversion"))
       return
     }
 
@@ -246,8 +248,8 @@ export function ExpenseFormFields({
         shouldValidate: true,
       })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "No se pudo obtener el tipo de cambio"
-      toast.error("Error al obtener tipo de cambio", { description: msg })
+      const msg = err instanceof Error ? err.message : t("expenses.noRateError")
+      toast.error(t("expenses.rateErrorTitle"), { description: msg })
     } finally {
       setAutoProjectRateLoading(false)
     }
@@ -263,7 +265,7 @@ export function ExpenseFormFields({
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Titulo *</FormLabel>
+            <FormLabel>{t("expenses.titleLabel")} *</FormLabel>
             <FormControl>
               <Input
                 autoFocus
@@ -282,7 +284,7 @@ export function ExpenseFormFields({
         name="originalAmount"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Monto *</FormLabel>
+            <FormLabel>{t("common.amount")} *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -303,7 +305,7 @@ export function ExpenseFormFields({
         name="expenseDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Fecha del gasto *</FormLabel>
+            <FormLabel>{t("expenses.dateLabel")} *</FormLabel>
             <FormControl>
               <DateInput {...field} max={today} />
             </FormControl>
@@ -319,11 +321,11 @@ export function ExpenseFormFields({
           name="categoryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Categoria *</FormLabel>
+              <FormLabel>{t("expenses.categoryLabel")} *</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar" />
+                    <SelectValue placeholder={t("expenses.selectPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -343,11 +345,11 @@ export function ExpenseFormFields({
           name="paymentMethodId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Metodo de pago *</FormLabel>
+              <FormLabel>{t("expenses.paymentMethodLabel")} *</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar" />
+                    <SelectValue placeholder={t("expenses.selectPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -364,7 +366,7 @@ export function ExpenseFormFields({
                     {selectedPaymentMethod.currency}
                   </Badge>
                   <Badge variant="outline" className="text-[10px] font-medium text-sky-600 dark:text-sky-400 border-sky-500/40">
-                    {{ bank: "Banco", cash: "Efectivo", card: "Tarjeta" }[selectedPaymentMethod.type]}
+                    {{ bank: t("paymentMethods.typeBank"), cash: t("paymentMethods.typeCash"), card: t("paymentMethods.typeCard") }[selectedPaymentMethod.type]}
                   </Badge>
                   {selectedPaymentMethod.bankName && (
                     <Badge variant="outline" className="text-[10px] font-medium text-slate-600 dark:text-slate-400 border-slate-500/40">
@@ -394,9 +396,9 @@ export function ExpenseFormFields({
               <Checkbox checked={field.value} onCheckedChange={(value) => field.onChange(value === true)} />
             </FormControl>
             <div className="leading-none">
-              <FormLabel className="cursor-pointer">Contabilizar ahora</FormLabel>
+              <FormLabel className="cursor-pointer">{t("expenses.countabilizeLabel")}</FormLabel>
               <p className="text-xs text-muted-foreground mt-1">
-                Si lo desactivas, se guarda como recordatorio y no afecta totales ni reportes.
+                {t("expenses.countabilizeHint")}
               </p>
             </div>
           </FormItem>
@@ -413,7 +415,7 @@ export function ExpenseFormFields({
           watchAmount={watchAmount}
           autoProjectRateLoading={autoProjectRateLoading}
           onAutoProjectConversion={handleAutoProjectConversion}
-          convertedAmountLabel={`Monto final en ${projectCurrency}`}
+          convertedAmountLabel={t("expenses.convertedAmountLabel", { currency: projectCurrency })}
           sameCurrencyMessage=""
         />
       )}
@@ -440,7 +442,7 @@ export function ExpenseFormFields({
           <AccordionTrigger className="text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground">
             <span className="flex items-center gap-2">
               <SlidersHorizontal className="size-3.5" />
-              Campos opcionales
+              {t("expenses.optionalFieldsSection")}
             </span>
           </AccordionTrigger>
           <AccordionContent>
@@ -450,7 +452,7 @@ export function ExpenseFormFields({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descripcion</FormLabel>
+                    <FormLabel>{t("common.description")}</FormLabel>
                     <FormControl>
                       <Textarea rows={3} className="resize-none" {...field} />
                     </FormControl>
@@ -463,10 +465,10 @@ export function ExpenseFormFields({
                 name="receiptNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>No. de recibo / factura</FormLabel>
+                    <FormLabel>{t("expenses.receiptLabel")}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={showPlaceholders ? "Ej: A-15422" : undefined}
+                        placeholder={showPlaceholders ? t("expenses.receiptPlaceholder") : undefined}
                         {...field}
                       />
                     </FormControl>
@@ -479,7 +481,7 @@ export function ExpenseFormFields({
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Notas</FormLabel>
+                    <FormLabel>{t("common.notes")}</FormLabel>
                     <FormControl>
                       <Textarea rows={2} className="resize-none" {...field} />
                     </FormControl>
@@ -499,9 +501,9 @@ export function ExpenseFormFields({
           >
             <span className="flex items-center gap-2">
               <GitBranch className="size-3.5" />
-              Division entre partners
+              {t("expenses.splitSection")}
               {!partnersEnabled && (
-                <span className="text-[10px] font-normal text-muted-foreground/60">(no habilitado)</span>
+                <span className="text-[10px] font-normal text-muted-foreground/60">{t("expenses.splitDisabled")}</span>
               )}
             </span>
           </AccordionTrigger>

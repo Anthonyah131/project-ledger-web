@@ -17,13 +17,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
-import { PAYMENT_METHOD_FORM_TYPE_LABEL } from "@/lib/constants"
 import type {
   PaymentMethodResponse,
   PaymentMethodType,
   UpdatePaymentMethodRequest,
 } from "@/types/payment-method"
 import { useUpdatePaymentMethodForm } from "@/hooks/forms/use-payment-method-form"
+import { useLanguage } from "@/context/language-context"
 
 interface EditPaymentMethodModalProps {
   paymentMethod: PaymentMethodResponse | null
@@ -40,32 +40,39 @@ export function EditPaymentMethodModal({
 }: EditPaymentMethodModalProps) {
   const { form, onSubmit, handleClose, watchType } =
     useUpdatePaymentMethodForm({ paymentMethod, onSave, onClose })
+  const { t } = useLanguage()
+
+  const formTypeLabels: Record<PaymentMethodType, string> = {
+    bank: t("paymentMethods.formTypeBank"),
+    card: t("paymentMethods.typeCard"),
+    cash: t("paymentMethods.typeCash"),
+  }
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar metodo de pago"
+      title={t("paymentMethods.editTitle")}
       description={
         <>
-          Modifica los datos del metodo de pago.
+          {t("paymentMethods.editSubtitle")}
           {paymentMethod && (
             <span className="ml-1 font-medium text-foreground">
-              La moneda ({paymentMethod.currency}) no se puede cambiar.
+              {t("paymentMethods.currencyWarning", { currency: paymentMethod.currency })}
             </span>
           )}
         </>
       }
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre</FormLabel>
+            <FormLabel>{t("common.name")}</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -79,7 +86,7 @@ export function EditPaymentMethodModal({
         name="type"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Tipo</FormLabel>
+            <FormLabel>{t("common.type")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger>
@@ -87,9 +94,9 @@ export function EditPaymentMethodModal({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {(Object.keys(PAYMENT_METHOD_FORM_TYPE_LABEL) as PaymentMethodType[]).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {PAYMENT_METHOD_FORM_TYPE_LABEL[t]}
+                {(Object.keys(formTypeLabels) as PaymentMethodType[]).map((typeKey) => (
+                  <SelectItem key={typeKey} value={typeKey}>
+                    {formTypeLabels[typeKey]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -107,8 +114,8 @@ export function EditPaymentMethodModal({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {watchType === "card" ? "Emisor" : "Banco"}
-                  <span className="text-muted-foreground ml-1">(opcional)</span>
+                  {watchType === "card" ? t("paymentMethods.issuerLabel") : t("paymentMethods.bankLabel")}
+                  <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
                 </FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -123,8 +130,8 @@ export function EditPaymentMethodModal({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {watchType === "card" ? "Ultimos 4 digitos" : "N. cuenta"}
-                  <span className="text-muted-foreground ml-1">(opcional)</span>
+                  {watchType === "card" ? t("paymentMethods.lastFourLabel") : t("paymentMethods.accountNumberLabel")}
+                  <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
                 </FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -142,8 +149,8 @@ export function EditPaymentMethodModal({
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Descripcion
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.description")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />

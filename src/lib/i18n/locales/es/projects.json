@@ -15,10 +15,32 @@
     "sortZA": "Z - A",
     "sortNew": "Nuevos",
     "noResultsSearch": "No se encontraron proyectos con ese criterio",
+    "newButton": "Nuevo",
+    "countSingular": "proyecto",
+    "countPlural": "proyectos",
+    "openLabel": "Abrir proyecto",
+    "descriptionOptional": "Descripción (opcional)",
+    "editSubtitle": "Modifica el nombre y la descripción del proyecto.",
+    "toolbar": {
+      "searchPlaceholder": "Buscar...",
+      "searchAriaLabel": "Buscar proyectos por nombre",
+      "sortAriaLabel": "Ordenar",
+      "pageSizeAriaLabel": "Por página",
+      "viewAriaLabel": "Modo de vista",
+      "shelfViewAriaLabel": "Vista cuadrícula",
+      "listViewAriaLabel": "Vista lista"
+    },
+    "list": {
+      "ariaLabel": "Lista de proyectos",
+      "colProject": "Proyecto",
+      "colRole": "Rol",
+      "colUpdated": "Actualizado"
+    },
     "backToProjects": "Volver a proyectos",
     "projectActions": "Acciones del proyecto",
     "manageAccess": "Gestionar accesos",
     "deleteProject": "Eliminar proyecto",
+    "createdAt": "Creado {date}",
     "deleteConfirmTitle": "Eliminar proyecto",
     "deleteConfirmDescription": "Esta acción puede desactivarlo, no eliminarlo definitivamente.",
     "deleteConfirmDescriptionNamed": "¿Eliminar proyecto \"{name}\"?",
@@ -136,6 +158,18 @@
       "removed": "Miembro removido",
       "removedDesc": "{name} fue removido del proyecto."
     },
+    "columnSince": "Desde",
+    "removeAria": "Remover a {name}",
+    "empty": {
+      "title": "Sin miembros",
+      "description": "Solo tú tienes acceso a este proyecto. Invita a alguien para colaborar."
+    },
+    "validation": {
+      "emailRequired": "Email es requerido",
+      "emailInvalid": "Email no es válido",
+      "emailMaxLength": "Máximo 255 caracteres",
+      "roleRequired": "Rol es requerido"
+    },
     "errors": {
       "load": "Error al cargar miembros",
       "add": "Error al agregar miembro",
@@ -171,6 +205,16 @@
     }
   },
   "alternativeCurrencies": {
+    "panel": {
+      "title": "Monedas alternativas del proyecto",
+      "baseCurrency": "Moneda base del proyecto:",
+      "selectAriaLabel": "Seleccionar moneda alternativa",
+      "addPlaceholder": "Agregar moneda",
+      "movementsWarning": "Al agregar una nueva moneda alternativa, deberás asignar manualmente los datos de conversión en cada movimiento existente para que el balance se refleje correctamente.",
+      "empty": "No hay monedas alternativas configuradas.",
+      "colSymbol": "Simbolo",
+      "deleteAria": "Eliminar {code}"
+    },
     "toast": {
       "added": "Moneda alternativa agregada",
       "addedDesc": "{code} fue agregada al proyecto.",

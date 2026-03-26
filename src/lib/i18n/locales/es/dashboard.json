@@ -27,6 +27,79 @@
       "noProjectSelected": "Selecciona un proyecto para cargar el dashboard.",
       "loadMonthly": "Error al cargar dashboard mensual",
       "loadProjects": "Error al cargar proyectos"
+    },
+    "monthly": {
+      "summaryCards": {
+        "vsMonth": "Vs {month}: {delta} ({percent})",
+        "monthlyNetChange": "Cambio neto mensual: {delta}"
+      },
+      "categoriesChart": {
+        "title": "Top categorías",
+        "description": "Gasto total de {scope} agrupado por categoría.",
+        "empty": "No hay categorías con gasto para la selección actual.",
+        "totalAmountLabel": "Monto total",
+        "amountLabel": "Monto",
+        "percentOfTotal": "{value}% del total",
+        "categoryRow": "#{rank} • {count} gastos",
+        "categorySummary": "{count} categorías con gasto para la selección actual.",
+        "footerCategories": "{count} categorías"
+      },
+      "paymentMethodsChart": {
+        "title": "Métodos de pago",
+        "description": "Distribución del gasto total del mes por cuenta, tarjeta o método registrado.",
+        "empty": "Sin movimientos en métodos de pago.",
+        "amountLabel": "Monto",
+        "operationsCount": "{count} operaciones",
+        "percentOfTotal": "{value}% del total",
+        "registeredExpenses": "{count} gastos registrados",
+        "methodsSummary": "{methods} métodos con gasto en {expenses} gastos registrados.",
+        "totalSpent": "Gasto total",
+        "totalExpenses": "{count} gastos",
+        "footerMethods": "{count} métodos con gasto",
+        "footerExpenses": "{count} gastos"
+      },
+      "trendChart": {
+        "title": "Tendencia diaria del mes",
+        "description": "Gastos, ingresos y balance neto de {scope} para comparar el comportamiento diario.",
+        "empty": "Este mes no tiene movimientos. Cuando registres gastos o ingresos, verás la tendencia aquí.",
+        "tip": "Tip: toca o haz clic en un punto para abrir el detalle diario filtrado.",
+        "spentLabel": "Gastos",
+        "incomeLabel": "Ingresos",
+        "netLabel": "Balance neto",
+        "spentShort": "Gast.",
+        "incomeShort": "Ingr.",
+        "netShort": "Neto",
+        "dayLabel": "Día {day}",
+        "movements": "Movimientos: {total} ({expenses} gastos, {incomes} ingresos)",
+        "projects": "Proyectos: {count}"
+      },
+      "alertsIndicator": {
+        "ariaLabelWithAlerts": "Ver alertas del mes ({count})",
+        "ariaLabelNoAlerts": "Sin alertas del mes",
+        "buttonText": "Alertas del mes",
+        "buttonTextNoAlerts": "Sin alertas",
+        "popoverTitle": "Alertas del mes",
+        "activeAlertsSingular": "1 alerta activa",
+        "activeAlertsPlural": "{count} alertas activas",
+        "noAlertsSubtitle": "No se detectaron alertas en este mes.",
+        "statusActive": "Activo",
+        "statusStable": "Estable",
+        "allGood": "Todo está en orden para el mes seleccionado.",
+        "hiddenAlertsSingular": "Se muestran 5 alertas como máximo. Hay 1 alerta adicional.",
+        "hiddenAlertsPlural": "Se muestran 5 alertas como máximo. Hay {count} alertas adicionales."
+      },
+      "errorCard": {
+        "title": "No se pudo cargar el dashboard",
+        "retry": "Reintentar"
+      },
+      "inactiveWarning": {
+        "title": "Acceso limitado",
+        "description": "Un administrador debe activar tu cuenta para que puedas crear proyectos y registrar gastos."
+      },
+      "picker": {
+        "previousYear": "Año anterior",
+        "nextYear": "Año siguiente"
+      }
     }
   }
 }

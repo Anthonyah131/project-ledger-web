@@ -3,6 +3,7 @@
 import { PiggyBank } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useLanguage } from "@/context/language-context"
 
 interface BudgetEmptyStateProps {
   canManage: boolean
@@ -10,31 +11,33 @@ interface BudgetEmptyStateProps {
 }
 
 export function BudgetEmptyState({ canManage, onSet }: BudgetEmptyStateProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="rounded-2xl border border-violet-500/20 bg-card shadow-sm shadow-violet-500/5 px-6 py-12 relative overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-r from-violet-500/15 via-purple-500/8 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-16 bg-linear-to-r from-violet-500/15 via-purple-500/8 to-transparent" />
       <div className="flex flex-col items-center justify-center gap-4 text-center">
-        <div className="flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 border border-violet-500/20 shadow-sm shadow-violet-500/20">
+        <div className="flex items-center justify-center size-14 rounded-2xl bg-linear-to-br from-violet-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 border border-violet-500/20 shadow-sm shadow-violet-500/20">
           <PiggyBank className="size-6 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-foreground">Sin presupuesto configurado</h3>
+          <h3 className="text-sm font-bold text-foreground">{t("budget.noBudget")}</h3>
           <p className="text-xs text-muted-foreground mt-1.5 max-w-70 leading-relaxed">
-            Define un presupuesto para controlar cuánto llevas gastado en este proyecto.
+            {t("budget.empty.description")}
           </p>
         </div>
         {canManage && (
           <Button
             onClick={onSet}
             size="sm"
-            className="mt-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/30"
+            className="mt-1 bg-linear-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 border-0 shadow-sm shadow-violet-500/30"
           >
-            Configurar presupuesto
+            {t("budget.configureBudget")}
           </Button>
         )}
         {!canManage && (
           <p className="text-[11px] text-muted-foreground">
-            Solo propietarios y editores pueden configurar el presupuesto.
+            {t("budget.empty.viewerHint")}
           </p>
         )}
       </div>
@@ -45,7 +48,7 @@ export function BudgetEmptyState({ canManage, onSet }: BudgetEmptyStateProps) {
 export function BudgetSkeleton() {
   return (
     <div className="rounded-2xl border bg-card shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-gradient-to-r from-primary/5 via-card to-card">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-linear-to-r from-primary/5 via-card to-card">
         <div className="flex items-center gap-3">
           <Skeleton className="size-9 rounded-xl" />
           <div className="space-y-2">

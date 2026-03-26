@@ -27,6 +27,32 @@ No se usan librerías externas. Los archivos JSON por feature viven en `src/lib/
 - ✅ `src/components/auth/auth-guard.tsx`
 - ✅ `src/components/billing/` — billing-plans-grid, billing-subscription-card
 - ✅ `src/components/landing/` — navbar, hero, features, how-it-works, stats, cta, pricing, footer (re-export)
+- ✅ `src/components/dashboard/` — app-sidebar, nav-user (nav-main/nav-secondary/site-header sin strings)
+- ✅ `src/components/members/` — add-member-modal, member-states, members-list
+- ✅ `src/components/partners/` — create/edit modals, partners-list, partners-panel, partners-toolbar, detail/partner-detail-panel, detail/partner-pm-section, detail/partner-projects-section, detail/section-toolbar
+- ✅ `src/components/payment-methods/` — create/edit modals, payment-methods-panel, payment-methods-toolbar, payment-methods-list, payment-methods-shelf-view, payment-method-states, payment-method-detail-panel, detail/payment-method-detail-blocks, detail/payment-method-detail-filters, detail/payment-method-detail-tabs
+- ✅ `src/components/project-detail/alternative-currencies/` — alternative-currencies-panel
+- ✅ `src/components/project-detail/budget/` — budget-panel, budget-states, set-budget-modal
+- ✅ `src/components/project-detail/categories/` — categories-list, categories-toolbar, category-states, create-category-modal, edit-category-modal
+- ✅ `src/components/project-detail/expenses/` — expense-states, expenses-toolbar, expenses-list, expense-form-fields, create-expense-modal, edit-expense-modal
+- ✅ `src/components/project-detail/incomes/` — income-states, incomes-toolbar, incomes-list, income-form-fields, create-income-modal, edit-income-modal
+- ✅ `src/components/project-detail/obligations/` — obligation-states, obligations-toolbar, obligations-list, create-obligation-modal, edit-obligation-modal
+- ✅ `src/components/project-detail/partner-settlements/` — settlement-states, settlements-list, partner-balance-cards, create-settlement-modal, edit-settlement-modal, partner-history-modal, settlement-suggestions-modal
+- ✅ `src/components/project-detail/partners/` — project-partners, project-partner-states
+- ✅ `src/components/project-detail/payment-methods/` — project-payment-methods
+- ✅ `src/components/project-detail/shared/` — movement-detail-sheet, split-section, document-extraction-step, document-extraction-feedback, currency-conversion/alternative-currency-conversions-section, currency-conversion/project-currency-conversion-section
+- ✅ `src/components/project-detail/project-header.tsx`
+- ✅ `src/lib/document-extraction-utils.ts` — utils movidas desde `shared/document-extraction/` y migradas (getExtractionQuotaBadgeLabel acepta `t`)
+- ✅ `src/components/projects/` — project-states, projects-toolbar, create-project-modal, edit-project-modal, projects-shelf, list-view, shelf-view
+- ✅ `src/components/shared/` — delete-confirm-modal, form-modal, empty-state, item-action-menu, pagination, chatbot (app-footer y delete-entity-modal ya estaban migrados)
+- ✅ `src/components/workspaces/` — assign-projects-modal, create-workspace-modal, edit-workspace-modal, workspaces-panel
+- ✅ `src/lib/plan-presentation.ts` — eliminado; funciones movidas a `src/data/site-data.ts` como `getPlanDescription`, `getPlanFeatureGroups`, `getPlanFeatures` (aceptan `t`); strings en `billing.plans.*`
+- ✅ `src/context/language-context.tsx` — fix: initializer lazy `useState(resolveInitialLocale)` en lugar de `useEffect`
+- ✅ `src/lib/document-extraction-utils.ts` — `getDocumentExtractionErrorMessage(err, t)` y `getDocumentValidationError(file, t)` reciben `t: TFn`; strings en `documentExtraction.errors.*`
+- ✅ `src/lib/billing-utils.ts` — `getBillingStatusMeta(status, t)` recibe `t: TFn`; usa `billing.status.*`; callers actualizados
+- ✅ `src/lib/error-utils.ts` — `toastApiError(err, label, t?)` con `t` opcional; usa `common.errors.*`
+- ✅ `src/lib/date-utils.ts` — `formatDate` y `formatMonthKey` aceptan `locale` opcional (default `"es"`); `getDateRangeError` acepta `t?`; key `common.errors.invalidDateRange` añadida
+- ✅ `src/lib/constants.ts` — eliminados `ROLE_LABEL`, `PAYMENT_METHOD_TYPE_LABEL`, `PAYMENT_METHOD_FORM_TYPE_LABEL`; reemplazados con `getRoleLabel(role, t)`, `getPaymentMethodTypeLabel(type, t)`, `getObligationStatusLabel(status, t)`; `STATUS_COLORS` sin campo `label`
 
 ## Archivos de locale — nuevas keys añadidas en esta sesión
 
@@ -45,32 +71,26 @@ Añadido: `billing.subscription.*` (30+ keys para BillingSubscriptionCard)
 ### `es/landing.json` + `en/landing.json`
 Reescritos con: `landing.heroTitlePart1/Highlight/Part2`, `landing.howItWorks.*`, `landing.features.*` (8 features), `landing.stats.*` (4 stats), `landing.ctaSubtitleFull`, `landing.pricing.errors.*`, `landing.viewFeature`
 
+- ✅ `src/components/reports/` — report-states, report-filters, expense-report-results, expense-report-monthly-sections-card, income-report-results, workspace-report-results, partner-balances-report-results, partner-general-report-results, payment-method-report-results, payment-method-report-method-card
+
+- ✅ `src/lib/validations/` — todos los schemas convertidos a factory functions `createXSchema(t)` / `updateXSchema(t)` (auth, project, category, expense, income, obligation, partner, payment-method, member, workspace, partner-settlement, project-budget, admin-user); strings en `common.validation.*`, `auth.validation.*`, `members.validation.*`, `partners.validation.*`, `partnerSettlements.validation.*`
+- ✅ `src/hooks/forms/` — todos los hooks actualizados para usar `useLanguage()` y pasar `t` a los schema factories
+- ✅ `src/hooks/auth/` — use-login, use-register, use-forgot-password actualizados
+- ✅ `src/hooks/settings/` — use-settings-profile actualizado
+
 ## Pendiente (próximas sesiones)
 
 Directorios de componentes aún sin migrar:
 - `src/components/chatbot/`
-- `src/components/dashboard/`
-- `src/components/landing/`
-- `src/components/members/`
-- `src/components/partners/`
-- `src/components/payment-methods/`
-- `src/components/project-detail/`
-- `src/components/projects/`
-- `src/components/reports/`
 - `src/components/settings/`
-- `src/components/shared/`
-- `src/components/workspaces/`
 
 Hooks pendientes:
 - `src/hooks/admin/`
-- `src/hooks/auth/`
 - `src/hooks/billing/`
 - `src/hooks/chatbot/`
 - `src/hooks/dashboard/`
-- `src/hooks/forms/`
 - `src/hooks/partners/`
 - `src/hooks/payment-methods/`
-- `src/hooks/settings/`
 - `src/hooks/workspaces/` (revisión: `use-workspace-view.ts`)
 
 Views pendientes:

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { ApiClientError } from "@/lib/api-client";
 import { formatPlanPrice } from "@/lib/billing-utils";
-import { getPlanDescription, getPlanFeatureGroups } from "@/lib/plan-presentation";
+import { getPlanDescription, getPlanFeatureGroups } from "@/data/site-data";
 import { useAuth } from "@/context/auth-context";
 import { useLanguage } from "@/context/language-context";
 import * as planService from "@/services/plan-service";
@@ -16,7 +16,7 @@ import type { PlanResponse } from "@/types/plan";
 export function Pricing() {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,8 +104,8 @@ export function Pricing() {
           )}
 
           {plans.map((plan) => {
-            const planDescription = getPlanDescription(plan);
-            const { limits: planLimits, capabilities: planCapabilities } = getPlanFeatureGroups(plan, 5, 4);
+            const planDescription = getPlanDescription(plan, t);
+            const { limits: planLimits, capabilities: planCapabilities } = getPlanFeatureGroups(plan.slug, t, 5, 4);
             const hasPlanLimits = planLimits.length > 0;
             const hasPlanCapabilities = planCapabilities.length > 0;
 
@@ -132,7 +132,7 @@ export function Pricing() {
                   </p>
                   <div className="mt-2 flex items-baseline gap-1">
                     <span className="text-4xl font-bold text-foreground">
-                      {formatPlanPrice(plan.monthlyPrice, plan.currency)}
+                      {formatPlanPrice(plan.monthlyPrice, plan.currency, locale)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {plan.monthlyPrice > 0 ? t("billing.perMonthLabel") : t("billing.forever")}

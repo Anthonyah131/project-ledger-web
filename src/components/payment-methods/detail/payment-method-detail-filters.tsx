@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { PaymentMethodProjectsResponse } from "@/types/payment-method"
+import { useLanguage } from "@/context/language-context"
 
 interface PaymentMethodDetailFiltersProps {
   projects: PaymentMethodProjectsResponse
@@ -39,6 +40,7 @@ export function PaymentMethodDetailFilters({
   setActiveStatus,
   clearFilters,
 }: PaymentMethodDetailFiltersProps) {
+  const { t } = useLanguage()
   const hasFilters =
     from.length > 0 || to.length > 0 || projectId.length > 0 || activeStatus !== "active"
 
@@ -48,7 +50,7 @@ export function PaymentMethodDetailFilters({
         <div className="size-7 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
           <Filter className="size-3.5" />
         </div>
-        <p className="text-sm font-bold text-foreground">Filtros compartidos</p>
+        <p className="text-sm font-bold text-foreground">{t("paymentMethods.sharedFilters")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr_1fr_auto] gap-3">
@@ -57,7 +59,7 @@ export function PaymentMethodDetailFilters({
           name="paymentMethodFrom"
           value={from}
           onChange={(event) => setFrom(event.target.value)}
-          aria-label="Fecha desde"
+          aria-label={t("common.dateFrom")}
           max={to || undefined}
           aria-invalid={Boolean(dateRangeError)}
           autoComplete="off"
@@ -68,18 +70,18 @@ export function PaymentMethodDetailFilters({
           name="paymentMethodTo"
           value={to}
           onChange={(event) => setTo(event.target.value)}
-          aria-label="Fecha hasta"
+          aria-label={t("common.dateTo")}
           min={from || undefined}
           aria-invalid={Boolean(dateRangeError)}
           autoComplete="off"
         />
 
         <Select value={projectId || "all"} onValueChange={(value) => setProjectId(value === "all" ? "" : value)}>
-          <SelectTrigger aria-label="Filtrar por proyecto">
-            <SelectValue placeholder="Todos los proyectos" />
+          <SelectTrigger aria-label={t("paymentMethods.filterByProject")}>
+            <SelectValue placeholder={t("paymentMethods.allProjects")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos los proyectos</SelectItem>
+            <SelectItem value="all">{t("paymentMethods.allProjects")}</SelectItem>
             {projects.items.map((project) => (
               <SelectItem key={project.id} value={project.id}>
                 {project.name}
@@ -89,13 +91,13 @@ export function PaymentMethodDetailFilters({
         </Select>
 
         <Select value={activeStatus} onValueChange={setActiveStatus}>
-          <SelectTrigger aria-label="Filtrar por estado contable">
-            <SelectValue placeholder="Contabilizados" />
+          <SelectTrigger aria-label={t("paymentMethods.filterByStatus")}>
+            <SelectValue placeholder={t("paymentMethods.statusActive")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="active">Contabilizados</SelectItem>
-            <SelectItem value="inactive">Recordatorios</SelectItem>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="active">{t("paymentMethods.statusActive")}</SelectItem>
+            <SelectItem value="inactive">{t("paymentMethods.statusInactive")}</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -107,7 +109,7 @@ export function PaymentMethodDetailFilters({
           className="border-violet-500/30 text-violet-700 dark:text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/50 disabled:opacity-40"
         >
           <X className="size-4" />
-          Limpiar
+          {t("common.clear")}
         </Button>
       </div>
 

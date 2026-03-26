@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   PaymentMethodExpenseItem,
   PaymentMethodIncomeItem,
@@ -57,6 +58,7 @@ interface ExpenseRowProps {
 }
 
 export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: ExpenseRowProps) {
+  const { t } = useLanguage()
   // Use accountAmount/accountCurrency (amount in the payment method's currency).
   // Fall back for historical expenses that don't have accountAmount yet.
   const accountAmount = expense.accountAmount ?? (
@@ -78,13 +80,13 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
           {!expense.isActive && (
             <>
               <span>·</span>
-              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">Recordatorio</Badge>
+              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">{t("paymentMethods.badgeReminder")}</Badge>
             </>
           )}
           {expense.receiptNumber && (
             <>
               <span>·</span>
-              <span>Ref: {expense.receiptNumber}</span>
+              <span>{t("paymentMethods.refLabel", { number: expense.receiptNumber })}</span>
             </>
           )}
         </div>
@@ -108,7 +110,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
         onClick={onOpenProject}
         className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
       >
-        Ver proyecto
+        {t("paymentMethods.viewProject")}
       </Button>
     </div>
   )
@@ -120,6 +122,7 @@ interface IncomeRowProps {
 }
 
 export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
+  const { t } = useLanguage()
   const accountAmount = income.accountAmount ?? income.originalAmount
   const accountCurrency = income.accountCurrency ?? income.originalCurrency
   const projectCurrency = income.projectCurrency
@@ -139,7 +142,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
           {!income.isActive && (
             <>
               <span>·</span>
-              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">Recordatorio</Badge>
+              <Badge variant="outline" className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">{t("paymentMethods.badgeReminder")}</Badge>
             </>
           )}
           {income.projectName && (
@@ -151,7 +154,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
           {income.receiptNumber && (
             <>
               <span>·</span>
-              <span>Ref: {income.receiptNumber}</span>
+              <span>{t("paymentMethods.refLabel", { number: income.receiptNumber })}</span>
             </>
           )}
         </div>
@@ -175,7 +178,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
         onClick={onOpenProject}
         className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
       >
-        Ver proyecto
+        {t("paymentMethods.viewProject")}
       </Button>
     </div>
   )

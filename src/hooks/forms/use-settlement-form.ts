@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createSettlementSchema,
   updateSettlementSchema,
@@ -33,10 +34,11 @@ export function useCreateSettlementForm({
   onCreate,
   onClose,
 }: UseCreateSettlementFormOptions) {
+  const { t } = useLanguage()
   const today = new Date().toISOString().split("T")[0]
 
   const form = useForm<CreateSettlementFormValues>({
-    resolver: zodResolver(createSettlementSchema),
+    resolver: zodResolver(createSettlementSchema(t)),
     defaultValues: {
       fromPartnerId: "",
       toPartnerId: "",
@@ -117,8 +119,9 @@ export function useUpdateSettlementForm({
   onSave,
   onClose,
 }: UseUpdateSettlementFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateSettlementFormValues>({
-    resolver: zodResolver(updateSettlementSchema),
+    resolver: zodResolver(updateSettlementSchema(t)),
     values: settlement
       ? {
           amount: String(settlement.amount),

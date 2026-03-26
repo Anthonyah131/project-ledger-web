@@ -9,25 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { useLanguage } from "@/context/language-context"
 import type { ObligationStatus } from "@/types/obligation"
-
-const SORT_OPTIONS = [
-  { value: "dueDate:asc", label: "Vencimiento (próximo)" },
-  { value: "dueDate:desc", label: "Vencimiento (lejano)" },
-  { value: "totalAmount:desc", label: "Monto (mayor)" },
-  { value: "totalAmount:asc", label: "Monto (menor)" },
-  { value: "title:asc", label: "Título (A-Z)" },
-  { value: "createdAt:desc", label: "Reciente" },
-]
-
-const STATUS_OPTIONS = [
-  { value: "all", label: "Todos los estados" },
-  { value: "open", label: "Abierta" },
-  { value: "partially_paid", label: "Pago parcial" },
-  { value: "paid", label: "Pagada" },
-  { value: "overdue", label: "Vencida" },
-]
 
 const PAGE_SIZES = ["10", "20", "50"]
 
@@ -50,6 +33,25 @@ export function ObligationsToolbar({
   onPageSizeChange,
   onCreate,
 }: ObligationsToolbarProps) {
+  const { t } = useLanguage()
+
+  const SORT_OPTIONS = [
+    { value: "dueDate:asc", label: t("obligations.sortDueDateAsc") },
+    { value: "dueDate:desc", label: t("obligations.sortDueDateDesc") },
+    { value: "totalAmount:desc", label: t("obligations.sortAmountDesc") },
+    { value: "totalAmount:asc", label: t("obligations.sortAmountAsc") },
+    { value: "title:asc", label: t("obligations.sortTitleAZ") },
+    { value: "createdAt:desc", label: t("obligations.sortRecent") },
+  ]
+
+  const STATUS_OPTIONS = [
+    { value: "all", label: t("obligations.statusAll") },
+    { value: "open", label: t("obligations.statusOpen") },
+    { value: "partially_paid", label: t("obligations.statusPartiallyPaid") },
+    { value: "paid", label: t("obligations.statusPaid") },
+    { value: "overdue", label: t("obligations.statusOverdue") },
+  ]
+
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {/* Sort */}
@@ -105,7 +107,7 @@ export function ObligationsToolbar({
           onClick={onCreate}
         >
           <Plus className="size-4 mr-1.5" />
-          Nueva obligación
+          {t("obligations.new")}
         </Button>
       </div>
     </div>

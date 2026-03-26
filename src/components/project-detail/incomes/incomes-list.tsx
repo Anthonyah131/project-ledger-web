@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { GitBranch } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 import { cn } from "@/lib/utils"
 import { getAccentColor } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
@@ -32,6 +33,7 @@ function IncomesListComponent({
   onToggleActive,
   onView,
 }: IncomesListProps) {
+  const { t } = useLanguage()
   const activatingIdsRef = useRef<Set<string>>(new Set())
   const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
 
@@ -64,14 +66,14 @@ function IncomesListComponent({
   )
 
   return (
-    <div role="list" aria-label="Lista de ingresos">
+    <div role="list" aria-label={t("incomes.listAriaLabel")}>
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
-        <span className="flex-1">Titulo</span>
-        <span className="w-28 text-right hidden sm:block">Fecha</span>
-        <span className="w-44 text-right hidden md:block">Monto</span>
-        <span className="w-44 text-right hidden xl:block">Conversiones</span>
-        <span className="w-40 text-right hidden lg:block">Metodo de pago</span>
-        <span className="w-36 text-right hidden xl:block">Categoria</span>
+        <span className="flex-1">{t("incomes.colTitle")}</span>
+        <span className="w-28 text-right hidden sm:block">{t("common.date")}</span>
+        <span className="w-44 text-right hidden md:block">{t("common.amount")}</span>
+        <span className="w-44 text-right hidden xl:block">{t("incomes.colConversions")}</span>
+        <span className="w-40 text-right hidden lg:block">{t("incomes.paymentMethodLabel")}</span>
+        <span className="w-36 text-right hidden xl:block">{t("expenses.categoryLabel")}</span>
         <span className="w-8" />
       </div>
 
@@ -107,7 +109,7 @@ function IncomesListComponent({
                       variant="outline"
                       className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
                     >
-                      Recordatorio
+                      {t("incomes.statusReminderBadge")}
                     </Badge>
                   ) : null}
                   {showSplitBadge ? (
@@ -152,7 +154,7 @@ function IncomesListComponent({
                     </p>
                   ))}
                   {exchanges.length > 2 && (
-                    <p className="text-[10px] text-muted-foreground/70">+{exchanges.length - 2} mas</p>
+                    <p className="text-[10px] text-muted-foreground/70">+{exchanges.length - 2} {t("incomes.moreExchanges")}</p>
                   )}
                 </div>
               ) : (
@@ -174,12 +176,12 @@ function IncomesListComponent({
             </span>
 
             <ItemActionMenu
-              ariaLabel="Acciones del ingreso"
+              ariaLabel={t("incomes.actionMenuAria")}
               onOpen={onView ? () => onView(income) : undefined}
-              openLabel="Ver detalle"
+              openLabel={t("incomes.viewDetail")}
               onActivate={!income.isActive ? () => { void handleActivate(income) } : undefined}
-              activateLabel="Activar movimiento"
-              activatingLabel="Activando..."
+              activateLabel={t("incomes.activateLabel")}
+              activatingLabel={t("common.activating")}
               isActivating={isActivating}
               disabled={isActivating}
               onEdit={() => onEdit(income)}

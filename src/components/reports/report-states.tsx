@@ -5,6 +5,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { FileText, SearchX } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 export function ReportSkeleton() {
   return (
@@ -21,6 +22,8 @@ export function ReportSkeleton() {
 }
 
 export function ReportEmptyPrompt() {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <div className="flex items-center justify-center size-12 rounded-xl bg-muted">
@@ -28,10 +31,10 @@ export function ReportEmptyPrompt() {
       </div>
       <div className="text-center">
         <h3 className="text-sm font-semibold text-foreground">
-          Genera un reporte
+          {t("reports.states.emptyTitle")}
         </h3>
         <p className="text-xs text-muted-foreground mt-1.5 max-w-65 leading-relaxed">
-          Configura los filtros y presiona &quot;Generar&quot; para ver los datos del reporte.
+          {t("reports.states.emptyDescription")}
         </p>
       </div>
     </div>
@@ -39,6 +42,8 @@ export function ReportEmptyPrompt() {
 }
 
 export function ReportNoData() {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <div className="flex items-center justify-center size-12 rounded-xl bg-muted">
@@ -46,10 +51,10 @@ export function ReportNoData() {
       </div>
       <div className="text-center">
         <h3 className="text-sm font-semibold text-foreground">
-          Sin datos
+          {t("reports.states.noDataTitle")}
         </h3>
         <p className="text-xs text-muted-foreground mt-1.5 max-w-65 leading-relaxed">
-          No se encontraron registros para el periodo seleccionado.
+          {t("reports.states.noDataDescription")}
         </p>
       </div>
     </div>

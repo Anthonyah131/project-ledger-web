@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
@@ -22,8 +23,9 @@ interface UseCreateWorkspaceFormOptions {
 }
 
 export function useCreateWorkspaceForm({ onCreate, onClose }: UseCreateWorkspaceFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreateWorkspaceFormValues>({
-    resolver: zodResolver(createWorkspaceSchema),
+    resolver: zodResolver(createWorkspaceSchema(t)),
     defaultValues: { name: "", description: "", color: "", icon: "" },
   })
 
@@ -53,8 +55,9 @@ interface UseUpdateWorkspaceFormOptions {
 }
 
 export function useUpdateWorkspaceForm({ workspace, onSave, onClose }: UseUpdateWorkspaceFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateWorkspaceFormValues>({
-    resolver: zodResolver(updateWorkspaceSchema),
+    resolver: zodResolver(updateWorkspaceSchema(t)),
     values: workspace
       ? {
           name: workspace.name,

@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { ProjectPartnerResponse } from "@/types/project-partner";
 import type { PartnerResponse } from "@/types/partner";
+import { useLanguage } from "@/context/language-context";
 
 // ─── Assign Partner Modal ──────────────────────────────────────────────────────
 
@@ -35,6 +36,7 @@ export function AssignPartnerModal({
   loading,
   onAssign,
 }: AssignPartnerModalProps) {
+  const { t } = useLanguage();
   const [assigningId, setAssigningId] = useState<string | null>(null);
 
   const assignedIds = new Set(assignedPartners.map((p) => p.partnerId));
@@ -53,10 +55,9 @@ export function AssignPartnerModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Asignar partner</DialogTitle>
+          <DialogTitle>{t("projectPartners.assign.title")}</DialogTitle>
           <DialogDescription>
-            Selecciona un partner para asignarlo al proyecto. Sus cuentas
-            quedarán disponibles automáticamente.
+            {t("projectPartners.assign.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -69,8 +70,8 @@ export function AssignPartnerModal({
             <Users className="size-8 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               {availablePartners.length === 0
-                ? "No tienes partners creados. Crea uno desde la sección Partners."
-                : "Todos tus partners ya están asignados a este proyecto."}
+                ? t("projectPartners.assign.empty.noPartners")
+                : t("projectPartners.assign.empty.allAssigned")}
             </p>
           </div>
         ) : (
@@ -101,7 +102,7 @@ export function AssignPartnerModal({
                   ) : (
                     <UserPlus className="size-3.5" />
                   )}
-                  Asignar
+                  {t("projectPartners.assign.button")}
                 </Button>
               </div>
             ))}
@@ -127,11 +128,12 @@ export function ProjectPartnersList({
   linkedPartnerIds,
   onRemove,
 }: ProjectPartnersListProps) {
+  const { t } = useLanguage();
   return (
-    <div role="list" aria-label="Partners del proyecto">
+    <div role="list" aria-label={t("projectPartners.list.ariaLabel")}>
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-linear-to-r from-violet-500/10 via-purple-500/5 to-transparent">
-        <span className="flex-1">Partner</span>
-        <span className="w-48 text-right hidden sm:block">Email</span>
+        <span className="flex-1">{t("projectPartners.list.colPartner")}</span>
+        <span className="w-48 text-right hidden sm:block">{t("projectPartners.list.colEmail")}</span>
         {isOwner && <span className="w-8" />}
       </div>
 
@@ -157,11 +159,11 @@ export function ProjectPartnersList({
                   onClick={() => !hasLinkedPMs && onRemove(pp)}
                   disabled={hasLinkedPMs}
                   className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
-                  aria-label={`Quitar ${pp.partnerName}`}
+                  aria-label={t("projectPartners.list.removeAriaLabel", { name: pp.partnerName })}
                   title={
                     hasLinkedPMs
-                      ? "Tiene métodos de pago vinculados al proyecto. Desvincula primero."
-                      : "Quitar partner"
+                      ? t("projectPartners.list.removeDisabledTitle")
+                      : t("projectPartners.list.removeTitle")
                   }
                 >
                   <UserMinus className="size-3.5" />

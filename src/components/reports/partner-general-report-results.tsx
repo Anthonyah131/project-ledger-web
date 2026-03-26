@@ -27,12 +27,15 @@ import type {
   PartnerGeneralReportResponse,
   PartnerGeneralReportProject,
 } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface Props {
   report: PartnerGeneralReportResponse
 }
 
 export function PartnerGeneralReportResults({ report }: Props) {
+  const { t } = useLanguage()
+
   const totalProjects = report.projects.length
   const totalTransactions = report.projects.reduce(
     (sum, p) => sum + p.transactions.length,
@@ -48,26 +51,26 @@ export function PartnerGeneralReportResults({ report }: Props) {
       {/* ── Stat strip ─────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-xl border bg-border overflow-hidden">
         <StatCell
-          label="Proyectos"
+          label={t("reports.workspace.projectsLabel")}
           value={String(totalProjects)}
           icon={<FolderKanban className="size-3.5" />}
         />
         <StatCell
-          label="Transacciones"
+          label={t("reports.partnerGeneral.transactionsLabel")}
           value={String(totalTransactions)}
           icon={<Banknote className="size-3.5" />}
         />
         <StatCell
-          label="Settlements"
+          label={t("reports.partnerGeneral.settlementsLabel")}
           value={String(totalSettlements)}
           icon={<Scale className="size-3.5" />}
         />
         <StatCell
-          label="Periodo"
+          label={t("reports.shared.period")}
           value={
             report.dateFrom && report.dateTo
               ? `${formatDate(report.dateFrom)} – ${formatDate(report.dateTo)}`
-              : "Todo"
+              : t("reports.partnerGeneral.all")
           }
           compact
         />
@@ -84,23 +87,23 @@ export function PartnerGeneralReportResults({ report }: Props) {
           <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border bg-gradient-to-r from-cyan-500/5 to-transparent">
             <CreditCard className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
             <h3 className="text-sm font-semibold text-foreground">
-              Métodos de pago
+              {t("reports.partnerGeneral.paymentMethodsTitle")}
             </h3>
             <span className="text-xs text-muted-foreground">
-              En moneda nativa de cada método
+              {t("reports.partnerGeneral.paymentMethodsSubtitle")}
             </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b text-muted-foreground bg-muted/30">
-                  <th className="text-left py-2.5 pl-5 pr-3 font-medium">Método</th>
-                  <th className="text-left py-2.5 px-3 font-medium">Banco</th>
-                  <th className="text-left py-2.5 px-3 font-medium">Moneda</th>
-                  <th className="text-right py-2.5 px-3 font-medium">Gastos</th>
-                  <th className="text-right py-2.5 px-3 font-medium">Ingresos</th>
-                  <th className="text-right py-2.5 px-3 font-medium">Flujo neto</th>
-                  <th className="text-right py-2.5 pr-5 pl-3 font-medium">Tx</th>
+                  <th className="text-left py-2.5 pl-5 pr-3 font-medium">{t("reports.partnerGeneral.colMethod")}</th>
+                  <th className="text-left py-2.5 px-3 font-medium">{t("reports.partnerGeneral.colBank")}</th>
+                  <th className="text-left py-2.5 px-3 font-medium">{t("reports.partnerGeneral.colCurrency")}</th>
+                  <th className="text-right py-2.5 px-3 font-medium">{t("reports.partnerGeneral.colExpenses")}</th>
+                  <th className="text-right py-2.5 px-3 font-medium">{t("reports.partnerGeneral.colIncomes")}</th>
+                  <th className="text-right py-2.5 px-3 font-medium">{t("reports.partnerGeneral.colNetFlow")}</th>
+                  <th className="text-right py-2.5 pr-5 pl-3 font-medium">{t("reports.partnerGeneral.colTx")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,6 +155,7 @@ export function PartnerGeneralReportResults({ report }: Props) {
 // ── Per-project collapsible section ─────────────────────────────────────────
 
 function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
+  const { t } = useLanguage()
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">("all")
   const [detailsOpen, setDetailsOpen] = useState(true)
   const isPositive = project.netBalance >= 0
@@ -159,7 +163,7 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
   const filteredTransactions =
     typeFilter === "all"
       ? project.transactions
-      : project.transactions.filter((t) => t.type === typeFilter)
+      : project.transactions.filter((tx) => tx.type === typeFilter)
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
@@ -198,29 +202,29 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
           {/* ── Balance metrics row ──────────────────────────── */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-border/40">
             <MetricCell
-              label="Pagó físicamente"
+              label={t("reports.shared.paidPhysically")}
               value={formatAmount(project.paidPhysically)}
               currency={project.currencyCode}
             />
             <MetricCell
-              label="Le deben otros"
+              label={t("reports.shared.othersOweHim")}
               value={formatAmount(project.othersOweHim)}
               currency={project.currencyCode}
               accent="emerald"
             />
             <MetricCell
-              label="Debe a otros"
+              label={t("reports.shared.heOwesOthers")}
               value={formatAmount(project.heOwesOthers)}
               currency={project.currencyCode}
               accent="rose"
             />
             <MetricCell
-              label="Settlements pagados"
+              label={t("reports.shared.settlementsPaid")}
               value={formatAmount(project.settlementsPaid)}
               currency={project.currencyCode}
             />
             <MetricCell
-              label="Settlements recibidos"
+              label={t("reports.shared.settlementsReceived")}
               value={formatAmount(project.settlementsReceived)}
               currency={project.currencyCode}
             />
@@ -231,10 +235,10 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
             <div>
               <div className="flex items-center justify-between px-5 py-2.5 bg-muted/20">
                 <span className="text-xs font-semibold text-foreground">
-                  Transacciones
+                  {t("reports.partnerGeneral.transactionsHeader")}
                   <span className="text-muted-foreground font-normal ml-1.5">
                     {filteredTransactions.length}
-                    {typeFilter !== "all" && ` de ${project.transactions.length}`}
+                    {typeFilter !== "all" && ` ${t("reports.partnerGeneral.ofTotal", { total: project.transactions.length })}`}
                   </span>
                 </span>
                 <Select
@@ -245,9 +249,9 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="expense">Gastos</SelectItem>
-                    <SelectItem value="income">Ingresos</SelectItem>
+                    <SelectItem value="all">{t("reports.shared.all")}</SelectItem>
+                    <SelectItem value="expense">{t("reports.shared.expenses")}</SelectItem>
+                    <SelectItem value="income">{t("reports.shared.incomes")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -255,13 +259,13 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b text-muted-foreground bg-muted/10">
-                      <th className="text-left py-2 pl-5 pr-3 font-medium">Fecha</th>
-                      <th className="text-left py-2 px-3 font-medium">Tipo</th>
-                      <th className="text-left py-2 px-3 font-medium">Título</th>
-                      <th className="text-left py-2 px-3 font-medium hidden sm:table-cell">Categoría</th>
-                      <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Pagó</th>
-                      <th className="text-left py-2 px-3 font-medium hidden lg:table-cell">Método</th>
-                      <th className="text-right py-2 pr-5 pl-3 font-medium">Split</th>
+                      <th className="text-left py-2 pl-5 pr-3 font-medium">{t("reports.shared.colDate")}</th>
+                      <th className="text-left py-2 px-3 font-medium">{t("reports.partnerGeneral.colType")}</th>
+                      <th className="text-left py-2 px-3 font-medium">{t("reports.shared.colTitle")}</th>
+                      <th className="text-left py-2 px-3 font-medium hidden sm:table-cell">{t("reports.shared.colCategory")}</th>
+                      <th className="text-left py-2 px-3 font-medium hidden md:table-cell">{t("reports.partnerGeneral.colPaidBy")}</th>
+                      <th className="text-left py-2 px-3 font-medium hidden lg:table-cell">{t("reports.shared.colMethod")}</th>
+                      <th className="text-right py-2 pr-5 pl-3 font-medium">{t("reports.partnerGeneral.colSplit")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -304,7 +308,7 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
             <div>
               <div className="px-5 py-2.5 bg-muted/20">
                 <span className="text-xs font-semibold text-foreground">
-                  Settlements
+                  {t("reports.partnerGeneral.settlementsHeader")}
                   <span className="text-muted-foreground font-normal ml-1.5">
                     {project.settlements.length}
                   </span>
@@ -314,10 +318,10 @@ function ProjectSection({ project }: { project: PartnerGeneralReportProject }) {
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b text-muted-foreground bg-muted/10">
-                      <th className="text-left py-2 pl-5 pr-3 font-medium">Fecha</th>
-                      <th className="text-left py-2 px-3 font-medium">Dirección</th>
-                      <th className="text-left py-2 px-3 font-medium">Otro partner</th>
-                      <th className="text-right py-2 pr-5 pl-3 font-medium">Monto</th>
+                      <th className="text-left py-2 pl-5 pr-3 font-medium">{t("reports.shared.colDate")}</th>
+                      <th className="text-left py-2 px-3 font-medium">{t("reports.partnerGeneral.colDirection")}</th>
+                      <th className="text-left py-2 px-3 font-medium">{t("reports.partnerGeneral.colOtherPartner")}</th>
+                      <th className="text-right py-2 pr-5 pl-3 font-medium">{t("reports.shared.colAmount")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -426,10 +430,12 @@ function NetBalancePill({
   value: number
   currency: string
 }) {
+  const { t } = useLanguage()
+
   if (value === 0) {
     return (
       <Badge variant="outline" className="font-mono text-xs border-border text-muted-foreground">
-        Saldado
+        {t("reports.shared.settled")}
       </Badge>
     )
   }
@@ -454,6 +460,8 @@ function NetBalancePill({
 }
 
 function TypeBadge({ type }: { type: "expense" | "income" }) {
+  const { t } = useLanguage()
+
   return (
     <Badge
       variant="outline"
@@ -463,12 +471,14 @@ function TypeBadge({ type }: { type: "expense" | "income" }) {
           : "border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
       }`}
     >
-      {type === "expense" ? "Gasto" : "Ingreso"}
+      {type === "expense" ? t("reports.shared.expense") : t("reports.shared.income")}
     </Badge>
   )
 }
 
 function DirectionBadge({ direction }: { direction: "paid_to" | "received_from" }) {
+  const { t } = useLanguage()
+
   return (
     <Badge
       variant="outline"
@@ -478,7 +488,7 @@ function DirectionBadge({ direction }: { direction: "paid_to" | "received_from" 
           : "border-rose-500/30 text-rose-600 dark:text-rose-400"
       }`}
     >
-      {direction === "received_from" ? "Recibido" : "Pagado"}
+      {direction === "received_from" ? t("reports.shared.received") : t("reports.shared.paid")}
     </Badge>
   )
 }

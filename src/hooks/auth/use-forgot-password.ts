@@ -36,19 +36,19 @@ export function useForgotPassword() {
 
   // Step 1: Request OTP
   const requestForm = useForm<ForgotPasswordFormValues>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema(t)),
     defaultValues: { email: initialEmail },
   })
 
   // Step 2: Verify OTP
   const verifyForm = useForm<VerifyOtpFormValues>({
-    resolver: zodResolver(verifyOtpSchema),
+    resolver: zodResolver(verifyOtpSchema(t)),
     defaultValues: { otpCode: "" },
   })
 
   // Step 3: Reset password
   const resetForm = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(resetPasswordSchema(t)),
     defaultValues: { newPassword: "", confirmPassword: "" },
   })
 

@@ -5,6 +5,7 @@
 import dynamic from "next/dynamic"
 import { useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/context/language-context"
 import { ArrowLeft, Mail, MoreVertical, Phone, StickyNote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -27,6 +28,7 @@ const EditPartnerModal = dynamic(() =>
 
 export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
   const router = useRouter()
+  const { t } = useLanguage()
 
   const {
     partner,
@@ -86,7 +88,7 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
           </Button>
         </div>
         <div className="flex flex-col items-center justify-center gap-2 py-20 text-center">
-          <p className="text-sm text-muted-foreground">No se pudo cargar la información del partner.</p>
+          <p className="text-sm text-muted-foreground">{t("partners.loadError")}</p>
         </div>
       </div>
     )
@@ -135,14 +137,14 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="size-8 shrink-0">
                 <MoreVertical className="size-4" />
-                <span className="sr-only">Opciones</span>
+                <span className="sr-only">{t("common.options")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onClick={() => setEditOpen(true)}>Editar</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>{t("common.edit")}</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteOpen(true)}>
-                Eliminar
+                {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -188,9 +190,9 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Eliminar partner"
-        description="Se eliminará el partner. Esta acción no puede deshacerse si no tiene cuentas vinculadas a proyectos activos."
-        getMessage={(p) => `¿Eliminar partner "${p.name}"?`}
+        title={t("partners.delete.title")}
+        description={t("partners.delete.descriptionDetail")}
+        getMessage={(p) => t("partners.delete.confirm", { name: p.name })}
       />
     </div>
   )

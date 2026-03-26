@@ -20,6 +20,7 @@ import type {
   PairwiseCurrencyTotal,
 } from "@/types/report"
 import type { CurrencyExchangeResponse } from "@/types/expense"
+import { useLanguage } from "@/context/language-context"
 
 interface Props {
   report: PartnerBalancesReportResponse
@@ -92,6 +93,8 @@ function SettlementExchanges({ exchanges }: { exchanges: CurrencyExchangeRespons
 // ── Main component ───────────────────────────────────────────────────────────
 
 export function PartnerBalancesReportResults({ report }: Props) {
+  const { t } = useLanguage()
+
   const hasSettlements = report.settlements.length > 0
   const hasPairwise = report.pairwiseBalances.length > 0
   const hasWarnings = (report.warnings?.length ?? 0) > 0
@@ -104,10 +107,10 @@ export function PartnerBalancesReportResults({ report }: Props) {
           <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
-              {report.warnings!.length} transacción(es) sin tipos de cambio configurados
+              {t("reports.partnerBalances.warningTitle", { count: report.warnings!.length })}
             </span>
             <span className="text-xs text-muted-foreground">
-              Los totales en monedas alternativas pueden estar incompletos.
+              {t("reports.partnerBalances.warningDesc")}
             </span>
             <div className="flex flex-col gap-0.5 mt-1">
               {report.warnings!.map((w) => (
@@ -122,15 +125,15 @@ export function PartnerBalancesReportResults({ report }: Props) {
 
       {/* ── Summary cards ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard label="Partners" value={String(report.partners.length)} />
-        <SummaryCard label="Settlements" value={String(report.settlements.length)} />
-        <SummaryCard label="Moneda" value={report.currencyCode} />
+        <SummaryCard label={t("reports.partnerBalances.partnersLabel")} value={String(report.partners.length)} />
+        <SummaryCard label={t("reports.partnerBalances.settlementsLabel")} value={String(report.settlements.length)} />
+        <SummaryCard label={t("reports.shared.currencyLabel")} value={report.currencyCode} />
         <SummaryCard
-          label="Periodo"
+          label={t("reports.shared.period")}
           value={
             report.dateFrom && report.dateTo
               ? `${formatDate(report.dateFrom)} – ${formatDate(report.dateTo)}`
-              : "Todo el historial"
+              : t("reports.shared.allHistory")
           }
         />
       </div>
@@ -139,9 +142,9 @@ export function PartnerBalancesReportResults({ report }: Props) {
       {report.partners.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Balances por partner</CardTitle>
+            <CardTitle>{t("reports.partnerBalances.partnerBalancesTitle")}</CardTitle>
             <CardDescription>
-              Balance neto de cada partner. Positivo = le deben, negativo = debe.
+              {t("reports.partnerBalances.partnerBalancesDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -169,10 +172,10 @@ export function PartnerBalancesReportResults({ report }: Props) {
                           }`}
                         >
                           {partner.netBalance === 0
-                            ? "Saldado"
+                            ? t("reports.shared.settled")
                             : isPositive
-                              ? "Le deben"
-                              : "Debe"}
+                              ? t("reports.partnerBalances.owedBy")
+                              : t("reports.partnerBalances.owes")}
                         </Badge>
                         <div className="flex flex-col items-end">
                           <span
@@ -192,34 +195,34 @@ export function PartnerBalancesReportResults({ report }: Props) {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs text-muted-foreground">
                       <div className="flex flex-col">
-                        <span>Pagó físicamente</span>
+                        <span>{t("reports.shared.paidPhysically")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.paidPhysically)}
                         </span>
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Le deben otros</span>
+                        <span>{t("reports.shared.othersOweHim")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.othersOweHim)}
                         </span>
                         <PartnerAltAmounts totals={altTotals} field="othersOweHim" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Debe a otros</span>
+                        <span>{t("reports.shared.heOwesOthers")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.heOwesOthers)}
                         </span>
                         <PartnerAltAmounts totals={altTotals} field="heOwesOthers" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Settlements pagados</span>
+                        <span>{t("reports.shared.settlementsPaid")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.settlementsPaid)}
                         </span>
                         <PartnerAltAmounts totals={altTotals} field="settlementsPaid" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Settlements recibidos</span>
+                        <span>{t("reports.shared.settlementsReceived")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(partner.settlementsReceived)}
                         </span>
@@ -238,9 +241,9 @@ export function PartnerBalancesReportResults({ report }: Props) {
       {hasSettlements && (
         <Card>
           <CardHeader>
-            <CardTitle>Settlements</CardTitle>
+            <CardTitle>{t("reports.partnerBalances.settlementsTitle")}</CardTitle>
             <CardDescription>
-              Pagos entre partners registrados en el periodo
+              {t("reports.partnerBalances.settlementsDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -297,9 +300,9 @@ export function PartnerBalancesReportResults({ report }: Props) {
       {hasPairwise && (
         <Card>
           <CardHeader>
-            <CardTitle>Balances entre pares</CardTitle>
+            <CardTitle>{t("reports.partnerBalances.pairwiseTitle")}</CardTitle>
             <CardDescription>
-              Desglose bruto y neto entre cada par de partners. Positivo = A le debe a B.
+              {t("reports.partnerBalances.pairwiseDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -322,13 +325,13 @@ export function PartnerBalancesReportResults({ report }: Props) {
                         </span>
                         {pair.netBalance !== 0 && (
                           <span className="text-xs text-muted-foreground">
-                            {owes} le debe a {owed}
+                            {t("reports.partnerBalances.owesTo", { owes, owed })}
                           </span>
                         )}
                       </div>
                       {pair.netBalance === 0 ? (
                         <Badge variant="outline" className="font-mono border-border text-muted-foreground">
-                          Saldado
+                          {t("reports.shared.settled")}
                         </Badge>
                       ) : (
                         <div className="flex flex-col items-end">
@@ -342,28 +345,28 @@ export function PartnerBalancesReportResults({ report }: Props) {
                     {/* Gross breakdown */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-muted-foreground">
                       <div className="flex flex-col gap-0.5">
-                        <span>{pair.partnerAName} debe a {pair.partnerBName}</span>
+                        <span>{t("reports.partnerBalances.aOwesB", { a: pair.partnerAName, b: pair.partnerBName })}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.aOwesB)}
                         </span>
                         <PairwiseAltAmounts totals={altTotals} field="aOwesB" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>{pair.partnerBName} debe a {pair.partnerAName}</span>
+                        <span>{t("reports.partnerBalances.aOwesB", { a: pair.partnerBName, b: pair.partnerAName })}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.bOwesA)}
                         </span>
                         <PairwiseAltAmounts totals={altTotals} field="bOwesA" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Settlements {pair.partnerAName} → {pair.partnerBName}</span>
+                        <span>{t("reports.partnerBalances.settlementsAToB", { a: pair.partnerAName, b: pair.partnerBName })}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.settlementsAToB)}
                         </span>
                         <PairwiseAltAmounts totals={altTotals} field="settlementsAToB" />
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span>Settlements {pair.partnerBName} → {pair.partnerAName}</span>
+                        <span>{t("reports.partnerBalances.settlementsAToB", { a: pair.partnerBName, b: pair.partnerAName })}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {report.currencyCode} {formatAmount(pair.settlementsBToA)}
                         </span>

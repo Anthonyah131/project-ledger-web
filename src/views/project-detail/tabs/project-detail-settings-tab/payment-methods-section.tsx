@@ -14,7 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
-import { PAYMENT_METHOD_TYPE_LABEL } from "@/lib/constants"
+import { getPaymentMethodTypeLabel } from "@/lib/constants"
 import { useLanguage } from "@/context/language-context"
 import type {
   ProjectPaymentMethodItem,
@@ -81,6 +81,7 @@ function PMList({
   isOwner: boolean
   onRemove: (pm: ProjectPaymentMethodItem) => void
 }) {
+  const { t } = useLanguage()
   return (
     <div className="divide-y divide-border rounded-md border border-border">
       {linkedPMs.map((pm) => (
@@ -98,7 +99,7 @@ function PMList({
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             <Badge variant="outline" className="text-[10px]">
-              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+              {getPaymentMethodTypeLabel(pm.type, t)}
             </Badge>
             <Badge variant="secondary" className="text-[10px]">
               {pm.currency}
@@ -208,7 +209,7 @@ function AddPMDialog({
                         </div>
                         <div className="flex shrink-0 items-center gap-1.5">
                           <Badge variant="outline" className="text-[10px]">
-                            {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+                            {getPaymentMethodTypeLabel(pm.type, t)}
                           </Badge>
                           <Badge variant="secondary" className="text-[10px]">
                             {pm.currency}

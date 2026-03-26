@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Loader2, Trash2 } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 interface AlternativeCurrencyExchangesSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,26 +46,28 @@ export function AlternativeCurrencyExchangesSection({
   onAutoRate,
   onRemoveExchange,
 }: AlternativeCurrencyExchangesSectionProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="rounded-xl border border-border/70 bg-muted/20 p-4 flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Conversiones a monedas alternativas
+          {t("currencyConversion.altSection")}
         </p>
         <span className="rounded-full border border-border/80 bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-          {requiresAlternativeConversions ? "Obligatorio" : "Opcional"}
+          {requiresAlternativeConversions ? t("currencyConversion.required") : t("currencyConversion.optional")}
         </span>
       </div>
 
       <p className="text-xs text-muted-foreground">
         {requiresAlternativeConversions
-          ? "Debes completar una conversion por cada moneda alternativa configurada en el proyecto."
-          : "No hay monedas alternativas vinculadas al proyecto. Configuralas en la pestaña Monedas para habilitar conversiones."}
+          ? t("currencyConversion.requiredHint")
+          : t("currencyConversion.optionalHint")}
       </p>
 
       <div className="flex flex-col gap-4">
         {fields.length === 0 && (
-          <p className="text-xs text-muted-foreground">Sin conversiones configuradas.</p>
+          <p className="text-xs text-muted-foreground">{t("currencyConversion.empty")}</p>
         )}
 
         {fields.map((field, index) => {
@@ -77,7 +80,7 @@ export function AlternativeCurrencyExchangesSection({
             >
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-sm font-medium text-foreground">
-                  Conversion {index + 1}
+                  {t("currencyConversion.itemLabel", { index: index + 1 })}
                 </p>
                 {!requiresAlternativeConversions && (
                   <Button
@@ -85,7 +88,7 @@ export function AlternativeCurrencyExchangesSection({
                     variant="ghost"
                     size="icon"
                     onClick={() => onRemoveExchange(index)}
-                    aria-label="Eliminar conversion"
+                    aria-label={t("currencyConversion.removeAriaLabel")}
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -98,7 +101,7 @@ export function AlternativeCurrencyExchangesSection({
                   name={`currencyExchanges.${index}.currencyCode`}
                   render={({ field: currencyField }) => (
                     <FormItem>
-                      <FormLabel>Moneda</FormLabel>
+                      <FormLabel>{t("currencyConversion.currencyLabel")}</FormLabel>
                       {requiresAlternativeConversions ? (
                         <FormControl>
                           <Input value={currencyField.value || ""} readOnly className="bg-muted/40" />
@@ -107,7 +110,7 @@ export function AlternativeCurrencyExchangesSection({
                         <Select value={currencyField.value} onValueChange={currencyField.onChange}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccionar" />
+                              <SelectValue placeholder={t("currencyConversion.currencyPlaceholder")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -130,7 +133,7 @@ export function AlternativeCurrencyExchangesSection({
                   render={({ field: rateField }) => (
                     <FormItem>
                       <FormLabel>
-                        Tasa ({projectCurrency} {"→"} {selectedCurrency || "?"})
+                        {t("currencyConversion.rateLabel", { from: projectCurrency, to: selectedCurrency || "?" })}
                       </FormLabel>
                       <FormControl>
                         <div className="flex gap-2">
@@ -177,7 +180,7 @@ export function AlternativeCurrencyExchangesSection({
                   name={`currencyExchanges.${index}.convertedAmount`}
                   render={({ field: amountField }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Monto {selectedCurrency || ""}</FormLabel>
+                      <FormLabel>{t("currencyConversion.amountLabel", { currency: selectedCurrency || "" })}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"

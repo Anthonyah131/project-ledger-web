@@ -14,12 +14,15 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type { WorkspaceReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface Props {
   report: WorkspaceReportResponse
 }
 
 export function WorkspaceReportResults({ report }: Props) {
+  const { t } = useLanguage()
+
   const hasConsolidated = report.consolidatedTotals != null
   const hasCategoryBreakdown =
     report.consolidatedByCategory && report.consolidatedByCategory.length > 0
@@ -37,23 +40,23 @@ export function WorkspaceReportResults({ report }: Props) {
       {hasConsolidated && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <SummaryCard
-            label="Total gastado"
+            label={t("reports.shared.totalSpent")}
             value={`${report.referenceCurrency} ${formatAmount(report.consolidatedTotals!.totalSpent)}`}
           />
           <SummaryCard
-            label="Total ingresos"
+            label={t("reports.shared.totalIncome")}
             value={`${report.referenceCurrency} ${formatAmount(report.consolidatedTotals!.totalIncome)}`}
           />
           <SummaryCard
-            label={report.consolidatedTotals!.netBalance >= 0 ? "Balance neto" : "Balance neto (negativo)"}
+            label={report.consolidatedTotals!.netBalance >= 0 ? t("reports.shared.netBalance") : t("reports.shared.netBalanceNeg")}
             value={`${report.referenceCurrency} ${formatAmount(report.consolidatedTotals!.netBalance)}`}
           />
           <SummaryCard
-            label="Total gastos"
+            label={t("reports.workspace.totalExpensesCount")}
             value={String(report.consolidatedTotals!.totalExpenseCount)}
           />
           <SummaryCard
-            label="Total ingresos"
+            label={t("reports.shared.incomeCount")}
             value={String(report.consolidatedTotals!.totalIncomeCount)}
           />
         </div>
@@ -62,24 +65,24 @@ export function WorkspaceReportResults({ report }: Props) {
       {/* ── General info cards ────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard
-          label="Workspace"
+          label={t("reports.workspace.workspaceLabel")}
           value={report.workspaceName}
         />
         <SummaryCard
-          label="Proyectos"
+          label={t("reports.workspace.projectsLabel")}
           value={String(report.projectCount)}
         />
         <SummaryCard
-          label="Periodo"
+          label={t("reports.shared.period")}
           value={
             report.dateFrom && report.dateTo
               ? `${formatDate(report.dateFrom)} – ${formatDate(report.dateTo)}`
-              : "Todo el historial"
+              : t("reports.shared.allHistory")
           }
         />
         {report.referenceCurrency && (
           <SummaryCard
-            label="Moneda de referencia"
+            label={t("reports.referenceCurrency")}
             value={report.referenceCurrency}
           />
         )}
@@ -89,8 +92,7 @@ export function WorkspaceReportResults({ report }: Props) {
         <div className="flex items-start gap-3 rounded-lg border px-4 py-3 text-sm border-border bg-muted/30 text-muted-foreground">
           <span className="mt-0.5 shrink-0 text-base leading-none">i</span>
           <span>
-            No se proporcionó moneda de referencia. Los totales consolidados no están disponibles.
-            Cada proyecto muestra sus montos en su propia moneda.
+            {t("reports.workspace.noCurrencyHint")}
           </span>
         </div>
       )}
@@ -99,9 +101,9 @@ export function WorkspaceReportResults({ report }: Props) {
       {report.projects.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Desglose por proyecto</CardTitle>
+            <CardTitle>{t("reports.workspace.projectBreakdownTitle")}</CardTitle>
             <CardDescription>
-              Resumen financiero de cada proyecto del workspace
+              {t("reports.workspace.projectBreakdownDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,21 +140,21 @@ export function WorkspaceReportResults({ report }: Props) {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs text-muted-foreground">
                       <div className="flex flex-col">
-                        <span>Gastos</span>
+                        <span>{t("reports.workspace.expensesLabel")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {project.currencyCode} {formatAmount(project.totalSpent)}
                         </span>
-                        <span>{project.expenseCount} registros</span>
+                        <span>{project.expenseCount} {t("reports.shared.records")}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span>Ingresos</span>
+                        <span>{t("reports.workspace.incomesLabel")}</span>
                         <span className="font-medium text-foreground tabular-nums">
                           {project.currencyCode} {formatAmount(project.totalIncome)}
                         </span>
-                        <span>{project.incomeCount} registros</span>
+                        <span>{project.incomeCount} {t("reports.shared.records")}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span>Balance neto</span>
+                        <span>{t("reports.workspace.netBalanceLabel")}</span>
                         <span
                           className={`font-medium tabular-nums ${
                             isPositive
@@ -176,9 +178,9 @@ export function WorkspaceReportResults({ report }: Props) {
       {hasCategoryBreakdown && (
         <Card>
           <CardHeader>
-            <CardTitle>Desglose por categoría</CardTitle>
+            <CardTitle>{t("reports.workspace.categoryBreakdownTitle")}</CardTitle>
             <CardDescription>
-              Gasto consolidado por categoría entre todos los proyectos
+              {t("reports.workspace.categoryBreakdownDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -191,7 +193,9 @@ export function WorkspaceReportResults({ report }: Props) {
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-medium">{cat.categoryName}</span>
                     <span className="text-xs text-muted-foreground">
-                      {cat.expenseCount} gastos · {cat.projectCount} proyecto{cat.projectCount !== 1 ? "s" : ""}
+                      {cat.projectCount !== 1
+                        ? t("reports.workspace.expensesAndProjectsPlural", { expenses: cat.expenseCount, projects: cat.projectCount })
+                        : t("reports.workspace.expensesAndProjects", { expenses: cat.expenseCount, projects: cat.projectCount })}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -219,9 +223,9 @@ export function WorkspaceReportResults({ report }: Props) {
       {hasMonthlyTrend && (
         <Card>
           <CardHeader>
-            <CardTitle>Tendencia mensual</CardTitle>
+            <CardTitle>{t("reports.shared.monthlyTrendTitle")}</CardTitle>
             <CardDescription>
-              Evolución mensual de gastos, ingresos y balance neto del workspace
+              {t("reports.workspace.monthlyTrendDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -249,9 +253,9 @@ export function WorkspaceReportResults({ report }: Props) {
                       {mt.expenseCount}/{mt.incomeCount}
                     </span>
                     <div className="text-xs tabular-nums w-64 text-right flex flex-col">
-                      <span>G: {formatAmount(mt.totalSpent)}</span>
-                      <span>I: {formatAmount(mt.totalIncome)}</span>
-                      <span className="font-semibold">N: {formatAmount(mt.netBalance)}</span>
+                      <span>{t("reports.shared.trendSpent")} {formatAmount(mt.totalSpent)}</span>
+                      <span>{t("reports.shared.trendIncome")} {formatAmount(mt.totalIncome)}</span>
+                      <span className="font-semibold">{t("reports.shared.trendNet")} {formatAmount(mt.netBalance)}</span>
                     </div>
                   </div>
                 )

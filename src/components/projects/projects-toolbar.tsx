@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils"
 import type { ViewMode } from "@/types/project"
 import { CURRENCY_OPTIONS } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 
 interface ToolbarProps {
   query: string
@@ -38,6 +39,7 @@ export function ProjectsToolbar({
   pageSize,
   onPageSizeChange,
 }: ToolbarProps) {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Left: search + currency */}
@@ -47,13 +49,13 @@ export function ProjectsToolbar({
           <Input
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Buscar..."
+            placeholder={t("projects.toolbar.searchPlaceholder")}
             className="pl-8.5 h-8 text-sm"
-            aria-label="Buscar proyectos por nombre"
+            aria-label={t("projects.toolbar.searchAriaLabel")}
           />
         </div>
         <Select value={currency} onValueChange={onCurrencyChange}>
-          <SelectTrigger className="w-auto min-w-32.5 h-8 text-sm" aria-label="Filtrar por moneda">
+          <SelectTrigger className="w-auto min-w-32.5 h-8 text-sm" aria-label={t("projects.filterByCurrency")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -69,19 +71,19 @@ export function ProjectsToolbar({
       {/* Right: sort + page size + view */}
       <div className="flex items-center gap-2">
         <Select value={sort} onValueChange={onSortChange}>
-          <SelectTrigger className="w-auto min-w-27.5 h-8 text-sm" aria-label="Ordenar">
+          <SelectTrigger className="w-auto min-w-27.5 h-8 text-sm" aria-label={t("projects.toolbar.sortAriaLabel")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="updatedAt:desc">Recientes</SelectItem>
-            <SelectItem value="name:asc">A - Z</SelectItem>
-            <SelectItem value="name:desc">Z - A</SelectItem>
-            <SelectItem value="createdAt:desc">Nuevos</SelectItem>
+            <SelectItem value="updatedAt:desc">{t("projects.sortRecent")}</SelectItem>
+            <SelectItem value="name:asc">{t("projects.sortAZ")}</SelectItem>
+            <SelectItem value="name:desc">{t("projects.sortZA")}</SelectItem>
+            <SelectItem value="createdAt:desc">{t("projects.sortNew")}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
-          <SelectTrigger className="w-auto min-w-15 h-8 text-sm" aria-label="Por pagina">
+          <SelectTrigger className="w-auto min-w-15 h-8 text-sm" aria-label={t("projects.toolbar.pageSizeAriaLabel")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -95,13 +97,13 @@ export function ProjectsToolbar({
         <div
           className="flex items-center h-8 border border-border rounded-md overflow-hidden"
           role="radiogroup"
-          aria-label="Modo de vista"
+          aria-label={t("projects.toolbar.viewAriaLabel")}
         >
           <button
             onClick={() => onViewModeChange("shelf")}
             role="radio"
             aria-checked={viewMode === "shelf"}
-            aria-label="Vista cuadricula"
+            aria-label={t("projects.toolbar.shelfViewAriaLabel")}
             className={cn(
               "flex items-center justify-center size-8 transition-colors duration-150",
               viewMode === "shelf"
@@ -115,7 +117,7 @@ export function ProjectsToolbar({
             onClick={() => onViewModeChange("list")}
             role="radio"
             aria-checked={viewMode === "list"}
-            aria-label="Vista lista"
+            aria-label={t("projects.toolbar.listViewAriaLabel")}
             className={cn(
               "flex items-center justify-center size-8 border-l border-border transition-colors duration-150",
               viewMode === "list"

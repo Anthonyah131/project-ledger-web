@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import type { CreateCategoryRequest } from "@/types/category"
 import { useCreateCategoryForm } from "@/hooks/forms/use-category-form"
 
@@ -24,17 +25,18 @@ export function CreateCategoryModal({
   onClose,
   onCreate,
 }: CreateCategoryModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useCreateCategoryForm({ onCreate, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nueva categoria"
-      description="Agrega una categoria al proyecto."
+      title={t("categories.createTitle")}
+      description={t("categories.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear categoria"
+      submitLabel={t("categories.create")}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -42,9 +44,9 @@ export function CreateCategoryModal({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} *</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Alimentacion" autoFocus {...field} />
+              <Input placeholder={t("categories.namePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -56,7 +58,7 @@ export function CreateCategoryModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion</FormLabel>
+            <FormLabel>{t("common.description")}</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>
@@ -70,9 +72,9 @@ export function CreateCategoryModal({
         name="budgetAmount"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Presupuesto</FormLabel>
+            <FormLabel>{t("categories.budget")}</FormLabel>
             <FormControl>
-              <Input type="number" step="0.01" min="0" placeholder="Sin limite" {...field} />
+              <Input type="number" step="0.01" min="0" placeholder={t("common.noLimit")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

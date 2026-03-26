@@ -1,27 +1,33 @@
 import { z } from "zod"
 
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
 // ─── Add member ───────────────────────────────────────────────────────────────
 
-export const addMemberSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email es requerido")
-    .email("Email no es válido")
-    .max(255, "Máximo 255 caracteres"),
-  role: z.enum(["editor", "viewer"], {
-    message: "Rol es requerido",
-  }),
-})
+export function addMemberSchema(t: TFn) {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(1, t("members.validation.emailRequired"))
+      .email(t("members.validation.emailInvalid"))
+      .max(255, t("members.validation.emailMaxLength")),
+    role: z.enum(["editor", "viewer"], {
+      message: t("members.validation.roleRequired"),
+    }),
+  })
+}
 
-export type AddMemberFormValues = z.infer<typeof addMemberSchema>
+export type AddMemberFormValues = z.infer<ReturnType<typeof addMemberSchema>>
 
 // ─── Change role ──────────────────────────────────────────────────────────────
 
-export const changeRoleSchema = z.object({
-  role: z.enum(["editor", "viewer"], {
-    message: "Rol es requerido",
-  }),
-})
+export function changeRoleSchema(t: TFn) {
+  return z.object({
+    role: z.enum(["editor", "viewer"], {
+      message: t("members.validation.roleRequired"),
+    }),
+  })
+}
 
-export type ChangeRoleFormValues = z.infer<typeof changeRoleSchema>
+export type ChangeRoleFormValues = z.infer<ReturnType<typeof changeRoleSchema>>

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
 import { Badge } from "@/components/ui/badge"
-import { getAccentColor, ROLE_LABEL } from "@/lib/constants"
+import { getAccentColor, getRoleLabel } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { formatCurrencySymbol } from "@/lib/format-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { useLanguage } from "@/context/language-context"
 
 interface ShelfViewProps {
   projects: ProjectResponse[]
@@ -27,11 +28,12 @@ function ShelfViewComponent({
   onDisconnect,
   globalIndex,
 }: ShelfViewProps) {
+  const { t } = useLanguage()
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border"
       role="list"
-      aria-label="Proyectos"
+      aria-label={t("projects.title")}
     >
       {projects.map((project, i) => (
         <ProjectCard
@@ -66,6 +68,7 @@ function ProjectCard({
   onDisconnect?: (project: ProjectResponse) => void
 }) {
   const router = useRouter()
+  const { t } = useLanguage()
   const accent = getAccentColor(accentIndex)
   const workspaceName = project.workspaceName
 
@@ -100,9 +103,9 @@ function ProjectCard({
 
             {/* Menu */}
             <ItemActionMenu
-              ariaLabel="Acciones del proyecto"
+              ariaLabel={t("projects.projectActions")}
               onOpen={() => router.push(`/projects/${project.id}`)}
-              openLabel="Abrir proyecto"
+              openLabel={t("projects.openLabel")}
               onEdit={() => onEdit(project)}
               onDelete={() => onDelete(project)}
               onShare={project.userRole === "owner" ? () => onShare(project) : undefined}
@@ -122,7 +125,7 @@ function ProjectCard({
               variant={project.userRole === "owner" ? "default" : "secondary"}
               className="text-[10px] px-1.5 py-0 h-4 font-medium"
             >
-              {ROLE_LABEL[project.userRole]}
+              {getRoleLabel(project.userRole, t)}
             </Badge>
             {workspaceName && (
               <Badge

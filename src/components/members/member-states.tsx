@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Users } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 export function MembersSkeleton() {
   return (
@@ -25,15 +26,16 @@ export function MembersSkeleton() {
 }
 
 export function MembersEmptyState() {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <div className="flex items-center justify-center size-12 rounded-xl bg-muted">
         <Users className="size-5 text-muted-foreground" />
       </div>
       <div className="text-center">
-        <h3 className="text-sm font-semibold text-foreground">Sin miembros</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("members.empty.title")}</h3>
         <p className="text-xs text-muted-foreground mt-1.5 max-w-65 leading-relaxed">
-          Solo tú tienes acceso a este proyecto. Invita a alguien para colaborar.
+          {t("members.empty.description")}
         </p>
       </div>
     </div>

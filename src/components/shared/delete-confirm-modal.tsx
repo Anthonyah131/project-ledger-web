@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AlertTriangle } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ export function DeleteConfirmModal({
   description,
   message,
 }: DeleteConfirmModalProps) {
+  const { t } = useLanguage()
   const [submitting, setSubmitting] = useState(false)
 
   const handleConfirm = async () => {
@@ -62,7 +64,7 @@ export function DeleteConfirmModal({
         <p className="text-sm text-foreground py-2">{message}</p>
         <DialogFooter>
           <Button variant="ghost" onClick={onClose} disabled={submitting}>
-            Cancelar
+            {t("common.cancel")}
           </Button>
           <Button
             variant="destructive"
@@ -71,7 +73,7 @@ export function DeleteConfirmModal({
             }}
             disabled={submitting}
           >
-            {submitting ? "Eliminando..." : "Eliminar"}
+            {submitting ? t("common.deleting") : t("common.delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
 import { useUpdateWorkspaceForm } from "@/hooks/forms/use-workspace-form"
+import { useLanguage } from "@/context/language-context"
 import type { WorkspaceResponse, UpdateWorkspaceRequest } from "@/types/workspace"
 
 interface EditWorkspaceModalProps {
@@ -21,24 +22,25 @@ interface EditWorkspaceModalProps {
 }
 
 export function EditWorkspaceModal({ workspace, open, onClose, onSave }: EditWorkspaceModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useUpdateWorkspaceForm({ workspace, onSave, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar workspace"
-      description="Modifica los datos del workspace."
+      title={t("workspaces.editTitle")}
+      description={t("workspaces.editSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar"
+      submitLabel={t("common.save")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} {t("common.required")}</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -53,8 +55,8 @@ export function EditWorkspaceModal({ workspace, open, onClose, onSave }: EditWor
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Descripción
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.description")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
@@ -71,11 +73,11 @@ export function EditWorkspaceModal({ workspace, open, onClose, onSave }: EditWor
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Color
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("workspaces.colorLabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="#4CAF50" {...field} />
+                <Input placeholder={t("workspaces.colorPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,11 +89,11 @@ export function EditWorkspaceModal({ workspace, open, onClose, onSave }: EditWor
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Ícono
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("workspaces.iconLabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="home, briefcase..." {...field} />
+                <Input placeholder={t("workspaces.iconPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

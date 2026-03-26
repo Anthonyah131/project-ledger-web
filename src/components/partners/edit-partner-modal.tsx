@@ -12,6 +12,7 @@ import {
 import { FormModal } from "@/components/shared/form-modal"
 import { useUpdatePartnerForm } from "@/hooks/forms/use-partner-form"
 import type { PartnerResponse, UpdatePartnerRequest } from "@/types/partner"
+import { useLanguage } from "@/context/language-context"
 
 interface EditPartnerModalProps {
   partner: PartnerResponse
@@ -22,23 +23,24 @@ interface EditPartnerModalProps {
 
 export function EditPartnerModal({ partner, open, onClose, onSave }: EditPartnerModalProps) {
   const { form, onSubmit, handleClose } = useUpdatePartnerForm({ partner, onSave, onClose })
+  const { t } = useLanguage()
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar partner"
-      description="Actualiza los datos del contacto financiero."
+      title={t("partners.editTitle")}
+      description={t("partners.editSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar"
+      submitLabel={t("common.save")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} *</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -54,8 +56,8 @@ export function EditPartnerModal({ partner, open, onClose, onSave }: EditPartner
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Email
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("common.email")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
@@ -70,8 +72,8 @@ export function EditPartnerModal({ partner, open, onClose, onSave }: EditPartner
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Teléfono
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("partners.phonelabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -88,8 +90,8 @@ export function EditPartnerModal({ partner, open, onClose, onSave }: EditPartner
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Notas
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.notes")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />

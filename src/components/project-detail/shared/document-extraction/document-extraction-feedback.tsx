@@ -2,6 +2,7 @@
 
 import { TriangleAlert } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useLanguage } from "@/context/language-context"
 
 interface DocumentExtractionFeedbackProps {
   warnings: string[]
@@ -9,6 +10,7 @@ interface DocumentExtractionFeedbackProps {
 }
 
 export function DocumentExtractionFeedback({ warnings, error }: DocumentExtractionFeedbackProps) {
+  const { t } = useLanguage()
   return (
     <>
       {warnings.length > 0 && (
@@ -16,7 +18,7 @@ export function DocumentExtractionFeedback({ warnings, error }: DocumentExtracti
           <div className="flex items-start gap-2">
             <TriangleAlert className="size-4 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <AlertTitle>Avisos del extractor</AlertTitle>
+              <AlertTitle>{t("documentExtraction.feedback.warningsTitle")}</AlertTitle>
               <AlertDescription>
                 <ul className="list-disc pl-4">
                   {warnings.map((warning) => (
@@ -31,7 +33,7 @@ export function DocumentExtractionFeedback({ warnings, error }: DocumentExtracti
 
       {error && (
         <Alert variant="destructive">
-          <AlertTitle>No se pudo extraer el documento</AlertTitle>
+          <AlertTitle>{t("documentExtraction.feedback.errorTitle")}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}

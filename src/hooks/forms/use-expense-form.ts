@@ -2,6 +2,7 @@
 
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createExpenseSchema,
   updateExpenseSchema,
@@ -53,12 +54,13 @@ export function useCreateExpenseForm({
   categories,
   paymentMethods,
 }: UseCreateExpenseFormOptions) {
+  const { t } = useLanguage()
   const defaultCategoryId =
     categories.find((c) => c.isDefault)?.id || categories[0]?.id || ""
   const defaultPaymentMethodId = paymentMethods[0]?.id || ""
 
   const form = useForm<CreateExpenseFormValues>({
-    resolver: zodResolver(createExpenseSchema),
+    resolver: zodResolver(createExpenseSchema(t)),
     defaultValues: {
       title: "",
       originalAmount: "",
@@ -196,8 +198,9 @@ interface UseUpdateExpenseFormOptions {
 }
 
 export function useUpdateExpenseForm({ expense, onSave, onClose }: UseUpdateExpenseFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateExpenseFormValues>({
-    resolver: zodResolver(updateExpenseSchema),
+    resolver: zodResolver(updateExpenseSchema(t)),
     defaultValues: {
       obligationId: "none",
       isActive: true,

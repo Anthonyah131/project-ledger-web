@@ -5,5 +5,9 @@
       "Bash(npx shadcn@latest add switch --yes)",
       "Bash(npx tsc:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ],
+  "enableAllProjectMcpServers": true
 }

@@ -1,9 +1,10 @@
 "use client"
 
 import { memo } from "react"
+import { useLanguage } from "@/context/language-context"
 import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
-import { getAccentColorRaw, STATUS_COLORS } from "@/lib/constants"
+import { getAccentColorRaw, STATUS_COLORS, getObligationStatusLabel } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type { ObligationResponse } from "@/types/obligation"
@@ -19,24 +20,25 @@ function ObligationsListComponent({
   onEdit,
   onDelete,
 }: ObligationsListProps) {
+  const { t } = useLanguage()
   return (
     <div className="rounded-xl border border-violet-500/20 bg-card shadow-sm shadow-violet-500/5 overflow-hidden">
       {/* Header */}
       <div className="grid grid-cols-[1fr_100px_100px_1fr_auto_auto] items-center gap-4 px-5 py-2.5 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent border-b border-violet-500/20">
         <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">
-          Titulo
+          {t("obligations.colTitle")}
         </span>
         <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">
-          Vence
+          {t("obligations.colDueDate")}
         </span>
         <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest text-right">
-          Total
+          {t("obligations.colTotal")}
         </span>
         <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest">
-          Progreso
+          {t("obligations.colProgress")}
         </span>
         <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest w-24 text-center">
-          Estado
+          {t("obligations.colStatus")}
         </span>
         <span className="w-8" />
       </div>
@@ -70,7 +72,7 @@ function ObligationsListComponent({
 
             {/* Due date */}
             <span className="text-xs text-muted-foreground">
-              {formatDate(obl.dueDate, { fixTimezone: true, fallback: "Sin vencimiento" })}
+              {formatDate(obl.dueDate, { fixTimezone: true, fallback: t("obligations.noDueDate") })}
             </span>
 
             {/* Total */}
@@ -91,7 +93,7 @@ function ObligationsListComponent({
                 />
               </div>
               <span className="text-[11px] text-muted-foreground">
-                {formatAmount(obl.paidAmount, "")} pagado
+                {formatAmount(obl.paidAmount, "")} {t("obligations.paidLabel")}
               </span>
             </div>
 
@@ -101,7 +103,7 @@ function ObligationsListComponent({
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${sc.bg} ${sc.text}`}
               >
                 <span className={`size-1.5 rounded-full ${sc.dot}`} />
-                {sc.label}
+                {getObligationStatusLabel(obl.status, t)}
               </span>
             </div>
 

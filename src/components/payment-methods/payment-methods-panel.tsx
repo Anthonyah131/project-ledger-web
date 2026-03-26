@@ -4,6 +4,7 @@ import { useCallback } from "react"
 import { Plus } from "lucide-react"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/context/language-context"
 import { usePaymentMethods } from "@/hooks/payment-methods/use-payment-methods"
 import { PaymentMethodsToolbar } from "./payment-methods-toolbar"
 import { PaymentMethodsShelfView } from "./payment-methods-shelf-view"
@@ -24,6 +25,7 @@ const EditPaymentMethodModal = dynamic(() =>
 )
 
 export function PaymentMethodsPanel() {
+  const { t } = useLanguage()
   const {
     paymentMethods,
     total,
@@ -76,11 +78,11 @@ export function PaymentMethodsPanel() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
-            Métodos de pago
+            {t("paymentMethods.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             <span className="font-bold text-cyan-600 dark:text-cyan-400">{total}</span>{" "}
-            {total === 1 ? "método" : "métodos"}
+            {total === 1 ? t("paymentMethods.singular") : t("paymentMethods.plural")}
           </p>
         </div>
         <Button
@@ -89,7 +91,7 @@ export function PaymentMethodsPanel() {
           className="bg-gradient-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700 border-0 shadow-sm shadow-cyan-500/30 transition-all"
         >
           <Plus className="size-3.5" />
-          Nuevo
+          {t("paymentMethods.newButtonShort")}
         </Button>
       </div>
 
@@ -160,9 +162,9 @@ export function PaymentMethodsPanel() {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title="Eliminar metodo de pago"
-        description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
-        getMessage={(pm) => `¿Eliminar "${pm.name}"?`}
+        title={t("paymentMethods.delete.title")}
+        description={t("paymentMethods.delete.description")}
+        getMessage={(pm) => t("paymentMethods.delete.confirm", { name: pm.name })}
       />
     </div>
   )

@@ -23,7 +23,7 @@ export function DashboardMonthlyLoading() {
           <Skeleton className="h-5 w-48" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[200px] w-full" />
+          <Skeleton className="h-50 w-full" />
         </CardContent>
       </Card>
 
@@ -33,7 +33,7 @@ export function DashboardMonthlyLoading() {
             <Skeleton className="h-5 w-52" />
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[300px] w-full" />
+            <Skeleton className="h-75 w-full" />
           </CardContent>
         </Card>
 
@@ -42,7 +42,7 @@ export function DashboardMonthlyLoading() {
             <Skeleton className="h-5 w-40" />
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[250px] w-full" />
+            <Skeleton className="h-62.5 w-full" />
           </CardContent>
         </Card>
       </div>

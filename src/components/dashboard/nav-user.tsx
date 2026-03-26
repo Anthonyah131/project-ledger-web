@@ -28,15 +28,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/auth-context"
+import { useLanguage } from "@/context/language-context"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user, logout } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   if (!user) return null
 
-  const displayName = user.fullName?.trim() || user.email || "Usuario"
+  const displayName = user.fullName?.trim() || user.email || t("common.user")
 
   /** Initials for avatar fallback (up to 2 letters) */
   const initials = displayName
@@ -100,13 +102,13 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push("/settings/profile")}>
                 <IconUserCircle />
-                Mi perfil
+                {t("common.profile")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
-              Cerrar sesión
+              {t("common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

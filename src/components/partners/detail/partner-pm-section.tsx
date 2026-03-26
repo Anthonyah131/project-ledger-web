@@ -1,25 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/context/language-context"
 import { CreditCard } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Pagination } from "@/components/shared/pagination"
 import { SectionToolbar } from "./section-toolbar"
-import { PAYMENT_METHOD_ACCENT, PAYMENT_METHOD_TYPE_LABEL } from "@/lib/constants"
+import { PAYMENT_METHOD_ACCENT, getPaymentMethodTypeLabel } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import type { PartnerPaymentMethodItem } from "@/types/partner"
 import type { ViewMode } from "@/types/project"
 
-const SORT_OPTIONS = [
-  { value: "name:asc", label: "A - Z" },
-  { value: "name:desc", label: "Z - A" },
-  { value: "updatedAt:desc", label: "Recientes" },
-]
-
 function PmCard({ pm }: { pm: PartnerPaymentMethodItem }) {
   const router = useRouter()
+  const { t } = useLanguage()
   return (
     <div
       role="listitem"
@@ -37,7 +33,7 @@ function PmCard({ pm }: { pm: PartnerPaymentMethodItem }) {
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-auto">
             <Badge className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
-              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+              {getPaymentMethodTypeLabel(pm.type, t)}
             </Badge>
             <span className="text-border">{"/"}</span>
             <span className="text-xs font-bold text-cyan-700 dark:text-cyan-400">{pm.currency}</span>
@@ -50,6 +46,7 @@ function PmCard({ pm }: { pm: PartnerPaymentMethodItem }) {
 
 function PmRow({ pm }: { pm: PartnerPaymentMethodItem }) {
   const router = useRouter()
+  const { t } = useLanguage()
   return (
     <div
       role="listitem"
@@ -62,7 +59,7 @@ function PmRow({ pm }: { pm: PartnerPaymentMethodItem }) {
         {pm.bankName && <p className="text-xs text-muted-foreground truncate mt-0.5">{pm.bankName}</p>}
       </div>
       <Badge className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 shrink-0">
-        {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+        {getPaymentMethodTypeLabel(pm.type, t)}
       </Badge>
       <span className="text-xs font-bold text-cyan-700 dark:text-cyan-400 w-10 text-right tabular-nums">{pm.currency}</span>
     </div>
@@ -93,19 +90,26 @@ export function PartnerPmSection({
   loading,
 }: PartnerPmSectionProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("shelf")
+  const { t } = useLanguage()
+
+  const sortOptions = useMemo(() => [
+    { value: "name:asc", label: t("common.sortAZ") },
+    { value: "name:desc", label: t("common.sortZA") },
+    { value: "updatedAt:desc", label: t("common.sortRecent") },
+  ], [t])
 
   return (
     <div className="bg-card rounded-xl border border-cyan-500/20 shadow-sm shadow-cyan-500/5 overflow-hidden mb-4">
       <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-border bg-gradient-to-r from-cyan-500/5 to-transparent">
         <CreditCard className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
-        <h2 className="text-sm font-semibold text-foreground">Métodos de pago</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("nav.paymentMethods")}</h2>
         {totalCount > 0 && (
           <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 tabular-nums">{totalCount}</span>
         )}
         <div className="ml-auto">
           <SectionToolbar
             sort={sort}
-            sortOptions={SORT_OPTIONS}
+            sortOptions={sortOptions}
             onSortChange={onSortChange}
             pageSize={pageSize}
             onPageSizeChange={onPageSizeChange}
@@ -120,7 +124,7 @@ export function PartnerPmSection({
       {loading ? (
         viewMode === "shelf" ? <GridSkeleton /> : <ListSkeleton />
       ) : items.length === 0 ? (
-        <SectionEmpty message="Este partner no tiene métodos de pago registrados." />
+        <SectionEmpty message={t("partners.pmSectionEmpty")} />
       ) : viewMode === "shelf" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-cyan-500/10" role="list">
           {items.map((pm) => <PmCard key={pm.id} pm={pm} />)}

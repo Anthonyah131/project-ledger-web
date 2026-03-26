@@ -2,6 +2,7 @@
 
 import { useCallback } from "react"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import { IncomeFormFields } from "./income-form-fields"
 import { DocumentExtractionStep } from "@/components/project-detail/shared/document-extraction/document-extraction-step"
 import { DocumentExtractionFeedback } from "@/components/project-detail/shared/document-extraction/document-extraction-feedback"
@@ -62,6 +63,7 @@ export function CreateIncomeModal({
       projectCurrency,
     })
 
+  const { t } = useLanguage()
   const isAiMode = mode === "ai"
   const {
     showFormStep,
@@ -96,22 +98,22 @@ export function CreateIncomeModal({
     <FormModal
       open={open}
       onClose={handleModalClose}
-      title={isAiMode ? "Nuevo ingreso con IA" : "Nuevo ingreso"}
+      title={isAiMode ? t("incomes.aiTitle") : t("incomes.createTitle")}
       description={
         isAiMode
-          ? "Sube el documento y luego revisa el borrador antes de guardar el ingreso."
-          : "Registra un nuevo ingreso en el proyecto."
+          ? t("incomes.aiSubtitle")
+          : t("incomes.createSubtitle")
       }
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear ingreso"
+      submitLabel={t("incomes.create")}
       submitHidden={isAiMode && !showFormStep}
       contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       {isAiMode && !showFormStep && (
         <DocumentExtractionStep
-          title="Extraer borrador con IA"
-          description="Sube una foto o PDF del recibo/factura para prellenar el formulario del ingreso."
+          title={t("incomes.extractWithAI")}
+          description={t("incomes.aiUploadHint")}
           quota={quota}
           quotaLoading={quotaLoading}
           quotaError={quotaError}

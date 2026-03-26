@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import { ISO_CURRENCIES } from "@/types/project"
 import type { CreateObligationRequest } from "@/types/obligation"
 import { useCreateObligationForm } from "@/hooks/forms/use-obligation-form"
@@ -33,17 +34,18 @@ export function CreateObligationModal({
   onClose,
   onCreate,
 }: CreateObligationModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useCreateObligationForm({ onCreate, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nueva obligacion"
-      description="Registra una nueva obligacion financiera."
+      title={t("obligations.createTitle")}
+      description={t("obligations.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear obligacion"
+      submitLabel={t("obligations.create")}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -51,9 +53,9 @@ export function CreateObligationModal({
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Titulo *</FormLabel>
+            <FormLabel>{t("obligations.titleLabel")} {t("common.required")}</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Prestamo oficina" autoFocus {...field} />
+              <Input placeholder={t("obligations.titlePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -66,7 +68,7 @@ export function CreateObligationModal({
           name="totalAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Monto total *</FormLabel>
+              <FormLabel>{t("obligations.totalAmountLabel")} {t("common.required")}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
               </FormControl>
@@ -79,7 +81,7 @@ export function CreateObligationModal({
           name="currency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Moneda *</FormLabel>
+              <FormLabel>{t("common.currency")} {t("common.required")}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -105,7 +107,7 @@ export function CreateObligationModal({
         name="dueDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Fecha de vencimiento</FormLabel>
+            <FormLabel>{t("obligations.dueDateLabel")}</FormLabel>
             <FormControl>
               <DateInput {...field} />
             </FormControl>
@@ -119,7 +121,7 @@ export function CreateObligationModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion</FormLabel>
+            <FormLabel>{t("common.description")}</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>

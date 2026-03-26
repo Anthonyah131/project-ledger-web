@@ -4,11 +4,12 @@ import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
+import { PAYMENT_METHOD_ACCENT } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { User } from "lucide-react"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { useLanguage } from "@/context/language-context"
 
 interface PaymentMethodsListProps {
   paymentMethods: PaymentMethodResponse[]
@@ -18,17 +19,24 @@ interface PaymentMethodsListProps {
 
 function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: PaymentMethodsListProps) {
   const router = useRouter()
+  const { t } = useLanguage()
+
+  const typeLabels: Record<string, string> = {
+    bank: t("paymentMethods.typeBank"),
+    card: t("paymentMethods.typeCard"),
+    cash: t("paymentMethods.typeCash"),
+  }
 
   return (
-    <div role="list" aria-label="Métodos de pago">
+    <div role="list" aria-label={t("paymentMethods.title")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
-        <span className="flex-1">Método</span>
-        <span className="w-20 text-center hidden sm:block">Tipo</span>
-        <span className="w-16 text-center hidden sm:block">Moneda</span>
-        <span className="w-40 hidden md:block">Banco / Emisor</span>
-        <span className="w-32 hidden lg:block">Partner</span>
-        <span className="w-28 text-right hidden lg:block">Actualizado</span>
+        <span className="flex-1">{t("paymentMethods.columnMethod")}</span>
+        <span className="w-20 text-center hidden sm:block">{t("common.type")}</span>
+        <span className="w-16 text-center hidden sm:block">{t("common.currency")}</span>
+        <span className="w-40 hidden md:block">{t("paymentMethods.columnBankIssuer")}</span>
+        <span className="w-32 hidden lg:block">{t("paymentMethods.columnPartner")}</span>
+        <span className="w-28 text-right hidden lg:block">{t("paymentMethods.columnUpdated")}</span>
         <span className="w-8" />
       </div>
 
@@ -62,7 +70,7 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
           {/* Type badge */}
           <div className="w-20 flex justify-center sm:flex">
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
-              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+              {typeLabels[pm.type]}
             </Badge>
           </div>
 
@@ -98,9 +106,9 @@ function PaymentMethodsListComponent({ paymentMethods, onEdit, onDelete }: Payme
 
           {/* Menu */}
           <ItemActionMenu
-            ariaLabel="Acciones del método de pago"
+            ariaLabel={t("paymentMethods.actionsAriaLabel")}
             onOpen={() => router.push(`/payment-methods/${pm.id}`)}
-            openLabel="Ver detalle"
+            openLabel={t("paymentMethods.viewDetail")}
             onEdit={() => onEdit(pm)}
             onDelete={() => onDelete(pm)}
             stopPropagation

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import type { ViewMode } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 
 interface PartnersToolbarProps {
   query: string
@@ -33,6 +34,8 @@ export function PartnersToolbar({
   pageSize,
   onPageSizeChange,
 }: PartnersToolbarProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Left: search */}
@@ -42,9 +45,9 @@ export function PartnersToolbar({
           <Input
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Buscar por nombre, email…"
+            placeholder={t("partners.searchPlaceholder")}
             className="pl-8.5 h-8 text-sm focus-visible:ring-violet-500/50 focus-visible:border-violet-500/50"
-            aria-label="Buscar partners"
+            aria-label={t("partners.searchAriaLabel")}
             autoComplete="off"
           />
         </div>
@@ -53,19 +56,19 @@ export function PartnersToolbar({
       {/* Right: sort + page size + view toggle */}
       <div className="flex items-center gap-2">
         <Select value={sort} onValueChange={onSortChange}>
-          <SelectTrigger className="w-auto min-w-27.5 h-8 text-sm" aria-label="Ordenar">
+          <SelectTrigger className="w-auto min-w-27.5 h-8 text-sm" aria-label={t("common.sortBy")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="name:asc">A - Z</SelectItem>
-            <SelectItem value="name:desc">Z - A</SelectItem>
-            <SelectItem value="updatedAt:desc">Recientes</SelectItem>
-            <SelectItem value="createdAt:desc">Nuevos</SelectItem>
+            <SelectItem value="name:asc">{t("common.sortAZ")}</SelectItem>
+            <SelectItem value="name:desc">{t("common.sortZA")}</SelectItem>
+            <SelectItem value="updatedAt:desc">{t("common.sortRecent")}</SelectItem>
+            <SelectItem value="createdAt:desc">{t("common.sortNew")}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
-          <SelectTrigger className="w-auto min-w-15 h-8 text-sm" aria-label="Por página">
+          <SelectTrigger className="w-auto min-w-15 h-8 text-sm" aria-label={t("common.perPage")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -79,14 +82,14 @@ export function PartnersToolbar({
         <div
           className="flex items-center h-8 border border-violet-500/30 rounded-md overflow-hidden"
           role="radiogroup"
-          aria-label="Modo de vista"
+          aria-label={t("common.viewMode")}
         >
           <button
             type="button"
             onClick={() => onViewModeChange("shelf")}
             role="radio"
             aria-checked={viewMode === "shelf"}
-            aria-label="Vista cuadrícula"
+            aria-label={t("common.gridView")}
             className={cn(
               "flex items-center justify-center size-8 transition-colors duration-150",
               viewMode === "shelf"
@@ -101,7 +104,7 @@ export function PartnersToolbar({
             onClick={() => onViewModeChange("list")}
             role="radio"
             aria-checked={viewMode === "list"}
-            aria-label="Vista lista"
+            aria-label={t("common.listView")}
             className={cn(
               "flex items-center justify-center size-8 border-l border-violet-500/30 transition-colors duration-150",
               viewMode === "list"

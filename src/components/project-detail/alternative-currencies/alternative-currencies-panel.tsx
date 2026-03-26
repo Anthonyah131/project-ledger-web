@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useLanguage } from "@/context/language-context"
 import type { CurrencyResponse } from "@/types/currency"
 import type { ProjectAlternativeCurrencyResponse } from "@/types/project-alternative-currency"
 
@@ -38,6 +39,7 @@ export function AlternativeCurrenciesPanel({
   onAdd,
   onDelete,
 }: AlternativeCurrenciesPanelProps) {
+  const { t } = useLanguage()
   const [selectedCode, setSelectedCode] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -73,12 +75,12 @@ export function AlternativeCurrenciesPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl border border-fuchsia-500/20 bg-card p-4 bg-gradient-to-r from-fuchsia-500/8 via-purple-500/5 to-transparent shadow-sm shadow-fuchsia-500/5">
+      <div className="rounded-xl border border-fuchsia-500/20 bg-card p-4 bg-linear-to-r from-fuchsia-500/8 via-purple-500/5 to-transparent shadow-sm shadow-fuchsia-500/5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <p className="text-sm font-bold text-foreground">Monedas alternativas del proyecto</p>
+            <p className="text-sm font-bold text-foreground">{t("alternativeCurrencies.panel.title")}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Moneda base del proyecto:{" "}
+              {t("alternativeCurrencies.panel.baseCurrency")}{" "}
               <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">{projectCurrency}</span>
             </p>
           </div>
@@ -86,8 +88,8 @@ export function AlternativeCurrenciesPanel({
           {canManage && (
             <div className="flex items-center gap-2">
               <Select value={selectedCode} onValueChange={setSelectedCode}>
-                <SelectTrigger className="w-56 h-8 text-sm border-fuchsia-500/30" aria-label="Seleccionar moneda alternativa">
-                  <SelectValue placeholder={catalogLoading ? "Cargando..." : "Agregar moneda"} />
+                <SelectTrigger className="w-56 h-8 text-sm border-fuchsia-500/30" aria-label={t("alternativeCurrencies.panel.selectAriaLabel")}>
+                  <SelectValue placeholder={catalogLoading ? t("common.loading") : t("alternativeCurrencies.panel.addPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableCodes.map((currency) => (
@@ -101,10 +103,10 @@ export function AlternativeCurrenciesPanel({
                 size="sm"
                 onClick={handleAdd}
                 disabled={!selectedCode || submitting || catalogLoading}
-                className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white hover:from-fuchsia-700 hover:to-purple-700 border-0 shadow-sm shadow-fuchsia-500/30"
+                className="bg-linear-to-r from-fuchsia-600 to-purple-600 text-white hover:from-fuchsia-700 hover:to-purple-700 border-0 shadow-sm shadow-fuchsia-500/30"
               >
                 {submitting ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />}
-                Agregar
+                {t("common.add")}
               </Button>
             </div>
           )}
@@ -115,7 +117,7 @@ export function AlternativeCurrenciesPanel({
         <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400">
           <TriangleAlert className="size-4" />
           <AlertDescription className="text-xs">
-            Al agregar una nueva moneda alternativa, deberás asignar manualmente los datos de conversión en cada movimiento existente para que el balance se refleje correctamente.
+            {t("alternativeCurrencies.panel.movementsWarning")}
           </AlertDescription>
         </Alert>
       )}
@@ -127,13 +129,13 @@ export function AlternativeCurrenciesPanel({
       ) : currencies.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-5 py-8 text-center">
           <Coins className="size-6 text-muted-foreground/50 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">No hay monedas alternativas configuradas.</p>
+          <p className="text-sm text-muted-foreground">{t("alternativeCurrencies.panel.empty")}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-fuchsia-500/20 overflow-hidden shadow-sm">
-          <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-fuchsia-600 dark:text-fuchsia-400 uppercase tracking-widest border-b border-fuchsia-500/20 bg-gradient-to-r from-fuchsia-500/10 via-purple-500/5 to-transparent">
-            <span className="flex-1">Moneda</span>
-            <span className="w-28 text-right hidden sm:block">Simbolo</span>
+          <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-fuchsia-600 dark:text-fuchsia-400 uppercase tracking-widest border-b border-fuchsia-500/20 bg-linear-to-r from-fuchsia-500/10 via-purple-500/5 to-transparent">
+            <span className="flex-1">{t("common.currency")}</span>
+            <span className="w-28 text-right hidden sm:block">{t("alternativeCurrencies.panel.colSymbol")}</span>
             {canManage && <span className="w-8" />}
           </div>
 
@@ -161,7 +163,7 @@ export function AlternativeCurrenciesPanel({
                     onClick={() => handleDelete(currency)}
                     disabled={deletingId === currency.id}
                     className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                    aria-label={`Eliminar ${currency.currencyCode}`}
+                    aria-label={t("alternativeCurrencies.panel.deleteAria", { code: currency.currencyCode })}
                   >
                     {deletingId === currency.id ? (
                       <Loader2 className="size-3.5 animate-spin" />

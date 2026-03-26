@@ -26,6 +26,7 @@ import { formatAmount } from "@/lib/format-utils"
 import type { ExpenseResponse } from "@/types/expense"
 import type { IncomeResponse } from "@/types/income"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { useLanguage } from "@/context/language-context"
 
 type Movement =
   | { type: "expense"; data: ExpenseResponse }
@@ -37,12 +38,6 @@ interface MovementDetailSheetProps {
   paymentMethods: PaymentMethodResponse[]
   onClose: () => void
   onEdit: () => void
-}
-
-const PM_TYPE_LABELS: Record<string, string> = {
-  bank: "Banco",
-  cash: "Efectivo",
-  card: "Tarjeta",
 }
 
 const PM_TYPE_ICONS: Record<string, React.ElementType> = {
@@ -58,6 +53,14 @@ export function MovementDetailSheet({
   onClose,
   onEdit,
 }: MovementDetailSheetProps) {
+  const { t } = useLanguage()
+
+  const PM_TYPE_LABELS: Record<string, string> = {
+    bank: t("movementDetail.pmTypes.bank"),
+    cash: t("movementDetail.pmTypes.cash"),
+    card: t("movementDetail.pmTypes.card"),
+  }
+
   const open = !!movement
 
   const pm = movement
@@ -71,7 +74,6 @@ export function MovementDetailSheet({
 
   const data = movement?.data
   const isIncome = movement?.type === "income"
-  const accentColor = isIncome ? "emerald" : "rose"
 
   const PmTypeIcon = pm?.type ? (PM_TYPE_ICONS[pm.type] ?? CreditCard) : CreditCard
 
@@ -110,15 +112,15 @@ export function MovementDetailSheet({
                         variant="outline"
                         className={`text-[10px] font-semibold uppercase ${isIncome ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-400"}`}
                       >
-                        {isIncome ? "Ingreso" : "Gasto"}
+                        {isIncome ? t("movementDetail.incomeLabel") : t("movementDetail.expenseLabel")}
                       </Badge>
                       {data.isActive ? (
                         <Badge variant="outline" className="text-[10px] font-semibold uppercase border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
-                          Contabilizado
+                          {t("movementDetail.accountedLabel")}
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="text-[10px] font-semibold uppercase border-amber-600/50 bg-amber-500/25 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">
-                          Recordatorio
+                          {t("movementDetail.reminderLabel")}
                         </Badge>
                       )}
                       {data.hasSplits && (
@@ -139,13 +141,13 @@ export function MovementDetailSheet({
                       onClick={() => { onClose(); setTimeout(onEdit, 150) }}
                     >
                       <Pencil className="size-3" />
-                      Editar
+                      {t("common.edit")}
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0"
-                      aria-label="Cerrar"
+                      aria-label={t("common.close")}
                       onClick={onClose}
                     >
                       <X className="size-4" />
@@ -162,12 +164,12 @@ export function MovementDetailSheet({
                 {/* Amounts card */}
                 <div className="rounded-xl border border-border/70 bg-muted/20 overflow-hidden">
                   <div className={`px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest ${isIncome ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/8" : "text-rose-600 dark:text-rose-400 bg-rose-500/8"}`}>
-                    Montos
+                    {t("movementDetail.amountsSection")}
                   </div>
                   <div className="px-4 pb-4 pt-3 flex flex-col gap-2.5">
                     {/* Original amount — primary */}
                     <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-muted-foreground">Original</span>
+                      <span className="text-xs text-muted-foreground">{t("movementDetail.originalLabel")}</span>
                       <span className={`text-xl font-bold tabular-nums ${isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                         {data.originalCurrency} {formatAmount(data.originalAmount)}
                       </span>
@@ -178,7 +180,7 @@ export function MovementDetailSheet({
                       <>
                         <Separator className="opacity-50" />
                         <div className="flex items-baseline justify-between">
-                          <span className="text-xs text-muted-foreground">En {projectCurrency}</span>
+                          <span className="text-xs text-muted-foreground">{t("movementDetail.inCurrency", { currency: projectCurrency })}</span>
                           <span className="text-sm font-semibold tabular-nums">
                             {projectCurrency} {formatAmount(data.convertedAmount)}
                           </span>
@@ -194,7 +196,7 @@ export function MovementDetailSheet({
                         <>
                           <Separator className="opacity-50" />
                           <div className="flex items-baseline justify-between">
-                            <span className="text-xs text-muted-foreground">En cuenta ({data.accountCurrency})</span>
+                            <span className="text-xs text-muted-foreground">{t("movementDetail.inAccount", { currency: data.accountCurrency })}</span>
                             <span className="text-sm font-semibold tabular-nums text-foreground/80">
                               {data.accountCurrency} {formatAmount((data as IncomeResponse).accountAmount)}
                             </span>
@@ -206,7 +208,7 @@ export function MovementDetailSheet({
                     {data.currencyExchanges && data.currencyExchanges.length > 0 && (
                       <>
                         <Separator className="opacity-50" />
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Conversiones alternativas</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{t("movementDetail.altConversions")}</p>
                         {data.currencyExchanges.map((ex) => (
                           <div key={ex.id} className="flex items-baseline justify-between">
                             <span className="text-xs text-muted-foreground">{ex.currencyCode}</span>
@@ -222,17 +224,17 @@ export function MovementDetailSheet({
 
                 {/* Details */}
                 <div className="flex flex-col gap-3">
-                  <DetailRow icon={<CalendarDays className="size-3.5" />} label="Fecha">
+                  <DetailRow icon={<CalendarDays className="size-3.5" />} label={t("common.date")}>
                     {formatDate(date, { fixTimezone: true })}
                   </DetailRow>
 
-                  <DetailRow icon={<Tag className="size-3.5" />} label="Categoría">
+                  <DetailRow icon={<Tag className="size-3.5" />} label={t("movementDetail.categoryLabel")}>
                     {data.categoryName ?? "—"}
                   </DetailRow>
 
                   <DetailRow
                     icon={<CreditCard className="size-3.5" />}
-                    label={isIncome ? "Cuenta destino" : "Método de pago"}
+                    label={isIncome ? t("movementDetail.destinationAccount") : t("movementDetail.paymentMethodLabel")}
                   >
                     {pm ? (
                       <div className="flex flex-col gap-1.5">
@@ -265,19 +267,19 @@ export function MovementDetailSheet({
                   </DetailRow>
 
                   {data.receiptNumber && (
-                    <DetailRow icon={<Hash className="size-3.5" />} label="No. recibo">
+                    <DetailRow icon={<Hash className="size-3.5" />} label={t("movementDetail.receiptNumber")}>
                       {data.receiptNumber}
                     </DetailRow>
                   )}
 
                   {data.description && (
-                    <DetailRow icon={<FileText className="size-3.5" />} label="Descripción">
+                    <DetailRow icon={<FileText className="size-3.5" />} label={t("common.description")}>
                       <span className="whitespace-pre-wrap">{data.description}</span>
                     </DetailRow>
                   )}
 
                   {data.notes && (
-                    <DetailRow icon={<StickyNote className="size-3.5" />} label="Notas">
+                    <DetailRow icon={<StickyNote className="size-3.5" />} label={t("common.notes")}>
                       <span className="whitespace-pre-wrap">{data.notes}</span>
                     </DetailRow>
                   )}
@@ -291,7 +293,7 @@ export function MovementDetailSheet({
                       <div className="flex items-center gap-2 mb-3">
                         <GitBranch className="size-3.5 text-violet-500" />
                         <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">
-                          División entre partners
+                          {t("movementDetail.splitsSection")}
                         </p>
                       </div>
                       <div className="flex flex-col gap-2">
@@ -336,7 +338,7 @@ export function MovementDetailSheet({
                 {data.hasSplits && (!data.splits || data.splits.length === 0) && (
                   <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
                     <Info className="size-3.5 shrink-0" />
-                    Este movimiento tiene splits. Abre el editor para verlos en detalle.
+                    {t("movementDetail.splitsInfo")}
                   </div>
                 )}
               </div>

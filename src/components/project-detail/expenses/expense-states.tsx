@@ -3,6 +3,7 @@
 import { FolderOpen } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
@@ -12,15 +13,17 @@ interface EmptyStateProps {
 }
 
 export function ExpensesEmptyState({ hasSearch, onCreate }: EmptyStateProps) {
+  const { t } = useLanguage()
+
   return (
     <EmptyState
       hasSearch={hasSearch}
       onCreate={onCreate}
       icon={FolderOpen}
-      title="Sin gastos registrados"
-      description="Registra el primer gasto del proyecto."
-      searchDescription="No se encontraron gastos con ese criterio."
-      createLabel="Nuevo gasto"
+      title={t("expenses.empty")}
+      description={t("expenses.emptyDescription")}
+      searchDescription={t("expenses.emptySearchDescription")}
+      createLabel={t("expenses.new")}
     />
   )
 }

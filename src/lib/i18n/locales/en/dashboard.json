@@ -27,6 +27,79 @@
       "noProjectSelected": "Select a project to load the dashboard.",
       "loadMonthly": "Error loading monthly dashboard",
       "loadProjects": "Error loading projects"
+    },
+    "monthly": {
+      "summaryCards": {
+        "vsMonth": "Vs {month}: {delta} ({percent})",
+        "monthlyNetChange": "Monthly net change: {delta}"
+      },
+      "categoriesChart": {
+        "title": "Top categories",
+        "description": "Total spending for {scope} grouped by category.",
+        "empty": "No categories with spending for the current selection.",
+        "totalAmountLabel": "Total amount",
+        "amountLabel": "Amount",
+        "percentOfTotal": "{value}% of total",
+        "categoryRow": "#{rank} • {count} expenses",
+        "categorySummary": "{count} categories with spending for the current selection.",
+        "footerCategories": "{count} categories"
+      },
+      "paymentMethodsChart": {
+        "title": "Payment methods",
+        "description": "Distribution of total monthly spending by account, card, or registered method.",
+        "empty": "No movements in payment methods.",
+        "amountLabel": "Amount",
+        "operationsCount": "{count} operations",
+        "percentOfTotal": "{value}% of total",
+        "registeredExpenses": "{count} registered expenses",
+        "methodsSummary": "{methods} methods with spending across {expenses} registered expenses.",
+        "totalSpent": "Total spent",
+        "totalExpenses": "{count} expenses",
+        "footerMethods": "{count} methods with spending",
+        "footerExpenses": "{count} expenses"
+      },
+      "trendChart": {
+        "title": "Daily monthly trend",
+        "description": "Expenses, income and net balance for {scope} to compare daily behavior.",
+        "empty": "This month has no movements. Once you record expenses or income, you will see the trend here.",
+        "tip": "Tip: tap or click a point to open the filtered daily detail.",
+        "spentLabel": "Expenses",
+        "incomeLabel": "Income",
+        "netLabel": "Net balance",
+        "spentShort": "Exp.",
+        "incomeShort": "Inc.",
+        "netShort": "Net",
+        "dayLabel": "Day {day}",
+        "movements": "Movements: {total} ({expenses} expenses, {incomes} income)",
+        "projects": "Projects: {count}"
+      },
+      "alertsIndicator": {
+        "ariaLabelWithAlerts": "View monthly alerts ({count})",
+        "ariaLabelNoAlerts": "No monthly alerts",
+        "buttonText": "Monthly alerts",
+        "buttonTextNoAlerts": "No alerts",
+        "popoverTitle": "Monthly alerts",
+        "activeAlertsSingular": "1 active alert",
+        "activeAlertsPlural": "{count} active alerts",
+        "noAlertsSubtitle": "No alerts detected this month.",
+        "statusActive": "Active",
+        "statusStable": "Stable",
+        "allGood": "Everything is in order for the selected month.",
+        "hiddenAlertsSingular": "Showing max 5 alerts. There is 1 additional alert.",
+        "hiddenAlertsPlural": "Showing max 5 alerts. There are {count} additional alerts."
+      },
+      "errorCard": {
+        "title": "Could not load the dashboard",
+        "retry": "Retry"
+      },
+      "inactiveWarning": {
+        "title": "Limited access",
+        "description": "An administrator must activate your account before you can create projects and record expenses."
+      },
+      "picker": {
+        "previousYear": "Previous year",
+        "nextYear": "Next year"
+      }
     }
   }
 }

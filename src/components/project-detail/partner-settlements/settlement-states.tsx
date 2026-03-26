@@ -3,6 +3,7 @@
 import { ArrowLeftRight, Handshake } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Balance skeleton ──────────────────────────────────────────────────────────
 
@@ -58,27 +59,29 @@ interface SettlementsEmptyStateProps {
 }
 
 export function SettlementsEmptyState({ onCreate }: SettlementsEmptyStateProps) {
+  const { t } = useLanguage()
   return (
     <EmptyState
       hasSearch={false}
       onCreate={onCreate}
       icon={ArrowLeftRight}
-      title="Sin liquidaciones"
-      description="Registra liquidaciones directas entre partners para saldar balances."
-      createLabel="Nueva liquidación"
+      title={t("partnerSettlements.empty")}
+      description={t("partnerSettlements.emptyDescription")}
+      createLabel={t("partnerSettlements.new")}
     />
   )
 }
 
 export function NoPartnersState() {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
       <Handshake className="size-10 text-muted-foreground/40" />
       <p className="text-sm font-medium text-muted-foreground">
-        No hay partners asignados al proyecto
+        {t("partnerSettlements.noPartnersTitle")}
       </p>
       <p className="text-xs text-muted-foreground/70">
-        Asigna partners desde la pestaña Configuración para ver balances y liquidaciones.
+        {t("partnerSettlements.noPartnersHint")}
       </p>
     </div>
   )

@@ -1,28 +1,34 @@
 import { z } from "zod"
 
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
 // ─── Create ───────────────────────────────────────────────────────────────────
 
-export const createProjectSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nombre es requerido")
-    .max(255, "Nombre no puede superar 255 caracteres"),
-  currencyCode: z.string().min(1, "Moneda es requerida"),
-  description: z.string().trim(),
-})
+export function createProjectSchema(t: TFn) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("common.validation.nameRequired"))
+      .max(255, t("common.validation.max255Chars")),
+    currencyCode: z.string().min(1, t("common.validation.currencyRequired")),
+    description: z.string().trim(),
+  })
+}
 
-export type CreateProjectFormValues = z.infer<typeof createProjectSchema>
+export type CreateProjectFormValues = z.infer<ReturnType<typeof createProjectSchema>>
 
 // ─── Update ───────────────────────────────────────────────────────────────────
 
-export const updateProjectSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nombre es requerido")
-    .max(255, "Nombre no puede superar 255 caracteres"),
-  description: z.string().trim(),
-})
+export function updateProjectSchema(t: TFn) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("common.validation.nameRequired"))
+      .max(255, t("common.validation.max255Chars")),
+    description: z.string().trim(),
+  })
+}
 
-export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>
+export type UpdateProjectFormValues = z.infer<ReturnType<typeof updateProjectSchema>>

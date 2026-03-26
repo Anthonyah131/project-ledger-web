@@ -17,6 +17,7 @@ import { PartnersToolbar } from "./partners-toolbar"
 import { PartnersList } from "./partners-list"
 import { cn } from "@/lib/utils"
 import type { PartnerResponse } from "@/types/partner"
+import { useLanguage } from "@/context/language-context"
 
 const CreatePartnerModal = dynamic(() =>
   import("./create-partner-modal").then((m) => m.CreatePartnerModal),
@@ -33,6 +34,7 @@ function PartnerCard({ partner, onOpen, onEdit, onDelete }: {
   onEdit: (p: PartnerResponse) => void
   onDelete: (p: PartnerResponse) => void
 }) {
+  const { t } = useLanguage()
   const initial = partner.name.charAt(0).toUpperCase()
 
   return (
@@ -70,7 +72,7 @@ function PartnerCard({ partner, onOpen, onEdit, onDelete }: {
             </div>
             <ItemActionMenu
               onOpen={() => onOpen(partner)}
-              openLabel="Ver detalle"
+              openLabel={t("partners.viewDetail")}
               onEdit={() => onEdit(partner)}
               onDelete={() => onDelete(partner)}
               stopPropagation
@@ -153,18 +155,19 @@ function PartnersEmptyState({ hasSearch, onCreate }: {
   hasSearch: boolean
   onCreate: () => void
 }) {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 px-4 text-center">
       <div className="size-11 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400">
         <Users className="size-5" />
       </div>
       <p className="text-sm text-muted-foreground">
-        {hasSearch ? "No se encontraron partners con ese criterio." : "Aún no tienes partners creados."}
+        {hasSearch ? t("partners.noResults") : t("partners.noPartnersYet")}
       </p>
       {!hasSearch && (
         <Button size="sm" onClick={onCreate} className="bg-violet-600 hover:bg-violet-700 text-white border-0">
           <Plus className="size-3.5" />
-          Crear partner
+          {t("partners.createButton")}
         </Button>
       )}
     </div>
@@ -175,6 +178,7 @@ function PartnersEmptyState({ hasSearch, onCreate }: {
 
 export function PartnersPanel() {
   const router = useRouter()
+  const { t } = useLanguage()
   const {
     partners,
     totalCount,
@@ -215,7 +219,7 @@ export function PartnersPanel() {
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             <span className="font-bold text-violet-600 dark:text-violet-400">{totalCount}</span>{" "}
-            {totalCount === 1 ? "partner" : "partners"}
+            {totalCount === 1 ? t("partners.singular") : t("partners.plural")}
           </p>
         </div>
         <Button
@@ -224,7 +228,7 @@ export function PartnersPanel() {
           className="bg-violet-600 hover:bg-violet-700 text-white border-0 shadow-sm shadow-violet-500/30 transition-all"
         >
           <Plus className="size-3.5" />
-          Nuevo
+          {t("partners.newButtonShort")}
         </Button>
       </div>
 
@@ -303,9 +307,9 @@ export function PartnersPanel() {
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title="Eliminar partner"
-        description="Se eliminará el partner y podrían desvincularse algunas cuentas de proyectos."
-        getMessage={(p) => `¿Eliminar partner "${p.name}"?`}
+        title={t("partners.delete.title")}
+        description={t("partners.delete.description")}
+        getMessage={(p) => t("partners.delete.confirm", { name: p.name })}
       />
     </div>
   )

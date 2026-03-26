@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { useLanguage } from "@/context/language-context"
 import type { ExpenseResponse } from "@/types/expense"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import { buildPaymentMethodLookup } from "@/lib/payment-method-utils"
@@ -24,6 +25,7 @@ interface ExpensesListProps {
 }
 
 function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive, onView }: ExpensesListProps) {
+  const { t } = useLanguage()
   const activatingIdsRef = useRef<Set<string>>(new Set())
   const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
 
@@ -56,15 +58,15 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
   )
 
   return (
-    <div role="list" aria-label="Lista de gastos">
+    <div role="list" aria-label={t("expenses.listAriaLabel")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest border-b border-rose-500/20 bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent">
-        <span className="flex-1">Titulo</span>
-        <span className="w-28 text-right hidden sm:block">Fecha</span>
-        <span className="w-44 text-right hidden md:block">Monto</span>
-        <span className="w-44 text-right hidden xl:block">Conversiones</span>
-        <span className="w-40 text-right hidden lg:block">Metodo de pago</span>
-        <span className="w-36 text-right hidden xl:block">Categoria</span>
+        <span className="flex-1">{t("expenses.colTitle")}</span>
+        <span className="w-28 text-right hidden sm:block">{t("common.date")}</span>
+        <span className="w-44 text-right hidden md:block">{t("common.amount")}</span>
+        <span className="w-44 text-right hidden xl:block">{t("expenses.colConversions")}</span>
+        <span className="w-40 text-right hidden lg:block">{t("expenses.paymentMethodLabel")}</span>
+        <span className="w-36 text-right hidden xl:block">{t("expenses.categoryLabel")}</span>
         <span className="w-8" />
       </div>
 
@@ -102,7 +104,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
                       variant="outline"
                       className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
                     >
-                      Recordatorio
+                      {t("expenses.statusReminderBadge")}
                     </Badge>
                   ) : null}
                   {showSplitBadge ? (
@@ -156,7 +158,7 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
                   ))}
                   {exchanges.length > 2 && (
                     <p className="text-[10px] text-muted-foreground/70">
-                      +{exchanges.length - 2} mas
+                      +{exchanges.length - 2} {t("expenses.moreExchanges")}
                     </p>
                   )}
                 </div>
@@ -182,12 +184,12 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
 
             {/* Menu */}
             <ItemActionMenu
-              ariaLabel="Acciones del gasto"
+              ariaLabel={t("expenses.actionMenuAria")}
               onOpen={onView ? () => onView(expense) : undefined}
-              openLabel="Ver detalle"
+              openLabel={t("expenses.viewDetail")}
               onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
-              activateLabel="Activar movimiento"
-              activatingLabel="Activando..."
+              activateLabel={t("expenses.activateLabel")}
+              activatingLabel={t("common.activating")}
               isActivating={isActivating}
               disabled={isActivating}
               onEdit={() => onEdit(expense)}

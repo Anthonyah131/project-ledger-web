@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useWatch } from "react-hook-form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import {
   FormControl,
   FormField,
@@ -53,6 +54,7 @@ export function EditExpenseModal({
   partnersEnabled = false,
   assignedPartners = [],
 }: EditExpenseModalProps) {
+  const { t } = useLanguage()
   const {
     form,
     onSubmit,
@@ -76,7 +78,7 @@ export function EditExpenseModal({
       e?.preventDefault()
       form.setError("obligationEquivalentAmount", {
         type: "manual",
-        message: `Campo requerido para pagos en ${selectedObligation!.currency}`,
+        message: t("expenses.equivalentRequired", { currency: selectedObligation!.currency }),
       })
       return
     }
@@ -93,11 +95,11 @@ export function EditExpenseModal({
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar gasto"
-      description="Modifica los datos de este gasto."
+      title={t("expenses.editTitle")}
+      description={t("expenses.editDescription")}
       form={form}
       onSubmit={handleSubmitWithEquivalentGuard}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
       contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       <ExpenseFormFields
@@ -120,15 +122,15 @@ export function EditExpenseModal({
           name="obligationId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Obligacion (opcional)</FormLabel>
+              <FormLabel>{t("expenses.obligationLabel")} {t("common.optional")}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Ninguna" />
+                    <SelectValue placeholder={t("expenses.obligationNone")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Ninguna</SelectItem>
+                  <SelectItem value="none">{t("expenses.obligationNone")}</SelectItem>
                   {obligations.map((o) => (
                     <SelectItem key={o.id} value={o.id}>
                       {o.title}
@@ -149,21 +151,21 @@ export function EditExpenseModal({
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Equivalente en {selectedObligation!.currency}{" "}
-                <span className="font-normal text-xs text-muted-foreground">(opcional)</span>
+                {t("expenses.equivalentLabel", { currency: selectedObligation!.currency })}{" "}
+                <span className="font-normal text-xs text-muted-foreground">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder={`¿Cuánto ${selectedObligation!.currency} cubre este pago?`}
+                  placeholder={t("expenses.equivalentHint", { currency: selectedObligation!.currency })}
                   value={field.value}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>
               <p className="text-xs text-muted-foreground">
-                Saldo pendiente: {selectedObligation!.currency}{" "}
+                {t("expenses.pendingBalance")} {selectedObligation!.currency}{" "}
                 {selectedObligation!.remainingAmount.toLocaleString()}
               </p>
               <FormMessage />

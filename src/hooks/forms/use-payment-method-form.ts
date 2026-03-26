@@ -2,6 +2,7 @@
 
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createPaymentMethodSchema,
   updatePaymentMethodSchema,
@@ -22,8 +23,9 @@ interface UseCreatePaymentMethodFormOptions {
 }
 
 export function useCreatePaymentMethodForm({ onCreate, onClose }: UseCreatePaymentMethodFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreatePaymentMethodFormValues>({
-    resolver: zodResolver(createPaymentMethodSchema),
+    resolver: zodResolver(createPaymentMethodSchema(t)),
     defaultValues: {
       name: "",
       type: "bank",
@@ -66,8 +68,9 @@ interface UseUpdatePaymentMethodFormOptions {
 }
 
 export function useUpdatePaymentMethodForm({ paymentMethod, onSave, onClose }: UseUpdatePaymentMethodFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdatePaymentMethodFormValues>({
-    resolver: zodResolver(updatePaymentMethodSchema),
+    resolver: zodResolver(updatePaymentMethodSchema(t)),
     values: paymentMethod
       ? {
           name: paymentMethod.name,

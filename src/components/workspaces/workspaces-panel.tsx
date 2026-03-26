@@ -8,6 +8,7 @@ import { useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Plus, Briefcase, Users } from "lucide-react"
 import { useWorkspaces } from "@/hooks/workspaces/use-workspaces"
+import { useLanguage } from "@/context/language-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
@@ -28,6 +29,7 @@ function WorkspaceCard({ workspace, onOpen, onEdit, onDelete }: {
   onEdit: (w: WorkspaceResponse) => void
   onDelete: (w: WorkspaceResponse) => void
 }) {
+  const { t } = useLanguage()
   const isOwner = workspace.role === "owner"
 
   return (
@@ -52,7 +54,7 @@ function WorkspaceCard({ workspace, onOpen, onEdit, onDelete }: {
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-foreground truncate">{workspace.name}</span>
             <Badge variant={isOwner ? "default" : "secondary"} className="text-[10px] px-1.5 py-0">
-              {isOwner ? "propietario" : "miembro"}
+              {isOwner ? t("workspaces.roleOwner") : t("workspaces.roleMember")}
             </Badge>
           </div>
           {workspace.description && (
@@ -60,7 +62,7 @@ function WorkspaceCard({ workspace, onOpen, onEdit, onDelete }: {
           )}
           <span className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
             <Briefcase className="size-3" />
-            {workspace.projectCount} {workspace.projectCount === 1 ? "proyecto" : "proyectos"}
+            {workspace.projectCount} {workspace.projectCount === 1 ? t("workspaces.project") : t("workspaces.projectPlural")}
           </span>
         </div>
       </div>
@@ -96,19 +98,21 @@ function WorkspacesSkeleton() {
 }
 
 function WorkspacesEmptyState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 px-4 text-center">
       <Users className="size-10 text-muted-foreground/50" />
-      <p className="text-sm text-muted-foreground">Aún no tienes workspaces creados.</p>
+      <p className="text-sm text-muted-foreground">{t("workspaces.emptyState")}</p>
       <Button size="sm" onClick={onCreate}>
         <Plus className="size-3.5" />
-        Crear workspace
+        {t("workspaces.createWorkspace")}
       </Button>
     </div>
   )
 }
 
 export function WorkspacesPanel({ onSelectWorkspace }: { onSelectWorkspace?: (id: string) => void } = {}) {
+  const { t } = useLanguage()
   const router = useRouter()
   const {
     workspaces,
@@ -137,14 +141,14 @@ export function WorkspacesPanel({ onSelectWorkspace }: { onSelectWorkspace?: (id
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">Workspaces</h1>
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">{t("workspaces.title")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {workspaces.length} {workspaces.length === 1 ? "workspace" : "workspaces"}
+            {workspaces.length} {workspaces.length === 1 ? t("workspaces.workspace") : t("workspaces.title").toLowerCase()}
           </p>
         </div>
         <Button onClick={handleOpenCreate} size="sm">
           <Plus className="size-3.5" />
-          Nuevo
+          {t("workspaces.newButton")}
         </Button>
       </div>
 
@@ -190,9 +194,9 @@ export function WorkspacesPanel({ onSelectWorkspace }: { onSelectWorkspace?: (id
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title="Eliminar workspace"
-        description="Se eliminará el workspace. Esta acción no puede deshacerse si no tiene proyectos activos."
-        getMessage={(w) => `¿Eliminar workspace "${w.name}"?`}
+        title={t("workspaces.delete.title")}
+        description={t("workspaces.delete.description")}
+        getMessage={(w) => t("workspaces.delete.confirm", { name: w.name })}
       />
     </div>
   )

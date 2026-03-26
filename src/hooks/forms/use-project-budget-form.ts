@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   setProjectBudgetSchema,
   type SetProjectBudgetFormValues,
@@ -33,8 +34,9 @@ function toFormValues(budget: ProjectBudgetResponse | null): SetProjectBudgetFor
 }
 
 export function useSetProjectBudgetForm({ budget, onSave, onClose }: UseSetProjectBudgetFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<SetProjectBudgetFormValues>({
-    resolver: zodResolver(setProjectBudgetSchema),
+    resolver: zodResolver(setProjectBudgetSchema(t)),
     defaultValues: toFormValues(budget),
   })
 

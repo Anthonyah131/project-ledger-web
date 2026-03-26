@@ -6,12 +6,15 @@ import { formatAmount } from "@/lib/format-utils"
 import type {
   PaymentMethodReportMethod,
 } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface PaymentMethodReportMethodCardProps {
   method: PaymentMethodReportMethod
 }
 
 export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMethodCardProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="rounded-lg border bg-muted/30 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -25,45 +28,45 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
           </Badge>
           {method.isInactive && (
             <Badge variant="outline" className="text-[10px] border-yellow-500/40 text-yellow-400">
-              Inactivo
+              {t("reports.pm.inactive")}
             </Badge>
           )}
         </div>
         <div className="flex flex-col items-end text-xs tabular-nums">
-          <span>Gastos: {method.currency} {formatAmount(method.totalSpent)}</span>
-          <span>Ingresos: {method.currency} {formatAmount(method.totalIncome ?? 0)}</span>
+          <span>{t("reports.pm.summaryExpenses")} {method.currency} {formatAmount(method.totalSpent)}</span>
+          <span>{t("reports.pm.summaryIncomes")} {method.currency} {formatAmount(method.totalIncome ?? 0)}</span>
           <span className="font-semibold">
-            Neto: {method.currency} {formatAmount(method.netFlow ?? (method.totalIncome ?? 0) - method.totalSpent)}
+            {t("reports.pm.summaryNet")} {method.currency} {formatAmount(method.netFlow ?? (method.totalIncome ?? 0) - method.totalSpent)}
           </span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3 text-xs">
-        <StatItem label="Gastos" value={String(method.expenseCount)} />
-        <StatItem label="Ingresos" value={String(method.incomeCount ?? 0)} />
+        <StatItem label={t("reports.pm.statExpenses")} value={String(method.expenseCount)} />
+        <StatItem label={t("reports.pm.statIncomes")} value={String(method.incomeCount ?? 0)} />
         <StatItem
-          label="Prom. gasto"
+          label={t("reports.pm.statAvgExpense")}
           value={`${method.currency} ${formatAmount(method.averageExpenseAmount)}`}
         />
         <StatItem
-          label="Prom. ingreso"
+          label={t("reports.pm.statAvgIncome")}
           value={`${method.currency} ${formatAmount(method.averageIncomeAmount ?? null, "—")}`}
         />
-        <StatItem label="Banco" value={method.bankName ?? "—"} />
+        <StatItem label={t("reports.pm.statBank")} value={method.bankName ?? "—"} />
       </div>
 
       {(method.firstUseDate || method.lastUseDate) && (
         <div className="flex gap-4 text-xs text-muted-foreground mb-3 flex-wrap">
           {method.firstUseDate && (
             <span>
-              Primer uso: {formatDate(method.firstUseDate)}
+              {t("reports.pm.firstUse")} {formatDate(method.firstUseDate)}
             </span>
           )}
           {method.lastUseDate && (
             <span>
-              Último uso: {formatDate(method.lastUseDate)}
+              {t("reports.pm.lastUse")} {formatDate(method.lastUseDate)}
               {method.daysSinceLastUse != null && method.daysSinceLastUse > 0 && (
-                <> ({method.daysSinceLastUse} días)</>
+                <> ({t("reports.pm.days", { n: method.daysSinceLastUse })})</>
               )}
             </span>
           )}
@@ -73,7 +76,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
       {method.topExpense && (
         <div className="mb-3 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs">
           <div className="flex flex-col gap-0.5">
-            <span className="text-muted-foreground">Gasto mayor</span>
+            <span className="text-muted-foreground">{t("reports.pm.topExpense")}</span>
             <span className="font-medium text-foreground">{method.topExpense.title}</span>
             <span className="text-muted-foreground">
               {method.topExpense.projectName} · {method.topExpense.categoryName}
@@ -88,7 +91,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
       {method.topCategories && method.topCategories.length > 0 && (
         <div className="mb-3 pt-2 border-t border-border/50">
           <span className="text-xs font-medium text-muted-foreground mb-2 block">
-            Principales categorías
+            {t("reports.pm.topCategories")}
           </span>
           <div className="flex flex-col gap-1.5">
             {method.topCategories.map((category) => (
@@ -115,7 +118,7 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
       {method.projects.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border/50">
           <span className="text-xs font-medium text-muted-foreground mb-2 block">
-            Proyectos
+            {t("reports.pm.projectsLabel")}
           </span>
           <div className="flex flex-wrap gap-2">
             {method.projects.map((project) => (
@@ -131,12 +134,12 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
       {method.expenses.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-muted-foreground">Gastos</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("reports.pm.expensesSection")}</span>
             {method.totalExpensesInPeriod != null &&
               method.expensesShown != null &&
               method.totalExpensesInPeriod > method.expensesShown && (
                 <span className="text-xs text-muted-foreground">
-                  Mostrando {method.expensesShown} de {method.totalExpensesInPeriod} — exporta a Excel/PDF para ver todos
+                  {t("reports.pm.showing", { shown: method.expensesShown, total: method.totalExpensesInPeriod })}
                 </span>
               )}
           </div>
@@ -144,11 +147,11 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b text-muted-foreground">
-                  <th className="text-left py-1.5 pr-3 font-medium">Fecha</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Título</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Proyecto</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Categoría</th>
-                  <th className="text-right py-1.5 font-medium">Monto</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colDate")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colTitle")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.pm.colProject")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colCategory")}</th>
+                  <th className="text-right py-1.5 font-medium">{t("reports.shared.colAmount")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,12 +180,12 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
       {method.incomes && method.incomes.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-muted-foreground">Ingresos</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("reports.pm.incomesSection")}</span>
             {method.totalIncomesInPeriod != null &&
               method.incomesShown != null &&
               method.totalIncomesInPeriod > method.incomesShown && (
                 <span className="text-xs text-muted-foreground">
-                  Mostrando {method.incomesShown} de {method.totalIncomesInPeriod} — exporta a Excel/PDF para ver todos
+                  {t("reports.pm.showing", { shown: method.incomesShown, total: method.totalIncomesInPeriod })}
                 </span>
               )}
           </div>
@@ -190,11 +193,11 @@ export function PaymentMethodReportMethodCard({ method }: PaymentMethodReportMet
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b text-muted-foreground">
-                  <th className="text-left py-1.5 pr-3 font-medium">Fecha</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Título</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Proyecto</th>
-                  <th className="text-left py-1.5 pr-3 font-medium">Categoría</th>
-                  <th className="text-right py-1.5 font-medium">Monto</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colDate")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colTitle")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.pm.colProject")}</th>
+                  <th className="text-left py-1.5 pr-3 font-medium">{t("reports.shared.colCategory")}</th>
+                  <th className="text-right py-1.5 font-medium">{t("reports.shared.colAmount")}</th>
                 </tr>
               </thead>
               <tbody>

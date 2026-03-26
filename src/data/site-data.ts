@@ -120,6 +120,56 @@ export function getContactChannels(t: TFn) {
   ];
 }
 
+// ─── Plan Presentation ─────────────────────────────────────────────────────────
+// Replaces src/lib/plan-presentation.ts — hardcoded per-slug data, i18n via t().
+
+const PLAN_L_KEYS = ["l1", "l2", "l3", "l4", "l5"] as const;
+const PLAN_C_KEYS = ["c1", "c2", "c3", "c4", "c5"] as const;
+
+export function getPlanDescription(
+  plan: { slug: string; description?: string | null },
+  t: TFn,
+): string {
+  const description = plan.description?.trim();
+  if (description) return description;
+
+  const slug = plan.slug.toLowerCase();
+  const key = `billing.plans.${slug}.description`;
+  const translated = t(key);
+  if (translated === key) return t("billing.plans.default.description");
+  return translated;
+}
+
+export function getPlanFeatureGroups(
+  slug: string,
+  t: TFn,
+  maxLimitItems = 5,
+  maxCapabilityItems = 5,
+): { limits: string[]; capabilities: string[] } {
+  const prefix = `billing.plans.${slug.toLowerCase()}`;
+
+  const limits = PLAN_L_KEYS
+    .map((k) => ({ k, v: t(`${prefix}.${k}`) }))
+    .filter(({ k, v }) => v !== `${prefix}.${k}`)
+    .map(({ v }) => v)
+    .slice(0, maxLimitItems);
+
+  const capabilities = PLAN_C_KEYS
+    .map((k) => ({ k, v: t(`${prefix}.${k}`) }))
+    .filter(({ k, v }) => v !== `${prefix}.${k}`)
+    .map(({ v }) => v)
+    .slice(0, maxCapabilityItems);
+
+  return { limits, capabilities };
+}
+
+export function getPlanFeatures(slug: string, t: TFn, maxItems = 6): string[] {
+  const { limits, capabilities } = getPlanFeatureGroups(slug, t, maxItems, maxItems);
+  const features = [...limits, ...capabilities];
+  if (features.length === 0) return [t("billing.plans.default.description")];
+  return features.slice(0, maxItems);
+}
+
 // ─── FAQ Categories ────────────────────────────────────────────────────────────
 
 export function getFaqCategories(t: TFn) {

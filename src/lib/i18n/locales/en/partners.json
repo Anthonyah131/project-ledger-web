@@ -9,7 +9,27 @@
     "emailPlaceholder": "harold@example.com",
     "phonePlaceholder": "+1 555 123 4567",
     "notesPlaceholder": "Additional notes...",
+    "editSubtitle": "Update the financial contact's details.",
     "phonelabel": "Phone",
+    "singular": "partner",
+    "plural": "partners",
+    "viewDetail": "View detail",
+    "newButtonShort": "New",
+    "createButton": "Create partner",
+    "noResults": "No partners found matching that criteria.",
+    "noPartnersYet": "No partners created yet.",
+    "loadError": "Could not load partner information.",
+    "searchPlaceholder": "Search by name, email…",
+    "searchAriaLabel": "Search partners",
+    "pmSectionEmpty": "This partner has no registered payment methods.",
+    "relatedProjects": "Related projects",
+    "projectsEmpty": "No projects with this partner assigned.",
+    "delete": {
+      "title": "Delete partner",
+      "description": "The partner will be deleted and some project accounts may be unlinked.",
+      "descriptionDetail": "The partner will be deleted. This action cannot be undone if they have no accounts linked to active projects.",
+      "confirm": "Delete partner \"{name}\"?"
+    },
     "empty": "No partners",
     "emptyDescription": "Add partners to assign them to expenses and income",
     "deleteConfirmTitle": "Delete partner?",
@@ -24,6 +44,9 @@
       "updatedDesc": "\"{name}\" was saved successfully.",
       "deleted": "Partner deleted",
       "deletedDesc": "\"{name}\" was deleted."
+    },
+    "validation": {
+      "emailInvalid": "Invalid email"
     },
     "errors": {
       "load": "Error loading partners",

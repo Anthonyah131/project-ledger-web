@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Loader2 } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 interface ProjectCurrencyConversionSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,6 +43,7 @@ export function ProjectCurrencyConversionSection({
   showConvertedAmountWhenSameCurrency = false,
   readOnlyWhenNoConversion = false,
 }: ProjectCurrencyConversionSectionProps) {
+  const { t } = useLanguage()
   if (!needsProjectConversion && !showConvertedAmountWhenSameCurrency) {
     return <p className="text-xs text-muted-foreground">{sameCurrencyMessage}</p>
   }
@@ -49,7 +51,7 @@ export function ProjectCurrencyConversionSection({
   return (
     <div className="rounded-xl border border-border/70 bg-muted/20 p-4 flex flex-col gap-3">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-        Conversion a moneda del proyecto
+        {t("currencyConversion.projectSection")}
       </p>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {needsProjectConversion ? (
@@ -59,7 +61,7 @@ export function ProjectCurrencyConversionSection({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Tasa ({watchCurrency} {"→"} {projectCurrency})
+                  {t("currencyConversion.rateLabel", { from: watchCurrency, to: projectCurrency })}
                 </FormLabel>
                 <FormControl>
                   <div className="flex gap-2">

@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import { ISO_CURRENCIES } from "@/types/project"
 import { useCreateSettlementForm } from "@/hooks/forms/use-settlement-form"
 import { getExchangeRate } from "@/services/exchange-rate-service"
@@ -49,6 +50,7 @@ export function CreateSettlementModal({
   alternativeCurrencyCodes,
   prefill,
 }: CreateSettlementModalProps) {
+  const { t } = useLanguage()
   const { form, fields, onSubmit, handleClose } = useCreateSettlementForm({
     projectCurrency,
     alternativeCurrencyCodes,
@@ -72,11 +74,11 @@ export function CreateSettlementModal({
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nueva liquidación"
-      description="Registra un pago directo entre dos partners."
+      title={t("partnerSettlements.createTitle")}
+      description={t("partnerSettlements.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Registrar"
+      submitLabel={t("partnerSettlements.create")}
       contentClassName="sm:max-w-sm max-h-[90vh] overflow-y-auto"
     >
       {/* From partner */}
@@ -85,11 +87,11 @@ export function CreateSettlementModal({
         name="fromPartnerId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Partner que paga *</FormLabel>
+            <FormLabel>{t("partnerSettlements.payerLabel")} {t("common.required")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar..." />
+                  <SelectValue placeholder={t("partnerSettlements.selectPartner")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -111,11 +113,11 @@ export function CreateSettlementModal({
         name="toPartnerId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Partner que recibe *</FormLabel>
+            <FormLabel>{t("partnerSettlements.receiverLabel")} {t("common.required")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar..." />
+                  <SelectValue placeholder={t("partnerSettlements.selectPartner")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -138,7 +140,7 @@ export function CreateSettlementModal({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Monto *</FormLabel>
+              <FormLabel>{t("common.amount")} {t("common.required")}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.01" min="0" placeholder="0.00" autoFocus {...field} />
               </FormControl>
@@ -151,7 +153,7 @@ export function CreateSettlementModal({
           name="currency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Moneda *</FormLabel>
+              <FormLabel>{t("common.currency")} {t("common.required")}</FormLabel>
               <Select
                 value={field.value}
                 onValueChange={(v) => {
@@ -185,7 +187,7 @@ export function CreateSettlementModal({
           name="exchangeRate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo de cambio a {projectCurrency} *</FormLabel>
+              <FormLabel>{t("partnerSettlements.exchangeRateLabel", { currency: projectCurrency })} {t("common.required")}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.000001" min="0" placeholder="1.000000" {...field} />
               </FormControl>
@@ -201,7 +203,7 @@ export function CreateSettlementModal({
         name="settlementDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Fecha *</FormLabel>
+            <FormLabel>{t("common.date")} {t("common.required")}</FormLabel>
             <FormControl>
               <DateInput {...field} />
             </FormControl>
@@ -216,7 +218,7 @@ export function CreateSettlementModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripción</FormLabel>
+            <FormLabel>{t("common.description")}</FormLabel>
             <FormControl>
               <Input placeholder="Ej: Saldo cuenta lote" {...field} />
             </FormControl>
@@ -231,7 +233,7 @@ export function CreateSettlementModal({
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Notas</FormLabel>
+            <FormLabel>{t("common.notes")}</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>
@@ -244,7 +246,7 @@ export function CreateSettlementModal({
       {fields.length > 0 && (
         <div className="rounded-xl border border-border/70 bg-muted/20 p-4 flex flex-col gap-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Conversiones a monedas alternativas
+            {t("partnerSettlements.alternativeCurrencies")}
           </p>
           {fields.map((f, index) => (
             <SettlementCurrencyExchangeRow
@@ -277,6 +279,7 @@ function SettlementCurrencyExchangeRow({
   projectCurrency,
   baseAmount,
 }: SettlementCurrencyExchangeRowProps) {
+  const { t } = useLanguage()
   const [autoRateLoading, setAutoRateLoading] = useState(false)
 
   const currencyCode = useWatch({
@@ -287,7 +290,7 @@ function SettlementCurrencyExchangeRow({
   async function handleAutoRate() {
     if (!currencyCode) return
     if (baseAmount <= 0) {
-      toast.warning("Ingresa un monto válido para calcular la conversión.")
+      toast.warning(t("partnerSettlements.enterValidAmountForConversion"))
       return
     }
     setAutoRateLoading(true)
@@ -296,8 +299,8 @@ function SettlementCurrencyExchangeRow({
       form.setValue(`currencyExchanges.${index}.exchangeRate`, String(response.rate), { shouldValidate: true })
       form.setValue(`currencyExchanges.${index}.convertedAmount`, String(response.convertedAmount), { shouldValidate: true })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "No se pudo obtener el tipo de cambio"
-      toast.error("Error al obtener tipo de cambio", { description: msg })
+      const msg = err instanceof Error ? err.message : t("partnerSettlements.noRateError")
+      toast.error(t("partnerSettlements.rateErrorTitle"), { description: msg })
     } finally {
       setAutoRateLoading(false)
     }
@@ -320,7 +323,7 @@ function SettlementCurrencyExchangeRow({
           ) : (
             <RefreshCw className="size-3" />
           )}
-          Auto
+          {t("common.auto")}
         </Button>
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -330,7 +333,7 @@ function SettlementCurrencyExchangeRow({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs">
-                Tasa ({projectCurrency} → {currencyCode})
+                {t("partnerSettlements.rateLabel", { from: projectCurrency, to: currencyCode })}
               </FormLabel>
               <FormControl>
                 <Input
@@ -361,7 +364,7 @@ function SettlementCurrencyExchangeRow({
           name={`currencyExchanges.${index}.convertedAmount`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Monto {currencyCode}</FormLabel>
+              <FormLabel className="text-xs">{t("partnerSettlements.amountLabel", { currency: currencyCode })}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.0001" min="0" placeholder="0.0000" {...field} />
               </FormControl>

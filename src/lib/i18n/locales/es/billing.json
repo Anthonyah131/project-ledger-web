@@ -62,12 +62,68 @@
       "notScheduled": "No programada",
       "fieldStatus": "Estado"
     },
+    "status": {
+      "active": { "label": "Activa", "description": "Tu suscripción está al día." },
+      "trialing": { "label": "En prueba", "description": "Tu suscripción está en período de prueba." },
+      "past_due": { "label": "Pago pendiente", "description": "Tu suscripción sigue vigente, pero hay un pago pendiente." },
+      "canceled": { "label": "Cancelada", "description": "La suscripción fue cancelada." },
+      "incomplete": { "label": "Incompleta", "description": "El cobro inicial no terminó correctamente." },
+      "incomplete_expired": { "label": "Expirada", "description": "La suscripción incompleta expiró." },
+      "unpaid": { "label": "Impaga", "description": "No se logró cobrar la suscripción." },
+      "unknown": { "label": "", "description": "Estado recibido desde Stripe." }
+    },
     "errors": {
       "sessionExpired": "Tu sesión expiró. Inicia sesión nuevamente.",
       "forbidden": "No tienes permisos para consultar la facturación.",
       "subscriptionForbidden": "No tienes permisos para consultar esta suscripción.",
       "loadFailed": "No fue posible cargar la información de facturación.",
       "subscriptionFailed": "No fue posible consultar el estado de la suscripción."
+    },
+    "plans": {
+      "free": {
+        "description": "Plan gratuito para uso personal básico. Perfecto para empezar a organizar tus finanzas.",
+        "l1": "Hasta 2 proyectos",
+        "l2": "Hasta 30 gastos por mes",
+        "l3": "Hasta 10 ingresos por mes",
+        "l4": "Hasta 5 categorías por proyecto",
+        "l5": "Hasta 2 métodos de pago",
+        "c1": "Gestión completa de proyectos",
+        "c2": "Hasta 3 monedas alternativas por proyecto",
+        "c3": "Sin colaboración en equipo"
+      },
+      "basic": {
+        "description": "Plan básico para freelancers y equipos pequeños. Incluye exportación y colaboración.",
+        "l1": "Hasta 10 proyectos",
+        "l2": "Hasta 200 gastos por mes",
+        "l3": "Hasta 100 ingresos por mes",
+        "l4": "Hasta 20 categorías por proyecto",
+        "l5": "Hasta 5 miembros por proyecto",
+        "c1": "Gestión completa de proyectos",
+        "c2": "Compartir proyectos con equipo",
+        "c3": "Exportación de datos",
+        "c4": "Presupuestos por proyecto"
+      },
+      "premium": {
+        "description": "Plan premium sin límites. Todas las funcionalidades: OCR, API, reportes avanzados y colaboración ilimitada.",
+        "l1": "Proyectos ilimitados",
+        "l2": "Gastos ilimitados por mes",
+        "l3": "Ingresos ilimitados por mes",
+        "l4": "Categorías ilimitadas por proyecto",
+        "l5": "Miembros ilimitados por proyecto",
+        "c1": "OCR de comprobantes con IA",
+        "c2": "Reportes avanzados",
+        "c3": "Acceso API",
+        "c4": "Soporte multi-moneda ilimitado"
+      },
+      "enterprise": {
+        "description": "Plan enterprise para equipos grandes: límites ilimitados y capacidades avanzadas de colaboración y control.",
+        "l1": "Todo lo del plan Premium",
+        "c1": "Soporte prioritario",
+        "c2": "Configuración personalizada"
+      },
+      "default": {
+        "description": "Plan de suscripción para gestionar tus finanzas de forma organizada."
+      }
     },
     "features": {
       "ocr": "OCR con IA",

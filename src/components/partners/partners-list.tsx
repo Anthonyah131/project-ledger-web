@@ -6,6 +6,7 @@ import { Mail, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import type { PartnerResponse } from "@/types/partner"
+import { useLanguage } from "@/context/language-context"
 
 interface PartnersListProps {
   partners: PartnerResponse[]
@@ -15,14 +16,15 @@ interface PartnersListProps {
 
 function PartnersListComponent({ partners, onEdit, onDelete }: PartnersListProps) {
   const router = useRouter()
+  const { t } = useLanguage()
 
   return (
     <div role="list" aria-label="Partners">
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
-        <span className="flex-1">Partner</span>
-        <span className="w-48 hidden md:block">Email</span>
-        <span className="w-32 hidden lg:block">Teléfono</span>
+        <span className="flex-1">{t("partners.singular")}</span>
+        <span className="w-48 hidden md:block">{t("common.email")}</span>
+        <span className="w-32 hidden lg:block">{t("partners.phonelabel")}</span>
         <span className="w-8" />
       </div>
 
@@ -84,7 +86,7 @@ function PartnersListComponent({ partners, onEdit, onDelete }: PartnersListProps
             {/* Menu */}
             <ItemActionMenu
               onOpen={() => router.push(`/partners/${p.id}`)}
-              openLabel="Ver detalle"
+              openLabel={t("partners.viewDetail")}
               onEdit={() => onEdit(p)}
               onDelete={() => onDelete(p)}
               stopPropagation

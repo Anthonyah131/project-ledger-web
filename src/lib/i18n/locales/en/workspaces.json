@@ -11,11 +11,29 @@
     "colorPlaceholder": "#4CAF50",
     "iconLabel": "Icon",
     "iconPlaceholder": "home, briefcase...",
+    "editSubtitle": "Modify the workspace details.",
+    "assignTitle": "Associate project to workspace",
+    "searchProject": "Search project...",
+    "allAssigned": "All projects are already in this workspace",
+    "associate": "Associate",
+    "workspace": "workspace",
+    "roleOwner": "owner",
+    "roleMember": "member",
+    "project": "project",
+    "projectPlural": "projects",
+    "emptyState": "You don't have any workspaces yet.",
+    "createWorkspace": "Create workspace",
+    "newButton": "New",
     "empty": "No workspaces",
     "emptyDescription": "Create a workspace to group related projects",
     "disconnectFromWorkspace": "Disconnect from workspace",
     "deleteConfirmTitle": "Delete workspace?",
     "deleteConfirmDescription": "This action cannot be undone. Projects will not be deleted.",
+    "delete": {
+      "title": "Delete workspace",
+      "description": "The workspace will be deleted. This action cannot be undone if there are no active projects.",
+      "confirm": "Delete workspace \"{name}\"?"
+    },
     "projectCount": "{count} project(s)",
     "workspaceLabel": "Workspace",
     "associateProject": "Associate project",
@@ -27,13 +45,17 @@
       "updated": "Workspace updated",
       "updatedDesc": "\"{name}\" was saved successfully.",
       "deleted": "Workspace deleted",
-      "deletedDesc": "\"{name}\" was deleted."
+      "deletedDesc": "\"{name}\" was deleted.",
+      "projectAssigned": "Project associated",
+      "projectAssignedDesc": "\"{name}\" was added to the workspace."
     },
     "errors": {
       "load": "Error loading workspaces",
       "create": "Error creating workspace",
       "update": "Error updating workspace",
-      "delete": "Error deleting workspace"
+      "delete": "Error deleting workspace",
+      "loadProjects": "Error loading projects",
+      "assignProject": "Error associating project"
     }
   }
 }

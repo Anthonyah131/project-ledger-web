@@ -12,11 +12,9 @@ import {
 } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import {
-  formatCompactCurrency,
-  formatCurrency,
-  formatDateLabel,
-} from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { useLanguage } from "@/context/language-context"
+import { useDateFormat } from "@/hooks/use-date-format"
+import { formatCompactCurrency, formatCurrency } from "@/lib/format-utils"
 import {
   Card,
   CardContent,
@@ -34,21 +32,6 @@ import {
 import type { DashboardTrendDay } from "@/types/dashboard"
 import { cn } from "@/lib/utils"
 
-const chartConfig = {
-  spent: {
-    label: "Gastos",
-    color: "var(--chart-1)",
-  },
-  income: {
-    label: "Ingresos",
-    color: "var(--chart-2)",
-  },
-  net: {
-    label: "Balance neto",
-    color: "var(--chart-4)",
-  },
-} satisfies ChartConfig
-
 interface DashboardMonthlyTrendChartProps {
   trendByDay: DashboardTrendDay[]
   currencyCode: string
@@ -64,7 +47,7 @@ interface TrendTooltipItem {
 }
 
 function formatAxisCompactNumber(value: number) {
-  return new Intl.NumberFormat("es", {
+  return new Intl.NumberFormat(undefined, {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(value)
@@ -83,10 +66,12 @@ export function DashboardMonthlyTrendChart({
   onOpenDayDetail,
 }: DashboardMonthlyTrendChartProps) {
   const isMobile = useIsMobile()
+  const { t } = useLanguage()
+  const { formatDateLabel } = useDateFormat()
 
   const chartData = useMemo(
     () => trendByDay.map((day) => ({ ...day, shortDate: formatDateLabel(day.date) })),
-    [trendByDay],
+    [trendByDay, formatDateLabel],
   )
 
   const renderTrendTooltip = useCallback((args: unknown) => {
@@ -110,7 +95,7 @@ export function DashboardMonthlyTrendChart({
 
     return (
       <div className="grid min-w-44 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">
-        <div className="font-medium text-foreground">Dia {String(label ?? "")}</div>
+        <div className="font-medium text-foreground">{t("dashboard.monthly.trendChart.dayLabel", { day: String(label ?? "") })}</div>
 
         <div className="grid gap-1.5">
           {payload.map((item, index) => {
@@ -132,34 +117,53 @@ export function DashboardMonthlyTrendChart({
 
         <div className="border-t border-border/60 pt-1.5 text-[11px] text-muted-foreground">
           <p>
-            Movimientos: {movementCount} ({expenseCount} gastos, {incomeCount} ingresos)
+            {t("dashboard.monthly.trendChart.movements", {
+              total: movementCount,
+              expenses: expenseCount,
+              incomes: incomeCount,
+            })}
           </p>
-          <p>Proyectos: {projectCount}</p>
+          <p>{t("dashboard.monthly.trendChart.projects", { count: projectCount })}</p>
         </div>
       </div>
     )
-  }, [currencyCode, isMobile])
+  }, [currencyCode, isMobile, t])
 
   const resolvedChartConfig = useMemo<ChartConfig>(
     () => {
-      if (!isMobile) return chartConfig
+      if (!isMobile) {
+        return {
+          spent: {
+            label: t("dashboard.monthly.trendChart.spentLabel"),
+            color: "var(--chart-1)",
+          },
+          income: {
+            label: t("dashboard.monthly.trendChart.incomeLabel"),
+            color: "var(--chart-2)",
+          },
+          net: {
+            label: t("dashboard.monthly.trendChart.netLabel"),
+            color: "var(--chart-4)",
+          },
+        }
+      }
 
       return {
         spent: {
-          label: "Gast.",
+          label: t("dashboard.monthly.trendChart.spentShort"),
           color: "var(--chart-1)",
         },
         income: {
-          label: "Ingr.",
+          label: t("dashboard.monthly.trendChart.incomeShort"),
           color: "var(--chart-2)",
         },
         net: {
-          label: "Neto",
+          label: t("dashboard.monthly.trendChart.netShort"),
           color: "var(--chart-4)",
         },
       }
     },
-    [isMobile],
+    [isMobile, t],
   )
 
   const handleChartClick = useCallback((state: unknown) => {
@@ -184,15 +188,15 @@ export function DashboardMonthlyTrendChart({
   return (
     <Card className="border-border/70 bg-card/75 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.18)]">
       <CardHeader className="pb-2 xl:pb-3">
-        <CardTitle>Tendencia diaria del mes</CardTitle>
+        <CardTitle>{t("dashboard.monthly.trendChart.title")}</CardTitle>
         <CardDescription>
-          Gastos, ingresos y balance neto de {scopeLabel.toLowerCase()} para comparar el comportamiento diario.
+          {t("dashboard.monthly.trendChart.description", { scope: scopeLabel.toLowerCase() })}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         {chartData.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Este mes no tiene movimientos. Cuando registres gastos o ingresos, veras la tendencia aqui.
+            {t("dashboard.monthly.trendChart.empty")}
           </p>
         ) : (
           <ChartContainer
@@ -251,7 +255,7 @@ export function DashboardMonthlyTrendChart({
                 fillOpacity={1}
                 strokeWidth={2}
                 dot={false}
-                name="Gastos"
+                name={t("dashboard.monthly.trendChart.spentLabel")}
               />
               <Area
                 type="monotone"
@@ -261,7 +265,7 @@ export function DashboardMonthlyTrendChart({
                 fillOpacity={1}
                 strokeWidth={2}
                 dot={false}
-                name="Ingresos"
+                name={t("dashboard.monthly.trendChart.incomeLabel")}
               />
               <Line
                 type="monotone"
@@ -270,7 +274,7 @@ export function DashboardMonthlyTrendChart({
                 strokeWidth={2.25}
                 dot={false}
                 activeDot={{ r: 5 }}
-                name="Balance neto"
+                name={t("dashboard.monthly.trendChart.netLabel")}
               />
             </AreaChart>
           </ChartContainer>
@@ -278,7 +282,7 @@ export function DashboardMonthlyTrendChart({
 
         {onOpenDayDetail && chartData.length > 0 && (
           <p className="mt-2 text-[11px] text-muted-foreground">
-            Tip: toca o haz click en un punto para abrir el detalle diario filtrado.
+            {t("dashboard.monthly.trendChart.tip")}
           </p>
         )}
       </CardContent>

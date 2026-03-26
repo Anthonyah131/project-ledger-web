@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createObligationSchema,
   updateObligationSchema,
@@ -22,8 +23,9 @@ interface UseCreateObligationFormOptions {
 }
 
 export function useCreateObligationForm({ onCreate, onClose }: UseCreateObligationFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreateObligationFormValues>({
-    resolver: zodResolver(createObligationSchema),
+    resolver: zodResolver(createObligationSchema(t)),
     defaultValues: {
       title: "",
       totalAmount: "",
@@ -62,8 +64,9 @@ interface UseUpdateObligationFormOptions {
 }
 
 export function useUpdateObligationForm({ obligation, onSave, onClose }: UseUpdateObligationFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateObligationFormValues>({
-    resolver: zodResolver(updateObligationSchema),
+    resolver: zodResolver(updateObligationSchema(t)),
     values: obligation
       ? {
           title: obligation.title,

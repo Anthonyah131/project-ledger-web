@@ -3,6 +3,7 @@
 import { CreditCard } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState as GenericEmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
@@ -12,15 +13,16 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ hasSearch, onCreate }: EmptyStateProps) {
+  const { t } = useLanguage()
   return (
     <GenericEmptyState
       hasSearch={hasSearch}
       onCreate={onCreate}
       icon={CreditCard}
-      title="Sin métodos de pago"
-      description="Agrega una cuenta bancaria, tarjeta o efectivo para registrar gastos."
-      searchDescription="No se encontraron métodos de pago con ese criterio."
-      createLabel="Agregar método"
+      title={t("paymentMethods.emptyTitle")}
+      description={t("paymentMethods.emptyDesc")}
+      searchDescription={t("paymentMethods.emptySearch")}
+      createLabel={t("paymentMethods.emptyCreateLabel")}
     />
   )
 }

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import type { ViewMode } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 
 interface SectionToolbarProps {
   sort: string
@@ -34,10 +35,12 @@ export function SectionToolbar({
   accentClass,
   borderClass,
 }: SectionToolbarProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex items-center gap-2">
       <Select value={sort} onValueChange={onSortChange}>
-        <SelectTrigger className="h-7 w-auto min-w-28 text-xs" aria-label="Ordenar">
+        <SelectTrigger className="h-7 w-auto min-w-28 text-xs" aria-label={t("common.sortBy")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -48,7 +51,7 @@ export function SectionToolbar({
       </Select>
 
       <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
-        <SelectTrigger className="h-7 w-auto min-w-14 text-xs" aria-label="Por página">
+        <SelectTrigger className="h-7 w-auto min-w-14 text-xs" aria-label={t("common.perPage")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -61,14 +64,14 @@ export function SectionToolbar({
       <div
         className={cn("flex items-center h-7 border rounded-md overflow-hidden", borderClass)}
         role="radiogroup"
-        aria-label="Modo de vista"
+        aria-label={t("common.viewMode")}
       >
         <button
           type="button"
           onClick={() => onViewModeChange("shelf")}
           role="radio"
           aria-checked={viewMode === "shelf"}
-          aria-label="Vista cuadrícula"
+          aria-label={t("common.gridView")}
           className={cn(
             "flex items-center justify-center size-7 transition-colors duration-150",
             viewMode === "shelf" ? accentClass : "text-muted-foreground hover:bg-accent/50",
@@ -81,7 +84,7 @@ export function SectionToolbar({
           onClick={() => onViewModeChange("list")}
           role="radio"
           aria-checked={viewMode === "list"}
-          aria-label="Vista lista"
+          aria-label={t("common.listView")}
           className={cn(
             "flex items-center justify-center size-7 border-l transition-colors duration-150",
             borderClass,

@@ -11,7 +11,7 @@ import { DashboardMonthlyLoading } from "@/components/dashboard/monthly/dashboar
 import { DashboardMonthlyPaymentMethodsChart } from "@/components/dashboard/monthly/dashboard-monthly-payment-methods-chart"
 import { DashboardMonthlySummaryCards } from "@/components/dashboard/monthly/dashboard-monthly-summary-cards"
 import { DashboardMonthlyTrendChart } from "@/components/dashboard/monthly/dashboard-monthly-trend-chart"
-import { formatMonthLabel } from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { useDateFormat } from "@/hooks/use-date-format"
 import { EmptyState } from "@/components/shared/empty-state"
 import {
   Select,
@@ -27,6 +27,7 @@ import type { DashboardAlert, DashboardTrendDay } from "@/types/dashboard"
 
 export function DashboardView() {
   const { t } = useLanguage()
+  const { formatMonthLabel } = useDateFormat()
   const router = useRouter()
   const { user } = useAuth()
 

@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import type { ObligationResponse, UpdateObligationRequest } from "@/types/obligation"
 import { useUpdateObligationForm } from "@/hooks/forms/use-obligation-form"
 
@@ -27,17 +28,18 @@ export function EditObligationModal({
   onClose,
   onSave,
 }: EditObligationModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useUpdateObligationForm({ obligation, onSave, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar obligacion"
-      description="Modifica los datos de esta obligacion."
+      title={t("obligations.editTitle")}
+      description={t("obligations.editDescription")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -45,7 +47,7 @@ export function EditObligationModal({
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Titulo *</FormLabel>
+            <FormLabel>{t("obligations.titleLabel")} {t("common.required")}</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -59,7 +61,7 @@ export function EditObligationModal({
         name="totalAmount"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Monto total *</FormLabel>
+            <FormLabel>{t("obligations.totalAmountLabel")} {t("common.required")}</FormLabel>
             <FormControl>
               <Input type="number" step="0.01" min="0" {...field} />
             </FormControl>
@@ -73,7 +75,7 @@ export function EditObligationModal({
         name="dueDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Fecha de vencimiento</FormLabel>
+            <FormLabel>{t("obligations.dueDateLabel")}</FormLabel>
             <FormControl>
               <DateInput {...field} />
             </FormControl>
@@ -87,7 +89,7 @@ export function EditObligationModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion</FormLabel>
+            <FormLabel>{t("common.description")}</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>

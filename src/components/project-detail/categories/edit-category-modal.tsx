@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import type { CategoryResponse, UpdateCategoryRequest } from "@/types/category"
 import { useUpdateCategoryForm } from "@/hooks/forms/use-category-form"
 
@@ -26,17 +27,18 @@ export function EditCategoryModal({
   onClose,
   onSave,
 }: EditCategoryModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useUpdateCategoryForm({ category, onSave, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar categoria"
-      description="Modifica los datos de esta categoria."
+      title={t("categories.editTitle")}
+      description={t("categories.editDescription")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -44,7 +46,7 @@ export function EditCategoryModal({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} *</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -58,7 +60,7 @@ export function EditCategoryModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion</FormLabel>
+            <FormLabel>{t("common.description")}</FormLabel>
             <FormControl>
               <Textarea rows={2} className="resize-none" {...field} />
             </FormControl>
@@ -72,9 +74,9 @@ export function EditCategoryModal({
         name="budgetAmount"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Presupuesto</FormLabel>
+            <FormLabel>{t("categories.budget")}</FormLabel>
             <FormControl>
-              <Input type="number" step="0.01" min="0" placeholder="Sin limite" {...field} />
+              <Input type="number" step="0.01" min="0" placeholder={t("common.noLimit")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

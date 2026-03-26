@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/language-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,26 +55,36 @@ interface ItemActionMenuProps {
 }
 
 export function ItemActionMenu({
-  ariaLabel = "Opciones",
+  ariaLabel,
   onEdit,
   onDelete,
   onOpen,
-  openLabel = "Abrir",
+  openLabel,
   onActivate,
-  activateLabel = "Activar",
-  activatingLabel = "Activando...",
+  activateLabel,
+  activatingLabel,
   isActivating = false,
   onShare,
-  shareLabel = "Gestionar accesos",
+  shareLabel,
   onDisconnect,
-  disconnectLabel = "Desconectar del workspace",
-  editLabel = "Editar",
-  deleteLabel = "Eliminar",
+  disconnectLabel,
+  editLabel,
+  deleteLabel,
   stopPropagation = false,
   align = "end",
   variant = "minimal",
   disabled = false,
 }: ItemActionMenuProps) {
+  const { t } = useLanguage()
+  const _ariaLabel = ariaLabel ?? t("common.options")
+  const _openLabel = openLabel ?? t("common.open")
+  const _activateLabel = activateLabel ?? t("common.activate")
+  const _activatingLabel = activatingLabel ?? t("common.activating")
+  const _shareLabel = shareLabel ?? t("common.manageAccess")
+  const _disconnectLabel = disconnectLabel ?? t("common.disconnectFromWorkspace")
+  const _editLabel = editLabel ?? t("common.edit")
+  const _deleteLabel = deleteLabel ?? t("common.delete")
+
   function runAfterMenuClose(fn: () => void) {
     if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
       window.requestAnimationFrame(() => fn());
@@ -91,11 +102,11 @@ export function ItemActionMenu({
             size="icon"
             className="size-8 text-muted-foreground/0 group-hover:text-muted-foreground transition-colors"
             onClick={stopPropagation ? (e) => e.stopPropagation() : undefined}
-            aria-label={ariaLabel}
+            aria-label={_ariaLabel}
             disabled={disabled}
           >
             <MoreHorizontal className="size-4" />
-            <span className="sr-only">{ariaLabel}</span>
+            <span className="sr-only">{_ariaLabel}</span>
           </Button>
         ) : (
           <button
@@ -109,7 +120,7 @@ export function ItemActionMenu({
               "transition-all duration-150",
               "focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
             )}
-            aria-label={ariaLabel}
+            aria-label={_ariaLabel}
           >
             <MoreHorizontal className="size-4" />
           </button>
@@ -120,7 +131,7 @@ export function ItemActionMenu({
           <>
             <DropdownMenuItem onSelect={() => runAfterMenuClose(onOpen)}>
               <ArrowRight className="size-4" />
-              {openLabel}
+              {_openLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
@@ -129,7 +140,7 @@ export function ItemActionMenu({
           <>
             <DropdownMenuItem onSelect={() => runAfterMenuClose(onShare)}>
               <Users className="size-4" />
-              {shareLabel}
+              {_shareLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
@@ -142,7 +153,7 @@ export function ItemActionMenu({
               ) : (
                 <CheckCircle2 className="size-4" />
               )}
-              {isActivating ? activatingLabel : activateLabel}
+              {isActivating ? _activatingLabel : _activateLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
@@ -151,21 +162,21 @@ export function ItemActionMenu({
           <>
             <DropdownMenuItem onSelect={() => runAfterMenuClose(onDisconnect)}>
               <Unlink className="size-4" />
-              {disconnectLabel}
+              {_disconnectLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
         <DropdownMenuItem onSelect={() => runAfterMenuClose(onEdit)}>
           <Pencil className="size-4" />
-          {editLabel}
+          {_editLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => runAfterMenuClose(onDelete)}
           className="text-destructive focus:text-destructive"
         >
           <Trash2 className="size-4" />
-          {deleteLabel}
+          {_deleteLabel}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

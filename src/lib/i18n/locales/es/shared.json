@@ -58,8 +58,53 @@
     "noLimit": "Sin límite",
     "auto": "Auto",
     "add": "Agregar",
+    "all": "Todos",
+    "clear": "Limpiar",
+    "dateFrom": "Fecha desde",
+    "dateTo": "Fecha hasta",
+    "sortAZ": "A - Z",
+    "sortZA": "Z - A",
+    "sortRecent": "Recientes",
+    "sortNew": "Nuevos",
+    "viewMode": "Modo de vista",
+    "disconnectFromWorkspace": "Desconectar del workspace",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "paginationRange": "{start}–{end} de {total}",
+    "roles": {
+      "owner": "Propietario",
+      "editor": "Editor",
+      "viewer": "Lector"
+    },
     "errors": {
-      "connection": "Error de conexión. Intenta de nuevo."
+      "connection": "Error de conexión. Intenta de nuevo.",
+      "planLimitExceeded": "Límite de plan alcanzado",
+      "planDenied": "Función no disponible en tu plan",
+      "tooManyRequests": "Demasiadas solicitudes",
+      "unexpected": "Error inesperado",
+      "invalidDateRange": "La fecha 'Desde' no puede ser mayor que 'Hasta'."
+    },
+    "validation": {
+      "required": "Campo requerido",
+      "nameRequired": "Nombre es requerido",
+      "titleRequired": "Título es requerido",
+      "dateRequired": "Fecha es requerida",
+      "invalidDate": "Fecha invalida",
+      "dateFuture": "La fecha no puede ser mayor a hoy",
+      "currencyRequired": "Moneda es requerida",
+      "amountRange": "Debe ser entre 0.01 y 999,999,999,999.99",
+      "exchangeRateRange": "Debe ser entre 0.000001 y 999,999,999,999.999999",
+      "positiveNumber": "Debe ser un número positivo",
+      "greaterThanZero": "Debe ser mayor a 0",
+      "max255Chars": "Nombre no puede superar 255 caracteres",
+      "max50Chars": "Máximo 50 caracteres",
+      "maxChars255": "Máx. 255 caracteres",
+      "hexColor": "Debe ser un color hex (ej: #4CAF50)",
+      "isoCode": "Debe ser un código ISO de 3 letras (ej: USD)",
+      "paymentMethodRequired": "Método de pago es requerido",
+      "categoryRequired": "Categoría es requerida",
+      "typeRequired": "Tipo es requerido",
+      "percentageRange": "Debe ser un número entre 1 y 100"
     }
   },
   "nav": {
@@ -75,6 +120,9 @@
     "reports": "Reportes",
     "paymentMethods": "Métodos de pago",
     "settings": "Configuración",
-    "admin": "Administración"
+    "admin": "Administración",
+    "partners": "Partners",
+    "help": "Ayuda",
+    "users": "Usuarios"
   }
 }

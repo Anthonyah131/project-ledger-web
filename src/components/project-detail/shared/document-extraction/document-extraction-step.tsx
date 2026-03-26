@@ -16,7 +16,8 @@ import { FileText, Loader2, Sparkles, UploadCloud, X } from "lucide-react"
 import {
   getExtractionQuotaBadgeLabel,
   getExtractionQuotaBadgeVariant,
-} from "./document-extraction-utils"
+} from "@/lib/document-extraction-utils"
+import { useLanguage } from "@/context/language-context"
 
 type DocumentKind = "receipt" | "invoice"
 
@@ -55,6 +56,7 @@ export function DocumentExtractionStep({
   extractionDisabled = false,
   extractMeta,
 }: DocumentExtractionStepProps) {
+  const { t } = useLanguage()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -103,7 +105,7 @@ export function DocumentExtractionStep({
           <p className="text-sm font-medium">{title}</p>
         </div>
         <Badge variant={getExtractionQuotaBadgeVariant(quota)}>
-          {quotaLoading ? "Cargando cuota..." : getExtractionQuotaBadgeLabel(quota)}
+          {quotaLoading ? t("documentExtraction.quotaLoading") : getExtractionQuotaBadgeLabel(quota, t)}
         </Badge>
       </div>
 
@@ -115,7 +117,7 @@ export function DocumentExtractionStep({
       <div
         role="button"
         tabIndex={0}
-        aria-label="Zona de carga de documento"
+        aria-label={t("documentExtraction.dropZoneAriaLabel")}
         onClick={() => !selectedFile && inputRef.current?.click()}
         onKeyDown={(e) => {
           if ((e.key === "Enter" || e.key === " ") && !selectedFile) {
@@ -155,7 +157,7 @@ export function DocumentExtractionStep({
             </div>
             <button
               type="button"
-              aria-label="Quitar archivo"
+              aria-label={t("documentExtraction.removeFileAriaLabel")}
               onClick={(e) => {
                 e.stopPropagation()
                 handleRemoveFile()
@@ -175,13 +177,13 @@ export function DocumentExtractionStep({
             />
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                Arrastra un archivo o{" "}
+                {t("documentExtraction.dropZoneText")}{" "}
                 <span className="font-medium text-foreground underline-offset-2 hover:underline cursor-pointer">
-                  selecciona uno
+                  {t("documentExtraction.dropZoneLink")}
                 </span>
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground/70">
-                PDF, JPG, PNG, WEBP — hasta 10 MB
+                {t("documentExtraction.dropZoneHint")}
               </p>
             </div>
           </>
@@ -196,11 +198,11 @@ export function DocumentExtractionStep({
           disabled={isDisabled}
         >
           <SelectTrigger className="w-[150px] shrink-0">
-            <SelectValue placeholder="Tipo de documento" />
+            <SelectValue placeholder={t("documentExtraction.documentKindPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="receipt">Recibo</SelectItem>
-            <SelectItem value="invoice">Factura</SelectItem>
+            <SelectItem value="receipt">{t("documentExtraction.kindReceipt")}</SelectItem>
+            <SelectItem value="invoice">{t("documentExtraction.kindInvoice")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -213,12 +215,12 @@ export function DocumentExtractionStep({
           {extracting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Extrayendo...
+              {t("documentExtraction.extracting")}
             </>
           ) : (
             <>
               <Sparkles className="size-4" />
-              Extraer con IA
+              {t("documentExtraction.extractButton")}
             </>
           )}
         </Button>
@@ -227,8 +229,11 @@ export function DocumentExtractionStep({
       {/* Extract meta */}
       {extractMeta && (
         <p className="text-xs text-muted-foreground/70">
-          Proveedor: {extractMeta.provider} · Modelo: {extractMeta.modelId} · Tipo:{" "}
-          {extractMeta.documentKind}
+          {t("documentExtraction.extractMeta", {
+            provider: extractMeta.provider,
+            model: extractMeta.modelId,
+            type: extractMeta.documentKind,
+          })}
         </p>
       )}
     </div>

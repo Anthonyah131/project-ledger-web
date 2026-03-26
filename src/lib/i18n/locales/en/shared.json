@@ -58,8 +58,53 @@
     "noLimit": "No limit",
     "auto": "Auto",
     "add": "Add",
+    "all": "All",
+    "clear": "Clear",
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "sortAZ": "A - Z",
+    "sortZA": "Z - A",
+    "sortRecent": "Recent",
+    "sortNew": "New",
+    "viewMode": "View mode",
+    "disconnectFromWorkspace": "Disconnect from workspace",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "paginationRange": "{start}–{end} of {total}",
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
     "errors": {
-      "connection": "Connection error. Please try again."
+      "connection": "Connection error. Please try again.",
+      "planLimitExceeded": "Plan limit reached",
+      "planDenied": "Feature not available on your plan",
+      "tooManyRequests": "Too many requests",
+      "unexpected": "Unexpected error",
+      "invalidDateRange": "The 'From' date cannot be greater than 'To'."
+    },
+    "validation": {
+      "required": "Required field",
+      "nameRequired": "Name is required",
+      "titleRequired": "Title is required",
+      "dateRequired": "Date is required",
+      "invalidDate": "Invalid date",
+      "dateFuture": "Date cannot be in the future",
+      "currencyRequired": "Currency is required",
+      "amountRange": "Must be between 0.01 and 999,999,999,999.99",
+      "exchangeRateRange": "Must be between 0.000001 and 999,999,999,999.999999",
+      "positiveNumber": "Must be a positive number",
+      "greaterThanZero": "Must be greater than 0",
+      "max255Chars": "Name cannot exceed 255 characters",
+      "max50Chars": "Maximum 50 characters",
+      "maxChars255": "Max. 255 characters",
+      "hexColor": "Must be a hex color (e.g. #4CAF50)",
+      "isoCode": "Must be a 3-letter ISO code (e.g. USD)",
+      "paymentMethodRequired": "Payment method is required",
+      "categoryRequired": "Category is required",
+      "typeRequired": "Type is required",
+      "percentageRange": "Must be a number between 1 and 100"
     }
   },
   "nav": {
@@ -75,6 +120,9 @@
     "reports": "Reports",
     "paymentMethods": "Payment methods",
     "settings": "Settings",
-    "admin": "Administration"
+    "admin": "Administration",
+    "partners": "Partners",
+    "help": "Help",
+    "users": "Users"
   }
 }

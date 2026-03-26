@@ -1,6 +1,7 @@
 "use client"
 
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import { IncomeFormFields } from "./income-form-fields"
 import type { IncomeResponse, UpdateIncomeRequest } from "@/types/income"
 import type { CategoryResponse } from "@/types/category"
@@ -36,6 +37,7 @@ export function EditIncomeModal({
   partnersEnabled = false,
   assignedPartners = [],
 }: EditIncomeModalProps) {
+  const { t } = useLanguage()
   const {
     form,
     onSubmit,
@@ -57,11 +59,11 @@ export function EditIncomeModal({
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar ingreso"
-      description="Modifica los datos de este ingreso."
+      title={t("incomes.editTitle")}
+      description={t("incomes.editDescription")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
       contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       <IncomeFormFields

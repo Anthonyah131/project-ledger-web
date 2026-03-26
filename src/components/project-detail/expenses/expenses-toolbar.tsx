@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useLanguage } from "@/context/language-context"
 import type { CategoryResponse } from "@/types/category"
 
 interface ExpensesToolbarProps {
@@ -43,6 +44,8 @@ export function ExpensesToolbar({
   onCreateManual,
   onCreateWithAi,
 }: ExpensesToolbarProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-border bg-card">
       <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
@@ -51,18 +54,18 @@ export function ExpensesToolbar({
           <Input
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Buscar por titulo..."
+            placeholder={t("expenses.searchPlaceholder")}
             className="pl-8.5 h-8 text-sm"
-            aria-label="Buscar gastos"
+            aria-label={t("expenses.searchAriaLabel")}
           />
         </div>
         {categories.length > 0 && (
           <Select value={categoryId || "all"} onValueChange={(v) => onCategoryChange(v === "all" ? "" : v)}>
-            <SelectTrigger className="w-auto min-w-36 h-8 text-sm" aria-label="Filtrar por categoría">
-              <SelectValue placeholder="Todas las categorías" />
+            <SelectTrigger className="w-auto min-w-36 h-8 text-sm" aria-label={t("expenses.filterByCategoryAria")}>
+              <SelectValue placeholder={t("expenses.allCategories")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="all">{t("expenses.allCategories")}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
@@ -70,32 +73,32 @@ export function ExpensesToolbar({
           </Select>
         )}
         <Select value={activeStatus} onValueChange={onActiveStatusChange}>
-          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label="Filtrar por estado">
+          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label={t("expenses.filterByStatusAria")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="active">Contabilizados</SelectItem>
-            <SelectItem value="inactive">Recordatorios</SelectItem>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="active">{t("expenses.statusActive")}</SelectItem>
+            <SelectItem value="inactive">{t("expenses.statusInactive")}</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={sort} onValueChange={onSortChange}>
-          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label="Ordenar">
+          <SelectTrigger className="w-auto min-w-40 h-8 text-sm" aria-label={t("common.sortBy")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="expenseDate:desc">Fecha (reciente)</SelectItem>
-            <SelectItem value="expenseDate:asc">Fecha (antigua)</SelectItem>
-            <SelectItem value="title:asc">Título A - Z</SelectItem>
-            <SelectItem value="convertedAmount:desc">Mayor monto</SelectItem>
-            <SelectItem value="createdAt:desc">Recién creados</SelectItem>
+            <SelectItem value="expenseDate:desc">{t("expenses.sortDateDesc")}</SelectItem>
+            <SelectItem value="expenseDate:asc">{t("expenses.sortDateAsc")}</SelectItem>
+            <SelectItem value="title:asc">{t("expenses.sortTitleAZ")}</SelectItem>
+            <SelectItem value="convertedAmount:desc">{t("expenses.sortAmountDesc")}</SelectItem>
+            <SelectItem value="createdAt:desc">{t("expenses.sortRecentlyCreated")}</SelectItem>
           </SelectContent>
         </Select>
         <Select
           value={String(pageSize)}
           onValueChange={(v) => onPageSizeChange(Number(v))}
         >
-          <SelectTrigger className="w-auto min-w-16 h-8 text-sm" aria-label="Por página">
+          <SelectTrigger className="w-auto min-w-16 h-8 text-sm" aria-label={t("common.perPage")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -112,7 +115,7 @@ export function ExpensesToolbar({
           className="bg-gradient-to-r from-rose-600 to-pink-600 text-white hover:from-rose-700 hover:to-pink-700 border-0 shadow-sm shadow-rose-500/30 transition-all"
         >
           <Plus className="size-3.5" />
-          Nuevo gasto
+          {t("expenses.new")}
         </Button>
         <Button
           onClick={onCreateWithAi}
@@ -120,7 +123,7 @@ export function ExpensesToolbar({
           variant="outline"
           className="border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60"
         >
-          Con IA
+          {t("expenses.withAI")}
         </Button>
       </div>
     </div>

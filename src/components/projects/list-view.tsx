@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { ProjectResponse } from "@/types/project"
 import { Badge } from "@/components/ui/badge"
-import { getAccentColor, ROLE_LABEL } from "@/lib/constants"
+import { getAccentColor, getRoleLabel } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
+import { useLanguage } from "@/context/language-context"
 
 interface ListViewProps {
   projects: ProjectResponse[]
@@ -20,15 +21,16 @@ interface ListViewProps {
 
 function ListViewComponent({ projects, onEdit, onDelete, onShare, onDisconnect, globalIndex }: ListViewProps) {
   const router = useRouter()
+  const { t } = useLanguage()
 
   return (
-    <div role="list" aria-label="Lista de proyectos">
+    <div role="list" aria-label={t("projects.list.ariaLabel")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
-        <span className="flex-1">Proyecto</span>
-        <span className="w-16 text-center hidden sm:block">Moneda</span>
-        <span className="w-24 text-center hidden md:block">Rol</span>
-        <span className="w-28 text-right hidden lg:block">Actualizado</span>
+        <span className="flex-1">{t("projects.list.colProject")}</span>
+        <span className="w-16 text-center hidden sm:block">{t("common.currency")}</span>
+        <span className="w-24 text-center hidden md:block">{t("projects.list.colRole")}</span>
+        <span className="w-28 text-right hidden lg:block">{t("projects.list.colUpdated")}</span>
         <span className="w-8" />
       </div>
 
@@ -77,7 +79,7 @@ function ListViewComponent({ projects, onEdit, onDelete, onShare, onDisconnect, 
               variant={project.userRole === "owner" ? "default" : "secondary"}
               className="text-[10px] px-1.5 py-0 h-4 font-medium"
             >
-              {ROLE_LABEL[project.userRole]}
+              {getRoleLabel(project.userRole, t)}
             </Badge>
           </div>
 
@@ -88,9 +90,9 @@ function ListViewComponent({ projects, onEdit, onDelete, onShare, onDisconnect, 
 
           {/* Menu */}
           <ItemActionMenu
-            ariaLabel="Acciones del proyecto"
+            ariaLabel={t("projects.projectActions")}
             onOpen={() => router.push(`/projects/${project.id}`)}
-            openLabel="Abrir proyecto"
+            openLabel={t("projects.openLabel")}
             onEdit={() => onEdit(project)}
             onDelete={() => onDelete(project)}
             onShare={project.userRole === "owner" ? () => onShare(project) : undefined}

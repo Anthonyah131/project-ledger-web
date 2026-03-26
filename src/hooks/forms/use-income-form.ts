@@ -82,7 +82,7 @@ export function useCreateIncomeForm({
   const defaultPaymentMethodId = paymentMethods[0]?.id || ""
 
   const form = useForm<CreateIncomeFormValues>({
-    resolver: zodResolver(createIncomeSchema),
+    resolver: zodResolver(createIncomeSchema(t)),
     defaultValues: {
       title: "",
       originalAmount: "",
@@ -263,7 +263,7 @@ export function useUpdateIncomeForm({
 }: UseUpdateIncomeFormOptions) {
   const { t } = useLanguage()
   const form = useForm<UpdateIncomeFormValues>({
-    resolver: zodResolver(updateIncomeSchema),
+    resolver: zodResolver(updateIncomeSchema(t)),
     defaultValues: {
       isActive: true,
       currencyExchanges: [],

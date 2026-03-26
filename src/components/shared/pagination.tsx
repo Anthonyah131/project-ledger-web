@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLanguage } from "@/context/language-context"
 
 interface PaginationProps {
   page: number
@@ -11,6 +12,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ page, pageSize, total, onPageChange }: PaginationProps) {
+  const { t } = useLanguage()
   const totalPages = Math.ceil(total / pageSize)
   if (totalPages <= 1) return null
 
@@ -36,7 +38,7 @@ export function Pagination({ page, pageSize, total, onPageChange }: PaginationPr
   return (
     <div className="flex items-center justify-between px-5 py-3">
       <p className="text-xs text-muted-foreground tabular-nums">
-        {start}{"\u2013"}{end} de {total}
+        {t("common.paginationRange", { start, end, total })}
       </p>
 
       <div className="flex items-center gap-1">
@@ -44,7 +46,7 @@ export function Pagination({ page, pageSize, total, onPageChange }: PaginationPr
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
           className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          aria-label="Página anterior"
+          aria-label={t("common.previousPage")}
         >
           <ChevronLeft className="size-3.5" />
         </button>
@@ -74,7 +76,7 @@ export function Pagination({ page, pageSize, total, onPageChange }: PaginationPr
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
           className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          aria-label="Página siguiente"
+          aria-label={t("common.nextPage")}
         >
           <ChevronRight className="size-3.5" />
         </button>

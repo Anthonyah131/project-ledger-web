@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import type { FieldValues, UseFormReturn } from "react-hook-form"
+import { useLanguage } from "@/context/language-context"
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,8 @@ export function FormModal<T extends FieldValues>({
   contentClassName,
   children,
 }: FormModalProps<T>) {
+  const { t } = useLanguage()
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className={contentClassName ?? "sm:max-w-md"}>
@@ -53,7 +56,7 @@ export function FormModal<T extends FieldValues>({
             {children}
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={onClose}>
-                Cancelar
+                {t("common.cancel")}
               </Button>
               {!submitHidden && (
                 <Button type="submit" disabled={submitDisabled}>

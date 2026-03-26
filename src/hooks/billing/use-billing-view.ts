@@ -111,8 +111,8 @@ export function useBillingView() {
   }, [loadBillingData])
 
   const currentStatusMeta = useMemo(
-    () => (subscription ? getBillingStatusMeta(subscription.status) : null),
-    [subscription],
+    () => (subscription ? getBillingStatusMeta(subscription.status, t) : null),
+    [subscription, t],
   )
 
   const freePlan = useMemo(

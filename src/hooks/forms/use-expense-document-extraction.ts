@@ -172,7 +172,7 @@ export function useExpenseDocumentExtraction({
   }, [isAiMode, projectId, t])
 
   const handleExtract = useCallback(async () => {
-    const validationError = getDocumentValidationError(uploadFile)
+    const validationError = getDocumentValidationError(uploadFile, t)
     if (validationError) {
       setExtractError(validationError)
       return
@@ -196,7 +196,7 @@ export function useExpenseDocumentExtraction({
         description: t("expenses.draftExtractedDesc"),
       })
     } catch (err) {
-      setExtractError(getDocumentExtractionErrorMessage(err))
+      setExtractError(getDocumentExtractionErrorMessage(err, t))
     } finally {
       setExtracting(false)
     }

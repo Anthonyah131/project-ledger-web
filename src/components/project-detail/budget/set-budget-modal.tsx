@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
+import { useLanguage } from "@/context/language-context"
 import { useSetProjectBudgetForm } from "@/hooks/forms/use-project-budget-form"
 import type {
   ProjectBudgetResponse,
@@ -30,6 +31,7 @@ export function SetProjectBudgetModal({
   onClose,
   onSave,
 }: SetProjectBudgetModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useSetProjectBudgetForm({
     budget,
     onSave,
@@ -40,11 +42,11 @@ export function SetProjectBudgetModal({
     <FormModal
       open={open}
       onClose={handleClose}
-      title={budget ? "Editar presupuesto" : "Configurar presupuesto"}
-      description="Define el monto máximo del proyecto y cuándo quieres recibir alerta por consumo."
+      title={budget ? t("budget.editTitle") : t("budget.configTitle")}
+      description={t("budget.subtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel={budget ? "Guardar cambios" : "Guardar presupuesto"}
+      submitLabel={budget ? t("common.save") : t("budget.saveNew")}
       contentClassName="sm:max-w-sm"
     >
       <FormField
@@ -52,12 +54,12 @@ export function SetProjectBudgetModal({
         name="totalBudget"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Monto total ({projectCurrency}) *</FormLabel>
+            <FormLabel>{t("budget.totalAmountLabel", { currency: projectCurrency })} *</FormLabel>
             <FormControl>
               <Input type="number" step="0.01" min="0" autoFocus {...field} />
             </FormControl>
             <p className="text-[11px] text-muted-foreground">
-              Monto total disponible para cubrir todos los gastos del proyecto.
+              {t("budget.totalAmountHint")}
             </p>
             <FormMessage />
           </FormItem>
@@ -69,12 +71,12 @@ export function SetProjectBudgetModal({
         name="alertPercentage"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Alerta al (%) *</FormLabel>
+            <FormLabel>{t("budget.alertPercentLabel")} *</FormLabel>
             <FormControl>
               <Input type="number" min="1" max="100" step="1" {...field} />
             </FormControl>
             <p className="text-[11px] text-muted-foreground">
-              Ejemplo: 80 significa alertar cuando se haya gastado el 80% del presupuesto.
+              {t("budget.alertPercentHint")}
             </p>
             <FormMessage />
           </FormItem>

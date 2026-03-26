@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { PAYMENT_METHOD_TYPE_LABEL } from "@/lib/constants"
+import { getPaymentMethodTypeLabel } from "@/lib/constants"
 import type { ProjectPaymentMethodResponse } from "@/types/project-payment-method"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Link Payment Method Modal ──────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ export function LinkPaymentMethodModal({
   loading,
   onLink,
 }: LinkPaymentMethodModalProps) {
+  const { t } = useLanguage()
   const [linkingId, setLinkingId] = useState<string | null>(null)
 
   const linkedIds = new Set(linkedMethods.map((m) => m.paymentMethodId))
@@ -52,9 +54,9 @@ export function LinkPaymentMethodModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Vincular método de pago</DialogTitle>
+          <DialogTitle>{t("projectPaymentMethods.link.title")}</DialogTitle>
           <DialogDescription>
-            Selecciona un método de pago para vincularlo al proyecto.
+            {t("projectPaymentMethods.link.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -66,7 +68,7 @@ export function LinkPaymentMethodModal({
           <div className="flex flex-col items-center gap-2 py-8 text-center">
             <CreditCard className="size-8 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
-              Todos tus métodos de pago ya están vinculados.
+              {t("projectPaymentMethods.link.empty")}
             </p>
           </div>
         ) : (
@@ -82,7 +84,7 @@ export function LinkPaymentMethodModal({
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="outline" className="text-[10px]">
-                      {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+                      {getPaymentMethodTypeLabel(pm.type, t)}
                     </Badge>
                     <Badge variant="secondary" className="text-[10px]">
                       {pm.currency}
@@ -110,7 +112,7 @@ export function LinkPaymentMethodModal({
                   ) : (
                     <Link2 className="size-3.5" />
                   )}
-                  Vincular
+                  {t("projectPaymentMethods.link.button")}
                 </Button>
               </div>
             ))}
@@ -134,14 +136,15 @@ export function ProjectPaymentMethodsList({
   isOwner,
   onUnlink,
 }: ProjectPaymentMethodsListProps) {
+  const { t } = useLanguage()
   return (
-    <div role="list" aria-label="Métodos de pago del proyecto">
+    <div role="list" aria-label={t("projectPaymentMethods.list.ariaLabel")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 bg-linear-to-r from-cyan-500/10 via-sky-500/5 to-transparent">
-        <span className="flex-1">Nombre</span>
-        <span className="w-28 text-right hidden sm:block">Tipo</span>
-        <span className="w-24 text-right hidden md:block">Moneda</span>
-        <span className="w-40 text-right hidden lg:block">Propietario</span>
+        <span className="flex-1">{t("common.name")}</span>
+        <span className="w-28 text-right hidden sm:block">{t("common.type")}</span>
+        <span className="w-24 text-right hidden md:block">{t("common.currency")}</span>
+        <span className="w-40 text-right hidden lg:block">{t("projectPaymentMethods.list.colOwner")}</span>
         {isOwner && <span className="w-8" />}
       </div>
 
@@ -165,7 +168,7 @@ export function ProjectPaymentMethodsList({
 
           {/* Type */}
           <span className="w-28 text-right text-xs text-muted-foreground hidden sm:block">
-            {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+            {getPaymentMethodTypeLabel(pm.type, t)}
           </span>
 
 
@@ -195,8 +198,8 @@ export function ProjectPaymentMethodsList({
               <button
                 onClick={() => onUnlink(pm)}
                 className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
-                aria-label={`Desvincular ${pm.paymentMethodName}`}
-                title="Desvincular"
+                aria-label={t("projectPaymentMethods.list.unlinkAriaLabel", { name: pm.paymentMethodName })}
+                title={t("projectPaymentMethods.list.unlinkTitle")}
               >
                 <Unlink2 className="size-3.5" />
               </button>

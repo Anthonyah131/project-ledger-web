@@ -85,7 +85,7 @@ export function Features() {
                 aria-label={t("landing.viewFeature", { feature: title })}
                 onClick={() => setActive(i)}
                 style={getCardStyle(i)}
-                className="absolute w-[300px] cursor-pointer rounded-2xl border bg-card text-left shadow-2xl transition-all"
+                className="absolute w-75 cursor-pointer rounded-2xl border bg-card text-left shadow-2xl transition-all"
               >
                 {/* Card gradient top accent */}
                 <div className={`h-1.5 w-full rounded-t-2xl ${isActive ? "bg-primary" : "bg-border"}`} />

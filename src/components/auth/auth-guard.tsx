@@ -58,7 +58,7 @@ export function AuthGuard({ children, requireAdmin = false, requireUser = false 
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          <span className="text-sm">{t("auth.verifyingSession")}</span>
+          <span className="text-sm" suppressHydrationWarning>{t("auth.verifyingSession")}</span>
         </div>
       </div>
     );

@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createPartnerSchema,
   updatePartnerSchema,
@@ -22,8 +23,9 @@ interface UseCreatePartnerFormOptions {
 }
 
 export function useCreatePartnerForm({ onCreate, onClose }: UseCreatePartnerFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreatePartnerFormValues>({
-    resolver: zodResolver(createPartnerSchema),
+    resolver: zodResolver(createPartnerSchema(t)),
     defaultValues: { name: "", email: "", phone: "", notes: "" },
   })
 
@@ -53,8 +55,9 @@ interface UseUpdatePartnerFormOptions {
 }
 
 export function useUpdatePartnerForm({ partner, onSave, onClose }: UseUpdatePartnerFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdatePartnerFormValues>({
-    resolver: zodResolver(updatePartnerSchema),
+    resolver: zodResolver(updatePartnerSchema(t)),
     values: partner
       ? {
           name: partner.name,

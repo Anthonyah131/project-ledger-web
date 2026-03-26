@@ -2,6 +2,7 @@
 
 import { Pencil, Trash2, ArrowRight } from "lucide-react"
 import { formatDate } from "@/lib/date-utils"
+import { useLanguage } from "@/context/language-context"
 import type { PartnerSettlementResponse } from "@/types/partner-settlement"
 
 function formatAmount(amount: number, currency: string) {
@@ -28,13 +29,14 @@ export function SettlementsList({
   onEdit,
   onDelete,
 }: SettlementsListProps) {
+  const { t } = useLanguage()
   return (
     <div className="rounded-xl border border-violet-500/20 bg-card shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
-        <span className="flex-1">De → A</span>
-        <span className="w-32 text-right hidden sm:block">Fecha</span>
-        <span className="w-36 text-right">Monto</span>
+        <span className="flex-1">{t("partnerSettlements.colFromTo")}</span>
+        <span className="w-32 text-right hidden sm:block">{t("common.date")}</span>
+        <span className="w-36 text-right">{t("common.amount")}</span>
         {canEdit && <span className="w-16" />}
       </div>
 
@@ -81,14 +83,14 @@ export function SettlementsList({
                 <button
                   onClick={() => onEdit(s)}
                   className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Editar liquidación"
+                  aria-label={t("partnerSettlements.editAria")}
                 >
                   <Pencil className="size-3.5" />
                 </button>
                 <button
                   onClick={() => onDelete(s)}
                   className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Eliminar liquidación"
+                  aria-label={t("partnerSettlements.deleteAria")}
                 >
                   <Trash2 className="size-3.5" />
                 </button>

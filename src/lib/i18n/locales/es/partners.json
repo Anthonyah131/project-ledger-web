@@ -9,7 +9,27 @@
     "emailPlaceholder": "harold@example.com",
     "phonePlaceholder": "+506 8888-1234",
     "notesPlaceholder": "Notas adicionales...",
+    "editSubtitle": "Actualiza los datos del contacto financiero.",
     "phonelabel": "Teléfono",
+    "singular": "partner",
+    "plural": "partners",
+    "viewDetail": "Ver detalle",
+    "newButtonShort": "Nuevo",
+    "createButton": "Crear partner",
+    "noResults": "No se encontraron partners con ese criterio.",
+    "noPartnersYet": "Aún no tienes partners creados.",
+    "loadError": "No se pudo cargar la información del partner.",
+    "searchPlaceholder": "Buscar por nombre, email…",
+    "searchAriaLabel": "Buscar partners",
+    "pmSectionEmpty": "Este partner no tiene métodos de pago registrados.",
+    "relatedProjects": "Proyectos relacionados",
+    "projectsEmpty": "No hay proyectos con este partner asignado.",
+    "delete": {
+      "title": "Eliminar partner",
+      "description": "Se eliminará el partner y podrían desvincularse algunas cuentas de proyectos.",
+      "descriptionDetail": "Se eliminará el partner. Esta acción no puede deshacerse si no tiene cuentas vinculadas a proyectos activos.",
+      "confirm": "¿Eliminar partner \"{name}\"?"
+    },
     "empty": "No hay partners",
     "emptyDescription": "Agrega partners para asignarlos a gastos e ingresos",
     "deleteConfirmTitle": "¿Eliminar partner?",
@@ -24,6 +44,9 @@
       "updatedDesc": "\"{name}\" se guardó correctamente.",
       "deleted": "Partner eliminado",
       "deletedDesc": "\"{name}\" fue eliminado."
+    },
+    "validation": {
+      "emailInvalid": "Email inválido"
     },
     "errors": {
       "load": "Error al cargar partners",

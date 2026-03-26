@@ -3,17 +3,19 @@
 import { FolderOpen } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState as GenericEmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 export function EmptyState({ hasSearch, onCreate }: { hasSearch: boolean; onCreate: () => void }) {
+  const { t } = useLanguage()
   return (
     <GenericEmptyState
       hasSearch={hasSearch}
       onCreate={onCreate}
       icon={FolderOpen}
-      title="No hay proyectos"
-      description="Crea tu primer proyecto para comenzar."
-      searchDescription="No se encontraron proyectos con ese criterio."
-      createLabel="Crear proyecto"
+      title={t("projects.empty")}
+      description={t("projects.emptyDescription")}
+      searchDescription={t("projects.noResultsSearch")}
+      createLabel={t("projects.createTitle")}
     />
   )
 }

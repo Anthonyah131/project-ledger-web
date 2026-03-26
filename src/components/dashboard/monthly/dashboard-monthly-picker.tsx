@@ -1,9 +1,11 @@
+"use client"
+
 import { useState, useCallback } from "react"
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
-import { formatMonthKey } from "@/lib/date-utils"
-
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useLanguage } from "@/context/language-context"
+import { useDateFormat } from "@/hooks/use-date-format"
 
 interface DashboardMonthlyPickerProps {
   selectedMonth: string
@@ -16,6 +18,8 @@ export function DashboardMonthlyPicker({
   onSelectMonth,
   loading,
 }: DashboardMonthlyPickerProps) {
+  const { t, locale } = useLanguage()
+  const { formatMonthKey } = useDateFormat()
   const [open, setOpen] = useState(false)
   const [pickerYear, setPickerYear] = useState(() => {
     return selectedMonth ? Number(selectedMonth.split("-")[0]) : new Date().getFullYear()
@@ -37,7 +41,7 @@ export function DashboardMonthlyPicker({
   }, [pickerYear, onSelectMonth])
 
   const displayLabel = formatMonthKey(selectedMonth, selectedMonth)
-  
+
   const currentMonthKey = (() => {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
@@ -46,7 +50,7 @@ export function DashboardMonthlyPicker({
   // Generate localized short month names (Jan, Feb, etc)
   const monthNames = Array.from({ length: 12 }).map((_, i) => {
     const d = new Date(2000, i, 1)
-    return d.toLocaleString("es", { month: "short" }).replace(".", "").toUpperCase()
+    return d.toLocaleString(locale, { month: "short" }).replace(".", "").toUpperCase()
   })
 
   return (
@@ -66,7 +70,7 @@ export function DashboardMonthlyPicker({
             variant="outline"
             className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
             onClick={() => setPickerYear((y) => y - 1)}
-            aria-label="Año anterior"
+            aria-label={t("dashboard.monthly.picker.previousYear")}
           >
             <IconChevronLeft className="h-4 w-4" />
           </Button>
@@ -76,7 +80,7 @@ export function DashboardMonthlyPicker({
             className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
             disabled={pickerYear >= new Date().getFullYear()}
             onClick={() => setPickerYear((y) => y + 1)}
-            aria-label="Año siguiente"
+            aria-label={t("dashboard.monthly.picker.nextYear")}
           >
             <IconChevronRight className="h-4 w-4" />
           </Button>

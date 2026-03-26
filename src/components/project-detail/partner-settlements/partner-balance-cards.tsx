@@ -3,6 +3,7 @@
 import { TrendingUp, TrendingDown, Minus, History, Lightbulb, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatCurrencyAmount } from "@/lib/format-utils"
+import { useLanguage } from "@/context/language-context"
 import type {
   PartnerBalanceItem,
   PartnerCurrencyTotal,
@@ -48,6 +49,7 @@ interface PartnerBalanceCardProps {
 }
 
 function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalanceCardProps) {
+  const { t } = useLanguage()
   const isPositive = partner.netBalance > 0
   const isNegative = partner.netBalance < 0
   const isZero = partner.netBalance === 0
@@ -59,7 +61,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
         <div className="min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{partner.partnerName}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Pagó físicamente {formatCurrencyAmount(partner.paidPhysically, currency)}
+            {t("partnerSettlements.paidPhysically", { amount: formatCurrencyAmount(partner.paidPhysically, currency) })}
           </p>
         </div>
         <Button
@@ -67,7 +69,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
           size="icon"
           className="shrink-0 size-7 text-muted-foreground hover:text-foreground"
           onClick={() => onViewHistory(partner)}
-          title="Ver historial"
+          title={t("partnerSettlements.viewHistory")}
         >
           <History className="size-3.5" />
         </Button>
@@ -98,7 +100,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
             </p>
           ))}
           <p className="text-[11px] text-muted-foreground">
-            {isPositive ? "Le deben" : isNegative ? "Debe" : "Al día"}
+            {isPositive ? t("partnerSettlements.owedLabel") : isNegative ? t("partnerSettlements.owesLabel") : t("partnerSettlements.balancedLabel")}
           </p>
         </div>
       </div>
@@ -106,7 +108,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
       {/* Detail breakdown */}
       <div className="flex flex-col gap-1.5 pt-1 border-t border-border/50">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Otros le deben</span>
+          <span>{t("partnerSettlements.othersOweHim")}</span>
           <div className="flex flex-col items-end gap-0.5">
             <span className="tabular-nums font-medium text-foreground">
               {formatCurrencyAmount(partner.othersOweHim, currency)}
@@ -115,7 +117,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
           </div>
         </div>
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Le debe a otros</span>
+          <span>{t("partnerSettlements.heOwesOthers")}</span>
           <div className="flex flex-col items-end gap-0.5">
             <span className="tabular-nums font-medium text-foreground">
               {formatCurrencyAmount(partner.heOwesOthers, currency)}
@@ -126,7 +128,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
         {(partner.settlementsPaid > 0 || partner.settlementsReceived > 0) && (
           <>
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Liquidaciones pagadas</span>
+              <span>{t("partnerSettlements.settlementsPaidLabel")}</span>
               <div className="flex flex-col items-end gap-0.5">
                 <span className="tabular-nums font-medium text-foreground">
                   {formatCurrencyAmount(partner.settlementsPaid, currency)}
@@ -135,7 +137,7 @@ function PartnerBalanceCard({ partner, currency, onViewHistory }: PartnerBalance
               </div>
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Liquidaciones recibidas</span>
+              <span>{t("partnerSettlements.settlementsReceivedLabel")}</span>
               <div className="flex flex-col items-end gap-0.5">
                 <span className="tabular-nums font-medium text-foreground">
                   {formatCurrencyAmount(partner.settlementsReceived, currency)}
@@ -158,12 +160,13 @@ interface PairwiseSectionProps {
 }
 
 function PairwiseSection({ pairwiseBalances, currency }: PairwiseSectionProps) {
+  const { t } = useLanguage()
   if (pairwiseBalances.length === 0) return null
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-        Balance entre pares
+        {t("partnerSettlements.pairwiseTitle")}
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {pairwiseBalances.map((pw) => {
@@ -185,16 +188,16 @@ function PairwiseSection({ pairwiseBalances, currency }: PairwiseSectionProps) {
                 <span>{pw.partnerBName}</span>
               </div>
               {balanced ? (
-                <p className="text-xs text-muted-foreground text-center">Saldados</p>
+                <p className="text-xs text-muted-foreground text-center">{t("partnerSettlements.pairwiseBalanced")}</p>
               ) : (
                 <div className="flex flex-col items-center gap-1">
                   <p className="text-xs text-muted-foreground text-center">
                     <span className="font-semibold text-foreground">{debtorName}</span>
-                    {" le debe "}
+                    {` ${t("partnerSettlements.pairwiseOwes")} `}
                     <span className={`font-semibold tabular-nums ${bOwesA ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                       {formatCurrencyAmount(amount, currency)}
                     </span>
-                    {" a "}
+                    {` ${t("partnerSettlements.pairwiseTo")} `}
                     <span className="font-semibold text-foreground">{creditorName}</span>
                   </p>
                   {(() => {
@@ -227,6 +230,7 @@ interface WarningsBannerProps {
 }
 
 function WarningsBanner({ warnings, currency }: WarningsBannerProps) {
+  const { t } = useLanguage()
   if (warnings.length === 0) return null
 
   return (
@@ -234,10 +238,10 @@ function WarningsBanner({ warnings, currency }: WarningsBannerProps) {
       <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-          Movimientos sin conversión de moneda configurada
+          {t("partnerSettlements.warningsTitle")}
         </p>
         <p className="text-xs text-muted-foreground">
-          Los totales en monedas alternativas pueden estar incompletos. Edita las transacciones afectadas y agrega los tipos de cambio.
+          {t("partnerSettlements.warningsDesc")}
         </p>
         <div className="flex flex-col gap-0.5 mt-1">
           {warnings.map((w) => (
@@ -264,6 +268,7 @@ export function PartnerBalanceCards({
   onViewHistory,
   onSuggest,
 }: PartnerBalanceCardsProps) {
+  const { t } = useLanguage()
   if (balance.partners.length === 0) return null
 
   const allBalanced = balance.partners.every((p) => p.netBalance === 0)
@@ -293,7 +298,7 @@ export function PartnerBalanceCards({
         <div className="flex justify-end">
           <Button variant="outline" size="sm" onClick={onSuggest}>
             <Lightbulb className="size-4" />
-            ¿Cómo liquidar?
+            {t("partnerSettlements.howToSettle")}
           </Button>
         </div>
       )}

@@ -20,7 +20,7 @@ export function useRegister() {
   const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema(t)),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   })
 

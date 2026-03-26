@@ -15,10 +15,32 @@
     "sortZA": "Z - A",
     "sortNew": "Newest",
     "noResultsSearch": "No projects found for that criteria",
+    "newButton": "New",
+    "countSingular": "project",
+    "countPlural": "projects",
+    "openLabel": "Open project",
+    "descriptionOptional": "Description (optional)",
+    "editSubtitle": "Update the project name and description.",
+    "toolbar": {
+      "searchPlaceholder": "Search...",
+      "searchAriaLabel": "Search projects by name",
+      "sortAriaLabel": "Sort",
+      "pageSizeAriaLabel": "Per page",
+      "viewAriaLabel": "View mode",
+      "shelfViewAriaLabel": "Grid view",
+      "listViewAriaLabel": "List view"
+    },
+    "list": {
+      "ariaLabel": "Projects list",
+      "colProject": "Project",
+      "colRole": "Role",
+      "colUpdated": "Updated"
+    },
     "backToProjects": "Back to projects",
     "projectActions": "Project actions",
     "manageAccess": "Manage access",
     "deleteProject": "Delete project",
+    "createdAt": "Created {date}",
     "deleteConfirmTitle": "Delete project",
     "deleteConfirmDescription": "This action may deactivate it, not permanently delete it.",
     "deleteConfirmDescriptionNamed": "Delete project \"{name}\"?",
@@ -136,6 +158,18 @@
       "removed": "Member removed",
       "removedDesc": "{name} was removed from the project."
     },
+    "columnSince": "Since",
+    "removeAria": "Remove {name}",
+    "empty": {
+      "title": "No members",
+      "description": "Only you have access to this project. Invite someone to collaborate."
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email is not valid",
+      "emailMaxLength": "Maximum 255 characters",
+      "roleRequired": "Role is required"
+    },
     "errors": {
       "load": "Error loading members",
       "add": "Error adding member",
@@ -171,6 +205,16 @@
     }
   },
   "alternativeCurrencies": {
+    "panel": {
+      "title": "Project alternative currencies",
+      "baseCurrency": "Project base currency:",
+      "selectAriaLabel": "Select alternative currency",
+      "addPlaceholder": "Add currency",
+      "movementsWarning": "When adding a new alternative currency, you must manually assign conversion data on each existing transaction for the balance to reflect correctly.",
+      "empty": "No alternative currencies configured.",
+      "colSymbol": "Symbol",
+      "deleteAria": "Remove {code}"
+    },
     "toast": {
       "added": "Alternative currency added",
       "addedDesc": "{code} was added to the project.",

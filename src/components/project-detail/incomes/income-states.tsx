@@ -3,6 +3,7 @@
 import { Wallet } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 interface EmptyStateProps {
   hasSearch: boolean
@@ -10,15 +11,17 @@ interface EmptyStateProps {
 }
 
 export function IncomesEmptyState({ hasSearch, onCreate }: EmptyStateProps) {
+  const { t } = useLanguage()
+
   return (
     <EmptyState
       hasSearch={hasSearch}
       onCreate={onCreate}
       icon={Wallet}
-      title="Sin ingresos registrados"
-      description="Registra el primer ingreso del proyecto."
-      searchDescription="No se encontraron ingresos con ese criterio."
-      createLabel="Nuevo ingreso"
+      title={t("incomes.empty")}
+      description={t("incomes.emptyDescription")}
+      searchDescription={t("incomes.emptySearchDescription")}
+      createLabel={t("incomes.new")}
     />
   )
 }

@@ -3,6 +3,7 @@
 import { Users } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
@@ -12,19 +13,20 @@ interface EmptyStateProps {
 }
 
 export function ProjectPartnersEmptyState({ isOwner, onAssign }: EmptyStateProps) {
+  const { t } = useLanguage()
   return (
     <EmptyState
       hasSearch={false}
       onCreate={onAssign}
       icon={Users}
-      title="Sin partners asignados"
+      title={t("projectPartners.empty.title")}
       description={
         isOwner
-          ? "Asigna un partner al proyecto para que sus cuentas estén disponibles."
-          : "El propietario del proyecto aún no ha asignado partners."
+          ? t("projectPartners.empty.ownerDescription")
+          : t("projectPartners.empty.viewerDescription")
       }
       searchDescription=""
-      createLabel={isOwner ? "Asignar partner" : undefined}
+      createLabel={isOwner ? t("projectPartners.empty.assignLabel") : undefined}
     />
   )
 }

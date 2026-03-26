@@ -12,6 +12,7 @@ import {
 import { FormModal } from "@/components/shared/form-modal"
 import { useCreatePartnerForm } from "@/hooks/forms/use-partner-form"
 import type { CreatePartnerRequest } from "@/types/partner"
+import { useLanguage } from "@/context/language-context"
 
 interface CreatePartnerModalProps {
   open: boolean
@@ -21,25 +22,26 @@ interface CreatePartnerModalProps {
 
 export function CreatePartnerModal({ open, onClose, onCreate }: CreatePartnerModalProps) {
   const { form, onSubmit, handleClose } = useCreatePartnerForm({ onCreate, onClose })
+  const { t } = useLanguage()
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nuevo partner"
-      description="Agrega un contacto financiero para asignar a proyectos."
+      title={t("partners.createTitle")}
+      description={t("partners.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear"
+      submitLabel={t("common.create")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} *</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Harold Vargas" autoFocus {...field} />
+              <Input placeholder={t("partners.namePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -53,11 +55,11 @@ export function CreatePartnerModal({ open, onClose, onCreate }: CreatePartnerMod
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Email
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("common.email")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input type="email" placeholder="harold@example.com" {...field} />
+                <Input type="email" placeholder={t("partners.emailPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,11 +71,11 @@ export function CreatePartnerModal({ open, onClose, onCreate }: CreatePartnerMod
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Teléfono
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("partners.phonelabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="+506 8888-1234" {...field} />
+                <Input placeholder={t("partners.phonePlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,11 +89,11 @@ export function CreatePartnerModal({ open, onClose, onCreate }: CreatePartnerMod
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Notas
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.notes")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
-              <Textarea rows={2} className="resize-none" placeholder="Notas adicionales..." {...field} />
+              <Textarea rows={2} className="resize-none" placeholder={t("partners.notesPlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

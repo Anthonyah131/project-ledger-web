@@ -15,30 +15,33 @@ import { PaymentMethodReportMethodCard } from "./payment-method-report-method-ca
 import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type { PaymentMethodReportResponse } from "@/types/report"
+import { useLanguage } from "@/context/language-context"
 
 interface Props {
   report: PaymentMethodReportResponse
 }
 
 export function PaymentMethodReportResults({ report }: Props) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col gap-6">
       {/* ── Summary cards ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <SummaryCard
-          label="Métodos de pago"
+          label={t("reports.pm.label")}
           value={String(report.paymentMethods.length)}
         />
         <SummaryCard
-          label="Periodo"
+          label={t("reports.shared.period")}
           value={
             report.dateFrom && report.dateTo
               ? `${formatDate(report.dateFrom)} – ${formatDate(report.dateTo)}`
-              : "Todo el historial"
+              : t("reports.shared.allHistory")
           }
         />
         <SummaryCard
-          label="Generado"
+          label={t("reports.shared.generated")}
           value={formatDate(report.generatedAt)}
         />
       </div>
@@ -47,9 +50,9 @@ export function PaymentMethodReportResults({ report }: Props) {
       {report.paymentMethods.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Métodos de pago</CardTitle>
+            <CardTitle>{t("reports.pm.label")}</CardTitle>
             <CardDescription>
-              Desglose de gastos, ingresos y flujo neto por cada método
+              {t("reports.pm.breakdownDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -67,9 +70,9 @@ export function PaymentMethodReportResults({ report }: Props) {
       {report.monthlyTrend.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Tendencia mensual</CardTitle>
+            <CardTitle>{t("reports.shared.monthlyTrendTitle")}</CardTitle>
             <CardDescription>
-              Evolución mensual por método de pago
+              {t("reports.pm.monthlyTrendDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -121,9 +124,9 @@ export function PaymentMethodReportResults({ report }: Props) {
                             {bm.expenseCount}/{bm.incomeCount ?? 0}
                           </span>
                           <div className="tabular-nums w-52 text-right flex flex-col">
-                            <span>G: {bm.currency} {formatAmount(bm.totalSpent)}</span>
-                            <span>I: {bm.currency} {formatAmount(income)}</span>
-                            <span className="font-semibold">N: {bm.currency} {formatAmount(net)}</span>
+                            <span>{t("reports.shared.trendSpent")} {bm.currency} {formatAmount(bm.totalSpent)}</span>
+                            <span>{t("reports.shared.trendIncome")} {bm.currency} {formatAmount(income)}</span>
+                            <span className="font-semibold">{t("reports.shared.trendNet")} {bm.currency} {formatAmount(net)}</span>
                           </div>
                         </div>
                       )

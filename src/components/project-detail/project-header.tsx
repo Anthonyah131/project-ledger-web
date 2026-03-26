@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Users, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ROLE_LABEL } from "@/lib/constants"
+import { getRoleLabel } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { ProjectResponse } from "@/types/project"
+import { useLanguage } from "@/context/language-context"
 
 interface ProjectHeaderProps {
   project: ProjectResponse | null
@@ -26,6 +27,7 @@ interface ProjectHeaderProps {
 
 export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: ProjectHeaderProps) {
   const router = useRouter()
+  const { t } = useLanguage()
 
   if (loading || !project) {
     return (
@@ -80,10 +82,10 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
                     : "bg-violet-500/10 text-violet-600 dark:text-violet-300 border-violet-500/30"
                 )}
               >
-                {ROLE_LABEL[project.userRole]}
+                {getRoleLabel(project.userRole, t)}
               </Badge>
               <span className="text-xs text-muted-foreground">
-                Creado {formatDate(project.createdAt)}
+                {t("projects.createdAt", { date: formatDate(project.createdAt) })}
               </span>
             </div>
           </div>
@@ -93,7 +95,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
             <button
               onClick={() => router.push("/projects")}
               className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 transition-all duration-150"
-              aria-label="Volver a proyectos"
+              aria-label={t("projects.backToProjects")}
             >
               <ArrowLeft className="size-4" />
             </button>
@@ -101,7 +103,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
               <DropdownMenuTrigger asChild>
                 <button
                   className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 transition-all duration-150"
-                  aria-label="Acciones del proyecto"
+                  aria-label={t("projects.projectActions")}
                 >
                   <MoreHorizontal className="size-4" />
                 </button>
@@ -109,12 +111,12 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
               <DropdownMenuContent align="end" className="w-44">
                 <DropdownMenuItem onClick={onEdit}>
                   <Pencil className="size-4" />
-                  Editar proyecto
+                  {t("projects.editTitle")}
                 </DropdownMenuItem>
                 {onShare && (
                   <DropdownMenuItem onClick={onShare}>
                     <Users className="size-4" />
-                    Gestionar accesos
+                    {t("projects.manageAccess")}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
@@ -123,7 +125,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="size-4" />
-                  Eliminar proyecto
+                  {t("projects.deleteProject")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

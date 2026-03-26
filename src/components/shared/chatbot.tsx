@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/context/auth-context'
+import { useLanguage } from '@/context/language-context'
 import { getUserProfile } from '@/services/plan-service'
 import { sendChatbotMessage } from '@/services/chatbot-service'
 import { cn } from '@/lib/utils'
@@ -33,6 +34,7 @@ const MAX_CHARS = 4000
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Chatbot() {
+  const { t } = useLanguage()
   const { user, isAuthenticated, isLoading } = useAuth()
   const [isPremium, setIsPremium] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -106,8 +108,8 @@ export default function Chatbot() {
         id: crypto.randomUUID(),
         role: 'bot',
         text: isServiceUnavailable
-          ? 'El asistente no está disponible en este momento. Inténtalo en unos minutos.'
-          : 'Ocurrió un error al procesar tu mensaje. Por favor intenta de nuevo.',
+          ? t('chatbot.unavailable')
+          : t('chatbot.errorMessage'),
       }
       setMessages((prev) => [...prev, botMsg])
     } finally {
@@ -143,14 +145,14 @@ export default function Chatbot() {
                 <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-primary-foreground">Aria</p>
-                <p className="text-xs text-primary-foreground/70">Tu asistente de Project Ledger</p>
+                <p className="text-sm font-semibold text-primary-foreground">{t('chatbot.title')}</p>
+                <p className="text-xs text-primary-foreground/70">{t('chatbot.subtitle')}</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
-              aria-label="Cerrar chat"
+              aria-label={t('chatbot.closeChat')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -163,9 +165,9 @@ export default function Chatbot() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                   <Bot className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <p className="text-sm font-medium">¡Hola! Soy Aria</p>
+                <p className="text-sm font-medium">{t('chatbot.greeting')}</p>
                 <p className="text-xs text-muted-foreground max-w-[240px]">
-                  Tu asistente financiero. Pregúntame sobre tus proyectos, gastos o reportes.
+                  {t('chatbot.greetingSubtitle')}
                 </p>
               </div>
             )}
@@ -217,7 +219,7 @@ export default function Chatbot() {
                   value={input}
                   onChange={(e) => setInput(e.target.value.slice(0, MAX_CHARS))}
                   onKeyDown={handleKeyDown}
-                  placeholder="Escribe tu mensaje..."
+                  placeholder={t('chatbot.inputPlaceholder')}
                   rows={1}
                   className={cn(
                     'w-full resize-none rounded-lg border border-border bg-background px-3 py-2.5 text-sm',
@@ -247,7 +249,7 @@ export default function Chatbot() {
                   'hover:bg-primary/90 active:scale-95',
                   'disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100'
                 )}
-                aria-label="Enviar mensaje"
+                aria-label={t('chatbot.send')}
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -266,7 +268,7 @@ export default function Chatbot() {
           'hover:shadow-xl hover:scale-105 active:scale-95',
           'animate-in slide-in-from-bottom-4 fade-in duration-300'
         )}
-        aria-label={isOpen ? 'Cerrar asistente' : 'Abrir asistente'}
+        aria-label={isOpen ? t('chatbot.closeAssistant') : t('chatbot.openAssistant')}
       >
         {isOpen ? (
           <X className="h-6 w-6" />

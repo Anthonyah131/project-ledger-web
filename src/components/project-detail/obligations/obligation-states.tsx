@@ -3,6 +3,7 @@
 import { Receipt } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 interface EmptyProps {
   hasFilter: boolean
@@ -10,15 +11,16 @@ interface EmptyProps {
 }
 
 export function ObligationsEmptyState({ hasFilter, onCreate }: EmptyProps) {
+  const { t } = useLanguage()
   return (
     <EmptyState
       hasSearch={hasFilter}
       onCreate={onCreate}
       icon={Receipt}
-      title="Sin obligaciones registradas"
-      description="Registra obligaciones financieras para llevar control de pagos."
-      searchDescription="No hay obligaciones que coincidan con el filtro seleccionado."
-      createLabel="Nueva obligación"
+      title={t("obligations.empty")}
+      description={t("obligations.emptyDescription")}
+      searchDescription={t("obligations.emptySearchDescription")}
+      createLabel={t("obligations.new")}
     />
   )
 }

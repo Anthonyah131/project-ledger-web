@@ -39,28 +39,20 @@ export function getAccentColorRaw(index: number): string {
 
 // ─── Project role labels ───────────────────────────────────────────────────────
 
-export const ROLE_LABEL: Record<string, string> = {
-  owner: "Propietario",
-  editor: "Editor",
-  viewer: "Lector",
-};
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
+export function getRoleLabel(role: string, t: TFn): string {
+  return t(`common.roles.${role}`) || role
+}
 
 // ─── Payment method constants ──────────────────────────────────────────────────
 
 import type { PaymentMethodType } from "@/types/payment-method";
 
-export const PAYMENT_METHOD_TYPE_LABEL: Record<PaymentMethodType, string> = {
-  bank: "Banco",
-  cash: "Efectivo",
-  card: "Tarjeta",
-};
-
-/** Longer labels used in form selects (create/edit payment method) */
-export const PAYMENT_METHOD_FORM_TYPE_LABEL: Record<PaymentMethodType, string> = {
-  bank: "Cuenta bancaria",
-  cash: "Efectivo",
-  card: "Tarjeta",
-};
+export function getPaymentMethodTypeLabel(type: PaymentMethodType, t: TFn): string {
+  const key = type === "bank" ? "typeBank" : type === "card" ? "typeCard" : "typeCash"
+  return t(`paymentMethods.${key}`) || type
+}
 
 export const PAYMENT_METHOD_ACCENT: Record<PaymentMethodType, string> = {
   bank: "bg-[oklch(0.55_0.14_280)]",
@@ -72,33 +64,40 @@ export const PAYMENT_METHOD_ACCENT: Record<PaymentMethodType, string> = {
 
 import type { ObligationStatus } from "@/types/obligation";
 
-export const STATUS_COLORS: Record<ObligationStatus, { dot: string; bg: string; text: string; label: string; color: string }> = {
+export const STATUS_COLORS: Record<ObligationStatus, { dot: string; bg: string; text: string; color: string }> = {
   open: {
     dot: "bg-primary",
     bg: "bg-primary/10",
     text: "text-primary",
-    label: "Abierta",
     color: "var(--primary)",
   },
   partially_paid: {
     dot: "bg-[oklch(0.62_0.14_85)]",
     bg: "bg-[oklch(0.62_0.14_85)]/10",
     text: "text-[oklch(0.62_0.14_85)]",
-    label: "Pago parcial",
     color: "oklch(0.62 0.14 85)",
   },
   paid: {
     dot: "bg-[oklch(0.60_0.16_155)]",
     bg: "bg-[oklch(0.60_0.16_155)]/10",
     text: "text-[oklch(0.60_0.16_155)]",
-    label: "Pagada",
     color: "oklch(0.60 0.16 155)",
   },
   overdue: {
     dot: "bg-[oklch(0.58_0.16_30)]",
     bg: "bg-[oklch(0.58_0.16_30)]/10",
     text: "text-[oklch(0.58_0.16_30)]",
-    label: "Vencida",
     color: "oklch(0.58 0.16 30)",
   },
 };
+
+const OBLIGATION_STATUS_KEY: Record<ObligationStatus, string> = {
+  open: "statusOpen",
+  partially_paid: "statusPartiallyPaid",
+  paid: "statusPaid",
+  overdue: "statusOverdue",
+}
+
+export function getObligationStatusLabel(status: ObligationStatus, t: TFn): string {
+  return t(`obligations.${OBLIGATION_STATUS_KEY[status]}`) || status
+}

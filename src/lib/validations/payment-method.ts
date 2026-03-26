@@ -1,36 +1,42 @@
 import { z } from "zod"
 
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
 const paymentMethodTypes = ["bank", "cash", "card"] as const
 
 // ─── Create ───────────────────────────────────────────────────────────────────
 
-export const createPaymentMethodSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nombre es requerido")
-    .max(255, "Máx. 255 caracteres"),
-  type: z.enum(paymentMethodTypes, { message: "Tipo es requerido" }),
-  currency: z.string().min(1, "Moneda es requerida"),
-  bankName: z.string().trim(),
-  accountNumber: z.string().trim(),
-  description: z.string().trim(),
-})
+export function createPaymentMethodSchema(t: TFn) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("common.validation.nameRequired"))
+      .max(255, t("common.validation.maxChars255")),
+    type: z.enum(paymentMethodTypes, { message: t("common.validation.typeRequired") }),
+    currency: z.string().min(1, t("common.validation.currencyRequired")),
+    bankName: z.string().trim(),
+    accountNumber: z.string().trim(),
+    description: z.string().trim(),
+  })
+}
 
-export type CreatePaymentMethodFormValues = z.infer<typeof createPaymentMethodSchema>
+export type CreatePaymentMethodFormValues = z.infer<ReturnType<typeof createPaymentMethodSchema>>
 
 // ─── Update ───────────────────────────────────────────────────────────────────
 
-export const updatePaymentMethodSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nombre es requerido")
-    .max(255, "Máx. 255 caracteres"),
-  type: z.enum(paymentMethodTypes, { message: "Tipo es requerido" }),
-  bankName: z.string().trim(),
-  accountNumber: z.string().trim(),
-  description: z.string().trim(),
-})
+export function updatePaymentMethodSchema(t: TFn) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("common.validation.nameRequired"))
+      .max(255, t("common.validation.maxChars255")),
+    type: z.enum(paymentMethodTypes, { message: t("common.validation.typeRequired") }),
+    bankName: z.string().trim(),
+    accountNumber: z.string().trim(),
+    description: z.string().trim(),
+  })
+}
 
-export type UpdatePaymentMethodFormValues = z.infer<typeof updatePaymentMethodSchema>
+export type UpdatePaymentMethodFormValues = z.infer<ReturnType<typeof updatePaymentMethodSchema>>

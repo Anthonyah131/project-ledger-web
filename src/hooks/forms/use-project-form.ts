@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   createProjectSchema,
   updateProjectSchema,
@@ -22,8 +23,9 @@ interface UseCreateProjectFormOptions {
 }
 
 export function useCreateProjectForm({ onCreate, onClose }: UseCreateProjectFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<CreateProjectFormValues>({
-    resolver: zodResolver(createProjectSchema),
+    resolver: zodResolver(createProjectSchema(t)),
     defaultValues: {
       name: "",
       currencyCode: "USD",
@@ -58,8 +60,9 @@ interface UseUpdateProjectFormOptions {
 }
 
 export function useUpdateProjectForm({ project, onSave, onClose }: UseUpdateProjectFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<UpdateProjectFormValues>({
-    resolver: zodResolver(updateProjectSchema),
+    resolver: zodResolver(updateProjectSchema(t)),
     values: project
       ? {
           name: project.name,

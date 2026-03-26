@@ -19,6 +19,7 @@ import {
 import { FormModal } from "@/components/shared/form-modal"
 import { ISO_CURRENCIES, type CreateProjectRequest } from "@/types/project"
 import { useCreateProjectForm } from "@/hooks/forms/use-project-form"
+import { useLanguage } from "@/context/language-context"
 
 interface CreateProjectModalProps {
   open: boolean
@@ -27,26 +28,27 @@ interface CreateProjectModalProps {
 }
 
 export function CreateProjectModal({ open, onClose, onCreate }: CreateProjectModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useCreateProjectForm({ onCreate, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nuevo proyecto"
-      description="Crea un nuevo proyecto para gestionar sus gastos."
+      title={t("projects.new")}
+      description={t("projects.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear proyecto"
+      submitLabel={t("projects.createTitle")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre del proyecto</FormLabel>
+            <FormLabel>{t("projects.settingsTab.nameLabel")}</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Proyecto Construccion" autoFocus {...field} />
+              <Input placeholder={t("projects.namePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -58,7 +60,7 @@ export function CreateProjectModal({ open, onClose, onCreate }: CreateProjectMod
         name="currencyCode"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Moneda</FormLabel>
+            <FormLabel>{t("common.currency")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="w-full">
@@ -83,10 +85,10 @@ export function CreateProjectModal({ open, onClose, onCreate }: CreateProjectMod
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion (opcional)</FormLabel>
+            <FormLabel>{t("projects.descriptionOptional")}</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Breve descripcion del proyecto..."
+                placeholder={t("projects.descriptionPlaceholder")}
                 rows={3}
                 className="resize-none"
                 {...field}

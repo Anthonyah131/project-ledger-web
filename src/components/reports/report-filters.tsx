@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Loader2, FileText, FileSpreadsheet, Download, AlertCircle } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 interface ReportFiltersProps {
   from: string
@@ -42,6 +43,7 @@ export function ReportFilters({
   dateRangeError,
   children,
 }: ReportFiltersProps) {
+  const { t } = useLanguage()
   const [exportFormat, setExportFormat] = useState<"excel" | "pdf" | "">("")
   const hasDateRangeError = Boolean(dateRangeError)
 
@@ -51,7 +53,7 @@ export function ReportFilters({
         {/* Date range */}
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="report-from" className="text-xs text-muted-foreground">
-            Desde
+            {t("reports.from")}
           </Label>
           <DateInput
             id="report-from"
@@ -65,7 +67,7 @@ export function ReportFilters({
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="report-to" className="text-xs text-muted-foreground">
-            Hasta
+            {t("reports.to")}
           </Label>
           <DateInput
             id="report-to"
@@ -87,7 +89,7 @@ export function ReportFilters({
             ) : (
               <FileText className="size-3.5" />
             )}
-            Generar
+            {t("reports.generate")}
           </Button>
 
           <div className="flex items-center gap-1.5">
@@ -96,17 +98,17 @@ export function ReportFilters({
               onValueChange={(v) => setExportFormat(v as "excel" | "pdf")}
               disabled={loading || exporting || hasDateRangeError}
             >
-              <SelectTrigger size="sm" className="w-36" aria-label="Formato de exportación">
-                <SelectValue placeholder="Formato" />
+              <SelectTrigger size="sm" className="w-36" aria-label={t("reports.filters.exportFormatAria")}>
+                <SelectValue placeholder={t("reports.format")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="excel">
                   <FileSpreadsheet className="size-3.5" />
-                  Excel (.xlsx)
+                  {t("reports.excel")}
                 </SelectItem>
                 <SelectItem value="pdf">
                   <FileText className="size-3.5" />
-                  PDF
+                  {t("reports.pdf")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -122,7 +124,7 @@ export function ReportFilters({
               ) : (
                 <Download className="size-3.5" />
               )}
-              Descargar
+              {t("reports.download")}
             </Button>
           </div>
         </div>
@@ -136,7 +138,7 @@ export function ReportFilters({
       )}
 
       <p className="text-xs text-muted-foreground">
-        Las exportaciones incluyen desglose de ingresos y balance neto para facilitar el análisis de flujo.
+        {t("reports.exportHint")}
       </p>
     </div>
   )

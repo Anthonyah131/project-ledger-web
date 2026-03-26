@@ -12,7 +12,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { formatPlanPrice } from "@/lib/billing-utils"
-import { getPlanDescription, getPlanFeatures } from "@/lib/plan-presentation"
+import { getPlanDescription, getPlanFeatures } from "@/data/site-data"
 import { useLanguage } from "@/context/language-context"
 import type { PlanResponse } from "@/types/plan"
 
@@ -35,13 +35,13 @@ export function BillingPlansGrid({
   actionInProgressType,
   onPlanAction,
 }: BillingPlansGridProps) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
 
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {plans.map((plan) => {
-        const planDescription = getPlanDescription(plan)
-        const planFeatures = getPlanFeatures(plan, 5)
+        const planDescription = getPlanDescription(plan, t)
+        const planFeatures = getPlanFeatures(plan.slug, t, 5)
         const isCurrentPlan = effectiveCurrentPlanId
           ? effectiveCurrentPlanId === plan.id
           : plan.slug.toLowerCase() === "free"
@@ -88,7 +88,7 @@ export function BillingPlansGrid({
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-semibold tracking-tight">
-                {formatPlanPrice(plan.monthlyPrice, plan.currency)}
+                {formatPlanPrice(plan.monthlyPrice, plan.currency, locale)}
                 <span className="ml-1 text-sm font-normal text-muted-foreground">
                   {plan.monthlyPrice > 0 ? t("billing.perMonth") : ""}
                 </span>

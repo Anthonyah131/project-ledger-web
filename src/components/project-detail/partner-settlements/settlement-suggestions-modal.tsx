@@ -1,6 +1,7 @@
 "use client"
 
 import { Loader2, ArrowRight, CheckCircle2 } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 import {
   Dialog,
   DialogContent,
@@ -29,13 +30,14 @@ export function SettlementSuggestionsModal({
   onClose,
   onUseSuggestion,
 }: SettlementSuggestionsModalProps) {
+  const { t } = useLanguage()
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>¿Cómo liquidar?</DialogTitle>
+          <DialogTitle>{t("partnerSettlements.howToSettle")}</DialogTitle>
           <DialogDescription>
-            Transferencias mínimas para llevar todos los balances a cero.
+            {t("partnerSettlements.suggestionsDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -46,8 +48,8 @@ export function SettlementSuggestionsModal({
         ) : !suggestions ? null : suggestions.suggestions.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <CheckCircle2 className="size-8 text-emerald-500" />
-            <p className="text-sm font-medium text-foreground">Todos los balances están saldados</p>
-            <p className="text-xs text-muted-foreground">No hay transferencias pendientes.</p>
+            <p className="text-sm font-medium text-foreground">{t("partnerSettlements.allBalanced")}</p>
+            <p className="text-xs text-muted-foreground">{t("partnerSettlements.noPendingTransfers")}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -75,7 +77,7 @@ export function SettlementSuggestionsModal({
                     onClose()
                   }}
                 >
-                  Usar
+                  {t("partnerSettlements.useSuggestion")}
                 </Button>
               </div>
             ))}
@@ -84,7 +86,7 @@ export function SettlementSuggestionsModal({
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Cerrar
+            {t("common.close")}
           </Button>
         </DialogFooter>
       </DialogContent>

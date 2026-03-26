@@ -2,8 +2,8 @@
 
 import { memo } from "react"
 import { cn } from "@/lib/utils"
-import { ROLE_LABEL } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
+import { useLanguage } from "@/context/language-context"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,
@@ -23,13 +23,18 @@ interface MembersListProps {
 }
 
 function MembersListComponent({ members, onChangeRole, onRemove }: MembersListProps) {
+  const { t } = useLanguage()
+
+  const roleLabel = (role: string) =>
+    t(`members.role${role.charAt(0).toUpperCase()}${role.slice(1)}` as Parameters<typeof t>[0])
+
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-medium text-muted-foreground uppercase tracking-widest border-b border-border bg-muted/30">
-        <span className="flex-1">Miembro</span>
-        <span className="w-36 text-center hidden sm:block">Rol</span>
-        <span className="w-28 text-right hidden md:block">Desde</span>
+        <span className="flex-1">{t("members.singular")}</span>
+        <span className="w-36 text-center hidden sm:block">{t("common.role")}</span>
+        <span className="w-28 text-right hidden md:block">{t("members.columnSince")}</span>
         <span className="w-10" />
       </div>
 
@@ -71,7 +76,7 @@ function MembersListComponent({ members, onChangeRole, onRemove }: MembersListPr
             <div className="w-36 justify-center hidden sm:flex">
               {isOwner ? (
                 <Badge variant="default" className="text-[10px] px-2 py-0 h-5 font-medium">
-                  {ROLE_LABEL[member.role]}
+                  {roleLabel(member.role)}
                 </Badge>
               ) : (
                 <Select
@@ -82,8 +87,8 @@ function MembersListComponent({ members, onChangeRole, onRemove }: MembersListPr
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="editor">{ROLE_LABEL.editor}</SelectItem>
-                    <SelectItem value="viewer">{ROLE_LABEL.viewer}</SelectItem>
+                    <SelectItem value="editor">{t("members.roleEditor")}</SelectItem>
+                    <SelectItem value="viewer">{t("members.roleViewer")}</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -102,7 +107,7 @@ function MembersListComponent({ members, onChangeRole, onRemove }: MembersListPr
                   size="icon"
                   className="size-7 text-muted-foreground/0 group-hover:text-muted-foreground hover:text-destructive transition-colors"
                   onClick={() => onRemove(member)}
-                  aria-label={`Remover a ${member.userFullName}`}
+                  aria-label={t("members.removeAria", { name: member.userFullName })}
                 >
                   <Trash2 className="size-3.5" />
                 </Button>

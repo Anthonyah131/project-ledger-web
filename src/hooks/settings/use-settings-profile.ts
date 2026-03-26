@@ -25,7 +25,7 @@ export function useSettingsProfile() {
   const [currentLanguage, setCurrentLanguage] = useState(() => getLanguage())
 
   const form = useForm<UpdateProfileFormValues>({
-    resolver: zodResolver(updateProfileSchema),
+    resolver: zodResolver(updateProfileSchema(t)),
     defaultValues: {
       fullName: "",
       avatarUrl: "",

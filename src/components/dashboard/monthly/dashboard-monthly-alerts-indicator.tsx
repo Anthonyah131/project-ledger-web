@@ -1,3 +1,5 @@
+"use client"
+
 import {
   IconAlertTriangle,
   IconBell,
@@ -6,6 +8,7 @@ import {
 } from "@tabler/icons-react"
 
 import type { DashboardAlert } from "@/types/dashboard"
+import { useLanguage } from "@/context/language-context"
 
 interface DashboardMonthlyAlertsIndicatorProps {
   alerts: DashboardAlert[]
@@ -32,10 +35,19 @@ export function DashboardMonthlyAlertsIndicator({
   alerts,
   onOpenAlert,
 }: DashboardMonthlyAlertsIndicatorProps) {
+  const { t } = useLanguage()
   const orderedAlerts = [...alerts].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
   const visibleAlerts = orderedAlerts.slice(0, 5)
   const hiddenAlertsCount = Math.max(0, orderedAlerts.length - visibleAlerts.length)
   const hasAlerts = orderedAlerts.length > 0
+
+  const activeAlertsLabel = orderedAlerts.length === 1
+    ? t("dashboard.monthly.alertsIndicator.activeAlertsSingular")
+    : t("dashboard.monthly.alertsIndicator.activeAlertsPlural", { count: orderedAlerts.length })
+
+  const hiddenAlertsLabel = hiddenAlertsCount === 1
+    ? t("dashboard.monthly.alertsIndicator.hiddenAlertsSingular")
+    : t("dashboard.monthly.alertsIndicator.hiddenAlertsPlural", { count: hiddenAlertsCount })
 
   return (
     <div className="group relative">
@@ -46,10 +58,12 @@ export function DashboardMonthlyAlertsIndicator({
             ? "border-destructive/30 bg-destructive/10 text-foreground hover:border-destructive/45 hover:bg-destructive/14"
             : "border-primary/30 bg-primary/10 text-primary hover:border-primary/45 hover:bg-primary/14"
         }`}
-        aria-label={hasAlerts ? `Ver alertas del mes (${orderedAlerts.length})` : "No hay alertas del mes"}
+        aria-label={hasAlerts
+          ? t("dashboard.monthly.alertsIndicator.ariaLabelWithAlerts", { count: orderedAlerts.length })
+          : t("dashboard.monthly.alertsIndicator.ariaLabelNoAlerts")}
       >
         {hasAlerts ? <IconBell className="size-4" /> : <IconCircleCheck className="size-4" />}
-        <span>{hasAlerts ? "Alertas del mes" : "Sin alertas"}</span>
+        <span>{hasAlerts ? t("dashboard.monthly.alertsIndicator.buttonText") : t("dashboard.monthly.alertsIndicator.buttonTextNoAlerts")}</span>
         {hasAlerts && (
           <span className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold leading-none text-destructive-foreground shadow-sm">
             {orderedAlerts.length > 99 ? "99+" : orderedAlerts.length}
@@ -61,19 +75,19 @@ export function DashboardMonthlyAlertsIndicator({
         <div className="rounded-2xl border border-border/70 bg-popover/98 p-3 shadow-xl backdrop-blur">
           <div className="mb-2 flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-foreground">Alertas del mes</p>
+              <p className="text-sm font-semibold text-foreground">{t("dashboard.monthly.alertsIndicator.popoverTitle")}</p>
               <p className="text-[11px] text-muted-foreground">
-                {hasAlerts ? `${orderedAlerts.length} alerta${orderedAlerts.length === 1 ? "" : "s"} activa${orderedAlerts.length === 1 ? "" : "s"}` : "No se detectaron alertas en este mes."}
+                {hasAlerts ? activeAlertsLabel : t("dashboard.monthly.alertsIndicator.noAlertsSubtitle")}
               </p>
             </div>
             <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${hasAlerts ? "border-destructive/35 bg-destructive/10 text-destructive" : "border-primary/35 bg-primary/10 text-primary"}`}>
-              {hasAlerts ? "Activo" : "Estable"}
+              {hasAlerts ? t("dashboard.monthly.alertsIndicator.statusActive") : t("dashboard.monthly.alertsIndicator.statusStable")}
             </span>
           </div>
 
           {visibleAlerts.length === 0 ? (
             <div className="rounded-xl border border-primary/25 bg-primary/8 px-3 py-4 text-sm text-primary">
-              Todo esta en orden para el mes seleccionado.
+              {t("dashboard.monthly.alertsIndicator.allGood")}
             </div>
           ) : (
             <div className="space-y-2">
@@ -107,7 +121,7 @@ export function DashboardMonthlyAlertsIndicator({
 
               {hiddenAlertsCount > 0 && (
                 <p className="px-1 text-[11px] text-muted-foreground">
-                  Se muestran 5 alertas como maximo. Hay {hiddenAlertsCount} alerta{hiddenAlertsCount === 1 ? "" : "s"} adicional{hiddenAlertsCount === 1 ? "" : "es"}.
+                  {hiddenAlertsLabel}
                 </p>
               )}
             </div>

@@ -137,8 +137,8 @@ export function BillingSuccessView() {
   }, [pollSeed, t]);
 
   const statusMeta = useMemo(
-    () => (subscription ? getBillingStatusMeta(subscription.status) : null),
-    [subscription],
+    () => (subscription ? getBillingStatusMeta(subscription.status, t) : null),
+    [subscription, t],
   );
 
   return (

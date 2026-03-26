@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLanguage } from "@/context/language-context"
 import {
   addMemberSchema,
   type AddMemberFormValues,
@@ -16,8 +17,9 @@ interface UseAddMemberFormOptions {
 }
 
 export function useAddMemberForm({ onAdd, onClose }: UseAddMemberFormOptions) {
+  const { t } = useLanguage()
   const form = useForm<AddMemberFormValues>({
-    resolver: zodResolver(addMemberSchema),
+    resolver: zodResolver(addMemberSchema(t)),
     defaultValues: {
       email: "",
       role: "editor",

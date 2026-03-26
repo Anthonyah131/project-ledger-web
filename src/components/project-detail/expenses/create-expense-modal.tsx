@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { FormModal } from "@/components/shared/form-modal"
 import { ExpenseFormFields } from "./expense-form-fields"
+import { useLanguage } from "@/context/language-context"
 import { useExpenseDocumentExtraction } from "@/hooks/forms/use-expense-document-extraction"
 import type { CreateExpenseRequest } from "@/types/expense"
 import type { CategoryResponse } from "@/types/category"
@@ -67,6 +68,7 @@ export function CreateExpenseModal({
     watchExchangeRate,
     watchConvertedAmount,
   } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods })
+  const { t } = useLanguage()
   const isAiMode = mode === "ai"
 
   const watchObligationId = useWatch({ control: form.control, name: "obligationId" })
@@ -107,7 +109,7 @@ export function CreateExpenseModal({
       e?.preventDefault()
       form.setError("obligationEquivalentAmount", {
         type: "manual",
-        message: `Campo requerido para pagos en ${selectedObligation!.currency}`,
+        message: t("expenses.equivalentRequired", { currency: selectedObligation!.currency }),
       })
       return
     }
@@ -124,22 +126,18 @@ export function CreateExpenseModal({
     <FormModal
       open={open}
       onClose={handleModalClose}
-      title={isAiMode ? "Nuevo gasto con IA" : "Nuevo gasto"}
-      description={
-        isAiMode
-          ? "Sube el documento y luego revisa el borrador antes de guardar el gasto."
-          : "Registra un nuevo gasto en el proyecto."
-      }
+      title={isAiMode ? t("expenses.aiTitle") : t("expenses.createTitle")}
+      description={isAiMode ? t("expenses.aiSubtitle") : t("expenses.createSubtitle")}
       form={form}
       onSubmit={handleSubmitWithEquivalentGuard}
-      submitLabel="Crear gasto"
+      submitLabel={t("expenses.create")}
       submitHidden={isAiMode && !showFormStep}
       contentClassName="sm:max-w-2xl max-h-[88vh] overflow-y-auto"
     >
       {isAiMode && !showFormStep && (
         <DocumentExtractionStep
-          title="Extraer borrador con IA"
-          description="Sube una foto o PDF del recibo/factura para prellenar el formulario del gasto."
+          title={t("expenses.extractWithAI")}
+          description={t("expenses.aiUploadHint")}
           quota={quota}
           quotaLoading={quotaLoading}
           quotaError={quotaError}
@@ -178,15 +176,15 @@ export function CreateExpenseModal({
               name="obligationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Obligacion (opcional)</FormLabel>
+                  <FormLabel>{t("expenses.obligationLabel")} {t("common.optional")}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Ninguna" />
+                        <SelectValue placeholder={t("expenses.obligationNone")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="none">Ninguna</SelectItem>
+                      <SelectItem value="none">{t("expenses.obligationNone")}</SelectItem>
                       {obligations.map((o) => (
                         <SelectItem key={o.id} value={o.id}>
                           {o.title}
@@ -207,21 +205,21 @@ export function CreateExpenseModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Equivalente en {selectedObligation!.currency}{" "}
-                    <span className="font-normal text-xs text-muted-foreground">(opcional)</span>
+                    {t("expenses.equivalentLabel", { currency: selectedObligation!.currency })}{" "}
+                    <span className="font-normal text-xs text-muted-foreground">{t("common.optional")}</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder={`¿Cuánto ${selectedObligation!.currency} cubre este pago?`}
+                      placeholder={t("expenses.equivalentHint", { currency: selectedObligation!.currency })}
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                   <p className="text-xs text-muted-foreground">
-                    Saldo pendiente: {selectedObligation!.currency}{" "}
+                    {t("expenses.pendingBalance")} {selectedObligation!.currency}{" "}
                     {selectedObligation!.remainingAmount.toLocaleString()}
                   </p>
                   <FormMessage />

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/context/language-context"
 import { FolderKanban } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -11,13 +12,6 @@ import { getAccentColor } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import type { PartnerProjectResponse } from "@/types/partner"
 import type { ViewMode } from "@/types/project"
-
-const SORT_OPTIONS = [
-  { value: "name:asc", label: "A - Z" },
-  { value: "name:desc", label: "Z - A" },
-  { value: "updatedAt:desc", label: "Recientes" },
-  { value: "createdAt:desc", label: "Nuevos" },
-]
 
 function ProjectCard({ project, accentIndex }: { project: PartnerProjectResponse; accentIndex: number }) {
   const router = useRouter()
@@ -104,20 +98,28 @@ export function PartnerProjectsSection({
   loading,
 }: PartnerProjectsSectionProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("shelf")
+  const { t } = useLanguage()
   const globalOffset = (page - 1) * pageSize
+
+  const sortOptions = useMemo(() => [
+    { value: "name:asc", label: t("common.sortAZ") },
+    { value: "name:desc", label: t("common.sortZA") },
+    { value: "updatedAt:desc", label: t("common.sortRecent") },
+    { value: "createdAt:desc", label: t("common.sortNew") },
+  ], [t])
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">
       <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-border bg-gradient-to-r from-foreground/3 to-transparent">
         <FolderKanban className="size-4 text-muted-foreground shrink-0" />
-        <h2 className="text-sm font-semibold text-foreground">Proyectos relacionados</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("partners.relatedProjects")}</h2>
         {totalCount > 0 && (
           <span className="text-xs text-muted-foreground tabular-nums">{totalCount}</span>
         )}
         <div className="ml-auto">
           <SectionToolbar
             sort={sort}
-            sortOptions={SORT_OPTIONS}
+            sortOptions={sortOptions}
             onSortChange={onSortChange}
             pageSize={pageSize}
             onPageSizeChange={onPageSizeChange}
@@ -132,7 +134,7 @@ export function PartnerProjectsSection({
       {loading ? (
         viewMode === "shelf" ? <GridSkeleton /> : <ListSkeleton />
       ) : items.length === 0 ? (
-        <SectionEmpty message="No hay proyectos con este partner asignado." />
+        <SectionEmpty message={t("partners.projectsEmpty")} />
       ) : viewMode === "shelf" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border" role="list">
           {items.map((p, i) => (

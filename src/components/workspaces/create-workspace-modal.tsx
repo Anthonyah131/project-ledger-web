@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form"
 import { FormModal } from "@/components/shared/form-modal"
 import { useCreateWorkspaceForm } from "@/hooks/forms/use-workspace-form"
+import { useLanguage } from "@/context/language-context"
 import type { CreateWorkspaceRequest } from "@/types/workspace"
 
 interface CreateWorkspaceModalProps {
@@ -20,26 +21,27 @@ interface CreateWorkspaceModalProps {
 }
 
 export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspaceModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useCreateWorkspaceForm({ onCreate, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Nuevo workspace"
-      description="Agrupa proyectos relacionados en un workspace."
+      title={t("workspaces.createTitle")}
+      description={t("workspaces.createSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Crear"
+      submitLabel={t("common.create")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre *</FormLabel>
+            <FormLabel>{t("common.name")} {t("common.required")}</FormLabel>
             <FormControl>
-              <Input placeholder="Ej: Casa Miravalles" autoFocus {...field} />
+              <Input placeholder={t("workspaces.namePlaceholder")} autoFocus {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -52,11 +54,11 @@ export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspac
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Descripción
-              <span className="text-muted-foreground ml-1">(opcional)</span>
+              {t("common.description")}
+              <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
             </FormLabel>
             <FormControl>
-              <Textarea rows={2} className="resize-none" placeholder="Descripción del workspace..." {...field} />
+              <Textarea rows={2} className="resize-none" placeholder={t("workspaces.descriptionPlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -70,11 +72,11 @@ export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspac
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Color
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("workspaces.colorLabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="#4CAF50" {...field} />
+                <Input placeholder={t("workspaces.colorPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,11 +88,11 @@ export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspac
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Ícono
-                <span className="text-muted-foreground ml-1">(opcional)</span>
+                {t("workspaces.iconLabel")}
+                <span className="text-muted-foreground ml-1">{t("common.optional")}</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="home, briefcase..." {...field} />
+                <Input placeholder={t("workspaces.iconPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

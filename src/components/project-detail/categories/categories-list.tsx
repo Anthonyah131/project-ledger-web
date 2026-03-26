@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { getAccentColorRaw } from "@/lib/constants"
 import { formatAmount } from "@/lib/format-utils"
+import { useLanguage } from "@/context/language-context"
 import type { CategoryResponse } from "@/types/category"
 
 interface CategoriesListProps {
@@ -18,15 +19,17 @@ function CategoriesListComponent({
   onEdit,
   onDelete,
 }: CategoriesListProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="rounded-xl border border-amber-500/20 bg-card shadow-sm shadow-amber-500/5 overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-[1fr_auto_auto] items-center gap-4 px-5 py-2.5 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent border-b border-amber-500/20">
+      <div className="grid grid-cols-[1fr_auto_auto] items-center gap-4 px-5 py-2.5 bg-linear-to-r from-amber-500/10 via-orange-500/5 to-transparent border-b border-amber-500/20">
         <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-          Nombre
+          {t("common.name")}
         </span>
         <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest w-32 text-right">
-          Presupuesto
+          {t("categories.budget")}
         </span>
         <span className="w-8" />
       </div>
@@ -52,7 +55,7 @@ function CategoriesListComponent({
                   </span>
                   {cat.isDefault && (
                     <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30">
-                      Por defecto
+                      {t("categories.isDefault")}
                     </Badge>
                   )}
                 </div>
@@ -66,7 +69,7 @@ function CategoriesListComponent({
 
             {/* Budget */}
             <span className="text-sm tabular-nums w-32 text-right font-bold text-amber-700 dark:text-amber-400">
-              {formatAmount(cat.budgetAmount)}
+              {formatAmount(cat.budgetAmount, t("common.noLimit"))}
             </span>
 
             {/* Actions */}

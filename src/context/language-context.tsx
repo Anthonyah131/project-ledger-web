@@ -38,11 +38,7 @@ function resolveInitialLocale(): Locale {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
-
-  useEffect(() => {
-    setLocaleState(resolveInitialLocale());
-  }, []);
+  const [locale, setLocaleState] = useState<Locale>(resolveInitialLocale);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);

@@ -12,6 +12,7 @@ import {
 import { FormModal } from "@/components/shared/form-modal"
 import type { ProjectResponse, UpdateProjectRequest } from "@/types/project"
 import { useUpdateProjectForm } from "@/hooks/forms/use-project-form"
+import { useLanguage } from "@/context/language-context"
 
 interface EditProjectModalProps {
   project: ProjectResponse | null
@@ -26,24 +27,25 @@ export function EditProjectModal({
   onClose,
   onSave,
 }: EditProjectModalProps) {
+  const { t } = useLanguage()
   const { form, onSubmit, handleClose } = useUpdateProjectForm({ project, onSave, onClose })
 
   return (
     <FormModal
       open={open}
       onClose={handleClose}
-      title="Editar proyecto"
-      description="Modifica el nombre y la descripcion del proyecto."
+      title={t("projects.editTitle")}
+      description={t("projects.editSubtitle")}
       form={form}
       onSubmit={onSubmit}
-      submitLabel="Guardar cambios"
+      submitLabel={t("common.save")}
     >
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre del proyecto</FormLabel>
+            <FormLabel>{t("projects.settingsTab.nameLabel")}</FormLabel>
             <FormControl>
               <Input autoFocus {...field} />
             </FormControl>
@@ -57,7 +59,7 @@ export function EditProjectModal({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripcion</FormLabel>
+            <FormLabel>{t("projects.settingsTab.descriptionLabel")}</FormLabel>
             <FormControl>
               <Textarea rows={3} className="resize-none" {...field} />
             </FormControl>

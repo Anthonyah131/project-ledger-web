@@ -62,8 +62,12 @@ function parseMonthKey(value: string): Date | null {
   return parsed
 }
 
+export interface FormatDateLocaleOptions extends FormatDateOptions {
+  locale?: string
+}
+
 /**
- * Format an ISO date string using the Spanish locale.
+ * Format an ISO date string using the given locale (default: "es").
  * Pass `withYear: true` for the long variant (e.g. "25 ene 2025"),
  * or omit / set `false` for the short variant (e.g. "25 ene").
  *
@@ -72,17 +76,17 @@ function parseMonthKey(value: string): Date | null {
  */
 export function formatDate(
   iso: string | null,
-  opts: FormatDateOptions = {},
+  opts: FormatDateLocaleOptions = {},
 ): string {
   if (!iso) return opts.fallback ?? ""
 
-  const { withYear = true, dayStyle = "numeric", fallback = "" } = opts
+  const { withYear = true, dayStyle = "numeric", fallback = "", locale } = opts
   // Auto-detect date-only strings and always parse as local midnight (no UTC shift).
   const parsedDate = ISO_DATE_REGEX.test(iso) ? parseIsoDate(iso) : new Date(iso)
   if (!parsedDate || Number.isNaN(parsedDate.getTime())) return fallback
 
   try {
-    return parsedDate.toLocaleDateString("es", {
+    return parsedDate.toLocaleDateString(locale, {
       day: dayStyle,
       month: "short",
       ...(withYear ? { year: "numeric" } : {}),
@@ -96,13 +100,13 @@ export function isMonthKeyString(value: string): boolean {
   return parseMonthKey(value) !== null
 }
 
-/** Formats YYYY-MM as "Mes YYYY" in Spanish locale. */
-export function formatMonthKey(value: string, fallback = ""): string {
+/** Formats YYYY-MM as "Mes YYYY" in the given locale. */
+export function formatMonthKey(value: string, fallback = "", locale?: string): string {
   const parsedDate = parseMonthKey(value)
   if (!parsedDate) return fallback || value
 
   try {
-    const label = parsedDate.toLocaleDateString("es", {
+    const label = parsedDate.toLocaleDateString(locale, {
       month: "long",
       year: "numeric",
       timeZone: "UTC",
@@ -129,10 +133,12 @@ function isValidDateRange(from: string, to: string): boolean {
   return fromDate.getTime() <= toDate.getTime()
 }
 
-export function getDateRangeError(from: string, to: string): string | null {
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
+export function getDateRangeError(from: string, to: string, t?: TFn): string | null {
   if (!from || !to) return null
   if (!isValidDateRange(from, to)) {
-    return "La fecha 'Desde' no puede ser mayor que 'Hasta'."
+    return t ? t("common.errors.invalidDateRange") : "La fecha 'Desde' no puede ser mayor que 'Hasta'."
   }
   return null
 }
@@ -140,4 +146,17 @@ export function getDateRangeError(from: string, to: string): string | null {
 export function isDateAfterToday(value: string): boolean {
   if (!isIsoDateString(value)) return false
   return value > getTodayIsoDate()
+}
+
+export function formatMonthLabel(month: string, locale?: string): string {
+  return formatMonthKey(month, month, locale)
+}
+
+export function formatDateLabel(value: string, locale?: string): string {
+  return formatDate(value, {
+    withYear: false,
+    dayStyle: "2-digit",
+    fallback: value,
+    locale,
+  })
 }

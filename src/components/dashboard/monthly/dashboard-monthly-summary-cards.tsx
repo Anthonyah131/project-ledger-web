@@ -1,3 +1,5 @@
+"use client"
+
 import {
   IconArrowDownRight,
   IconArrowUpRight,
@@ -10,12 +12,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import type { DashboardComparison, DashboardSummary } from "@/types/dashboard"
 
-import {
-  formatCurrency,
-  formatMonthLabel,
-  formatSignedCurrency,
-  formatSignedPercent,
-} from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { formatCurrency, formatSignedCurrency, formatSignedPercent } from "@/lib/format-utils"
+import { useLanguage } from "@/context/language-context"
+import { useDateFormat } from "@/hooks/use-date-format"
 
 interface DashboardMonthlySummaryCardsProps {
   summary: DashboardSummary
@@ -49,29 +48,41 @@ export function DashboardMonthlySummaryCards({
   comparison,
   currencyCode,
 }: DashboardMonthlySummaryCardsProps) {
+  const { t } = useLanguage()
+  const { formatMonthLabel } = useDateFormat()
   const previousMonthLabel = formatMonthLabel(comparison.previous_month)
 
   const cards: SummaryCardItem[] = [
     {
-      label: "Gastos del mes",
+      label: t("dashboard.monthlyExpenses"),
       value: formatCurrency(summary.total_spent, currencyCode),
-      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.spent_delta, currencyCode)} (${formatSignedPercent(comparison.spent_delta_percentage)})`,
+      footer: t("dashboard.monthly.summaryCards.vsMonth", {
+        month: previousMonthLabel,
+        delta: formatSignedCurrency(comparison.spent_delta, currencyCode),
+        percent: formatSignedPercent(comparison.spent_delta_percentage),
+      }),
       icon: IconReceipt,
       footerIcon: comparison.spent_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: comparison.spent_delta <= 0 ? "positive" : "warning",
     },
     {
-      label: "Ingresos del mes",
+      label: t("dashboard.monthlyIncome"),
       value: formatCurrency(summary.total_income, currencyCode),
-      footer: `Vs ${previousMonthLabel}: ${formatSignedCurrency(comparison.income_delta, currencyCode)} (${formatSignedPercent(comparison.income_delta_percentage)})`,
+      footer: t("dashboard.monthly.summaryCards.vsMonth", {
+        month: previousMonthLabel,
+        delta: formatSignedCurrency(comparison.income_delta, currencyCode),
+        percent: formatSignedPercent(comparison.income_delta_percentage),
+      }),
       icon: IconCoins,
       footerIcon: comparison.income_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: comparison.income_delta >= 0 ? "positive" : "warning",
     },
     {
-      label: "Balance neto",
+      label: t("dashboard.netBalance"),
       value: formatCurrency(summary.net_balance, currencyCode),
-      footer: `Cambio neto mensual: ${formatSignedCurrency(comparison.net_delta, currencyCode)}`,
+      footer: t("dashboard.monthly.summaryCards.monthlyNetChange", {
+        delta: formatSignedCurrency(comparison.net_delta, currencyCode),
+      }),
       icon: summary.net_balance >= 0 ? IconArrowUpRight : IconArrowDownRight,
       footerIcon: comparison.net_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: summary.net_balance >= 0 ? "positive" : "warning",

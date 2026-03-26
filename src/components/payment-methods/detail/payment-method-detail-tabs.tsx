@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Calendar, CreditCard, FolderKanban, Link, Unlink, User, Wallet } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -81,6 +82,7 @@ function PartnerLinkList({
   loading: boolean
   onLink: (partnerId: string) => Promise<void>
 }) {
+  const { t } = useLanguage()
   const [pendingId, setPendingId] = useState<string | null>(null)
 
   async function handleLink(partnerId: string) {
@@ -113,7 +115,7 @@ function PartnerLinkList({
     return (
       <div className="flex flex-col items-center gap-2 py-10 text-center">
         <User className="size-8 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">No tienes partners registrados.</p>
+        <p className="text-sm text-muted-foreground">{t("paymentMethods.noPartnersRegistered")}</p>
       </div>
     )
   }
@@ -138,7 +140,7 @@ function PartnerLinkList({
             disabled={pendingId === partner.id}
             onClick={() => handleLink(partner.id)}
           >
-            {pendingId === partner.id ? "..." : "Asignar"}
+            {pendingId === partner.id ? "..." : t("paymentMethods.assignButton")}
           </Button>
         </div>
       ))}
@@ -171,35 +173,36 @@ export function PaymentMethodDetailTabs({
   onOpenProjectCard,
   partnerTab,
 }: PaymentMethodDetailTabsProps) {
+  const { t } = useLanguage()
   return (
     <Tabs defaultValue="expenses">
       <TabsList variant="line">
-        <TabsTrigger value="expenses">Pagos relacionados</TabsTrigger>
-        <TabsTrigger value="incomes">Ingresos relacionados</TabsTrigger>
-        <TabsTrigger value="projects">Proyectos</TabsTrigger>
-        <TabsTrigger value="partner">Partner</TabsTrigger>
+        <TabsTrigger value="expenses">{t("paymentMethods.tabExpenses")}</TabsTrigger>
+        <TabsTrigger value="incomes">{t("paymentMethods.tabIncomes")}</TabsTrigger>
+        <TabsTrigger value="projects">{t("paymentMethods.tabProjects")}</TabsTrigger>
+        <TabsTrigger value="partner">{t("paymentMethods.columnPartner")}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="expenses" className="space-y-4">
         <div className="rounded-xl border border-rose-500/20 overflow-hidden shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-rose-500/20 bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent">
-            <p className="text-xs font-bold text-rose-600 dark:text-rose-400">{expenses.totalCount} pagos asociados</p>
+            <p className="text-xs font-bold text-rose-600 dark:text-rose-400">{t("paymentMethods.associatedExpenses", { count: expenses.totalCount })}</p>
             <div className="flex items-center gap-2">
               <Select value={sort} onValueChange={handleSortChange}>
-                <SelectTrigger className="h-8 w-42.5 text-xs" aria-label="Orden de pagos">
+                <SelectTrigger className="h-8 w-42.5 text-xs" aria-label={t("common.sortBy")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="expenseDate:desc">Fecha (reciente)</SelectItem>
-                  <SelectItem value="expenseDate:asc">Fecha (antigua)</SelectItem>
-                  <SelectItem value="title:asc">Titulo A - Z</SelectItem>
-                  <SelectItem value="amount:desc">Mayor monto</SelectItem>
-                  <SelectItem value="createdAt:desc">Recien creados</SelectItem>
+                  <SelectItem value="expenseDate:desc">{t("paymentMethods.sortDateRecent")}</SelectItem>
+                  <SelectItem value="expenseDate:asc">{t("paymentMethods.sortDateOld")}</SelectItem>
+                  <SelectItem value="title:asc">{t("paymentMethods.sortTitleAZ")}</SelectItem>
+                  <SelectItem value="amount:desc">{t("paymentMethods.sortAmountDesc")}</SelectItem>
+                  <SelectItem value="createdAt:desc">{t("paymentMethods.sortRecentlyCreated")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-                <SelectTrigger className="h-8 w-20 text-xs" aria-label="Pagos por pagina">
+                <SelectTrigger className="h-8 w-20 text-xs" aria-label={t("common.perPage")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -220,8 +223,8 @@ export function PaymentMethodDetailTabs({
           ) : expenses.items.length === 0 ? (
             <EmptyBlock
               icon={CreditCard}
-              title="Sin pagos relacionados"
-              description="No hay gastos con este metodo y filtros actuales."
+              title={t("paymentMethods.noExpenses")}
+              description={t("paymentMethods.noExpensesDesc")}
             />
           ) : (
             <div className="divide-y divide-border">
@@ -252,23 +255,23 @@ export function PaymentMethodDetailTabs({
       <TabsContent value="incomes" className="space-y-4">
         <div className="rounded-xl border border-emerald-500/20 overflow-hidden shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{incomes.totalCount} ingresos asociados</p>
+            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{t("paymentMethods.associatedIncomes", { count: incomes.totalCount })}</p>
             <div className="flex items-center gap-2">
               <Select value={incomeSort} onValueChange={handleIncomeSortChange}>
-                <SelectTrigger className="h-8 w-42.5 text-xs" aria-label="Orden de ingresos">
+                <SelectTrigger className="h-8 w-42.5 text-xs" aria-label={t("common.sortBy")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="incomeDate:desc">Fecha (reciente)</SelectItem>
-                  <SelectItem value="incomeDate:asc">Fecha (antigua)</SelectItem>
-                  <SelectItem value="title:asc">Titulo A - Z</SelectItem>
-                  <SelectItem value="amount:desc">Mayor monto</SelectItem>
-                  <SelectItem value="createdAt:desc">Recien creados</SelectItem>
+                  <SelectItem value="incomeDate:desc">{t("paymentMethods.sortDateRecent")}</SelectItem>
+                  <SelectItem value="incomeDate:asc">{t("paymentMethods.sortDateOld")}</SelectItem>
+                  <SelectItem value="title:asc">{t("paymentMethods.sortTitleAZ")}</SelectItem>
+                  <SelectItem value="amount:desc">{t("paymentMethods.sortAmountDesc")}</SelectItem>
+                  <SelectItem value="createdAt:desc">{t("paymentMethods.sortRecentlyCreated")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={String(incomePageSize)} onValueChange={(value) => setIncomePageSize(Number(value))}>
-                <SelectTrigger className="h-8 w-20 text-xs" aria-label="Ingresos por pagina">
+                <SelectTrigger className="h-8 w-20 text-xs" aria-label={t("common.perPage")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -289,8 +292,8 @@ export function PaymentMethodDetailTabs({
           ) : incomes.items.length === 0 ? (
             <EmptyBlock
               icon={Wallet}
-              title="Sin ingresos relacionados"
-              description="No hay ingresos con este metodo y filtros actuales."
+              title={t("paymentMethods.noIncomes")}
+              description={t("paymentMethods.noIncomesDesc")}
             />
           ) : (
             <div className="divide-y divide-border">
@@ -320,7 +323,7 @@ export function PaymentMethodDetailTabs({
       <TabsContent value="projects">
         <div className="rounded-xl border border-violet-500/20 overflow-hidden bg-card shadow-sm">
           <div className="px-4 py-3 border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
-            <p className="text-xs font-bold text-violet-600 dark:text-violet-400">{projects.totalCount} proyectos vinculados</p>
+            <p className="text-xs font-bold text-violet-600 dark:text-violet-400">{t("paymentMethods.linkedProjects", { count: projects.totalCount })}</p>
           </div>
 
           {loadingProjects ? (
@@ -332,8 +335,8 @@ export function PaymentMethodDetailTabs({
             <div className="p-4">
               <EmptyBlock
                 icon={FolderKanban}
-                title="Sin proyectos relacionados"
-                description="Este metodo aun no tiene movimiento en proyectos."
+                title={t("paymentMethods.noProjects")}
+                description={t("paymentMethods.noProjectsDesc")}
               />
             </div>
           ) : (
@@ -351,12 +354,12 @@ export function PaymentMethodDetailTabs({
 
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <Badge variant="outline" className="text-[10px] border-violet-500/30 text-violet-600 dark:text-violet-400">{project.currencyCode}</Badge>
-                    <span>Owner: {project.ownerUserId.slice(0, 8)}...</span>
+                    <span>{t("paymentMethods.ownerLabel")}: {project.ownerUserId.slice(0, 8)}...</span>
                   </div>
 
                   <div className="mt-2 text-[11px] text-muted-foreground flex items-center gap-1">
                     <Calendar className="size-3" />
-                    Actualizado {formatDate(project.updatedAt)}
+                    {t("paymentMethods.projectUpdated", { date: formatDate(project.updatedAt) })}
                   </div>
                 </button>
               ))}
@@ -392,12 +395,12 @@ export function PaymentMethodDetailTabs({
                     className="text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
                   >
                     <Unlink className="size-3.5 mr-1" />
-                    Quitar
+                    {t("paymentMethods.unlinkButton")}
                   </Button>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Para cambiar el partner, primero quita el actual y luego asigna uno nuevo.
+                {t("paymentMethods.partnerChangeHint")}
               </p>
             </div>
           ) : (
@@ -406,14 +409,14 @@ export function PaymentMethodDetailTabs({
                 <User className="size-6 text-muted-foreground/40" />
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">Sin partner vinculado</p>
+                <p className="text-sm font-medium text-foreground">{t("paymentMethods.noPartner")}</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-                  Vincula un partner para asociar este método de pago a una entidad.
+                  {t("paymentMethods.noPartnerDesc")}
                 </p>
               </div>
               <Button size="sm" onClick={partnerTab.onOpenLinkDialog}>
                 <Link className="size-3.5 mr-1" />
-                Asignar partner
+                {t("paymentMethods.assignPartner")}
               </Button>
             </div>
           )}
@@ -423,9 +426,9 @@ export function PaymentMethodDetailTabs({
         <Dialog open={partnerTab.linkPartnerOpen} onOpenChange={(v) => !v && partnerTab.onCloseLinkDialog()}>
           <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Asignar partner</DialogTitle>
+              <DialogTitle>{t("paymentMethods.assignPartner")}</DialogTitle>
               <DialogDescription>
-                Selecciona el partner a vincular con este método de pago.
+                {t("paymentMethods.assignPartnerDesc")}
               </DialogDescription>
             </DialogHeader>
             <PartnerLinkList

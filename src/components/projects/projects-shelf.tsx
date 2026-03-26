@@ -16,6 +16,7 @@ import {
   ShelfSkeleton,
   ListSkeleton,
 } from "./project-states"
+import { useLanguage } from "@/context/language-context"
 
 const CreateProjectModal = dynamic(() =>
   import("./create-project-modal").then((mod) => mod.CreateProjectModal)
@@ -33,6 +34,7 @@ interface ProjectsShelfProps {
 
 export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProjectMutated }: ProjectsShelfProps = {}) {
   const router = useRouter()
+  const { t } = useLanguage()
   const {
     projects,
     total,
@@ -94,15 +96,15 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-xl font-semibold text-foreground tracking-tight">
-            Proyectos
+            {t("projects.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} {total === 1 ? "proyecto" : "proyectos"}
+            {total} {total === 1 ? t("projects.countSingular") : t("projects.countPlural")}
           </p>
         </div>
         <Button onClick={handleOpenCreate} size="sm">
           <Plus className="size-3.5" />
-          Nuevo
+          {t("projects.newButton")}
         </Button>
       </div>
 
@@ -179,9 +181,9 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
         open={!!deleteTarget}
         onClose={handleCloseDelete}
         onConfirm={mutateDelete}
-        title="Eliminar proyecto"
-        description="Esta accion puede desactivarlo, no eliminarlo definitivamente."
-        getMessage={(p) => `¿Eliminar proyecto "${p.name}"?`}
+        title={t("projects.delete.title")}
+        description={t("projects.delete.description")}
+        getMessage={(p) => t("projects.delete.confirm", { name: p.name })}
       />
     </div>
   )

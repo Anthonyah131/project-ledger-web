@@ -1,3 +1,5 @@
+"use client"
+
 import {
   IconAlertCircle,
   IconChevronLeft,
@@ -11,6 +13,7 @@ import { DashboardMonthlyPicker } from "@/components/dashboard/monthly/dashboard
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { DashboardAlert } from "@/types/dashboard"
+import { useLanguage } from "@/context/language-context"
 
 interface DashboardMonthlyHeaderProps {
   userFirstName: string
@@ -45,15 +48,17 @@ export function DashboardMonthlyHeader({
   onReload,
   onOpenAlert,
 }: DashboardMonthlyHeaderProps) {
+  const { t, locale } = useLanguage()
+
   return (
     <section className="rounded-2xl border border-border/70 bg-[linear-gradient(145deg,var(--card),color-mix(in_oklch,var(--card),var(--primary)_10%))] p-5 shadow-sm transition-shadow hover:shadow-md md:p-6 xl:p-7">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between xl:gap-6">
         <div className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Dashboard mensual
+            {t("dashboard.title")}
           </p>
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl xl:text-[2rem]">
-            Bienvenido, {userFirstName}
+            {t("dashboard.greeting", { name: userFirstName })}
           </h1>
           <Badge
             variant="outline"
@@ -62,14 +67,14 @@ export function DashboardMonthlyHeader({
               : "w-fit gap-1.5 border-chart-3/40 bg-chart-3/10 text-foreground"}
           >
             {isActive ? <IconShieldCheck className="size-3.5" /> : <IconAlertCircle className="size-3.5" />}
-            {isActive ? "Cuenta activa" : "Cuenta pendiente de activacion"}
+            {isActive ? t("dashboard.activeAccount") : t("dashboard.pendingAccount")}
           </Badge>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Resumen financiero consolidado para {monthLabel.toLowerCase()}.
+            {t("dashboard.financialSummary")} {monthLabel.toLowerCase()}.
           </p>
           {generatedAt && (
             <p className="text-xs text-muted-foreground/80">
-              Actualizado: {new Date(generatedAt).toLocaleString("es")}
+              {t("dashboard.updatedAt", { date: new Date(generatedAt).toLocaleString(locale) })}
             </p>
           )}
         </div>
@@ -82,7 +87,7 @@ export function DashboardMonthlyHeader({
             size="icon-sm"
             onClick={onGoPreviousMonth}
             disabled={!canGoPrevious || loading}
-            aria-label="Mes anterior"
+            aria-label={t("dashboard.previousMonth")}
           >
             <IconChevronLeft className="size-4" />
           </Button>
@@ -99,7 +104,7 @@ export function DashboardMonthlyHeader({
               size="icon-sm"
               onClick={onGoNextMonth}
               disabled={loading}
-              aria-label="Mes siguiente"
+              aria-label={t("dashboard.nextMonth")}
             >
               <IconChevronRight className="size-4" />
             </Button>
@@ -107,7 +112,7 @@ export function DashboardMonthlyHeader({
 
           <Button variant="outline" size="sm" onClick={onReload} disabled={loading}>
             <IconRefresh className="size-4" />
-            Recargar
+            {t("common.reload")}
           </Button>
         </div>
       </div>

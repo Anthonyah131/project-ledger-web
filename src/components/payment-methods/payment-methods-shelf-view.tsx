@@ -4,11 +4,12 @@ import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { PAYMENT_METHOD_TYPE_LABEL, PAYMENT_METHOD_ACCENT } from "@/lib/constants"
+import { PAYMENT_METHOD_ACCENT } from "@/lib/constants"
 import { formatDate } from "@/lib/date-utils"
 import { ItemActionMenu } from "@/components/shared/item-action-menu"
 import { User } from "lucide-react"
 import type { PaymentMethodResponse } from "@/types/payment-method"
+import { useLanguage } from "@/context/language-context"
 
 interface ShelfViewProps {
   paymentMethods: PaymentMethodResponse[]
@@ -17,11 +18,12 @@ interface ShelfViewProps {
 }
 
 function PaymentMethodsShelfViewComponent({ paymentMethods, onEdit, onDelete }: ShelfViewProps) {
+  const { t } = useLanguage()
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-cyan-500/10"
       role="list"
-      aria-label="Métodos de pago"
+      aria-label={t("paymentMethods.title")}
     >
       {paymentMethods.map((pm) => (
         <PaymentMethodCard key={pm.id} pm={pm} onEdit={onEdit} onDelete={onDelete} />
@@ -42,6 +44,12 @@ function PaymentMethodCard({
   onDelete: (pm: PaymentMethodResponse) => void
 }) {
   const router = useRouter()
+  const { t } = useLanguage()
+  const typeLabels: Record<string, string> = {
+    bank: t("paymentMethods.typeBank"),
+    card: t("paymentMethods.typeCard"),
+    cash: t("paymentMethods.typeCash"),
+  }
 
   return (
     <div
@@ -74,9 +82,9 @@ function PaymentMethodCard({
 
             {/* Menu */}
             <ItemActionMenu
-              ariaLabel="Acciones del método de pago"
+              ariaLabel={t("paymentMethods.actionsAriaLabel")}
               onOpen={() => router.push(`/payment-methods/${pm.id}`)}
-              openLabel="Ver detalle"
+              openLabel={t("paymentMethods.viewDetail")}
               onEdit={() => onEdit(pm)}
               onDelete={() => onDelete(pm)}
               stopPropagation
@@ -86,7 +94,7 @@ function PaymentMethodCard({
           {/* Bottom: metadata */}
           <div className="flex flex-wrap items-center gap-2 mt-auto">
             <Badge className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
-              {PAYMENT_METHOD_TYPE_LABEL[pm.type]}
+              {typeLabels[pm.type]}
             </Badge>
             <span className="text-border">{"/"}</span>
             <span className="text-xs font-bold text-cyan-700 dark:text-cyan-400">{pm.currency}</span>

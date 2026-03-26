@@ -1,10 +1,10 @@
+"use client"
+
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
-import {
-  formatCompactCurrency,
-  formatCurrency,
-} from "@/components/dashboard/monthly/dashboard-monthly-format"
+import { formatCompactCurrency, formatCurrency } from "@/lib/format-utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useLanguage } from "@/context/language-context"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartLegend,
@@ -15,13 +15,6 @@ import {
 } from "@/components/ui/chart"
 import type { DashboardTopCategory } from "@/types/dashboard"
 import { cn } from "@/lib/utils"
-
-const categoriesChartConfig = {
-  totalAmount: {
-    label: "Monto total",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig
 
 interface DashboardMonthlyCategoriesChartProps {
   topCategories: DashboardTopCategory[]
@@ -40,6 +33,14 @@ export function DashboardMonthlyCategoriesChart({
   scopeLabel,
 }: DashboardMonthlyCategoriesChartProps) {
   const isMobile = useIsMobile()
+  const { t } = useLanguage()
+
+  const categoriesChartConfig = {
+    totalAmount: {
+      label: t("dashboard.monthly.categoriesChart.totalAmountLabel"),
+      color: "var(--chart-2)",
+    },
+  } satisfies ChartConfig
 
   const chartData = topCategories.map((category) => ({
     categoryId: category.category_id,
@@ -74,7 +75,7 @@ export function DashboardMonthlyCategoriesChart({
               style={{ backgroundColor: payload[0]?.color ?? "var(--chart-2)" }}
               aria-hidden
             />
-            <span className="text-muted-foreground">Monto</span>
+            <span className="text-muted-foreground">{t("dashboard.monthly.categoriesChart.amountLabel")}</span>
           </div>
           <span className="font-medium tabular-nums text-foreground">
             {isMobile
@@ -83,8 +84,7 @@ export function DashboardMonthlyCategoriesChart({
           </span>
         </div>
         <div className="border-t border-border/60 pt-1.5 text-[11px] text-muted-foreground">
-          <p>{point.expenseCount ?? 0} gastos</p>
-          <p>{(point.percentage ?? 0).toFixed(2)}% del total</p>
+          <p>{t("dashboard.monthly.categoriesChart.percentOfTotal", { value: (point.percentage ?? 0).toFixed(2) })}</p>
         </div>
       </div>
     )
@@ -93,14 +93,14 @@ export function DashboardMonthlyCategoriesChart({
   return (
     <Card className="border-border/70 bg-card/80 shadow-sm">
       <CardHeader className="pb-2 xl:pb-3">
-        <CardTitle className="text-base font-semibold tracking-tight">Top categorias</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-tight">{t("dashboard.monthly.categoriesChart.title")}</CardTitle>
         <CardDescription>
-          Gasto total de {scopeLabel.toLowerCase()} agrupado por categoria.
+          {t("dashboard.monthly.categoriesChart.description", { scope: scopeLabel.toLowerCase() })}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         {chartData.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No hay categorias con gasto para la seleccion actual.</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.monthly.categoriesChart.empty")}</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.9fr] lg:items-start">
             <div className="space-y-1.5 order-2 lg:order-1">
@@ -112,7 +112,7 @@ export function DashboardMonthlyCategoriesChart({
                   <div className="min-w-0">
                     <p className="truncate text-foreground">{category.categoryName}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      #{index + 1} • {category.expenseCount} gastos
+                      {t("dashboard.monthly.categoriesChart.categoryRow", { rank: index + 1, count: category.expenseCount })}
                     </p>
                   </div>
                   <span className="shrink-0 font-medium tabular-nums">
@@ -124,7 +124,7 @@ export function DashboardMonthlyCategoriesChart({
               ))}
 
               <div className="rounded-md border border-border/60 bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
-                {chartData.length} categorias con gasto para la seleccion actual.
+                {t("dashboard.monthly.categoriesChart.categorySummary", { count: chartData.length })}
               </div>
             </div>
 
@@ -173,7 +173,7 @@ export function DashboardMonthlyCategoriesChart({
       </CardContent>
       {chartData.length > 0 && (
         <CardFooter className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <span>{chartData.length} categorias</span>
+          <span>{t("dashboard.monthly.categoriesChart.footerCategories", { count: chartData.length })}</span>
           <span className="font-medium tabular-nums text-foreground">
             {isMobile
               ? formatCompactCurrency(totalAmount, currencyCode)

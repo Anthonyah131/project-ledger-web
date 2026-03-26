@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
+import { useLanguage } from "@/context/language-context"
 
 type ParentCE = {
   currencyCode?: string
@@ -85,6 +86,7 @@ export function SplitSection({
   watchConvertedAmount = "",
   projectCurrency = "",
 }: SplitSectionProps) {
+  const { t } = useLanguage()
   const { replace } = useFieldArray({ control: form.control, name: "splits" })
 
   const splitType = (useWatch({ control: form.control, name: "splitType" }) ?? "percentage") as
@@ -233,7 +235,7 @@ export function SplitSection({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-medium">
           <GitBranch className="size-4 text-violet-500" />
-          Splits por partner
+          {t("splitSection.title")}
         </div>
         <div className="flex rounded-md border border-border overflow-hidden text-xs">
           <button
@@ -245,7 +247,7 @@ export function SplitSection({
             }`}
             onClick={() => form.setValue("splitType", "percentage", { shouldValidate: false })}
           >
-            %
+            {t("splitSection.percentageMode")}
           </button>
           <button
             type="button"
@@ -256,7 +258,7 @@ export function SplitSection({
             }`}
             onClick={() => form.setValue("splitType", "fixed", { shouldValidate: false })}
           >
-            Monto fijo
+            {t("splitSection.fixedMode")}
           </button>
         </div>
       </div>
@@ -265,8 +267,8 @@ export function SplitSection({
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs text-muted-foreground">
           {isPercentage
-            ? `Asigna el porcentaje de ${projectCurrency || "moneda del proyecto"} que cubre cada partner. La suma debe ser 100%.`
-            : `Asigna el monto en ${projectCurrency || "moneda del proyecto"} que cubre cada partner.`}
+            ? t("splitSection.percentageDescription", { currency: projectCurrency || t("common.currency") })
+            : t("splitSection.fixedDescription", { currency: projectCurrency || t("common.currency") })}
         </p>
         <Button
           type="button"
@@ -277,7 +279,7 @@ export function SplitSection({
           disabled={!isPercentage && (!convertedAmount || convertedAmount <= 0)}
         >
           <RefreshCw className="size-3" />
-          Igualar
+          {t("splitSection.equalizeButton")}
         </Button>
       </div>
 
@@ -376,7 +378,7 @@ export function SplitSection({
             isValid ? "text-muted-foreground" : "text-destructive"
           }`}
         >
-          <span>Total</span>
+          <span>{t("splitSection.totalLabel")}</span>
           <span className="font-mono">
             {isPercentage
               ? `${total.toFixed(2)}% / 100%`
@@ -391,9 +393,9 @@ export function SplitSection({
         <p className="text-xs text-destructive">
           {isPercentage
             ? total > 100
-              ? `Sobran ${(total - 100).toFixed(2)}%.`
-              : `Faltan ${(100 - total).toFixed(2)}%.`
-            : "La suma debe igualar el monto original."}
+              ? t("splitSection.errorOver", { amount: (total - 100).toFixed(2) })
+              : t("splitSection.errorUnder", { amount: (100 - total).toFixed(2) })
+            : t("splitSection.errorFixed")}
         </p>
       )}
     </div>

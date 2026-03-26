@@ -7,10 +7,10 @@
  */
 export function formatAmount(
   amount: number | null | undefined,
-  fallback = "Sin límite",
+  fallback = "—",
 ): string {
   if (amount === null || amount === undefined) return fallback
-  return new Intl.NumberFormat("es", {
+  return new Intl.NumberFormat(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
@@ -35,6 +35,44 @@ export function formatCurrencyAmount(amount: number, currency: string): string {
     currencyFormatters.set(currency, formatter)
   }
   return formatter.format(amount)
+}
+
+export function formatCurrency(value: number, currencyCode: string): string {
+  if (!currencyCode) {
+    return formatAmount(value, "0.00")
+  }
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currencyCode,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+export function formatSignedCurrency(value: number, currencyCode: string): string {
+  const formatted = formatCurrency(Math.abs(value), currencyCode)
+  if (value === 0) return formatted
+  return `${value > 0 ? "+" : "-"}${formatted}`
+}
+
+export function formatSignedPercent(value: number): string {
+  const absValue = Math.abs(value)
+  return `${value > 0 ? "+" : value < 0 ? "-" : ""}${formatAmount(absValue)}%`
+}
+
+export function formatPercent(value: number): string {
+  return `${formatAmount(value, "0.00")}%`
+}
+
+export function formatCompactCurrency(value: number, currencyCode: string): string {
+  if (!currencyCode) {
+    return formatAmount(value, "0.00")
+  }
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currencyCode,
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value)
 }
 
 /**

@@ -3,6 +3,7 @@
 import { Tag } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/shared/empty-state"
+import { useLanguage } from "@/context/language-context"
 
 interface EmptyProps {
   hasSearch: boolean
@@ -10,15 +11,17 @@ interface EmptyProps {
 }
 
 export function CategoriesEmptyState({ hasSearch, onCreate }: EmptyProps) {
+  const { t } = useLanguage()
+
   return (
     <EmptyState
       hasSearch={hasSearch}
       onCreate={onCreate}
       icon={Tag}
-      title="Sin categorías adicionales"
-      description="Agrega categorías para organizar tus gastos."
-      searchDescription="No se encontraron categorías que coincidan con tu búsqueda."
-      createLabel="Nueva categoría"
+      title={t("categories.emptyAdditional")}
+      description={t("categories.emptyDescription")}
+      searchDescription={t("categories.emptySearchDescription")}
+      createLabel={t("categories.new")}
     />
   )
 }
@@ -26,7 +29,7 @@ export function CategoriesEmptyState({ hasSearch, onCreate }: EmptyProps) {
 export function CategoriesSkeleton() {
   return (
     <div className="rounded-xl border border-amber-500/20 bg-card shadow-sm overflow-hidden">
-      <div className="px-5 py-2.5 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent border-b border-amber-500/20">
+      <div className="px-5 py-2.5 bg-linear-to-r from-amber-500/10 via-orange-500/5 to-transparent border-b border-amber-500/20">
         <Skeleton className="h-3 w-20" />
       </div>
       {Array.from({ length: 4 }).map((_, i) => (

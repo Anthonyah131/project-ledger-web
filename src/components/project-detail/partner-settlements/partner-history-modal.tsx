@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
+import { useLanguage } from "@/context/language-context"
 import { Loader2, ArrowUpRight, ArrowDownLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   Dialog,
@@ -46,6 +47,7 @@ export function PartnerHistoryModal({
   projectCurrency,
   onClose,
 }: PartnerHistoryModalProps) {
+  const { t } = useLanguage()
   const [history, setHistory] = useState<PartnerHistoryResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -81,9 +83,9 @@ export function PartnerHistoryModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Historial — {partnerName}</DialogTitle>
+          <DialogTitle>{t("partnerSettlements.historyTitle", { name: partnerName })}</DialogTitle>
           <DialogDescription>
-            Transacciones con splits y liquidaciones de este partner.
+            {t("partnerSettlements.historyDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +99,7 @@ export function PartnerHistoryModal({
             {history.settlements.length > 0 && (
               <section>
                 <h3 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-2">
-                  Liquidaciones
+                  {t("partnerSettlements.settlementsSection")}
                 </h3>
                 <div className="flex flex-col gap-1.5">
                   {history.settlements.map((s) => (
@@ -110,7 +112,7 @@ export function PartnerHistoryModal({
             {/* Transactions */}
             <section>
               <h3 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-2">
-                Transacciones con splits
+                {t("partnerSettlements.transactionsSection")}
                 {history.transactions.totalCount > 0 && (
                   <span className="ml-2 font-normal normal-case text-muted-foreground">
                     ({history.transactions.totalCount})
@@ -120,7 +122,7 @@ export function PartnerHistoryModal({
 
               {history.transactions.items.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-4 text-center">
-                  Sin transacciones con splits registradas.
+                  {t("partnerSettlements.noTransactions")}
                 </p>
               ) : (
                 <div className="flex flex-col gap-1.5">
@@ -144,7 +146,7 @@ export function PartnerHistoryModal({
                     onClick={() => setPage((p) => p - 1)}
                   >
                     <ChevronLeft className="size-4" />
-                    Anterior
+                    {t("common.previous")}
                   </Button>
                   <span className="text-xs text-muted-foreground">
                     {page} / {history.transactions.totalPages}
@@ -155,7 +157,7 @@ export function PartnerHistoryModal({
                     disabled={!history.transactions.hasNextPage}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Siguiente
+                    {t("common.next")}
                     <ChevronRight className="size-4" />
                   </Button>
                 </div>
@@ -177,6 +179,7 @@ function SettlementHistoryRow({
   item: PartnerHistorySettlementItem
   projectCurrency: string
 }) {
+  const { t } = useLanguage()
   const isPaid = item.type === "settlement_paid"
   return (
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border/50 bg-muted/30">
@@ -189,12 +192,12 @@ function SettlementHistoryRow({
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           {isPaid ? (
             <>
-              <span>Pagó a</span>
+              <span>{t("partnerSettlements.paidTo")}</span>
               <span className="font-medium text-foreground">{item.toPartner ?? "—"}</span>
             </>
           ) : (
             <>
-              <span>Recibió de</span>
+              <span>{t("partnerSettlements.receivedFrom")}</span>
               <span className="font-medium text-foreground">{item.fromPartner ?? "—"}</span>
             </>
           )}
@@ -216,6 +219,7 @@ function TransactionHistoryRow({
   item: PartnerHistoryTransactionItem
   projectCurrency: string
 }) {
+  const { t } = useLanguage()
   const isExpense = item.type === "expense"
   return (
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border/50">
@@ -225,7 +229,7 @@ function TransactionHistoryRow({
             variant="outline"
             className={`text-[10px] py-0 px-1.5 shrink-0 ${isExpense ? "text-rose-600 border-rose-500/40" : "text-emerald-600 border-emerald-500/40"}`}
           >
-            {isExpense ? "Gasto" : "Ingreso"}
+            {isExpense ? t("partnerSettlements.expenseLabel") : t("partnerSettlements.incomeLabel")}
           </Badge>
           <p className="text-sm text-foreground truncate font-medium">{item.title}</p>
         </div>
@@ -235,7 +239,7 @@ function TransactionHistoryRow({
             <>
               <span className="text-muted-foreground/40">·</span>
               <p className="text-[11px] text-muted-foreground truncate">
-                Paga: {item.payingPartner}
+                {t("partnerSettlements.payingPartnerPrefix")} {item.payingPartner}
               </p>
             </>
           )}
@@ -258,7 +262,7 @@ function TransactionHistoryRow({
         <p className="text-[11px] text-muted-foreground">
           {item.splitType === "percentage"
             ? `${item.splitValue}%`
-            : `Fijo ${formatAmount(item.splitValue, projectCurrency)}`}
+            : t("partnerSettlements.fixedSplit", { amount: formatAmount(item.splitValue, projectCurrency) })}
         </p>
       </div>
     </div>
