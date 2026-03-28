@@ -284,9 +284,9 @@ export const SecondaryRow = memo(function SecondaryRow({
   }
 
   return (
-    <div className="px-5 pt-3 pb-4 border-t border-dashed border-border/30 bg-muted/20 space-y-4">
+    <div className="px-4 sm:px-5 pt-3 pb-4 border-t border-dashed border-border/30 bg-muted/20 space-y-4">
       {/* Row 1: converted amount + description + notes + exchange rate + account amount */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Converted amount (moved from primary row) */}
         <div className="space-y-1.5">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">

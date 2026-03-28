@@ -171,3 +171,376 @@
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   COSMIC THEME - Glassmorphism with nebula background
+   ══════════════════════════════════════════════════════════════════════════════ */
+.cosmic {
+  /* ── Core backgrounds ─────────────────────────────────────────── */
+  --background: #0a0e17;
+  --foreground: #e8edf5;
+
+  /* Glassmorphism cards - using solid color, transparency via utility classes */
+  --card: #0f172a;
+  --card-foreground: #e8edf5;
+
+  --popover: #0f172a;
+  --popover-foreground: #e8edf5;
+
+  /* ── Primary - Cyan/Teal accent ───────────────────────────────── */
+  --primary: #22d3ee;
+  --primary-foreground: #0a0e17;
+
+  /* ── Secondary & muted ────────────────────────────────────────── */
+  --secondary: #1e293b;
+  --secondary-foreground: #e8edf5;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #164e63;
+  --accent-foreground: #22d3ee;
+
+  /* ── Destructive ──────────────────────────────────────────────── */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* ── Borders & inputs ─────────────────────────────────────────── */
+  --border: #334155;
+  --input: #1e293b;
+  --ring: #22d3ee;
+
+  /* ── Charts - vibrant cosmic palette ──────────────────────────── */
+  --chart-1: #22d3ee;
+  --chart-2: #a855f7;
+  --chart-3: #10b981;
+  --chart-4: #f59e0b;
+  --chart-5: #ec4899;
+
+  /* ── Sidebar ──────────────────────────────────────────────────── */
+  --sidebar: #070a10;
+  --sidebar-foreground: #e8edf5;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #0a0e17;
+  --sidebar-accent: #164e63;
+  --sidebar-accent-foreground: #22d3ee;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #22d3ee;
+}
+
+/* Cosmic nebula background - applied to html for full coverage */
+html.cosmic {
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(120, 0, 255, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(0, 200, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 60% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 10% 90%, rgba(0, 150, 200, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0e17 0%, #0f172a 50%, #0a0e17 100%);
+  background-attachment: fixed;
+}
+
+html.cosmic body {
+  background: transparent;
+}
+
+/* ── Glassmorphism Cards ─────────────────────────────────────────── */
+.cosmic .bg-card {
+  background: rgba(15, 23, 42, 0.55) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Card component specific */
+.cosmic [data-slot="card"],
+.cosmic .rounded-lg.border.bg-card {
+  background: rgba(15, 23, 42, 0.55) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(148, 163, 184, 0.12) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Background card areas */
+.cosmic .bg-background {
+  background: transparent !important;
+}
+
+/* Secondary backgrounds - slightly more opaque */
+.cosmic .bg-secondary {
+  background: rgba(30, 41, 59, 0.5) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.cosmic .bg-muted {
+  background: rgba(30, 41, 59, 0.4) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Popovers & Dialogs ──────────────────────────────────────────── */
+.cosmic [data-radix-popper-content-wrapper] > * {
+  background: rgba(15, 23, 42, 0.9) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.cosmic [role="dialog"] {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────── */
+.cosmic input:not([type="checkbox"]):not([type="radio"]),
+.cosmic textarea,
+.cosmic select,
+.cosmic [data-slot="control"] {
+  background: rgba(15, 23, 42, 0.5) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.cosmic input:focus,
+.cosmic textarea:focus,
+.cosmic select:focus {
+  border-color: rgba(34, 211, 238, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+.cosmic aside,
+.cosmic [data-sidebar="sidebar"],
+.cosmic [data-slot="sidebar"] {
+  background: rgba(7, 10, 16, 0.85) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(148, 163, 184, 0.1) !important;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+.cosmic table,
+.cosmic [role="table"] {
+  background: transparent;
+}
+
+.cosmic thead {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.cosmic tbody tr {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.08);
+}
+
+.cosmic tbody tr:hover {
+  background: rgba(34, 211, 238, 0.05);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.cosmic .bg-primary {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+}
+
+.cosmic .bg-primary:hover {
+  box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+}
+
+/* ── Sheets/Drawers ──────────────────────────────────────────────── */
+.cosmic [data-state="open"][role="dialog"],
+.cosmic .fixed.inset-y-0 {
+  background: rgba(10, 14, 23, 0.92) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────── */
+.cosmic [role="tablist"] {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Dropdown menus ──────────────────────────────────────────────── */
+.cosmic [role="menu"],
+.cosmic [role="listbox"] {
+  background: rgba(15, 23, 42, 0.92) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* ── Scrollbar styling ───────────────────────────────────────────── */
+.cosmic ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.cosmic ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cosmic ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 4px;
+}
+
+.cosmic ::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+/* ── Settings Nav (sidebar nav in settings page) ─────────────────── */
+.cosmic nav[aria-label] {
+  background: transparent;
+}
+
+.cosmic nav[aria-label] a {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.cosmic nav[aria-label] a:hover {
+  background: rgba(34, 211, 238, 0.08);
+  border-color: rgba(148, 163, 184, 0.1);
+}
+
+.cosmic nav[aria-label] a.bg-muted,
+.cosmic nav[aria-label] a[class*="bg-muted"] {
+  background: rgba(34, 211, 238, 0.12) !important;
+  border-color: rgba(34, 211, 238, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Tabs List (default variant with bg-muted) ───────────────────── */
+.cosmic [data-slot="tabs-list"],
+.cosmic [role="tablist"] {
+  background: rgba(15, 23, 42, 0.5) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.cosmic [data-slot="tabs-trigger"],
+.cosmic [role="tab"] {
+  background: transparent;
+}
+
+.cosmic [data-slot="tabs-trigger"][data-state="active"],
+.cosmic [role="tab"][aria-selected="true"] {
+  background: rgba(34, 211, 238, 0.15) !important;
+  border-color: rgba(34, 211, 238, 0.3) !important;
+  color: #22d3ee;
+}
+
+/* ── Sidebar inner container ─────────────────────────────────────── */
+.cosmic [data-slot="sidebar-inner"],
+.cosmic [data-sidebar="sidebar"] {
+  background: rgba(7, 10, 16, 0.9) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Sidebar menu items */
+.cosmic [data-sidebar="menu-button"]:hover,
+.cosmic [data-slot="sidebar-menu-button"]:hover {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+.cosmic [data-sidebar="menu-button"][data-active="true"],
+.cosmic [data-slot="sidebar-menu-button"][data-active="true"] {
+  background: rgba(34, 211, 238, 0.15) !important;
+  color: #22d3ee;
+}
+
+/* Sidebar accent backgrounds */
+.cosmic .bg-sidebar-accent,
+.cosmic [class*="bg-sidebar-accent"] {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+/* ── Sheet/Drawer content (mobile sidebar) ───────────────────────── */
+.cosmic [data-slot="sheet-content"],
+.cosmic [role="dialog"][class*="fixed"] {
+  background: rgba(7, 10, 16, 0.95) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: rgba(148, 163, 184, 0.1) !important;
+}
+
+/* ── Borders in cards and containers ─────────────────────────────── */
+.cosmic .border,
+.cosmic .border-border {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.cosmic .border-border\/50 {
+  border-color: rgba(148, 163, 184, 0.08);
+}
+
+/* ── Rounded containers with borders ─────────────────────────────── */
+.cosmic .rounded-lg.border,
+.cosmic .rounded-xl.border,
+.cosmic .rounded-md.border {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(148, 163, 184, 0.12) !important;
+}
+
+/* ── Separator lines ─────────────────────────────────────────────── */
+.cosmic [data-slot="separator"],
+.cosmic hr,
+.cosmic .bg-border {
+  background: rgba(148, 163, 184, 0.15) !important;
+}
+
+/* ── Badge styling ───────────────────────────────────────────────── */
+.cosmic .bg-violet-500\/10,
+.cosmic .bg-emerald-500\/10,
+.cosmic .bg-rose-500\/10,
+.cosmic .bg-amber-500\/10 {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Select trigger ──────────────────────────────────────────────── */
+.cosmic [data-slot="select-trigger"],
+.cosmic button[role="combobox"] {
+  background: rgba(15, 23, 42, 0.5) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.cosmic [data-slot="select-trigger"]:hover,
+.cosmic button[role="combobox"]:hover {
+  border-color: rgba(34, 211, 238, 0.3) !important;
+}
+
+/* ── Switch/Toggle ───────────────────────────────────────────────── */
+.cosmic [role="switch"] {
+  background: rgba(30, 41, 59, 0.6) !important;
+}
+
+.cosmic [role="switch"][data-state="checked"] {
+  background: rgba(34, 211, 238, 0.8) !important;
+}
+
+/* Cosmic theme preview for settings */
+.cosmic-preview {
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(120, 0, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(0, 200, 255, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 60% 80%, rgba(255, 0, 150, 0.2) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0e17 0%, #0f172a 100%);
+}

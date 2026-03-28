@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
-export type ThemePreference = "light" | "dark" | "system";
-export type ResolvedTheme = "light" | "dark";
+export type ThemePreference = "light" | "dark" | "cosmic" | "system";
+export type ResolvedTheme = "light" | "dark" | "cosmic";
 
 interface ThemeContextValue {
   theme: ThemePreference;
@@ -17,7 +17,7 @@ const STORAGE_KEY = "theme-preference";
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 function isThemePreference(value: string | null): value is ThemePreference {
-  return value === "light" || value === "dark" || value === "system";
+  return value === "light" || value === "dark" || value === "cosmic" || value === "system";
 }
 
 function getSystemTheme(): ResolvedTheme {
@@ -30,9 +30,10 @@ function applyThemeToDom(resolvedTheme: ResolvedTheme) {
 
   const html = document.documentElement;
 
-  html.classList.remove("light", "dark");
+  html.classList.remove("light", "dark", "cosmic");
   html.classList.add(resolvedTheme);
-  html.style.colorScheme = resolvedTheme;
+  // cosmic uses dark color scheme for browser chrome
+  html.style.colorScheme = resolvedTheme === "cosmic" ? "dark" : resolvedTheme;
 
   return resolvedTheme;
 }
@@ -45,7 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   });
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() => getSystemTheme());
 
-  const resolvedTheme = theme === "system" ? systemTheme : theme;
+  const resolvedTheme: ResolvedTheme = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
     applyThemeToDom(resolvedTheme);

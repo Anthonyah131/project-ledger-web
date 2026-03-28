@@ -168,10 +168,10 @@ export function BulkImportView({
           {/* Column header + "jump to bottom" — overflow-x only (no vertical scroll: show all rows) */}
           <div className="overflow-x-auto">
             <div className="min-w-[560px]">
-              {/* Column header row */}
+              {/* Column header row - Desktop */}
               <div
                 className={cn(
-                  "grid items-center px-5 py-2.5 gap-x-3 text-[11px] font-bold uppercase tracking-widest",
+                  "hidden sm:grid items-center px-5 py-2.5 gap-x-3 text-[11px] font-bold uppercase tracking-widest",
                   headerGradient,
                   headerText,
                 )}
@@ -197,6 +197,28 @@ export function BulkImportView({
                     <ChevronDown className="size-3.5" />
                   </button>
                 </div>
+              </div>
+
+              {/* Column header row - Mobile */}
+              <div
+                className={cn(
+                  "flex sm:hidden items-center justify-between px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest",
+                  headerGradient,
+                  headerText,
+                )}
+              >
+                <span>{t("bulkImport.rowCount", { count: itemCount, max: maxItems })}</span>
+                <button
+                  type="button"
+                  onClick={scrollToBottom}
+                  className={cn(
+                    "h-6 w-6 rounded-md flex items-center justify-center transition-colors",
+                    "text-current/60 hover:text-current hover:bg-black/10 dark:hover:bg-white/10",
+                  )}
+                  title={t("bulkImport.jumpToBottom")}
+                >
+                  <ChevronDown className="size-3.5" />
+                </button>
               </div>
 
               {/* All rows — no vertical scroll cap */}

@@ -80,6 +80,8 @@
       "lightDescription": "For bright spaces.",
       "darkTitle": "Dark",
       "darkDescription": "Reduces eye strain.",
+      "cosmicTitle": "Cosmic",
+      "cosmicDescription": "Glassmorphism with nebula.",
       "systemTitle": "System",
       "systemDescription": "Adapts automatically."
     },

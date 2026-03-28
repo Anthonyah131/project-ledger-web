@@ -238,81 +238,166 @@ export const ApplyToAllBar = memo(function ApplyToAllBar({
       : "text-emerald-600 dark:text-emerald-400"
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-2 px-5 py-2.5 text-xs", gradient)}>
-      <span className={cn("font-bold text-[11px] uppercase tracking-widest shrink-0", labelColor)}>
-        {t("bulkImport.applyToAll")}
-      </span>
-
-      <div className="flex items-center gap-1.5">
-        <Select onValueChange={(v) => { catRef.current = v }}>
-          <SelectTrigger className="h-7 text-xs w-40 bg-background/60 border-border/60">
-            <SelectValue placeholder={t("bulkImport.selectCategory")} />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((c) => (
-              <SelectItem key={c.id} value={c.id} className="text-xs">
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 text-[11px] px-2"
-          onClick={() => catRef.current && onApplyToAll("categoryId", catRef.current)}
-        >
+    <>
+      {/* Desktop Layout */}
+      <div className={cn("hidden sm:flex flex-wrap items-center gap-x-3 gap-y-2 px-5 py-2.5 text-xs", gradient)}>
+        <span className={cn("font-bold text-[11px] uppercase tracking-widest shrink-0", labelColor)}>
           {t("bulkImport.applyToAll")}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 text-[11px] px-2"
-          onClick={() => catRef.current && onApplyToEmpty("categoryId", catRef.current)}
-        >
-          {t("bulkImport.applyToEmpty")}
-        </Button>
+        </span>
+
+        <div className="flex items-center gap-1.5">
+          <Select onValueChange={(v) => { catRef.current = v }}>
+            <SelectTrigger className="h-7 text-xs w-40 bg-background/60 border-border/60">
+              <SelectValue placeholder={t("bulkImport.selectCategory")} />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id} className="text-xs">
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-[11px] px-2"
+            onClick={() => catRef.current && onApplyToAll("categoryId", catRef.current)}
+          >
+            {t("bulkImport.applyToAll")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-[11px] px-2"
+            onClick={() => catRef.current && onApplyToEmpty("categoryId", catRef.current)}
+          >
+            {t("bulkImport.applyToEmpty")}
+          </Button>
+        </div>
+
+        <div className="w-px h-4 bg-border/50 shrink-0" />
+
+        <div className="flex items-center gap-1.5">
+          <Select onValueChange={(v) => { pmRef.current = v }}>
+            <SelectTrigger className="h-7 text-xs w-44 bg-background/60 border-border/60">
+              <SelectValue placeholder={t("bulkImport.selectPaymentMethod")} />
+            </SelectTrigger>
+            <SelectContent>
+              {paymentMethods.map((pm) => (
+                <SelectItem key={pm.id} value={pm.id} className="text-xs">
+                  {pm.name}
+                  {pm.currency && (
+                    <span className="ml-1 text-muted-foreground">({pm.currency})</span>
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-[11px] px-2"
+            onClick={() => pmRef.current && onApplyToAll("paymentMethodId", pmRef.current)}
+          >
+            {t("bulkImport.applyToAll")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-[11px] px-2"
+            onClick={() => pmRef.current && onApplyToEmpty("paymentMethodId", pmRef.current)}
+          >
+            {t("bulkImport.applyToEmpty")}
+          </Button>
+        </div>
       </div>
 
-      <div className="w-px h-4 bg-border/50 shrink-0" />
-
-      <div className="flex items-center gap-1.5">
-        <Select onValueChange={(v) => { pmRef.current = v }}>
-          <SelectTrigger className="h-7 text-xs w-44 bg-background/60 border-border/60">
-            <SelectValue placeholder={t("bulkImport.selectPaymentMethod")} />
-          </SelectTrigger>
-          <SelectContent>
-            {paymentMethods.map((pm) => (
-              <SelectItem key={pm.id} value={pm.id} className="text-xs">
-                {pm.name}
-                {pm.currency && (
-                  <span className="ml-1 text-muted-foreground">({pm.currency})</span>
-                )}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 text-[11px] px-2"
-          onClick={() => pmRef.current && onApplyToAll("paymentMethodId", pmRef.current)}
-        >
+      {/* Mobile Layout */}
+      <div className={cn("sm:hidden px-4 py-3 space-y-3", gradient)}>
+        <span className={cn("font-bold text-[11px] uppercase tracking-widest block", labelColor)}>
           {t("bulkImport.applyToAll")}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 text-[11px] px-2"
-          onClick={() => pmRef.current && onApplyToEmpty("paymentMethodId", pmRef.current)}
-        >
-          {t("bulkImport.applyToEmpty")}
-        </Button>
+        </span>
+
+        {/* Category row */}
+        <div className="space-y-2">
+          <Select onValueChange={(v) => { catRef.current = v }}>
+            <SelectTrigger className="h-9 text-xs w-full bg-background/60 border-border/60">
+              <SelectValue placeholder={t("bulkImport.selectCategory")} />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id} className="text-xs">
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] w-full"
+              onClick={() => catRef.current && onApplyToAll("categoryId", catRef.current)}
+            >
+              {t("bulkImport.applyToAll")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] w-full"
+              onClick={() => catRef.current && onApplyToEmpty("categoryId", catRef.current)}
+            >
+              {t("bulkImport.applyToEmpty")}
+            </Button>
+          </div>
+        </div>
+
+        {/* Payment method row */}
+        <div className="space-y-2">
+          <Select onValueChange={(v) => { pmRef.current = v }}>
+            <SelectTrigger className="h-9 text-xs w-full bg-background/60 border-border/60">
+              <SelectValue placeholder={t("bulkImport.selectPaymentMethod")} />
+            </SelectTrigger>
+            <SelectContent>
+              {paymentMethods.map((pm) => (
+                <SelectItem key={pm.id} value={pm.id} className="text-xs">
+                  {pm.name}
+                  {pm.currency && (
+                    <span className="ml-1 text-muted-foreground">({pm.currency})</span>
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] w-full"
+              onClick={() => pmRef.current && onApplyToAll("paymentMethodId", pmRef.current)}
+            >
+              {t("bulkImport.applyToAll")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] w-full"
+              onClick={() => pmRef.current && onApplyToEmpty("paymentMethodId", pmRef.current)}
+            >
+              {t("bulkImport.applyToEmpty")}
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 })
