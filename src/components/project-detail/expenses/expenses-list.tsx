@@ -59,15 +59,21 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
 
   return (
     <div role="list" aria-label={t("expenses.listAriaLabel")} className="min-w-0">
-      {/* Header */}
-      <div className="flex items-center gap-x-4 px-5 py-2.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest border-b border-rose-500/20 bg-linear-to-r from-rose-500/10 via-rose-500/5 to-transparent">
+      {/* Header - Desktop */}
+      <div className="hidden sm:flex items-center gap-x-4 px-5 py-2.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest border-b border-rose-500/20 bg-linear-to-r from-rose-500/10 via-rose-500/5 to-transparent">
         <span className="flex-1">{t("expenses.colTitle")}</span>
-        <span className="w-28 text-right hidden sm:block">{t("common.date")}</span>
+        <span className="w-28 text-right">{t("common.date")}</span>
         <span className="w-44 text-right hidden md:block">{t("common.amount")}</span>
         <span className="w-44 text-right hidden xl:block">{t("expenses.colConversions")}</span>
         <span className="w-40 text-right hidden lg:block">{t("expenses.paymentMethodLabel")}</span>
         <span className="w-36 text-right hidden xl:block">{t("expenses.categoryLabel")}</span>
         <span className="w-8" />
+      </div>
+
+      {/* Header - Mobile */}
+      <div className="flex sm:hidden items-center justify-between px-4 py-2 text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest border-b border-rose-500/20 bg-linear-to-r from-rose-500/10 via-rose-500/5 to-transparent">
+        <span>{t("expenses.colTitle")}</span>
+        <span>{t("common.amount")}</span>
       </div>
 
       {expenses.map((expense, i) => {
@@ -82,120 +88,209 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
             key={expense.id}
             role="listitem"
             className={cn(
-              "group flex items-center gap-x-4 px-5 py-3.5",
-              "border-b border-border/50 last:border-b-0",
+              "group border-b border-border/50 last:border-b-0",
               "hover:bg-rose-500/5 transition-colors duration-150",
               onView && "cursor-pointer",
             )}
             onClick={onView ? () => onView(expense) : undefined}
           >
-            {/* Accent dot */}
-            <div className={cn("size-2.5 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex items-center gap-x-4 px-5 py-3.5">
+              {/* Accent dot */}
+              <div className={cn("size-2.5 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
 
-            {/* Title */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate leading-snug">
-                {expense.title}
-              </p>
-              {(!expense.isActive || showSplitBadge) ? (
-                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                  {!expense.isActive ? (
-                    <Badge
-                      variant="outline"
-                      className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
-                    >
-                      {t("expenses.statusReminderBadge")}
-                    </Badge>
-                  ) : null}
-                  {showSplitBadge ? (
-                    <Badge
-                      variant="outline"
-                      className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
-                    >
-                      <GitBranch className="size-2.5" />
-                      Split
-                    </Badge>
-                  ) : null}
-                </div>
-              ) : null}
-              {expense.description ? (
-                <p className="text-xs text-muted-foreground truncate mt-0.5">
-                  {expense.description}
+              {/* Title */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate leading-snug">
+                  {expense.title}
                 </p>
-              ) : null}
+                {(!expense.isActive || showSplitBadge) ? (
+                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    {!expense.isActive ? (
+                      <Badge
+                        variant="outline"
+                        className="border-amber-600/50 bg-amber-500/25 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
+                      >
+                        {t("expenses.statusReminderBadge")}
+                      </Badge>
+                    ) : null}
+                    {showSplitBadge ? (
+                      <Badge
+                        variant="outline"
+                        className="border-violet-500/40 bg-violet-500/10 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1"
+                      >
+                        <GitBranch className="size-2.5" />
+                        Split
+                      </Badge>
+                    ) : null}
+                  </div>
+                ) : null}
+                {expense.description ? (
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    {expense.description}
+                  </p>
+                ) : null}
+              </div>
+
+              {/* Date */}
+              <span className="w-28 text-right text-xs text-muted-foreground tabular-nums">
+                {formatDate(expense.expenseDate, { fixTimezone: true })}
+              </span>
+
+              {/* Amount — primary: convertedAmount in project currency */}
+              <div className="w-44 text-right hidden md:block">
+                <p className="text-sm font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+                  {projectCurrency}{" "}
+                  {formatAmount(expense.convertedAmount)}
+                </p>
+                {showOriginal && (
+                  <p className="text-xs text-muted-foreground tabular-nums mt-0.5">
+                    {expense.originalCurrency}{" "}
+                    {formatAmount(expense.originalAmount)}
+                  </p>
+                )}
+              </div>
+
+              {/* Currency exchanges */}
+              <div className="w-44 text-right hidden xl:block">
+                {exchanges.length > 0 ? (
+                  <div className="flex flex-col items-end gap-0.5">
+                    {exchanges.slice(0, 2).map((exchange) => (
+                      <p
+                        key={exchange.id}
+                        className="text-xs text-muted-foreground tabular-nums"
+                      >
+                        {exchange.currencyCode} {formatAmount(exchange.convertedAmount)}
+                      </p>
+                    ))}
+                    {exchanges.length > 2 && (
+                      <p className="text-[10px] text-muted-foreground/70">
+                        +{exchanges.length - 2} {t("expenses.moreExchanges")}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-xs text-muted-foreground/30">—</span>
+                )}
+              </div>
+
+              {/* Payment method */}
+              <div className="w-40 text-right hidden lg:block">
+                <p className="text-xs text-muted-foreground truncate">{pmInfo?.name ?? "—"}</p>
+                {pmInfo && (
+                  <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
+                    {pmInfo.currency}{pmInfo.partnerName ? ` · ${pmInfo.partnerName}` : ""}
+                  </p>
+                )}
+              </div>
+
+              {/* Category */}
+              <span className="w-36 text-right text-xs text-muted-foreground hidden xl:block truncate">
+                {expense.categoryName}
+              </span>
+
+              {/* Menu */}
+              <ItemActionMenu
+                ariaLabel={t("expenses.actionMenuAria")}
+                onOpen={onView ? () => onView(expense) : undefined}
+                openLabel={t("expenses.viewDetail")}
+                onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
+                activateLabel={t("expenses.activateLabel")}
+                activatingLabel={t("common.activating")}
+                isActivating={isActivating}
+                disabled={isActivating}
+                onEdit={() => onEdit(expense)}
+                onDelete={() => onDelete(expense)}
+                stopPropagation
+              />
             </div>
 
-            {/* Date */}
-            <span className="w-28 text-right text-xs text-muted-foreground tabular-nums hidden sm:block">
-              {formatDate(expense.expenseDate, { fixTimezone: true })}
-            </span>
+            {/* Mobile Layout */}
+            <div className="flex sm:hidden items-start gap-3 px-4 py-3">
+              {/* Accent dot */}
+              <div className={cn("size-2 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-card mt-1.5", getAccentColor(i))} />
 
-            {/* Amount — primary: convertedAmount in project currency */}
-            <div className="w-44 text-right hidden md:block">
-              <p className="text-sm font-bold text-rose-600 dark:text-rose-400 tabular-nums">
-                {projectCurrency}{" "}
-                {formatAmount(expense.convertedAmount)}
-              </p>
-              {showOriginal && (
-                <p className="text-xs text-muted-foreground tabular-nums mt-0.5">
-                  {expense.originalCurrency}{" "}
-                  {formatAmount(expense.originalAmount)}
-                </p>
-              )}
-            </div>
-
-            {/* Currency exchanges */}
-            <div className="w-44 text-right hidden xl:block">
-              {exchanges.length > 0 ? (
-                <div className="flex flex-col items-end gap-0.5">
-                  {exchanges.slice(0, 2).map((exchange) => (
-                    <p
-                      key={exchange.id}
-                      className="text-xs text-muted-foreground tabular-nums"
-                    >
-                      {exchange.currencyCode} {formatAmount(exchange.convertedAmount)}
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground truncate leading-snug">
+                      {expense.title}
                     </p>
-                  ))}
-                  {exchanges.length > 2 && (
-                    <p className="text-[10px] text-muted-foreground/70">
-                      +{exchanges.length - 2} {t("expenses.moreExchanges")}
+                    <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground">
+                      <span className="tabular-nums">{formatDate(expense.expenseDate, { fixTimezone: true })}</span>
+                      {expense.categoryName && (
+                        <>
+                          <span className="text-border">·</span>
+                          <span className="truncate">{expense.categoryName}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+                      {projectCurrency} {formatAmount(expense.convertedAmount)}
                     </p>
-                  )}
+                    {showOriginal && (
+                      <p className="text-[10px] text-muted-foreground tabular-nums">
+                        {expense.originalCurrency} {formatAmount(expense.originalAmount)}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <span className="text-xs text-muted-foreground/30">—</span>
-              )}
+                {/* Badges and Description */}
+                {(!expense.isActive || showSplitBadge || expense.description || pmInfo) && (
+                  <div className="mt-1.5 space-y-1">
+                    {(!expense.isActive || showSplitBadge) && (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {!expense.isActive && (
+                          <Badge
+                            variant="outline"
+                            className="border-amber-600/50 bg-amber-500/25 text-[9px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 h-5"
+                          >
+                            {t("expenses.statusReminderBadge")}
+                          </Badge>
+                        )}
+                        {showSplitBadge && (
+                          <Badge
+                            variant="outline"
+                            className="border-violet-500/40 bg-violet-500/10 text-[9px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300 gap-1 h-5"
+                          >
+                            <GitBranch className="size-2" />
+                            Split
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                    {pmInfo && (
+                      <p className="text-[11px] text-muted-foreground/70 truncate">
+                        {pmInfo.name}{pmInfo.partnerName ? ` · ${pmInfo.partnerName}` : ""}
+                      </p>
+                    )}
+                    {expense.description && (
+                      <p className="text-[11px] text-muted-foreground truncate">
+                        {expense.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Menu */}
+              <ItemActionMenu
+                ariaLabel={t("expenses.actionMenuAria")}
+                onOpen={onView ? () => onView(expense) : undefined}
+                openLabel={t("expenses.viewDetail")}
+                onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
+                activateLabel={t("expenses.activateLabel")}
+                activatingLabel={t("common.activating")}
+                isActivating={isActivating}
+                disabled={isActivating}
+                onEdit={() => onEdit(expense)}
+                onDelete={() => onDelete(expense)}
+                stopPropagation
+              />
             </div>
-
-            {/* Payment method */}
-            <div className="w-40 text-right hidden lg:block">
-              <p className="text-xs text-muted-foreground truncate">{pmInfo?.name ?? "—"}</p>
-              {pmInfo && (
-                <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
-                  {pmInfo.currency}{pmInfo.partnerName ? ` · ${pmInfo.partnerName}` : ""}
-                </p>
-              )}
-            </div>
-
-            {/* Category */}
-            <span className="w-36 text-right text-xs text-muted-foreground hidden xl:block truncate">
-              {expense.categoryName}
-            </span>
-
-            {/* Menu */}
-            <ItemActionMenu
-              ariaLabel={t("expenses.actionMenuAria")}
-              onOpen={onView ? () => onView(expense) : undefined}
-              openLabel={t("expenses.viewDetail")}
-              onActivate={!expense.isActive ? () => { void handleActivate(expense) } : undefined}
-              activateLabel={t("expenses.activateLabel")}
-              activatingLabel={t("common.activating")}
-              isActivating={isActivating}
-              disabled={isActivating}
-              onEdit={() => onEdit(expense)}
-              onDelete={() => onDelete(expense)}
-              stopPropagation
-            />
           </div>
         )
       })}

@@ -28,8 +28,10 @@ function countErrors(obj: unknown): number {
 }
 
 // Shared grid template — must match the header columns in bulk-import-view.tsx
+// Desktop: full columns
 export const ROW_GRID_COLS =
   "1.75rem minmax(8rem, 1fr) 6.5rem 8.5rem minmax(8rem, 9rem) minmax(9rem, 11rem) auto"
+// Mobile: simplified 2-column layout handled separately
 
 interface RowProps {
   index: number
@@ -124,9 +126,9 @@ export const BulkImportRow = memo(function BulkImportRow({
         errorCount > 0 && "bg-destructive/5",
       )}
     >
-      {/* ── Primary row ── */}
+      {/* ── Primary row - Desktop ── */}
       <div
-        className={cn("group grid items-center px-5 py-3 gap-x-3", hoverClass)}
+        className={cn("hidden sm:grid group items-center px-5 py-3 gap-x-3", hoverClass)}
         style={{ gridTemplateColumns: ROW_GRID_COLS }}
       >
         {/* Status indicator */}
@@ -269,6 +271,157 @@ export const BulkImportRow = memo(function BulkImportRow({
             <Trash2 className="size-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* ── Primary row - Mobile ── */}
+      <div className={cn("sm:hidden group px-4 py-3 space-y-3", hoverClass)}>
+        {/* Header: Status + Title + Delete */}
+        <div className="flex items-start gap-2">
+          <div className="flex items-center justify-center pt-2.5 shrink-0">
+            {errorCount > 0 ? (
+              <AlertCircle className="size-3.5 text-destructive" />
+            ) : isComplete ? (
+              <CheckCircle2 className="size-3.5 text-emerald-500 opacity-70" />
+            ) : (
+              <span className="text-[11px] font-mono text-muted-foreground/50 tabular-nums">
+                {index + 1}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <Input
+              {...form.register(`items.${index}.title`)}
+              placeholder={t("bulkImport.colTitle")}
+              className={cn(
+                "h-9 text-sm w-full",
+                errors?.title && "border-destructive focus-visible:ring-destructive/30",
+              )}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            className="h-9 w-9 rounded-md flex items-center justify-center shrink-0 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all"
+            aria-label={t("bulkImport.removeRow")}
+          >
+            <Trash2 className="size-4" />
+          </button>
+        </div>
+
+        {/* Amount + Date row */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              {t("bulkImport.colAmount")}
+            </label>
+            <Input
+              {...form.register(`items.${index}.originalAmount`)}
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.00"
+              className={cn(
+                "h-9 text-sm font-mono w-full",
+                errors?.originalAmount && "border-destructive focus-visible:ring-destructive/30",
+              )}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              {t("bulkImport.colDate")}
+            </label>
+            <Input
+              {...form.register(`items.${index}.date`)}
+              type="date"
+              className={cn(
+                "h-9 text-sm w-full",
+                errors?.date && "border-destructive focus-visible:ring-destructive/30",
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Category + Payment Method row */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              {t("bulkImport.colCategory")}
+            </label>
+            <Controller
+              control={form.control}
+              name={`items.${index}.categoryId`}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      "h-9 text-sm w-full",
+                      errors?.categoryId && "border-destructive focus-visible:ring-destructive/30",
+                    )}
+                  >
+                    <SelectValue placeholder={t("bulkImport.selectCategory")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id} className="text-sm">
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              {t("bulkImport.colPaymentMethod")}
+            </label>
+            <Controller
+              control={form.control}
+              name={`items.${index}.paymentMethodId`}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      "h-9 text-sm w-full",
+                      errors?.paymentMethodId && "border-destructive focus-visible:ring-destructive/30",
+                    )}
+                  >
+                    <SelectValue placeholder={t("bulkImport.selectPaymentMethod")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentMethods.map((pm) => (
+                      <SelectItem key={pm.id} value={pm.id} className="text-sm">
+                        {pm.name}
+                        {pm.currency && (
+                          <span className="ml-1 text-muted-foreground">({pm.currency})</span>
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Expand toggle for secondary fields */}
+        {hasSecondaryFields && isPrimaryComplete && (
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            className={cn(
+              "w-full h-8 rounded-md flex items-center justify-center gap-1.5 text-xs transition-colors",
+              expanded
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted border border-border/50",
+            )}
+          >
+            <ChevronDown
+              className={cn("size-3.5 transition-transform duration-200", expanded && "rotate-180")}
+            />
+            {expanded ? t("bulkImport.collapseRow") : t("bulkImport.expandRow")}
+          </button>
+        )}
       </div>
 
       {/* ── Secondary row — only visible when primary is filled ── */}
