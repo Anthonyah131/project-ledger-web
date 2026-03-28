@@ -37,7 +37,7 @@ function ProjectsWorkspacesViewInner() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Tab bar */}
       <div className="flex items-center gap-1 border-b border-border mb-8">
         <TabButton active={tab === "projects"} onClick={() => switchTab("projects")}>

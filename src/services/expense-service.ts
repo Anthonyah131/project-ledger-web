@@ -10,6 +10,8 @@ import type {
   ExpenseDocumentKind,
   ExtractExpenseFromImageResponse,
   OcrExtractionQuotaResponse,
+  BulkCreateExpensesRequest,
+  BulkCreateExpensesResponse,
 } from "@/types/expense"
 
 // ─── Query params ──────────────────────────────────────────────────────────────
@@ -81,6 +83,12 @@ export function updateExpenseActiveState(
 
 export function deleteExpense(projectId: string, expenseId: string) {
   return api.delete<void>(`/projects/${projectId}/expenses/${expenseId}`)
+}
+
+// ─── Bulk import ──────────────────────────────────────────────────────────────
+
+export function bulkCreateExpenses(projectId: string, data: BulkCreateExpensesRequest) {
+  return api.post<BulkCreateExpensesResponse>(`/projects/${projectId}/expenses/bulk`, data)
 }
 
 // ─── Templates ────────────────────────────────────────────────────────────────

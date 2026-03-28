@@ -11,6 +11,9 @@
     "unavailable": "El asistente no está disponible en este momento. Inténtalo en unos minutos",
     "errorMessage": "Ocurrió un error al procesar tu mensaje. Por favor intenta de nuevo",
     "premiumRequired": "Esta función requiere un plan de pago",
-    "upgradeToPremium": "Mejorar plan"
+    "upgradeToPremium": "Mejorar plan",
+    "send": "Enviar mensaje",
+    "newConversation": "Nueva conversación",
+    "realTimeData": "Datos consultados en tiempo real"
   }
 }

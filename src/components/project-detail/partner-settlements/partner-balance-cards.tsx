@@ -182,10 +182,10 @@ function PairwiseSection({ pairwiseBalances, currency }: PairwiseSectionProps) {
               key={`${pw.partnerAId}-${pw.partnerBId}`}
               className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2"
             >
-              <div className="flex items-center justify-between text-sm font-medium text-foreground">
-                <span>{pw.partnerAName}</span>
-                <span className="text-muted-foreground">↔</span>
-                <span>{pw.partnerBName}</span>
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground min-w-0">
+                <span className="truncate min-w-0 flex-1 text-right">{pw.partnerAName}</span>
+                <span className="text-muted-foreground shrink-0">↔</span>
+                <span className="truncate min-w-0 flex-1">{pw.partnerBName}</span>
               </div>
               {balanced ? (
                 <p className="text-xs text-muted-foreground text-center">{t("partnerSettlements.pairwiseBalanced")}</p>

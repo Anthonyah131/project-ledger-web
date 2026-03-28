@@ -224,7 +224,7 @@ export function ReportsView() {
   )
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
       {/* Page heading */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">

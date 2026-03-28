@@ -16,7 +16,6 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   DropdownMenu,
@@ -106,7 +105,6 @@ function PaymentMethodDetailPanelComponent({
   loadingExpenses,
   loadingIncomes,
   loadingProjects,
-  loadingSummary,
   error,
   page,
   setPage,
@@ -171,7 +169,7 @@ function PaymentMethodDetailPanelComponent({
 
   if (loadingDetail) {
     return (
-      <div className="w-full max-w-5xl mx-auto space-y-6">
+      <div className="w-full max-w-7xl mx-auto space-y-6">
         <Skeleton className="h-9 w-40" />
         <Skeleton className="h-36 w-full" />
         <Skeleton className="h-72 w-full" />
@@ -181,7 +179,7 @@ function PaymentMethodDetailPanelComponent({
 
   if (!paymentMethod) {
     return (
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto">
         <Alert variant="destructive">
           <AlertTitle>{t("paymentMethods.loadErrorTitle")}</AlertTitle>
           <AlertDescription>
@@ -197,7 +195,7 @@ function PaymentMethodDetailPanelComponent({
   const relatedProjectsCount = summary?.relatedProjectsCount ?? projects.totalCount
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
@@ -329,7 +327,7 @@ function PaymentMethodDetailPanelComponent({
 
       <div className="rounded-xl border border-cyan-500/15 bg-card overflow-hidden shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="p-4 bg-gradient-to-br from-rose-500/5 to-transparent border-b md:border-b-0 md:border-r border-rose-500/15">
+          <div className="p-4 bg-linear-to-br from-rose-500/5 to-transparent border-b md:border-b-0 md:border-r border-rose-500/15">
             <p className="text-xs uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">{t("paymentMethods.totalFilteredExpenses")}</p>
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
               {loadingExpenses
@@ -338,7 +336,7 @@ function PaymentMethodDetailPanelComponent({
             </p>
             <p className="text-[10px] text-muted-foreground/60 mt-0.5">{t("paymentMethods.movements", { count: expenses.totalCount })}</p>
           </div>
-          <div className="p-4 bg-gradient-to-br from-emerald-500/5 to-transparent">
+          <div className="p-4 bg-linear-to-br from-emerald-500/5 to-transparent">
             <p className="text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">{t("paymentMethods.totalFilteredIncomes")}</p>
             <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
               {loadingIncomes

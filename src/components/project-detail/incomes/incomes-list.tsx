@@ -66,8 +66,8 @@ function IncomesListComponent({
   )
 
   return (
-    <div role="list" aria-label={t("incomes.listAriaLabel")}>
-      <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
+    <div role="list" aria-label={t("incomes.listAriaLabel")} className="min-w-0">
+      <div className="flex items-center gap-x-4 px-5 py-2.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
         <span className="flex-1">{t("incomes.colTitle")}</span>
         <span className="w-28 text-right hidden sm:block">{t("common.date")}</span>
         <span className="w-44 text-right hidden md:block">{t("common.amount")}</span>
@@ -89,16 +89,16 @@ function IncomesListComponent({
             key={income.id}
             role="listitem"
             className={cn(
-              "group flex items-center px-5 py-3.5",
+              "group flex items-center gap-x-4 px-5 py-3.5",
               "border-b border-border/50 last:border-b-0",
               "hover:bg-emerald-500/5 transition-colors duration-150",
               onView && "cursor-pointer",
             )}
             onClick={onView ? () => onView(income) : undefined}
           >
-            <div className={cn("size-2.5 rounded-full shrink-0 mr-3.5 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
+            <div className={cn("size-2.5 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-card", getAccentColor(i))} />
 
-            <div className="flex-1 min-w-0 mr-4">
+            <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate leading-snug">
                 {income.title}
               </p>

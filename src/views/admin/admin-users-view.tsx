@@ -61,7 +61,7 @@ export function AdminUsersView() {
   const sort = `${sortBy}:${sortDirection}`
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>

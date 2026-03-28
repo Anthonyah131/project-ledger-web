@@ -218,6 +218,43 @@ export interface ExtractExpenseFromImageResponse {
   warnings: string[];
 }
 
+// ─── Bulk import ──────────────────────────────────────────────────────────────
+
+export interface BulkExpenseItem {
+  categoryId: string
+  paymentMethodId: string
+  obligationId?: string | null
+  obligationEquivalentAmount?: number | null
+  originalAmount: number
+  originalCurrency: string
+  exchangeRate: number
+  convertedAmount: number
+  accountAmount?: number | null
+  title: string
+  description?: string | null
+  date: string // "YYYY-MM-DD"
+  notes?: string | null
+  currencyExchanges?: CurrencyExchangeRequest[] | null
+  splits?: SplitInput[] | null
+}
+
+export interface BulkCreateExpensesRequest {
+  items: BulkExpenseItem[]
+}
+
+export interface BulkCreatedItem {
+  id: string
+  title: string
+  originalAmount: number
+  convertedAmount: number
+  date: string
+}
+
+export interface BulkCreateExpensesResponse {
+  created: number
+  items: BulkCreatedItem[]
+}
+
 export interface OcrExtractionQuotaResponse {
   projectOwnerUserId: string;
   planName: string;

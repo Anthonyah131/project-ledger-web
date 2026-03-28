@@ -73,7 +73,7 @@ export function PaymentMethodsPanel() {
   }, [setDeleteTarget])
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
@@ -88,7 +88,7 @@ export function PaymentMethodsPanel() {
         <Button
           onClick={handleOpenCreate}
           size="sm"
-          className="bg-gradient-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700 border-0 shadow-sm shadow-cyan-500/30 transition-all"
+          className="bg-linear-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700 border-0 shadow-sm shadow-cyan-500/30 transition-all"
         >
           <Plus className="size-3.5" />
           {t("paymentMethods.newButtonShort")}

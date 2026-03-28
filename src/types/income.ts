@@ -93,6 +93,33 @@ export interface UpdateIncomeRequest {
   splits?: SplitInput[] | null;
 }
 
+// ─── Bulk import ──────────────────────────────────────────────────────────────
+
+export interface BulkIncomeItem {
+  categoryId: string
+  paymentMethodId: string
+  originalAmount: number
+  originalCurrency: string
+  exchangeRate: number
+  convertedAmount: number
+  accountAmount?: number | null
+  title: string
+  description?: string | null
+  date: string // "YYYY-MM-DD"
+  notes?: string | null
+  currencyExchanges?: CurrencyExchangeRequest[] | null
+  splits?: SplitInput[] | null
+}
+
+export interface BulkCreateIncomesRequest {
+  items: BulkIncomeItem[]
+}
+
+export interface BulkCreateIncomesResponse {
+  created: number
+  items: import("@/types/expense").BulkCreatedItem[]
+}
+
 export type IncomeDocumentKind = "receipt" | "invoice";
 
 export interface IncomeExtractionDraft {

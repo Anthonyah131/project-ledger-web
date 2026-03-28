@@ -57,9 +57,9 @@ export function ProjectDetailView({ projectId }: Props) {
     mutateProjectDeleteOpen,
     mutateProjectUpdate, mutateProjectDelete, mutateProjectSettingsUpdate,
     exp, inc, pac, cat, obl, bud, ppm, ppp, sel,
-    mutateExpenseCreate, mutateExpenseUpdate, mutateExpenseDelete,
+    mutateExpenseCreate, mutateExpenseBulkCreate, mutateExpenseUpdate, mutateExpenseDelete,
     mutateExpenseActiveState,
-    mutateIncomeCreate, mutateIncomeUpdate, mutateIncomeDelete,
+    mutateIncomeCreate, mutateIncomeBulkCreate, mutateIncomeUpdate, mutateIncomeDelete,
     mutateIncomeActiveState,
     mutateAlternativeCurrencyAdd, mutateAlternativeCurrencyDelete,
     mutateCategoryCreate, mutateCategoryUpdate,
@@ -186,7 +186,7 @@ export function ProjectDetailView({ projectId }: Props) {
   const handleDeleteProjectClose = useCallback(() => setDeleteProjectOpen(false), [setDeleteProjectOpen]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
       {/* Header */}
       <ProjectHeader
         project={detail.project}
@@ -198,7 +198,7 @@ export function ProjectDetailView({ projectId }: Props) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line">
+        <TabsList variant="line" className="w-full flex-wrap gap-y-1">
           <TabsTrigger value="expenses">{t("projects.tabs.expenses")}</TabsTrigger>
           <TabsTrigger value="incomes">{t("projects.tabs.incomes")}</TabsTrigger>
           <TabsTrigger value="obligations">{t("projects.tabs.obligations")}</TabsTrigger>
@@ -229,6 +229,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onDeleteSelect={setExpenseDeleteTarget}
           onDeleteClose={handleExpenseDeleteClose}
           onCreate={mutateExpenseCreate}
+          onBulkCreate={mutateExpenseBulkCreate}
           onSave={mutateExpenseUpdate}
           onDelete={mutateExpenseDelete}
           onToggleActive={mutateExpenseActiveState}
@@ -253,6 +254,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onDeleteSelect={setIncomeDeleteTarget}
           onDeleteClose={handleIncomeDeleteClose}
           onCreate={mutateIncomeCreate}
+          onBulkCreate={mutateIncomeBulkCreate}
           onSave={mutateIncomeUpdate}
           onDelete={mutateIncomeDelete}
           onToggleActive={mutateIncomeActiveState}

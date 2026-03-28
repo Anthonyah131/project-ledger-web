@@ -13,6 +13,7 @@ import type {
   ExpenseResponse,
   CreateExpenseRequest,
   UpdateExpenseRequest,
+  BulkCreateExpensesRequest,
 } from "@/types/expense"
 import type { MutationOptions } from "@/types/common"
 
@@ -41,6 +42,7 @@ export function useProjectExpenses(projectId: string) {
 
   // Modals
   const [createOpen, setCreateOpen] = useState(false)
+  const [bulkImportOpen, setBulkImportOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ExpenseResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ExpenseResponse | null>(null)
 
@@ -162,6 +164,28 @@ export function useProjectExpenses(projectId: string) {
     [projectId, fetchExpenses, t]
   )
 
+  // ── Bulk create ──────────────────────────────────────────
+
+  const mutateBulkCreate = useCallback(
+    async (data: BulkCreateExpensesRequest, options?: MutationOptions) => {
+      try {
+        const result = await expenseService.bulkCreateExpenses(projectId, data)
+        toast.success(t("bulkImport.toast.created", {
+          count: result.created,
+          type: t("bulkImport.typeExpenses"),
+        }))
+        if (options?.refetch ?? true) {
+          await fetchExpenses()
+        }
+        return result
+      } catch (err) {
+        toastApiError(err, t("bulkImport.errors.import"))
+        throw err
+      }
+    },
+    [projectId, fetchExpenses, t]
+  )
+
   // ── Page/sort handlers ────────────────────────────────────
 
   const handlePageSizeChange = useCallback((size: number) => {
@@ -191,9 +215,11 @@ export function useProjectExpenses(projectId: string) {
     activeStatus,
     sort,
     createOpen, setCreateOpen,
+    bulkImportOpen, setBulkImportOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
     mutateCreate,
+    mutateBulkCreate,
     mutateUpdate,
     mutateDelete,
     mutateActiveState,

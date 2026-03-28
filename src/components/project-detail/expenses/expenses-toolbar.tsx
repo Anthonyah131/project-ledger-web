@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, Table2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +27,7 @@ interface ExpensesToolbarProps {
   onCategoryChange: (id: string) => void
   onCreateManual: () => void
   onCreateWithAi: () => void
+  onBulkImport: () => void
 }
 
 export function ExpensesToolbar({
@@ -43,6 +44,7 @@ export function ExpensesToolbar({
   onCategoryChange,
   onCreateManual,
   onCreateWithAi,
+  onBulkImport,
 }: ExpensesToolbarProps) {
   const { t } = useLanguage()
 
@@ -108,14 +110,23 @@ export function ExpensesToolbar({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           onClick={onCreateManual}
           size="sm"
-          className="bg-gradient-to-r from-rose-600 to-pink-600 text-white hover:from-rose-700 hover:to-pink-700 border-0 shadow-sm shadow-rose-500/30 transition-all"
+          className="bg-linear-to-r from-rose-600 to-pink-600 text-white hover:from-rose-700 hover:to-pink-700 border-0 shadow-sm shadow-rose-500/30 transition-all"
         >
           <Plus className="size-3.5" />
           {t("expenses.new")}
+        </Button>
+        <Button
+          onClick={onBulkImport}
+          size="sm"
+          variant="outline"
+          className="border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60"
+        >
+          <Table2 className="size-3.5" />
+          {t("bulkImport.title")}
         </Button>
         <Button
           onClick={onCreateWithAi}

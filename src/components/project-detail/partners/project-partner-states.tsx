@@ -36,7 +36,7 @@ export function ProjectPartnersEmptyState({ isOwner, onAssign }: EmptyStateProps
 export function ProjectPartnersSkeleton() {
   return (
     <div className="flex flex-col">
-      <div className="px-5 py-2.5 border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
+      <div className="px-5 py-2.5 border-b border-violet-500/20 bg-linear-to-r from-violet-500/10 via-purple-500/5 to-transparent">
         <Skeleton className="h-3 w-48" />
       </div>
       {Array.from({ length: 3 }).map((_, i) => (

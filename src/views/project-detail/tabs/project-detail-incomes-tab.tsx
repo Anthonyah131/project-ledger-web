@@ -8,6 +8,7 @@ import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { Pagination } from "@/components/shared/pagination"
 import { IncomesToolbar } from "@/components/project-detail/incomes/incomes-toolbar"
 import { IncomesList } from "@/components/project-detail/incomes/incomes-list"
+import { BulkImportView } from "@/components/project-detail/shared/bulk-import/bulk-import-view"
 import {
   IncomesEmptyState,
   IncomesSkeleton,
@@ -15,6 +16,7 @@ import {
 import type { CategoryResponse } from "@/types/category"
 import type { CurrencyResponse } from "@/types/currency"
 import type {
+  BulkCreateIncomesRequest,
   CreateIncomeRequest,
   IncomeResponse,
   UpdateIncomeRequest,
@@ -48,6 +50,8 @@ interface IncomesTabState {
   total: number
   setPage: (value: number) => void
   createOpen: boolean
+  bulkImportOpen: boolean
+  setBulkImportOpen: (v: boolean) => void
   editTarget: IncomeResponse | null
   deleteTarget: IncomeResponse | null
 }
@@ -71,6 +75,7 @@ interface ProjectDetailIncomesTabProps {
   onDeleteSelect: (income: IncomeResponse) => void
   onDeleteClose: () => void
   onCreate: (data: CreateIncomeRequest) => void
+  onBulkCreate: (data: BulkCreateIncomesRequest) => Promise<void>
   onSave: (id: string, data: UpdateIncomeRequest) => void
   onDelete: (income: IncomeResponse) => void
   onToggleActive: (income: IncomeResponse, isActive: boolean) => void
@@ -95,47 +100,69 @@ export function ProjectDetailIncomesTab({
   onDeleteSelect,
   onDeleteClose,
   onCreate,
+  onBulkCreate,
   onSave,
   onDelete,
   onToggleActive,
 }: ProjectDetailIncomesTabProps) {
   const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<IncomeResponse | null>(null)
+  const [view, setView] = useState<"list" | "import">("list")
 
   return (
     <TabsContent value="incomes" className="flex flex-col gap-4">
-      <IncomesToolbar
-        query={inc.query}
-        onQueryChange={inc.setQuery}
-        activeStatus={inc.activeStatus}
-        onActiveStatusChange={inc.handleActiveStatusChange}
-        sort={inc.sort}
-        onSortChange={inc.handleSortChange}
-        pageSize={inc.pageSize}
-        onPageSizeChange={inc.handlePageSizeChange}
-        categories={categories}
-        categoryId={inc.selectedCategoryId}
-        onCategoryChange={inc.setSelectedCategoryId}
-        onCreateManual={onCreateManual}
-        onCreateWithAi={onCreateWithAi}
-      />
-
-      {inc.loading ? (
-        <IncomesSkeleton />
-      ) : inc.incomes.length === 0 ? (
-        <IncomesEmptyState hasSearch={inc.hasSearch} onCreate={onCreateManual} />
+      {view === "import" ? (
+        <BulkImportView
+          mode="incomes"
+          projectCurrency={projectCurrency}
+          categories={categories}
+          paymentMethods={paymentMethods}
+          alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
+          onSubmitIncomes={onBulkCreate}
+          onClose={() => setView("list")}
+        />
       ) : (
         <>
-          <IncomesList
-            incomes={inc.incomes}
-            projectCurrency={projectCurrency}
-            paymentMethods={paymentMethods}
-            onEdit={onEditSelect}
-            onDelete={onDeleteSelect}
-            onToggleActive={onToggleActive}
-            onView={setViewTarget}
-          />
-          {!inc.hasSearch && (
+          <div className="min-w-0 rounded-xl border border-border bg-card overflow-hidden">
+            <IncomesToolbar
+              query={inc.query}
+              onQueryChange={inc.setQuery}
+              activeStatus={inc.activeStatus}
+              onActiveStatusChange={inc.handleActiveStatusChange}
+              sort={inc.sort}
+              onSortChange={inc.handleSortChange}
+              pageSize={inc.pageSize}
+              onPageSizeChange={inc.handlePageSizeChange}
+              categories={categories}
+              categoryId={inc.selectedCategoryId}
+              onCategoryChange={inc.setSelectedCategoryId}
+              onCreateManual={onCreateManual}
+              onCreateWithAi={onCreateWithAi}
+              onBulkImport={() => setView("import")}
+            />
+
+            {inc.loading ? (
+              <IncomesSkeleton />
+            ) : inc.incomes.length === 0 ? (
+              <IncomesEmptyState hasSearch={inc.hasSearch} onCreate={onCreateManual} />
+            ) : (
+              <div className="overflow-x-auto">
+                <IncomesList
+                  incomes={inc.incomes}
+                  projectCurrency={projectCurrency}
+                  paymentMethods={paymentMethods}
+                  onEdit={onEditSelect}
+                  onDelete={onDeleteSelect}
+                  onToggleActive={onToggleActive}
+                  onView={setViewTarget}
+                />
+              </div>
+            )}
+          </div>
+
+          {!inc.loading && inc.incomes.length > 0 && !inc.hasSearch && (
             <Pagination
               page={inc.page}
               pageSize={inc.pageSize}
@@ -196,6 +223,7 @@ export function ProjectDetailIncomesTab({
         onClose={() => setViewTarget(null)}
         onEdit={() => { setViewTarget(null); onEditSelect(viewTarget!) }}
       />
+
     </TabsContent>
   )
 }

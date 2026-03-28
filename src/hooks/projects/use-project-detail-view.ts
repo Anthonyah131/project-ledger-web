@@ -16,8 +16,8 @@ import { useProjectAlternativeCurrencies } from "./use-project-alternative-curre
 import { useProjectPartners } from "./use-project-partners"
 import { useProjectPartnerSettlements } from "./use-project-partner-settlements"
 import type { UpdateProjectRequest, UpdateProjectSettingsRequest } from "@/types/project"
-import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse } from "@/types/expense"
-import type { CreateIncomeRequest, IncomeResponse, UpdateIncomeRequest } from "@/types/income"
+import type { CreateExpenseRequest, UpdateExpenseRequest, ExpenseResponse, BulkCreateExpensesRequest } from "@/types/expense"
+import type { CreateIncomeRequest, IncomeResponse, UpdateIncomeRequest, BulkCreateIncomesRequest } from "@/types/income"
 import type {
   CategoryResponse,
   CreateCategoryRequest,
@@ -57,6 +57,7 @@ export function useProjectDetailView(projectId: string) {
   } = detail
   const {
     mutateCreate: mutateExpenseCreateRaw,
+    mutateBulkCreate: mutateExpenseBulkCreateRaw,
     mutateUpdate: mutateExpenseUpdateRaw,
     mutateDelete: mutateExpenseDeleteRaw,
     mutateActiveState: mutateExpenseActiveStateRaw,
@@ -88,6 +89,7 @@ export function useProjectDetailView(projectId: string) {
   partnersEnabledRef.current = partnersEnabled
   const {
     mutateCreate: mutateIncomeCreateRaw,
+    mutateBulkCreate: mutateIncomeBulkCreateRaw,
     mutateUpdate: mutateIncomeUpdateRaw,
     mutateDelete: mutateIncomeDeleteRaw,
     mutateActiveState: mutateIncomeActiveStateRaw,
@@ -144,6 +146,18 @@ export function useProjectDetailView(projectId: string) {
     [mutateExpenseCreateRaw, refetchExpenses, refetchObligations, refetchBudget, refetchPartnerBalance],
   )
 
+  const mutateExpenseBulkCreate = useCallback(
+    async (data: BulkCreateExpensesRequest) => {
+      await mutateExpenseBulkCreateRaw(data, { refetch: false })
+      await Promise.all([
+        refetchExpenses(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
+      ])
+    },
+    [mutateExpenseBulkCreateRaw, refetchExpenses, refetchBudget, refetchPartnerBalance],
+  )
+
   const mutateExpenseUpdate = useCallback(
     async (expenseId: string, data: UpdateExpenseRequest) => {
       await mutateExpenseUpdateRaw(expenseId, data, { refetch: false })
@@ -194,6 +208,18 @@ export function useProjectDetailView(projectId: string) {
       ])
     },
     [mutateIncomeCreateRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
+  )
+
+  const mutateIncomeBulkCreate = useCallback(
+    async (data: BulkCreateIncomesRequest) => {
+      await mutateIncomeBulkCreateRaw(data, { refetch: false })
+      await Promise.all([
+        refetchIncomes(),
+        hasBudgetRef.current ? refetchBudget() : Promise.resolve(),
+        partnersEnabledRef.current ? refetchPartnerBalance() : Promise.resolve(),
+      ])
+    },
+    [mutateIncomeBulkCreateRaw, refetchIncomes, refetchBudget, refetchPartnerBalance],
   )
 
   const mutateIncomeUpdate = useCallback(
@@ -341,10 +367,12 @@ export function useProjectDetailView(projectId: string) {
     sel,
     // cross-tab sync handlers
     mutateExpenseCreate,
+    mutateExpenseBulkCreate,
     mutateExpenseUpdate,
     mutateExpenseDelete,
     mutateExpenseActiveState,
     mutateIncomeCreate,
+    mutateIncomeBulkCreate,
     mutateIncomeUpdate,
     mutateIncomeDelete,
     mutateIncomeActiveState,

@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/context/auth-context'
 import { useLanguage } from '@/context/language-context'
 import { getUserProfile } from '@/services/plan-service'
-import { sendChatbotMessage } from '@/services/chatbot-service'
+import { sendChatbotMessage, type ChatHistoryEntry } from '@/services/chatbot-service'
 import { cn } from '@/lib/utils'
-import { Bot, Send, X, Loader2, MessageSquare } from 'lucide-react'
+import { Bot, Send, X, Loader2, MessageSquare, RotateCcw } from 'lucide-react'
 
 // ─── Premium detection ────────────────────────────────────────────────────────
 
@@ -27,6 +27,8 @@ interface Message {
   text: string
   provider?: string
   model?: string
+  toolCallsExecuted?: number
+  usedFinancialContext?: boolean
 }
 
 const MAX_CHARS = 4000
@@ -39,6 +41,7 @@ export default function Chatbot() {
   const [isPremium, setIsPremium] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const [history, setHistory] = useState<ChatHistoryEntry[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -92,15 +95,22 @@ export default function Chatbot() {
     setSending(true)
 
     try {
-      const data = await sendChatbotMessage(text)
+      const data = await sendChatbotMessage(text, history)
       const botMsg: Message = {
         id: crypto.randomUUID(),
         role: 'bot',
         text: data.response,
         provider: data.provider,
         model: data.model,
+        toolCallsExecuted: data.toolCallsExecuted,
+        usedFinancialContext: data.usedFinancialContext,
       }
       setMessages((prev) => [...prev, botMsg])
+      setHistory((prev) => [
+        ...prev,
+        { role: 'user', content: text },
+        { role: 'assistant', content: data.response },
+      ])
     } catch (err: unknown) {
       const isServiceUnavailable =
         err instanceof Error && err.message.includes('503')
@@ -115,6 +125,12 @@ export default function Chatbot() {
     } finally {
       setSending(false)
     }
+  }
+
+  function handleNewConversation() {
+    setMessages([])
+    setHistory([])
+    setInput('')
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -149,13 +165,25 @@ export default function Chatbot() {
                 <p className="text-xs text-primary-foreground/70">{t('chatbot.subtitle')}</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
-              aria-label={t('chatbot.closeChat')}
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              {messages.length > 0 && (
+                <button
+                  onClick={handleNewConversation}
+                  className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
+                  aria-label={t('chatbot.newConversation')}
+                  title={t('chatbot.newConversation')}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </button>
+              )}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
+                aria-label={t('chatbot.closeChat')}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -191,9 +219,16 @@ export default function Chatbot() {
                   {msg.text}
                 </div>
                 {msg.role === 'bot' && msg.provider && (
-                  <p className="px-1 text-[10px] text-muted-foreground">
-                    {msg.provider} · {msg.model}
-                  </p>
+                  <div className="flex flex-col gap-0.5 px-1">
+                    {(msg.toolCallsExecuted ?? 0) > 0 && (
+                      <p className="text-[10px] font-medium text-primary">
+                        ⚡ {t('chatbot.realTimeData')}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground">
+                      {msg.provider} · {msg.model}
+                    </p>
+                  </div>
                 )}
               </div>
             ))}

@@ -20,7 +20,6 @@ import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { usePartnerDetail } from "@/hooks/partners/use-partner-detail"
 import { PartnerPmSection } from "./partner-pm-section"
 import { PartnerProjectsSection } from "./partner-projects-section"
-import type { PartnerDetailResponse } from "@/types/partner"
 
 const EditPartnerModal = dynamic(() =>
   import("../edit-partner-modal").then((m) => m.EditPartnerModal),
@@ -57,13 +56,13 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
   } = usePartnerDetail(partnerId)
 
   const handleConfirmDelete = useCallback(
-    (_p: PartnerDetailResponse) => mutateDelete(),
+    () => mutateDelete(),
     [mutateDelete],
   )
 
   if (loading) {
     return (
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto">
         <div className="mb-6"><Skeleton className="h-8 w-28" /></div>
         <div className="bg-card rounded-xl border border-violet-500/20 p-6 mb-4 space-y-4">
           <div className="flex items-start gap-4">
@@ -81,7 +80,7 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
 
   if (error || !partner) {
     return (
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto">
         <div className="mb-6">
           <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2" onClick={() => router.push("/partners")}>
             <ArrowLeft className="size-4" />Partners
@@ -95,7 +94,7 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Back */}
       <div className="mb-6">
         <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2" onClick={() => router.push("/partners")}>

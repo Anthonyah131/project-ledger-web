@@ -10,6 +10,7 @@ import type {
   IncomeResponse,
   CreateIncomeRequest,
   UpdateIncomeRequest,
+  BulkCreateIncomesRequest,
 } from "@/types/income"
 import type { MutationOptions } from "@/types/common"
 
@@ -35,6 +36,7 @@ export function useProjectIncomes(projectId: string) {
   const [activeStatus, setActiveStatus] = useState<IncomeActiveStatusFilter>("active")
 
   const [createOpen, setCreateOpen] = useState(false)
+  const [bulkImportOpen, setBulkImportOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<IncomeResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<IncomeResponse | null>(null)
 
@@ -140,6 +142,26 @@ export function useProjectIncomes(projectId: string) {
     [projectId, fetchIncomes, t]
   )
 
+  const mutateBulkCreate = useCallback(
+    async (data: BulkCreateIncomesRequest, options?: MutationOptions) => {
+      try {
+        const result = await incomeService.bulkCreateIncomes(projectId, data)
+        toast.success(t("bulkImport.toast.created", {
+          count: result.created,
+          type: t("bulkImport.typeIncomes"),
+        }))
+        if (options?.refetch ?? true) {
+          await fetchIncomes()
+        }
+        return result
+      } catch (err) {
+        toastApiError(err, t("bulkImport.errors.import"))
+        throw err
+      }
+    },
+    [projectId, fetchIncomes, t]
+  )
+
   const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size)
     setPage(1)
@@ -171,11 +193,14 @@ export function useProjectIncomes(projectId: string) {
     sort,
     createOpen,
     setCreateOpen,
+    bulkImportOpen,
+    setBulkImportOpen,
     editTarget,
     setEditTarget,
     deleteTarget,
     setDeleteTarget,
     mutateCreate,
+    mutateBulkCreate,
     mutateUpdate,
     mutateDelete,
     mutateActiveState,

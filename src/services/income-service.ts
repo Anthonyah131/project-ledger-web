@@ -9,6 +9,8 @@ import type {
   IncomeResponse,
   IncomesPageResponse,
   UpdateIncomeRequest,
+  BulkCreateIncomesRequest,
+  BulkCreateIncomesResponse,
 } from "@/types/income";
 
 export interface GetIncomesParams {
@@ -71,6 +73,12 @@ export function updateIncomeActiveState(
 
 export function deleteIncome(projectId: string, incomeId: string) {
   return api.delete<void>(`/projects/${projectId}/incomes/${incomeId}`);
+}
+
+// ─── Bulk import ──────────────────────────────────────────────────────────────
+
+export function bulkCreateIncomes(projectId: string, data: BulkCreateIncomesRequest) {
+  return api.post<BulkCreateIncomesResponse>(`/projects/${projectId}/incomes/bulk`, data);
 }
 
 export interface ExtractIncomeFromImageRequest {

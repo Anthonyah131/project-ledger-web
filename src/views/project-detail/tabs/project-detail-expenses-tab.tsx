@@ -8,12 +8,14 @@ import { Pagination } from "@/components/shared/pagination"
 import { ExpensesToolbar } from "@/components/project-detail/expenses/expenses-toolbar"
 import { ExpensesList } from "@/components/project-detail/expenses/expenses-list"
 import { MovementDetailSheet } from "@/components/project-detail/shared/movement-detail-sheet"
+import { BulkImportView } from "@/components/project-detail/shared/bulk-import/bulk-import-view"
 import {
   ExpensesEmptyState,
   ExpensesSkeleton,
 } from "@/components/project-detail/expenses/expense-states"
 import type { CategoryResponse } from "@/types/category"
 import type {
+  BulkCreateExpensesRequest,
   CreateExpenseRequest,
   ExpenseResponse,
   UpdateExpenseRequest,
@@ -48,6 +50,8 @@ interface ExpensesTabState {
   total: number
   setPage: (value: number) => void
   createOpen: boolean
+  bulkImportOpen: boolean
+  setBulkImportOpen: (v: boolean) => void
   editTarget: ExpenseResponse | null
   deleteTarget: ExpenseResponse | null
 }
@@ -71,6 +75,7 @@ interface ProjectDetailExpensesTabProps {
   onDeleteSelect: (expense: ExpenseResponse) => void
   onDeleteClose: () => void
   onCreate: (data: CreateExpenseRequest) => void
+  onBulkCreate: (data: BulkCreateExpensesRequest) => Promise<void>
   onSave: (id: string, data: UpdateExpenseRequest) => void
   onDelete: (expense: ExpenseResponse) => void
   onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void
@@ -95,47 +100,70 @@ export function ProjectDetailExpensesTab({
   onDeleteSelect,
   onDeleteClose,
   onCreate,
+  onBulkCreate,
   onSave,
   onDelete,
   onToggleActive,
 }: ProjectDetailExpensesTabProps) {
   const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<ExpenseResponse | null>(null)
+  const [view, setView] = useState<"list" | "import">("list")
 
   return (
     <TabsContent value="expenses" className="flex flex-col gap-4">
-      <ExpensesToolbar
-        query={exp.query}
-        onQueryChange={exp.setQuery}
-        activeStatus={exp.activeStatus}
-        onActiveStatusChange={exp.handleActiveStatusChange}
-        sort={exp.sort}
-        onSortChange={exp.handleSortChange}
-        pageSize={exp.pageSize}
-        onPageSizeChange={exp.handlePageSizeChange}
-        categories={categories}
-        categoryId={exp.selectedCategoryId}
-        onCategoryChange={exp.setSelectedCategoryId}
-        onCreateManual={onCreateManual}
-        onCreateWithAi={onCreateWithAi}
-      />
-
-      {exp.loading ? (
-        <ExpensesSkeleton />
-      ) : exp.expenses.length === 0 ? (
-        <ExpensesEmptyState hasSearch={exp.hasSearch} onCreate={onCreateManual} />
+      {view === "import" ? (
+        <BulkImportView
+          mode="expenses"
+          projectCurrency={projectCurrency}
+          categories={categories}
+          paymentMethods={paymentMethods}
+          alternativeCurrencyCodes={alternativeCurrencyCodes}
+          partnersEnabled={partnersEnabled}
+          assignedPartners={assignedPartners}
+          obligations={obligations}
+          onSubmitExpenses={onBulkCreate}
+          onClose={() => setView("list")}
+        />
       ) : (
         <>
-          <ExpensesList
-            expenses={exp.expenses}
-            projectCurrency={projectCurrency}
-            paymentMethods={paymentMethods}
-            onEdit={onEditSelect}
-            onDelete={onDeleteSelect}
-            onToggleActive={onToggleActive}
-            onView={setViewTarget}
-          />
-          {!exp.hasSearch && (
+          <div className="min-w-0 rounded-xl border border-border bg-card overflow-hidden">
+            <ExpensesToolbar
+              query={exp.query}
+              onQueryChange={exp.setQuery}
+              activeStatus={exp.activeStatus}
+              onActiveStatusChange={exp.handleActiveStatusChange}
+              sort={exp.sort}
+              onSortChange={exp.handleSortChange}
+              pageSize={exp.pageSize}
+              onPageSizeChange={exp.handlePageSizeChange}
+              categories={categories}
+              categoryId={exp.selectedCategoryId}
+              onCategoryChange={exp.setSelectedCategoryId}
+              onCreateManual={onCreateManual}
+              onCreateWithAi={onCreateWithAi}
+              onBulkImport={() => setView("import")}
+            />
+
+            {exp.loading ? (
+              <ExpensesSkeleton />
+            ) : exp.expenses.length === 0 ? (
+              <ExpensesEmptyState hasSearch={exp.hasSearch} onCreate={onCreateManual} />
+            ) : (
+              <div className="overflow-x-auto">
+                <ExpensesList
+                  expenses={exp.expenses}
+                  projectCurrency={projectCurrency}
+                  paymentMethods={paymentMethods}
+                  onEdit={onEditSelect}
+                  onDelete={onDeleteSelect}
+                  onToggleActive={onToggleActive}
+                  onView={setViewTarget}
+                />
+              </div>
+            )}
+          </div>
+
+          {!exp.loading && exp.expenses.length > 0 && !exp.hasSearch && (
             <Pagination
               page={exp.page}
               pageSize={exp.pageSize}
@@ -196,6 +224,7 @@ export function ProjectDetailExpensesTab({
         onClose={() => setViewTarget(null)}
         onEdit={() => { setViewTarget(null); onEditSelect(viewTarget!) }}
       />
+
     </TabsContent>
   )
 }

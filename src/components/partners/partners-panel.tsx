@@ -210,7 +210,7 @@ export function PartnersPanel() {
   const handleCloseDelete = useCallback(() => setDeleteTarget(null), [setDeleteTarget])
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>

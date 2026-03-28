@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, Table2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +27,7 @@ interface IncomesToolbarProps {
   onCategoryChange: (id: string) => void
   onCreateManual: () => void
   onCreateWithAi: () => void
+  onBulkImport: () => void
 }
 
 export function IncomesToolbar({
@@ -43,6 +44,7 @@ export function IncomesToolbar({
   onCategoryChange,
   onCreateManual,
   onCreateWithAi,
+  onBulkImport,
 }: IncomesToolbarProps) {
   const { t } = useLanguage()
   return (
@@ -109,7 +111,7 @@ export function IncomesToolbar({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           onClick={onCreateManual}
           size="sm"
@@ -117,6 +119,15 @@ export function IncomesToolbar({
         >
           <Plus className="size-3.5" />
           {t("incomes.new")}
+        </Button>
+        <Button
+          onClick={onBulkImport}
+          size="sm"
+          variant="outline"
+          className="border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60"
+        >
+          <Table2 className="size-3.5" />
+          {t("bulkImport.title")}
         </Button>
         <Button
           onClick={onCreateWithAi}

@@ -52,7 +52,7 @@ export function WorkspaceDetailView({ workspaceId, onBack }: WorkspaceDetailView
   const projectIds = workspace?.projects.map((p) => p.id)
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       {/* Back navigation */}
       <div className="mb-6">
         <Button

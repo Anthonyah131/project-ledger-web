@@ -20,7 +20,7 @@ export default function DashboardLayout({
         <AppSidebar />
         <SidebarInset>
           <SiteHeader />
-          <main className="flex flex-1 flex-col gap-0 px-4 py-6 lg:px-6">{children}</main>
+          <main className="flex flex-1 flex-col gap-0 px-3 py-6 lg:px-4">{children}</main>
         </SidebarInset>
       </SidebarProvider>
       <Chatbot />

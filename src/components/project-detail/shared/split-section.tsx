@@ -1,9 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useFieldArray, useWatch } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
-import { GitBranch, RefreshCw } from "lucide-react"
+import { Calculator, GitBranch, RefreshCw } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -106,11 +106,10 @@ export function SplitSection({
   const isPercentage = splitType === "percentage"
 
   // Sync field array entries with assigned partners list.
-  // On partner list change: reset to current values, preserving existing splitValues.
+  // On partner list change: reset to current values, preserving existing splitValues and CEs.
   useEffect(() => {
     if (!partnersEnabled || n === 0) return
 
-    // Read live form state (not stale render closure) so RHF's values-reset is visible here.
     const current = (form.getValues("splits") as RawSplitItem[] | undefined) ?? []
     const parentCEs = (form.getValues("currencyExchanges") as ParentCE[] | undefined) ?? []
 
@@ -119,7 +118,6 @@ export function SplitSection({
       const splitValue = existing?.splitValue ?? ""
       const numValue = Number(splitValue)
 
-      // Initialize CEs: use existing if available, otherwise compute from parent
       const existingCEs = existing?.currencyExchanges ?? []
       const currencyExchanges =
         existingCEs.length > 0
@@ -144,45 +142,6 @@ export function SplitSection({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assignedPartners, partnersEnabled, replace, form])
-
-  // Tracks whether splits were already populated from the API on initial load.
-  // Resets to false on each mount (modal is conditionally rendered, so this is per-open).
-  const splitsInitializedRef = useRef(false)
-
-  // Reactive: when a split value changes, auto-recalculate its CEs.
-  // Using a key derived from split values only, so setting CE values doesn't loop.
-  const splitValuesKey = useMemo(
-    () => (rawSplits ?? []).map((s) => s.splitValue).join(","),
-    [rawSplits],
-  )
-  useEffect(() => {
-    if (!partnersEnabled) return
-    const parentCEs = parentCurrencyExchanges ?? []
-    if (!parentCEs.some((pce) => pce.currencyCode && Number(pce.convertedAmount) > 0)) return
-
-    // On the first run where splits already have valid CEs (loaded from the API via RHF reset),
-    // skip recalculation to preserve the original values. Subsequent user-driven changes
-    // (split value edits, amount changes, type changes) always recalculate.
-    if (!splitsInitializedRef.current) {
-      splitsInitializedRef.current = true
-      const hasSplitCEs = (rawSplits ?? []).some(
-        (s) => (s.currencyExchanges ?? []).some((ce) => ce.currencyCode && Number(ce.convertedAmount) > 0)
-      )
-      if (hasSplitCEs) return
-    }
-
-    ;(rawSplits ?? []).forEach((split, index) => {
-      const splitValue = Number(split.splitValue)
-      const updatedCEs = splitValue > 0
-        ? computeSplitCEs(splitValue, parentCEs, isPercentage, convertedAmount)
-        : buildEmptyCEs(parentCEs)
-
-      if (updatedCEs.length > 0) {
-        form.setValue(`splits.${index}.currencyExchanges`, updatedCEs, { shouldValidate: false })
-      }
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [splitValuesKey, splitType, convertedAmount])
 
   const total = useMemo(
     () =>
@@ -227,6 +186,22 @@ export function SplitSection({
     )
   }, [n, parentCurrencyExchanges, isPercentage, convertedAmount, replace, assignedPartners])
 
+  // Manual CE recalculation: recalculates all split CEs based on current split values.
+  const recalculateCEs = useCallback(() => {
+    const parentCEs = parentCurrencyExchanges ?? []
+    if (!parentCEs.some((pce) => pce.currencyCode && Number(pce.convertedAmount) > 0)) return
+    const currentSplits = (form.getValues("splits") as RawSplitItem[] | undefined) ?? []
+    currentSplits.forEach((split, index) => {
+      const splitValue = Number(split.splitValue)
+      const updatedCEs = splitValue > 0
+        ? computeSplitCEs(splitValue, parentCEs, isPercentage, convertedAmount)
+        : buildEmptyCEs(parentCEs)
+      if (updatedCEs.length > 0) {
+        form.setValue(`splits.${index}.currencyExchanges`, updatedCEs, { shouldValidate: false })
+      }
+    })
+  }, [parentCurrencyExchanges, isPercentage, convertedAmount, form])
+
   if (!partnersEnabled || n === 0) return null
 
   return (
@@ -263,24 +238,39 @@ export function SplitSection({
         </div>
       </div>
 
-      {/* Description + equal button */}
+      {/* Description + action buttons */}
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs text-muted-foreground">
           {isPercentage
             ? t("splitSection.percentageDescription", { currency: projectCurrency || t("common.currency") })
             : t("splitSection.fixedDescription", { currency: projectCurrency || t("common.currency") })}
         </p>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs gap-1.5 shrink-0"
-          onClick={fillEqual}
-          disabled={!isPercentage && (!convertedAmount || convertedAmount <= 0)}
-        >
-          <RefreshCw className="size-3" />
-          {t("splitSection.equalizeButton")}
-        </Button>
+        <div className="flex items-center gap-1 shrink-0">
+          {validParentCEs.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs gap-1.5"
+              onClick={recalculateCEs}
+              disabled={!convertedAmount || convertedAmount <= 0}
+            >
+              <Calculator className="size-3" />
+              {t("splitSection.recalculateCEsButton")}
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs gap-1.5"
+            onClick={fillEqual}
+            disabled={!isPercentage && (!convertedAmount || convertedAmount <= 0)}
+          >
+            <RefreshCw className="size-3" />
+            {t("splitSection.equalizeButton")}
+          </Button>
+        </div>
       </div>
 
       {/* Per-partner rows */}

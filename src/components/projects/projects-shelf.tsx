@@ -91,7 +91,7 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
   }, [onDisconnect])
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
