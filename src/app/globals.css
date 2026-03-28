@@ -398,6 +398,144 @@ html.cosmic body {
   background: rgba(148, 163, 184, 0.3);
 }
 
+/* ── Settings Nav (sidebar nav in settings page) ─────────────────── */
+.cosmic nav[aria-label] {
+  background: transparent;
+}
+
+.cosmic nav[aria-label] a {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.cosmic nav[aria-label] a:hover {
+  background: rgba(34, 211, 238, 0.08);
+  border-color: rgba(148, 163, 184, 0.1);
+}
+
+.cosmic nav[aria-label] a.bg-muted,
+.cosmic nav[aria-label] a[class*="bg-muted"] {
+  background: rgba(34, 211, 238, 0.12) !important;
+  border-color: rgba(34, 211, 238, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Tabs List (default variant with bg-muted) ───────────────────── */
+.cosmic [data-slot="tabs-list"],
+.cosmic [role="tablist"] {
+  background: rgba(15, 23, 42, 0.5) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.cosmic [data-slot="tabs-trigger"],
+.cosmic [role="tab"] {
+  background: transparent;
+}
+
+.cosmic [data-slot="tabs-trigger"][data-state="active"],
+.cosmic [role="tab"][aria-selected="true"] {
+  background: rgba(34, 211, 238, 0.15) !important;
+  border-color: rgba(34, 211, 238, 0.3) !important;
+  color: #22d3ee;
+}
+
+/* ── Sidebar inner container ─────────────────────────────────────── */
+.cosmic [data-slot="sidebar-inner"],
+.cosmic [data-sidebar="sidebar"] {
+  background: rgba(7, 10, 16, 0.9) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Sidebar menu items */
+.cosmic [data-sidebar="menu-button"]:hover,
+.cosmic [data-slot="sidebar-menu-button"]:hover {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+.cosmic [data-sidebar="menu-button"][data-active="true"],
+.cosmic [data-slot="sidebar-menu-button"][data-active="true"] {
+  background: rgba(34, 211, 238, 0.15) !important;
+  color: #22d3ee;
+}
+
+/* Sidebar accent backgrounds */
+.cosmic .bg-sidebar-accent,
+.cosmic [class*="bg-sidebar-accent"] {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+/* ── Sheet/Drawer content (mobile sidebar) ───────────────────────── */
+.cosmic [data-slot="sheet-content"],
+.cosmic [role="dialog"][class*="fixed"] {
+  background: rgba(7, 10, 16, 0.95) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: rgba(148, 163, 184, 0.1) !important;
+}
+
+/* ── Borders in cards and containers ─────────────────────────────── */
+.cosmic .border,
+.cosmic .border-border {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.cosmic .border-border\/50 {
+  border-color: rgba(148, 163, 184, 0.08);
+}
+
+/* ── Rounded containers with borders ─────────────────────────────── */
+.cosmic .rounded-lg.border,
+.cosmic .rounded-xl.border,
+.cosmic .rounded-md.border {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(148, 163, 184, 0.12) !important;
+}
+
+/* ── Separator lines ─────────────────────────────────────────────── */
+.cosmic [data-slot="separator"],
+.cosmic hr,
+.cosmic .bg-border {
+  background: rgba(148, 163, 184, 0.15) !important;
+}
+
+/* ── Badge styling ───────────────────────────────────────────────── */
+.cosmic .bg-violet-500\/10,
+.cosmic .bg-emerald-500\/10,
+.cosmic .bg-rose-500\/10,
+.cosmic .bg-amber-500\/10 {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Select trigger ──────────────────────────────────────────────── */
+.cosmic [data-slot="select-trigger"],
+.cosmic button[role="combobox"] {
+  background: rgba(15, 23, 42, 0.5) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.cosmic [data-slot="select-trigger"]:hover,
+.cosmic button[role="combobox"]:hover {
+  border-color: rgba(34, 211, 238, 0.3) !important;
+}
+
+/* ── Switch/Toggle ───────────────────────────────────────────────── */
+.cosmic [role="switch"] {
+  background: rgba(30, 41, 59, 0.6) !important;
+}
+
+.cosmic [role="switch"][data-state="checked"] {
+  background: rgba(34, 211, 238, 0.8) !important;
+}
+
 /* Cosmic theme preview for settings */
 .cosmic-preview {
   background: 
