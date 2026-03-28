@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation"
 import {
   IconDotsVertical,
   IconLogout,
-  IconUserCircle,
 } from "@tabler/icons-react"
 
 import {
@@ -15,7 +14,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -98,13 +96,6 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/settings/profile")}>
-                <IconUserCircle />
-                {t("common.profile")}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />

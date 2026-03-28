@@ -43,6 +43,10 @@ interface IncomesTabState {
   handlePageSizeChange: (value: number) => void
   selectedCategoryId: string
   setSelectedCategoryId: (value: string) => void
+  dateFrom: string
+  dateTo: string
+  handleDateFromChange: (value: string) => void
+  handleDateToChange: (value: string) => void
   loading: boolean
   incomes: IncomeResponse[]
   hasSearch: boolean
@@ -138,6 +142,10 @@ export function ProjectDetailIncomesTab({
               categories={categories}
               categoryId={inc.selectedCategoryId}
               onCategoryChange={inc.setSelectedCategoryId}
+              dateFrom={inc.dateFrom}
+              dateTo={inc.dateTo}
+              onDateFromChange={inc.handleDateFromChange}
+              onDateToChange={inc.handleDateToChange}
               onCreateManual={onCreateManual}
               onCreateWithAi={onCreateWithAi}
               onBulkImport={() => setView("import")}

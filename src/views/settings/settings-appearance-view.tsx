@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop, Moon, Sun, Sparkles } from "lucide-react";
+import { Moon, Sun, Sparkles } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/context/theme-context";
@@ -13,12 +13,12 @@ export function SettingsAppearanceView() {
 
   const OPTIONS = [
     {
-      value: "light" as const,
-      title: t("settings.appearance.lightTitle"),
-      description: t("settings.appearance.lightDescription"),
-      icon: Sun,
-      preview: "bg-white border-gray-200",
-      previewInner: "bg-gray-100",
+      value: "cosmic" as const,
+      title: t("settings.appearance.cosmicTitle"),
+      description: t("settings.appearance.cosmicDescription"),
+      icon: Sparkles,
+      preview: "cosmic-preview border-cyan-500/30",
+      previewInner: "bg-slate-800/60 backdrop-blur-sm border border-cyan-500/20",
     },
     {
       value: "dark" as const,
@@ -29,20 +29,12 @@ export function SettingsAppearanceView() {
       previewInner: "bg-zinc-800",
     },
     {
-      value: "cosmic" as const,
-      title: t("settings.appearance.cosmicTitle"),
-      description: t("settings.appearance.cosmicDescription"),
-      icon: Sparkles,
-      preview: "cosmic-preview border-cyan-500/30",
-      previewInner: "bg-slate-800/60 backdrop-blur-sm border border-cyan-500/20",
-    },
-    {
-      value: "system" as const,
-      title: t("settings.appearance.systemTitle"),
-      description: t("settings.appearance.systemDescription"),
-      icon: Laptop,
-      preview: "bg-gradient-to-br from-white to-zinc-900 border-zinc-400",
-      previewInner: "bg-gradient-to-br from-gray-100 to-zinc-800",
+      value: "light" as const,
+      title: t("settings.appearance.lightTitle"),
+      description: t("settings.appearance.lightDescription"),
+      icon: Sun,
+      preview: "bg-white border-gray-200",
+      previewInner: "bg-gray-100",
     },
   ];
 
@@ -57,7 +49,7 @@ export function SettingsAppearanceView() {
 
       <Separator className="my-4" />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {OPTIONS.map((option) => {
           const isSelected = option.value === theme;
 

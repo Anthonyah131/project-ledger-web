@@ -1,0 +1,425 @@
+version: "2"
+type: frontend
+tech_stack:
+  - language: TypeScript
+  - framework: Next.js 16 (App Router)
+  - ui_library: shadcn/ui + Tailwind CSS
+  - other: React 19, Zod, React Hook Form, Sonner (toasts), Recharts
+routes:
+  - path: /
+    file: src/app/page.tsx
+    auth_required: false
+    description: Landing page with Log in / Register links
+  - path: /login
+    file: src/app/(auth)/login/page.tsx
+    auth_required: false
+    description: Email + password login form. Shows "Verificando sesión activa..." spinner on initial load while auth context initializes.
+  - path: /register
+    file: src/app/(auth)/register/page.tsx
+    auth_required: false
+    description: Registration form
+  - path: /forgot-password
+    file: src/app/(auth)/forgot-password/page.tsx
+    auth_required: false
+    description: Password recovery form
+  - path: /auth/callback
+    file: src/app/auth/callback/page.tsx
+    auth_required: false
+    description: OAuth callback handler
+  - path: /dashboard
+    file: src/app/(dashboard)/dashboard/page.tsx
+    auth_required: true
+    description: Monthly financial overview with project selector, month navigation, charts, and summary cards
+  - path: /projects
+    file: src/app/(dashboard)/projects/page.tsx
+    auth_required: true
+    description: Project list with create/edit/delete actions
+  - path: /projects/[projectId]
+    file: src/app/(dashboard)/projects/[projectId]/page.tsx
+    auth_required: true
+    description: Project detail with tabs - Expenses, Incomes, Categories, Budget, Obligations, Partners, Settlements, Settings
+  - path: /projects/[projectId]/members
+    file: src/app/(dashboard)/projects/[projectId]/members/page.tsx
+    auth_required: true
+    description: Project member management (invite, change role, remove)
+  - path: /partners
+    file: src/app/(dashboard)/partners/page.tsx
+    auth_required: true
+    description: Global partner directory list
+  - path: /partners/[partnerId]
+    file: src/app/(dashboard)/partners/[partnerId]/page.tsx
+    auth_required: true
+    description: Partner detail with associated projects and balances
+  - path: /payment-methods
+    file: src/app/(dashboard)/payment-methods/page.tsx
+    auth_required: true
+    description: Payment methods list
+  - path: /payment-methods/[id]
+    file: src/app/(dashboard)/payment-methods/[id]/page.tsx
+    auth_required: true
+    description: Payment method detail with associated transactions
+  - path: /workspaces
+    file: src/app/(dashboard)/workspaces/page.tsx
+    auth_required: true
+    description: Workspaces list with create/delete
+  - path: /workspaces/[workspaceId]
+    file: src/app/(dashboard)/workspaces/[workspaceId]/page.tsx
+    auth_required: true
+    description: Workspace detail with project list
+  - path: /reports
+    file: src/app/(dashboard)/reports/page.tsx
+    auth_required: true
+    description: Financial reports with 6 tabs - Expenses, Incomes, Payment Methods, Partner Balances, Partner General, Workspace
+  - path: /settings
+    file: src/app/(dashboard)/settings/page.tsx
+    auth_required: true
+    description: Settings shell - redirects to /settings/profile
+  - path: /settings/profile
+    file: src/app/(dashboard)/settings/profile/page.tsx
+    auth_required: true
+    description: Profile settings - name, email, avatar
+  - path: /settings/security
+    file: src/app/(dashboard)/settings/security/page.tsx
+    auth_required: true
+    description: Security settings - change password
+  - path: /settings/appearance
+    file: src/app/(dashboard)/settings/appearance/page.tsx
+    auth_required: true
+    description: Appearance settings - theme selection (Light, Dark, Cosmic)
+  - path: /settings/billing
+    file: src/app/(dashboard)/settings/billing/page.tsx
+    auth_required: true
+    description: Billing - subscription plans
+  - path: /billing
+    file: src/app/(dashboard)/billing/page.tsx
+    auth_required: true
+    description: Billing page with current plan and upgrade options
+  - path: /billing/success
+    file: src/app/(dashboard)/billing/success/page.tsx
+    auth_required: true
+    description: Post-payment success confirmation
+  - path: /billing/cancel
+    file: src/app/(dashboard)/billing/cancel/page.tsx
+    auth_required: true
+    description: Post-payment cancellation page
+  - path: /admin/users
+    file: src/app/(dashboard)/admin/users/page.tsx
+    auth_required: true
+    description: Admin panel - user list with search, activate/deactivate, delete
+  - path: /help
+    file: src/app/(dashboard)/help/page.tsx
+    auth_required: true
+    description: Help page with n8n chat widget
+
+features:
+  - name: User Login
+    description: Login with email and password. Page shows auth-check spinner on load before showing the form.
+    files:
+      - src/app/(auth)/login/page.tsx
+      - src/context/AuthContext.tsx
+    entry_route: /login
+    user_interactions:
+      - Navigate to /login
+      - Wait for spinner "Verificando sesión activa..." to clear and email input to appear
+      - Fill email input field
+      - Fill password input field
+      - Click "Log in" button
+      - On success - redirected to /dashboard
+      - On failure - error toast appears
+    api_calls:
+      - method: POST
+        endpoint: /auth/login
+    auth_required: false
+
+  - name: Login Form Validation
+    description: Client-side validation on the login form
+    files:
+      - src/app/(auth)/login/page.tsx
+    entry_route: /login
+    user_interactions:
+      - Submit form with empty fields - see required validation errors
+      - Submit form with invalid email format - see email validation error
+      - Submit form with wrong password - see error toast
+    api_calls: []
+    auth_required: false
+
+  - name: Dashboard
+    description: Monthly financial overview. Works with empty data (new user). Shows project selector, month nav, summary cards, charts.
+    files:
+      - src/app/(dashboard)/dashboard/page.tsx
+      - src/views/dashboard/dashboard-view.tsx
+    entry_route: /dashboard
+    user_interactions:
+      - View monthly summary cards (Total Income, Total Expenses, Net Balance)
+      - Navigate to previous/next month
+      - Select a project from the project dropdown to scope data
+      - View empty state when no data exists
+      - View top categories and payment methods charts
+    api_calls:
+      - method: GET
+        endpoint: /dashboard/monthly-overview
+    auth_required: true
+
+  - name: Partners Directory
+    description: Global partner directory. Create, view, edit, delete partners.
+    files:
+      - src/app/(dashboard)/partners/page.tsx
+      - src/app/(dashboard)/partners/[partnerId]/page.tsx
+    entry_route: /partners
+    user_interactions:
+      - View partners list (or empty state)
+      - Click "New partner" button to open create modal
+      - Fill name (required), email, phone, notes
+      - Submit to create partner
+      - Click a partner to open its detail page
+      - Edit partner name/info from detail page
+      - Search for partners by name
+      - Delete partner from detail page
+      - View associated projects and balances on detail page
+    api_calls:
+      - method: GET
+        endpoint: /partners
+      - method: POST
+        endpoint: /partners
+      - method: PUT
+        endpoint: /partners/{id}
+      - method: DELETE
+        endpoint: /partners/{id}
+    auth_required: true
+
+  - name: Payment Methods
+    description: User-scoped payment methods list. Create, view, edit, delete.
+    files:
+      - src/app/(dashboard)/payment-methods/page.tsx
+      - src/app/(dashboard)/payment-methods/[id]/page.tsx
+    entry_route: /payment-methods
+    user_interactions:
+      - View payment methods list (or empty state)
+      - Click "New payment method" button to open create modal
+      - Fill name (required), type (bank/cash/card), currency, bank name, account number
+      - Submit to create payment method
+      - Click a payment method to open its detail page
+      - Edit payment method info
+      - Delete payment method
+      - View associated incomes/expenses on detail page
+    api_calls:
+      - method: GET
+        endpoint: /payment-methods
+      - method: POST
+        endpoint: /payment-methods
+      - method: PUT
+        endpoint: /payment-methods/{id}
+      - method: DELETE
+        endpoint: /payment-methods/{id}
+    auth_required: true
+
+  - name: Project Management
+    description: Create, list, view, edit, delete projects. Each project has a base currency.
+    files:
+      - src/app/(dashboard)/projects/page.tsx
+      - src/app/(dashboard)/projects/[projectId]/page.tsx
+    entry_route: /projects
+    user_interactions:
+      - View projects list (cards layout, or empty state)
+      - Click "New" button to open create modal
+      - Fill project name (required), description, currency
+      - Submit to create project
+      - Click a project card to open its detail
+      - Click the options menu on a project card to edit or delete
+      - Confirm deletion in dialog
+    api_calls:
+      - method: GET
+        endpoint: /projects
+      - method: POST
+        endpoint: /projects
+      - method: PUT
+        endpoint: /projects/{id}
+      - method: DELETE
+        endpoint: /projects/{id}
+    auth_required: true
+
+  - name: Project Settings Tab - Partner Assignment
+    description: Inside a project's Settings tab, assign global partners to the project with a split percentage.
+    files:
+      - src/views/project-detail/tabs/project-detail-settings-tab/index.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Open project detail page
+      - Click Settings tab
+      - Find the Partners section
+      - Select a partner from the dropdown
+      - Enter a split percentage (0-100)
+      - Click "Add partner" to save
+      - System blocks adding if total split exceeds 100%
+      - Remove a partner from the project
+    api_calls:
+      - method: POST
+        endpoint: /projects/{id}/partners
+      - method: DELETE
+        endpoint: /projects/{id}/partners/{partnerId}
+    auth_required: true
+
+  - name: Project Expenses Tab
+    description: Track money going out of a project. Full CRUD with filters.
+    files:
+      - src/views/project-detail/tabs/project-detail-expenses-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Expenses tab on project detail
+      - View expenses list or empty state
+      - Click "New expense" button
+      - Fill title, amount, date, category, payment method
+      - Submit to create expense
+      - Edit an existing expense
+      - Delete an expense
+      - Filter by date range, category, payment method
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/expenses
+      - method: POST
+        endpoint: /projects/{id}/expenses
+      - method: PUT
+        endpoint: /projects/{id}/expenses/{expenseId}
+      - method: DELETE
+        endpoint: /projects/{id}/expenses/{expenseId}
+    auth_required: true
+
+  - name: Project Incomes Tab
+    description: Track money coming into a project. Full CRUD with filters.
+    files:
+      - src/views/project-detail/tabs/project-detail-incomes-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Incomes tab on project detail
+      - View incomes list or empty state
+      - Click "New income" button
+      - Fill title (required), amount (required), date (required), category, payment method
+      - Submit to create income
+      - Edit an existing income
+      - Delete an income
+      - Filter by date range, category, payment method
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/incomes
+      - method: POST
+        endpoint: /projects/{id}/incomes
+      - method: PUT
+        endpoint: /projects/{id}/incomes/{incomeId}
+      - method: DELETE
+        endpoint: /projects/{id}/incomes/{incomeId}
+    auth_required: true
+
+  - name: Project Categories Tab
+    description: Project-scoped categories for classifying transactions.
+    files:
+      - src/views/project-detail/tabs/project-detail-categories-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Categories tab on project detail
+      - View categories list or empty state
+      - Click "New category" button
+      - Fill name (required), description, color
+      - Submit to create category
+      - Edit category name and color
+      - Delete a category
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/categories
+      - method: POST
+        endpoint: /projects/{id}/categories
+      - method: PUT
+        endpoint: /projects/{id}/categories/{categoryId}
+      - method: DELETE
+        endpoint: /projects/{id}/categories/{categoryId}
+    auth_required: true
+
+  - name: Project Budget Tab
+    description: Define and track budget per project and per category.
+    files:
+      - src/views/project-detail/tabs/project-detail-budget-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Budget tab on project detail
+      - View budget utilization or empty state
+      - Set a budget amount for the project
+      - View progress bars showing actual vs budget per category
+      - Delete an existing budget
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/budget
+      - method: POST
+        endpoint: /projects/{id}/budget
+      - method: DELETE
+        endpoint: /projects/{id}/budget/{budgetId}
+    auth_required: true
+
+  - name: Project Obligations Tab
+    description: Track financial commitments - invoices, contracts, recurring costs.
+    files:
+      - src/views/project-detail/tabs/project-detail-obligations-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Obligations tab on project detail
+      - View obligations list or empty state
+      - Click "New obligation" button
+      - Fill title (required), amount (required), due date, description
+      - Submit to create obligation
+      - Edit an obligation's due date or amount
+      - Delete an obligation
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/obligations
+      - method: POST
+        endpoint: /projects/{id}/obligations
+      - method: PUT
+        endpoint: /projects/{id}/obligations/{obligationId}
+      - method: DELETE
+        endpoint: /projects/{id}/obligations/{obligationId}
+    auth_required: true
+
+  - name: Project Partners Tab
+    description: View partners assigned to project and their balances/settlements.
+    files:
+      - src/views/project-detail/tabs/project-detail-partners-tab.tsx
+    entry_route: /projects/[projectId]
+    user_interactions:
+      - Click Partners tab on project detail
+      - View partner balances or empty state
+      - View settlement suggestions
+      - Create a settlement between partners
+      - Delete a settlement
+      - See net balance per partner
+    api_calls:
+      - method: GET
+        endpoint: /projects/{id}/partners
+      - method: GET
+        endpoint: /projects/{id}/partner-settlements
+      - method: POST
+        endpoint: /projects/{id}/partner-settlements
+      - method: DELETE
+        endpoint: /projects/{id}/partner-settlements/{id}
+    auth_required: true
+
+  - name: Project Delete
+    description: Delete a project from the projects list using the options menu.
+    files:
+      - src/app/(dashboard)/projects/page.tsx
+    entry_route: /projects
+    user_interactions:
+      - Go to /projects
+      - Click options menu (three dots) on a project card
+      - Click "Delete"
+      - Confirm deletion in the confirmation dialog
+      - Verify project disappears from the list
+    api_calls:
+      - method: DELETE
+        endpoint: /projects/{id}
+    auth_required: true
+
+known_limitations:
+  - issue: Login page shows "Verificando sesión activa..." spinner on initial load. Must wait for email input to be visible before interacting with the form.
+    location: src/app/(auth)/login/page.tsx
+    impact: Tests that fill login form must use wait_for_selector('input[type="email"]') before filling fields
+  - issue: Project Settings tab for partner assignment may be under Settings tab not Partners tab depending on UI state
+    location: src/views/project-detail/tabs/project-detail-settings-tab/index.tsx
+    impact: Navigate to Settings tab within project detail to assign partners

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
-export type ThemePreference = "light" | "dark" | "cosmic" | "system";
+export type ThemePreference = "light" | "dark" | "cosmic";
 export type ResolvedTheme = "light" | "dark" | "cosmic";
 
 interface ThemeContextValue {
@@ -17,60 +17,33 @@ const STORAGE_KEY = "theme-preference";
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 function isThemePreference(value: string | null): value is ThemePreference {
-  return value === "light" || value === "dark" || value === "cosmic" || value === "system";
-}
-
-function getSystemTheme(): ResolvedTheme {
-  if (typeof window === "undefined") return "dark";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return value === "light" || value === "dark" || value === "cosmic";
 }
 
 function applyThemeToDom(resolvedTheme: ResolvedTheme) {
-  if (typeof document === "undefined") return "dark" as const;
+  if (typeof document === "undefined") return;
 
   const html = document.documentElement;
-
   html.classList.remove("light", "dark", "cosmic");
   html.classList.add(resolvedTheme);
-  // cosmic uses dark color scheme for browser chrome
   html.style.colorScheme = resolvedTheme === "cosmic" ? "dark" : resolvedTheme;
-
-  return resolvedTheme;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemePreference>(() => {
-    if (typeof window === "undefined") return "system";
+    if (typeof window === "undefined") return "cosmic";
     const stored = localStorage.getItem(STORAGE_KEY);
-    return isThemePreference(stored) ? stored : "system";
+    return isThemePreference(stored) ? stored : "cosmic";
   });
-  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() => getSystemTheme());
 
-  const resolvedTheme: ResolvedTheme = theme === "system" ? systemTheme : theme;
+  const resolvedTheme: ResolvedTheme = theme;
 
   useEffect(() => {
     applyThemeToDom(resolvedTheme);
-
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY, theme);
     }
   }, [theme, resolvedTheme]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const syncSystemTheme = () => {
-      setSystemTheme(mediaQuery.matches ? "dark" : "light");
-    };
-
-    syncSystemTheme();
-    mediaQuery.addEventListener("change", syncSystemTheme);
-    return () => {
-      mediaQuery.removeEventListener("change", syncSystemTheme);
-    };
-  }, []);
 
   const setTheme = useCallback((nextTheme: ThemePreference) => {
     setThemeState(nextTheme);

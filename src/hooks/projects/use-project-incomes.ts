@@ -34,6 +34,8 @@ export function useProjectIncomes(projectId: string) {
   const [query, setQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")
   const [activeStatus, setActiveStatus] = useState<IncomeActiveStatusFilter>("active")
+  const [dateFrom, setDateFrom] = useState("")
+  const [dateTo, setDateTo] = useState("")
 
   const [createOpen, setCreateOpen] = useState(false)
   const [bulkImportOpen, setBulkImportOpen] = useState(false)
@@ -50,6 +52,8 @@ export function useProjectIncomes(projectId: string) {
         sortBy,
         sortDirection,
         isActive: toIsActiveParam(activeStatus),
+        from: dateFrom || undefined,
+        to: dateTo || undefined,
       })
       setIncomes(data.items)
       setTotalCount(data.totalCount)
@@ -58,7 +62,7 @@ export function useProjectIncomes(projectId: string) {
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort, activeStatus, t])
+  }, [projectId, page, pageSize, sort, activeStatus, dateFrom, dateTo, t])
 
   useEffect(() => {
     fetchIncomes()
@@ -78,7 +82,7 @@ export function useProjectIncomes(projectId: string) {
     return result
   }, [incomes, debouncedQuery, selectedCategoryId])
 
-  const hasSearch = !!debouncedQuery || !!selectedCategoryId
+  const hasSearch = !!debouncedQuery || !!selectedCategoryId || !!dateFrom || !!dateTo
 
   const mutateCreate = useCallback(
     async (data: CreateIncomeRequest, options?: MutationOptions) => {
@@ -177,6 +181,16 @@ export function useProjectIncomes(projectId: string) {
     setPage(1)
   }, [])
 
+  const handleDateFromChange = useCallback((value: string) => {
+    setDateFrom(value)
+    setPage(1)
+  }, [])
+
+  const handleDateToChange = useCallback((value: string) => {
+    setDateTo(value)
+    setPage(1)
+  }, [])
+
   return {
     incomes: filtered,
     total: hasSearch ? filtered.length : totalCount,
@@ -191,6 +205,8 @@ export function useProjectIncomes(projectId: string) {
     setSelectedCategoryId,
     activeStatus,
     sort,
+    dateFrom,
+    dateTo,
     createOpen,
     setCreateOpen,
     bulkImportOpen,
@@ -207,6 +223,8 @@ export function useProjectIncomes(projectId: string) {
     handlePageSizeChange,
     handleSortChange,
     handleActiveStatusChange,
+    handleDateFromChange,
+    handleDateToChange,
     refetch: fetchIncomes,
   }
 }

@@ -1,0 +1,4034 @@
+[
+  {
+    "id": "TC001",
+    "title": "Register a new user and land on the dashboard",
+    "description": "Verifies a user can complete registration and is redirected into the authenticated dashboard.",
+    "category": "User Registration",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill New User into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill unique+tc001@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Registration required-field validation",
+    "description": "Verifies the registration form shows inline validation when submitted with missing required fields.",
+    "category": "User Registration",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify required field validation errors are visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Login successfully redirects to dashboard after spinner clears",
+    "description": "Verifies login is possible after auth initialization completes and redirects to the dashboard.",
+    "category": "User Login",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email input to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Login with wrong credentials shows error toast",
+    "description": "Verifies invalid credentials result in a visible error toast rather than successful navigation.",
+    "category": "User Login",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email input to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid.user@example.com"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with wrong-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an error toast is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Login required-field validation when submitting empty form",
+    "description": "Verifies the login form displays required validation errors when submitted without input.",
+    "category": "User Login",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email input to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify required field validation errors are visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Password recovery request shows confirmation for valid email format",
+    "description": "Verifies submitting the password recovery form with a valid email format shows a confirmation state.",
+    "category": "Password Recovery",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /forgot-password"
+      },
+      {
+        "type": "action",
+        "description": "Fill registered.user@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the recovery form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a confirmation that reset instructions were sent is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Password recovery shows error for invalid email format",
+    "description": "Verifies the password recovery form rejects an invalid email format with a visible error state.",
+    "category": "Password Recovery",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /forgot-password"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid-email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the recovery form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Dashboard: View monthly overview and interact with controls",
+    "description": "Verifies the dashboard loads and key monthly overview interactions work: project scoping and month navigation.",
+    "category": "Dashboard (Monthly Overview)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Select a project from the project selector"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the next month"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify monthly summary cards are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category and payment method charts are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Dashboard: Empty state when no data exists for the selected period",
+    "description": "Verifies the dashboard shows an empty state and guidance when there are no transactions for the selected scope/period.",
+    "category": "Dashboard (Monthly Overview)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to a different month"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state is displayed for the period"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify guidance for creating the first transactions is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Dashboard: Redirect to login when unauthenticated",
+    "description": "Verifies unauthenticated users are redirected to the login page when attempting to access the dashboard.",
+    "category": "Dashboard (Monthly Overview)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the login page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the login form is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Dashboard: Switch project scope updates the displayed overview",
+    "description": "Verifies that changing the project selector updates the scoped dashboard view.",
+    "category": "Dashboard (Monthly Overview)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Select a project from the project selector"
+      },
+      {
+        "type": "action",
+        "description": "Select a different project from the project selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify monthly summary cards are displayed for the newly selected project"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard charts are displayed for the newly selected project"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Project Management: Create a new project",
+    "description": "Verifies a user can create a project and see it appear in the projects list.",
+    "category": "Project Management (Create / Edit / Delete)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Open the create project modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project name field with Project Alpha TC"
+      },
+      {
+        "type": "action",
+        "description": "Select a currency for the project"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create project form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the projects list contains Project Alpha TC"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Project Management: Edit an existing project",
+    "description": "Verifies a user can edit a project and see the updated details in the list.",
+    "category": "Project Management (Create / Edit / Delete)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Open the create project modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project name field with Project To Edit TC"
+      },
+      {
+        "type": "action",
+        "description": "Select a currency for the project"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create project form"
+      },
+      {
+        "type": "action",
+        "description": "Open the edit project flow for Project To Edit TC"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project name field with Project Edited TC"
+      },
+      {
+        "type": "action",
+        "description": "Submit the edit project form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the projects list contains Project Edited TC"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Project Management: Inline validation when creating project with missing name",
+    "description": "Verifies the create project form shows validation when required fields are missing.",
+    "category": "Project Management (Create / Edit / Delete)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Open the create project modal"
+      },
+      {
+        "type": "action",
+        "description": "Leave the project name field empty"
+      },
+      {
+        "type": "action",
+        "description": "Select a currency for the project"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create project form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline validation error is displayed for the project name field"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Project Management: Delete a project and verify it is removed from list",
+    "description": "Verifies a user can delete a project via confirmation dialog and it disappears from the list.",
+    "category": "Project Management (Create / Edit / Delete)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Open the create project modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project name field with Project To Delete TC"
+      },
+      {
+        "type": "action",
+        "description": "Select a currency for the project"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create project form"
+      },
+      {
+        "type": "action",
+        "description": "Trigger deletion for Project To Delete TC"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion in the dialog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the projects list does not contain Project To Delete TC"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Create a new project expense from a project detail page",
+    "description": "Verifies an expense can be created end-to-end and appears in the expenses list.",
+    "category": "Project Expenses",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new expense form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Expense seed 001 into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 123.45 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Select a category"
+      },
+      {
+        "type": "action",
+        "description": "Select a payment method"
+      },
+      {
+        "type": "action",
+        "description": "Submit the expense form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an expense with title \"Expense seed 001\" is displayed in the expenses list"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Edit an existing expense amount",
+    "description": "Verifies an existing expense can be edited and the updated amount is reflected in the list.",
+    "category": "Project Expenses",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new expense form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Expense seed 002 into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 10.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Select a category"
+      },
+      {
+        "type": "action",
+        "description": "Select a payment method"
+      },
+      {
+        "type": "action",
+        "description": "Submit the expense form"
+      },
+      {
+        "type": "action",
+        "description": "Open the expense row actions for \"Expense seed 002\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the edit action"
+      },
+      {
+        "type": "action",
+        "description": "Fill 25.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the edit form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the expense \"Expense seed 002\" shows amount 25.00 in the expenses list"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Validate missing amount on new expense submission",
+    "description": "Verifies the expense form shows an inline validation error when required amount is missing.",
+    "category": "Project Expenses",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new expense form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Expense missing amount into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Select a category"
+      },
+      {
+        "type": "action",
+        "description": "Select a payment method"
+      },
+      {
+        "type": "action",
+        "description": "Submit the expense form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline validation error is visible for the amount field"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Delete an expense from the expenses list",
+    "description": "Verifies an expense can be deleted and is removed from the expenses list after confirmation.",
+    "category": "Project Expenses",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new expense form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Expense to delete into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 9.99 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Select a category"
+      },
+      {
+        "type": "action",
+        "description": "Select a payment method"
+      },
+      {
+        "type": "action",
+        "description": "Submit the expense form"
+      },
+      {
+        "type": "action",
+        "description": "Open the expense row actions for \"Expense to delete\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the delete action"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the expense with title \"Expense to delete\" is not displayed in the expenses list"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Expenses tab shows list or empty state",
+    "description": "Verifies the Expenses tab loads and shows either existing expenses or an empty state.",
+    "category": "Project Expenses",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify expenses list content or an empty state message is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Cancel creating a new expense closes the form without adding an item",
+    "description": "Verifies the new expense dialog can be dismissed and no new expense is created.",
+    "category": "Project Expenses",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new expense form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Expense draft 001 into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 55.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Dismiss the expense form without saving"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the expense creation form is no longer visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an expense with title \"Expense draft 001\" is not displayed in the expenses list"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Create a new project income from a project detail page",
+    "description": "Verifies an income can be created end-to-end and appears in the incomes list.",
+    "category": "Project Incomes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Incomes tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new income form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Income seed 001 into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 500.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the income form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an income with title \"Income seed 001\" is displayed in the incomes list"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Edit an existing income",
+    "description": "Verifies an existing income can be edited and changes are reflected in the list.",
+    "category": "Project Incomes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Incomes tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new income form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Income seed 002 into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 100.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the income form"
+      },
+      {
+        "type": "action",
+        "description": "Open the income row actions for \"Income seed 002\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the edit action"
+      },
+      {
+        "type": "action",
+        "description": "Fill Income seed 002 updated into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the edit form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an income with title \"Income seed 002 updated\" is displayed in the incomes list"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Validate missing required fields on new income submission",
+    "description": "Verifies the income form shows inline validation errors when required fields are missing.",
+    "category": "Project Incomes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Incomes tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new income form"
+      },
+      {
+        "type": "action",
+        "description": "Submit the income form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify inline validation errors are visible for required fields"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Delete an income from the incomes list",
+    "description": "Verifies an income can be deleted and is removed from the incomes list after confirmation.",
+    "category": "Project Incomes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Incomes tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new income form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Income to delete into the title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 77.77 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the income form"
+      },
+      {
+        "type": "action",
+        "description": "Open the income row actions for \"Income to delete\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the delete action"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the income with title \"Income to delete\" is not displayed in the incomes list"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Incomes tab shows list or empty state",
+    "description": "Verifies the Incomes tab loads and shows either existing incomes or an empty state.",
+    "category": "Project Incomes",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Incomes tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify incomes list content or an empty state message is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Create a new category with optional color",
+    "description": "Verifies a category can be created and appears in the categories list.",
+    "category": "Project Categories",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Categories tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new category form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Category seed 001 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a color"
+      },
+      {
+        "type": "action",
+        "description": "Submit the category form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a category named \"Category seed 001\" is displayed in the categories list"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Edit a category name or color",
+    "description": "Verifies an existing category can be edited and the updated value is shown in the list.",
+    "category": "Project Categories",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Categories tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new category form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Category seed 002 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the category form"
+      },
+      {
+        "type": "action",
+        "description": "Open the category row actions for \"Category seed 002\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the edit action"
+      },
+      {
+        "type": "action",
+        "description": "Fill Category seed 002 updated into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the edit form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a category named \"Category seed 002 updated\" is displayed in the categories list"
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "Validate missing name on new category submission",
+    "description": "Verifies the category form shows an inline validation error when name is missing.",
+    "category": "Project Categories",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Categories tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new category form"
+      },
+      {
+        "type": "action",
+        "description": "Submit the category form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline validation error is visible for the category name field"
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "Delete a category from the categories list",
+    "description": "Verifies a category can be deleted and is removed from the categories list after confirmation.",
+    "category": "Project Categories",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to projects"
+      },
+      {
+        "type": "action",
+        "description": "Click a project in the project list to open its details page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Categories tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new category form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Category to delete into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the category form"
+      },
+      {
+        "type": "action",
+        "description": "Open the category row actions for \"Category to delete\""
+      },
+      {
+        "type": "action",
+        "description": "Choose the delete action"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the category named \"Category to delete\" is not displayed in the categories list"
+      }
+    ]
+  },
+  {
+    "id": "TC031",
+    "title": "Project Budget tab loads and shows budget utilization UI",
+    "description": "Verifies a user can reach a project Budget tab and see budget utilization/progress indicators.",
+    "category": "Project Budget",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Budget tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify budget utilization information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category-level budget progress indicators are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC032",
+    "title": "Set and save a project-level budget amount",
+    "description": "Verifies a user can set a project-level budget amount and see utilization/progress information after saving.",
+    "category": "Project Budget",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Budget tab"
+      },
+      {
+        "type": "action",
+        "description": "Fill 10000 into the project-level budget amount field"
+      },
+      {
+        "type": "action",
+        "description": "Save the budget"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify budget utilization information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category-level budget progress indicators are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC033",
+    "title": "Budget tab shows category actual vs budget progress and can identify over-budget categories",
+    "description": "Verifies category progress bars are visible and over-budget state can be observed when present.",
+    "category": "Project Budget",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Budget tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify progress bars showing actual versus budget per category are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify over-budget categories are visually indicated when applicable"
+      }
+    ]
+  },
+  {
+    "id": "TC034",
+    "title": "Negative budget amount shows inline validation error",
+    "description": "Verifies invalid negative budget input is blocked with an inline validation error.",
+    "category": "Project Budget",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Budget tab"
+      },
+      {
+        "type": "action",
+        "description": "Fill -1 into the project-level budget amount field"
+      },
+      {
+        "type": "action",
+        "description": "Save the budget"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline validation error is visible for the budget amount"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the budget is not saved"
+      }
+    ]
+  },
+  {
+    "id": "TC035",
+    "title": "Project Obligations tab loads and shows obligations list area",
+    "description": "Verifies a user can reach the Obligations tab and see the obligations list or empty state.",
+    "category": "Project Obligations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Obligations tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an obligations list or empty state is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC036",
+    "title": "Create a new obligation and see it in the list",
+    "description": "Verifies creating an obligation end-to-end from the Obligations tab adds it to the list.",
+    "category": "Project Obligations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Obligations tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Fill PL Obligation A into the obligation title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 250 into the obligation amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid due date into the due date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the obligation form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the obligation named PL Obligation A appears in the obligations list"
+      }
+    ]
+  },
+  {
+    "id": "TC037",
+    "title": "Edit an obligation amount or due date and see the update reflected",
+    "description": "Verifies editing an existing obligation updates the displayed values after saving.",
+    "category": "Project Obligations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Obligations tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Fill PL Obligation Edit Target into the obligation title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 100 into the obligation amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid due date into the due date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Open the edit form for the obligation named PL Obligation Edit Target"
+      },
+      {
+        "type": "action",
+        "description": "Fill 150 into the obligation amount field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the edit form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the obligation named PL Obligation Edit Target shows amount 150 in the obligations list"
+      }
+    ]
+  },
+  {
+    "id": "TC038",
+    "title": "Submitting obligation with missing required fields shows inline validation errors",
+    "description": "Verifies required-field validation prevents creating an obligation when fields are missing.",
+    "category": "Project Obligations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Obligations tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Submit the obligation form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify inline validation errors are visible for required fields"
+      }
+    ]
+  },
+  {
+    "id": "TC039",
+    "title": "Delete an obligation and confirm it is removed from the list",
+    "description": "Verifies an obligation can be deleted via confirmation and disappears from the obligations list.",
+    "category": "Project Obligations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Obligations tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the new obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Fill PL Obligation Delete Target into the obligation title field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 75 into the obligation amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid due date into the due date field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the obligation form"
+      },
+      {
+        "type": "action",
+        "description": "Initiate deletion for the obligation named PL Obligation Delete Target"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the obligation named PL Obligation Delete Target is not displayed in the obligations list"
+      }
+    ]
+  },
+  {
+    "id": "TC040",
+    "title": "Project Partners tab loads and shows partner balances or empty state",
+    "description": "Verifies a user can reach the Partners tab and see balances section or an empty state.",
+    "category": "Project Partners & Settlements",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Partners tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify partner balances are displayed or an empty state message is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC041",
+    "title": "Create a settlement and see it listed with balances updated",
+    "description": "Verifies creating a settlement from the Partners tab adds it to the settlements list and updates balances.",
+    "category": "Project Partners & Settlements",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Partners tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the settlement creation flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid from-partner in the from partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Select a different valid to-partner in the to partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Fill 50 into the settlement amount field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the settlement"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new settlement is listed in the settlements list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify partner balances reflect the settlement"
+      }
+    ]
+  },
+  {
+    "id": "TC042",
+    "title": "Delete a settlement and confirm it is removed with balances updated",
+    "description": "Verifies removing an existing settlement deletes it from the list and updates balances accordingly.",
+    "category": "Project Partners & Settlements",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Partners tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the settlement creation flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid from-partner in the from partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Select a different valid to-partner in the to partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Fill 30 into the settlement amount field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the settlement"
+      },
+      {
+        "type": "action",
+        "description": "Initiate deletion for the most recently created settlement"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted settlement is not displayed in the settlements list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify partner balances reflect the settlement removal"
+      }
+    ]
+  },
+  {
+    "id": "TC043",
+    "title": "Settlement creation with zero or negative amount shows inline validation error",
+    "description": "Verifies invalid settlement amounts are rejected with inline validation feedback.",
+    "category": "Project Partners & Settlements",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the projects navigation item"
+      },
+      {
+        "type": "action",
+        "description": "Click the first project in the list"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the Partners tab"
+      },
+      {
+        "type": "action",
+        "description": "Open the settlement creation flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid from-partner in the from partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Select a different valid to-partner in the to partner selector"
+      },
+      {
+        "type": "action",
+        "description": "Fill 0 into the settlement amount field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the settlement"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline validation error is visible for the settlement amount"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the settlement is not added to the settlements list"
+      }
+    ]
+  },
+  {
+    "id": "TC044",
+    "title": "Partners Directory loads and shows list or empty state",
+    "description": "Verifies the partners directory page loads its primary content after login.",
+    "category": "Partners Directory",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partners directory shows a partners list or an empty state"
+      }
+    ]
+  },
+  {
+    "id": "TC045",
+    "title": "Create a new partner from the directory",
+    "description": "Creates a partner via the new partner modal and verifies it appears in the partners list.",
+    "category": "Partners Directory",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill Partner Name 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill partner01@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 5550101 into the phone field"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test notes for Partner Name 01 into the notes field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Partner Name 01 appears in the partners list"
+      }
+    ]
+  },
+  {
+    "id": "TC046",
+    "title": "Search partners by name filters results",
+    "description": "Creates a partner and verifies searching by name filters to that partner.",
+    "category": "Partners Directory",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill SearchPartner 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "action",
+        "description": "Fill SearchPartner 01 into the partner search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partners list shows SearchPartner 01 as a matching result"
+      }
+    ]
+  },
+  {
+    "id": "TC047",
+    "title": "View partner detail page from directory list",
+    "description": "Creates a partner and verifies the detail page shows associated projects/balances sections.",
+    "category": "Partners Directory",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill DetailPartner 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "action",
+        "description": "Click the partner named DetailPartner 01 to open its detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partner detail shows associated projects and balance information"
+      }
+    ]
+  },
+  {
+    "id": "TC048",
+    "title": "Edit partner information from detail page",
+    "description": "Creates a partner, edits its name from the detail page, and verifies updated details are shown.",
+    "category": "Partners Directory",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill EditPartner 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "action",
+        "description": "Click the partner named EditPartner 01 to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Enter edit mode for partner information"
+      },
+      {
+        "type": "action",
+        "description": "Fill EditPartner 01 Updated into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Save partner changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partner detail shows the name EditPartner 01 Updated"
+      }
+    ]
+  },
+  {
+    "id": "TC049",
+    "title": "Delete partner from detail page",
+    "description": "Creates a partner, deletes it from its detail page, and verifies it is removed from the directory list.",
+    "category": "Partners Directory",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill DeletePartner 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "action",
+        "description": "Click the partner named DeletePartner 01 to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Initiate partner deletion"
+      },
+      {
+        "type": "action",
+        "description": "Confirm partner deletion"
+      },
+      {
+        "type": "action",
+        "description": "Fill DeletePartner 01 into the partner search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partners list shows no results for DeletePartner 01"
+      }
+    ]
+  },
+  {
+    "id": "TC050",
+    "title": "Creating a partner requires a name",
+    "description": "Verifies inline validation blocks partner creation when required name is missing.",
+    "category": "Partners Directory",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /partners"
+      },
+      {
+        "type": "action",
+        "description": "Open the create partner modal"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create partner form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a required-field validation error is shown for the name field"
+      }
+    ]
+  },
+  {
+    "id": "TC051",
+    "title": "Payment Methods page loads and shows list or empty state",
+    "description": "Verifies the payment methods page loads its primary content after login.",
+    "category": "Payment Methods",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /payment-methods"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the payment methods page shows a methods list or an empty state"
+      }
+    ]
+  },
+  {
+    "id": "TC052",
+    "title": "Create a new payment method",
+    "description": "Creates a payment method and verifies it appears in the list.",
+    "category": "Payment Methods",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /payment-methods"
+      },
+      {
+        "type": "action",
+        "description": "Open the create payment method flow"
+      },
+      {
+        "type": "action",
+        "description": "Fill PM Name 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid payment method type"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid currency"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test Bank into the bank name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 000111222 into the account number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create payment method form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify PM Name 01 appears in the payment methods list"
+      }
+    ]
+  },
+  {
+    "id": "TC053",
+    "title": "Edit payment method info from detail page",
+    "description": "Creates a payment method, edits it from its detail page, and verifies updated details are shown.",
+    "category": "Payment Methods",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /payment-methods"
+      },
+      {
+        "type": "action",
+        "description": "Open the create payment method flow"
+      },
+      {
+        "type": "action",
+        "description": "Fill Edit PM 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid payment method type"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid currency"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create payment method form"
+      },
+      {
+        "type": "action",
+        "description": "Click the payment method named Edit PM 01 to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Enter edit mode for payment method information"
+      },
+      {
+        "type": "action",
+        "description": "Fill Edit PM 01 Updated into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Save payment method changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the payment method detail shows the name Edit PM 01 Updated"
+      }
+    ]
+  },
+  {
+    "id": "TC054",
+    "title": "Delete a payment method from its detail page",
+    "description": "Creates a payment method, deletes it, and verifies it is removed from the list.",
+    "category": "Payment Methods",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /payment-methods"
+      },
+      {
+        "type": "action",
+        "description": "Open the create payment method flow"
+      },
+      {
+        "type": "action",
+        "description": "Fill Delete PM 01 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid payment method type"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid currency"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create payment method form"
+      },
+      {
+        "type": "action",
+        "description": "Click the payment method named Delete PM 01 to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Initiate payment method deletion"
+      },
+      {
+        "type": "action",
+        "description": "Confirm payment method deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Delete PM 01 is not present in the payment methods list"
+      }
+    ]
+  },
+  {
+    "id": "TC055",
+    "title": "Creating a payment method without a required name shows validation error",
+    "description": "Verifies inline validation blocks creation when name is missing.",
+    "category": "Payment Methods",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /payment-methods"
+      },
+      {
+        "type": "action",
+        "description": "Open the create payment method flow"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create payment method form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a required-field validation error is shown for the name field"
+      }
+    ]
+  },
+  {
+    "id": "TC056",
+    "title": "Create a workspace from the workspace list",
+    "description": "Verifies a user can create a new workspace and see it appear in the workspace list.",
+    "category": "Workspaces",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /workspaces"
+      },
+      {
+        "type": "action",
+        "description": "Open the create workspace modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Workspace Alpha\" into the workspace name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Workspace for UI automation\" into the workspace description field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create workspace form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new workspace named \"Workspace Alpha\" is displayed in the workspace list"
+      }
+    ]
+  },
+  {
+    "id": "TC057",
+    "title": "Open workspace detail and view projects list",
+    "description": "Verifies a user can open a workspace detail view and see the projects list area.",
+    "category": "Workspaces",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /workspaces"
+      },
+      {
+        "type": "action",
+        "description": "Open the create workspace modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Workspace Detail Check\" into the workspace name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create workspace form"
+      },
+      {
+        "type": "action",
+        "description": "Open the workspace detail page for \"Workspace Detail Check\" from the workspace list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the workspace detail view is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a list of projects for the workspace is displayed or an empty state is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC058",
+    "title": "Workspace create validation when name is missing",
+    "description": "Verifies inline validation is shown when attempting to create a workspace without a name.",
+    "category": "Workspaces",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /workspaces"
+      },
+      {
+        "type": "action",
+        "description": "Open the create workspace modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"\" into the workspace name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create workspace form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a name validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC059",
+    "title": "Create a workspace with only required fields",
+    "description": "Verifies a user can create a workspace when only the name is provided.",
+    "category": "Workspaces",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /workspaces"
+      },
+      {
+        "type": "action",
+        "description": "Open the create workspace modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Workspace Minimal\" into the workspace name field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the create workspace form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new workspace named \"Workspace Minimal\" is displayed in the workspace list"
+      }
+    ]
+  },
+  {
+    "id": "TC060",
+    "title": "Cancel workspace creation from the modal",
+    "description": "Verifies cancelling the create workspace modal does not add a new workspace to the list.",
+    "category": "Workspaces",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /workspaces"
+      },
+      {
+        "type": "action",
+        "description": "Open the create workspace modal"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Workspace Should Not Save\" into the workspace name field"
+      },
+      {
+        "type": "action",
+        "description": "Close the create workspace modal without submitting"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify \"Workspace Should Not Save\" is not displayed in the workspace list"
+      }
+    ]
+  },
+  {
+    "id": "TC061",
+    "title": "Reports Expenses tab with filters shows results area",
+    "description": "Verifies the Expenses report tab supports applying date range and project filters and renders results content.",
+    "category": "Reports",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /reports"
+      },
+      {
+        "type": "action",
+        "description": "Select the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid date range in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Select a project in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Apply the report filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify aggregated expense totals are displayed or an empty state is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an expenses trend visualization is displayed or an empty state is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC062",
+    "title": "Reports Partner Balances tab with project filter",
+    "description": "Verifies the Partner Balances report can be filtered by project and shows partner balance rows or an empty state.",
+    "category": "Reports",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /reports"
+      },
+      {
+        "type": "action",
+        "description": "Select the Partner Balances tab"
+      },
+      {
+        "type": "action",
+        "description": "Select a project in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Apply the report filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify net balance per partner is displayed or an empty state is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC063",
+    "title": "Reports empty state when filters yield no data",
+    "description": "Verifies the reports UI shows an empty state with guidance when filters produce no results.",
+    "category": "Reports",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid date range in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Select a combination of filters intended to narrow results heavily"
+      },
+      {
+        "type": "action",
+        "description": "Apply the report filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state is displayed for the report results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify suggestions for adjusting filters are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC064",
+    "title": "Reports tab switching updates the report content area",
+    "description": "Verifies switching between report tabs changes the visible report content section.",
+    "category": "Reports",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /reports"
+      },
+      {
+        "type": "action",
+        "description": "Select the Expenses tab"
+      },
+      {
+        "type": "action",
+        "description": "Select the Incomes tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the incomes report content is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Select the Payment Methods tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the payment methods report content is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC065",
+    "title": "Update profile name and save",
+    "description": "Verifies a user can update their profile name and see the change persisted in the UI after saving.",
+    "category": "Settings — Profile, Security, Appearance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/profile"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"QA User Renamed\" into the full name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the full name field shows \"QA User Renamed\""
+      }
+    ]
+  },
+  {
+    "id": "TC066",
+    "title": "Change password with current and new password",
+    "description": "Verifies a user can submit the change password form and sees a success confirmation.",
+    "category": "Settings — Profile, Security, Appearance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/security"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the current password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid new password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same new password into the confirm new password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the change password form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC067",
+    "title": "Incorrect current password shows error on change password",
+    "description": "Verifies an error is shown when submitting a password change with an incorrect current password.",
+    "category": "Settings — Profile, Security, Appearance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/security"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the current password field with \"wrong-password\""
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid new password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same new password into the confirm new password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the change password form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an inline or toast error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC068",
+    "title": "Select and save theme applies immediately",
+    "description": "Verifies selecting a theme and saving applies the theme immediately in the UI.",
+    "category": "Settings — Profile, Security, Appearance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/appearance"
+      },
+      {
+        "type": "action",
+        "description": "Select the Cosmic theme option"
+      },
+      {
+        "type": "action",
+        "description": "Save appearance settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected theme is applied immediately"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the Cosmic theme option is shown as selected"
+      }
+    ]
+  },
+  {
+    "id": "TC069",
+    "title": "Appearance save with no changes keeps current selection",
+    "description": "Verifies saving appearance settings without changing the selection does not break the page and retains the current theme selection.",
+    "category": "Settings — Profile, Security, Appearance",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/appearance"
+      },
+      {
+        "type": "action",
+        "description": "Save appearance settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appearance settings page remains usable after saving"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a theme option remains selected"
+      }
+    ]
+  },
+  {
+    "id": "TC070",
+    "title": "Admin user list loads and supports searching",
+    "description": "Ensures an admin can load the user management page, view the user list, and filter it using the search input.",
+    "category": "Admin — User Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Fill a search value into the user search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user list updates to show filtered results"
+      }
+    ]
+  },
+  {
+    "id": "TC071",
+    "title": "Deactivate an active user and confirm inactive state",
+    "description": "Ensures an admin can deactivate a user and see the user marked inactive in the list.",
+    "category": "Admin — User Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Select a user that is currently active from the user list"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to deactivate the selected user"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the deactivation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected user is marked as inactive in the user list"
+      }
+    ]
+  },
+  {
+    "id": "TC072",
+    "title": "Delete a user and confirm removal from list",
+    "description": "Ensures an admin can delete a user and the user no longer appears in the list afterward.",
+    "category": "Admin — User Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Select a user from the user list"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to delete the selected user"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted user is no longer present in the user list"
+      }
+    ]
+  },
+  {
+    "id": "TC073",
+    "title": "Search can be cleared to restore the full user list",
+    "description": "Ensures clearing the search query restores the unfiltered user list view.",
+    "category": "Admin — User Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Fill a search value into the user search field"
+      },
+      {
+        "type": "action",
+        "description": "Clear the user search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the full unfiltered user list is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC074",
+    "title": "Search with a non-matching query shows an empty state",
+    "description": "Ensures searching for an unlikely query yields no results and the UI shows an empty state.",
+    "category": "Admin — User Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Fill a clearly non-matching search value into the user search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for no matching users"
+      }
+    ]
+  },
+  {
+    "id": "TC075",
+    "title": "Deactivate then reactivate the same user",
+    "description": "Ensures an admin can toggle a user's active status off and then back on from the list.",
+    "category": "Admin — User Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Select a user that is currently active from the user list"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to deactivate the selected user"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the deactivation"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to activate the same user"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the activation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected user is marked as active in the user list"
+      }
+    ]
+  },
+  {
+    "id": "TC076",
+    "title": "Pagination controls navigate between pages of users",
+    "description": "Ensures an admin can move between pages of the user list using pagination controls.",
+    "category": "Admin — User Management",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the email field to be visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/users"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to go to the next page of users"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a different set of users is displayed compared to the previous page"
+      }
+    ]
+  }
+]

@@ -222,10 +222,10 @@
   --sidebar-foreground: #e8edf5;
   --sidebar-primary: #22d3ee;
   --sidebar-primary-foreground: #0a0e17;
-  --sidebar-accent: #164e63;
-  --sidebar-accent-foreground: #22d3ee;
+  --sidebar-accent: rgba(34, 211, 238, 0.08);
+  --sidebar-accent-foreground: #e8edf5;
   --sidebar-border: #1e293b;
-  --sidebar-ring: #22d3ee;
+  --sidebar-ring: rgba(34, 211, 238, 0.4);
 }
 
 /* Cosmic nebula background - applied to html for full coverage */
@@ -405,20 +405,14 @@ html.cosmic body {
 
 .cosmic nav[aria-label] a {
   background: transparent;
-  border: 1px solid transparent;
 }
 
 .cosmic nav[aria-label] a:hover {
   background: rgba(34, 211, 238, 0.08);
-  border-color: rgba(148, 163, 184, 0.1);
 }
 
-.cosmic nav[aria-label] a.bg-muted,
-.cosmic nav[aria-label] a[class*="bg-muted"] {
-  background: rgba(34, 211, 238, 0.12) !important;
-  border-color: rgba(34, 211, 238, 0.2) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+.cosmic nav[aria-label] a.bg-muted {
+  background: rgba(34, 211, 238, 0.10) !important;
 }
 
 /* ── Tabs List (default variant with bg-muted) ───────────────────── */
@@ -437,9 +431,8 @@ html.cosmic body {
 
 .cosmic [data-slot="tabs-trigger"][data-state="active"],
 .cosmic [role="tab"][aria-selected="true"] {
-  background: rgba(34, 211, 238, 0.15) !important;
-  border-color: rgba(34, 211, 238, 0.3) !important;
-  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.12) !important;
+  border-color: rgba(34, 211, 238, 0.2) !important;
 }
 
 /* ── Sidebar inner container ─────────────────────────────────────── */
@@ -450,23 +443,6 @@ html.cosmic body {
   -webkit-backdrop-filter: blur(24px);
 }
 
-/* Sidebar menu items */
-.cosmic [data-sidebar="menu-button"]:hover,
-.cosmic [data-slot="sidebar-menu-button"]:hover {
-  background: rgba(34, 211, 238, 0.1) !important;
-}
-
-.cosmic [data-sidebar="menu-button"][data-active="true"],
-.cosmic [data-slot="sidebar-menu-button"][data-active="true"] {
-  background: rgba(34, 211, 238, 0.15) !important;
-  color: #22d3ee;
-}
-
-/* Sidebar accent backgrounds */
-.cosmic .bg-sidebar-accent,
-.cosmic [class*="bg-sidebar-accent"] {
-  background: rgba(34, 211, 238, 0.1) !important;
-}
 
 /* ── Sheet/Drawer content (mobile sidebar) ───────────────────────── */
 .cosmic [data-slot="sheet-content"],
@@ -534,6 +510,18 @@ html.cosmic body {
 
 .cosmic [role="switch"][data-state="checked"] {
   background: rgba(34, 211, 238, 0.8) !important;
+}
+
+/* ── Chatbot floating window (necesita fondo sólido, no glassmorphism sutil) */
+.cosmic .fixed.rounded-xl.bg-card {
+  background: rgba(10, 14, 23, 0.92) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(34, 211, 238, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* Cosmic theme preview for settings */

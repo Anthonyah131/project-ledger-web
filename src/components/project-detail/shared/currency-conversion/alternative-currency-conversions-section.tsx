@@ -188,7 +188,17 @@ export function AlternativeCurrencyExchangesSection({
                           min="0"
                           placeholder="0.0000"
                           value={amountField.value}
-                          onChange={(event) => amountField.onChange(event.target.value)}
+                          onChange={(event) => {
+                            amountField.onChange(event.target.value)
+                            const convertedAmt = Number(event.target.value)
+                            if (convertedAmt > 0 && projectAmount > 0) {
+                              form.setValue(
+                                `currencyExchanges.${index}.exchangeRate`,
+                                (convertedAmt / projectAmount).toFixed(6),
+                                { shouldValidate: true }
+                              )
+                            }
+                          }}
                         />
                       </FormControl>
                       <FormMessage />

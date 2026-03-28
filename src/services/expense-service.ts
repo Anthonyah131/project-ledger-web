@@ -24,6 +24,10 @@ export interface GetExpensesParams {
   sortDirection?: "asc" | "desc"
   includeDeleted?: boolean
   isActive?: boolean
+  /** ISO date YYYY-MM-DD — inclusive lower bound on expenseDate */
+  from?: string
+  /** ISO date YYYY-MM-DD — inclusive upper bound on expenseDate */
+  to?: string
 }
 
 // ─── Expenses (scoped to project) ─────────────────────────────────────────────
@@ -41,6 +45,8 @@ export function getExpenses(projectId: string, params: GetExpensesParams = {}) {
   if (params.isActive !== undefined) {
     query.set("isActive", String(params.isActive))
   }
+  if (params.from) query.set("from", params.from)
+  if (params.to) query.set("to", params.to)
 
   const qs = query.toString()
   const url = qs

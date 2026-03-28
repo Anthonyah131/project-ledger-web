@@ -134,7 +134,7 @@ export function ProjectDetailSettingsTab({
     <TabsContent value="settings" className="mt-0">
       <div className="flex flex-col gap-6 pt-4 md:flex-row md:gap-8">
         {/* Sidebar nav */}
-        <aside className="shrink-0 md:w-52">
+        <aside className="shrink-0 bg-card md:w-52 p-2 rounded-md">
           <nav
             className="flex flex-row gap-1 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0"
             aria-label={t("projects.settingsTab.sectionLabel")}

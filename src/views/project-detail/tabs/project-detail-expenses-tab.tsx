@@ -43,6 +43,10 @@ interface ExpensesTabState {
   handlePageSizeChange: (value: number) => void
   selectedCategoryId: string
   setSelectedCategoryId: (value: string) => void
+  dateFrom: string
+  dateTo: string
+  handleDateFromChange: (value: string) => void
+  handleDateToChange: (value: string) => void
   loading: boolean
   expenses: ExpenseResponse[]
   hasSearch: boolean
@@ -137,6 +141,10 @@ export function ProjectDetailExpensesTab({
               pageSize={exp.pageSize}
               onPageSizeChange={exp.handlePageSizeChange}
               categories={categories}
+              dateFrom={exp.dateFrom}
+              dateTo={exp.dateTo}
+              onDateFromChange={exp.handleDateFromChange}
+              onDateToChange={exp.handleDateToChange}
               categoryId={exp.selectedCategoryId}
               onCategoryChange={exp.setSelectedCategoryId}
               onCreateManual={onCreateManual}

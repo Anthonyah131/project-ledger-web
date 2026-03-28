@@ -21,6 +21,10 @@ export interface GetIncomesParams {
   sortDirection?: "asc" | "desc";
   includeDeleted?: boolean;
   isActive?: boolean;
+  /** ISO date YYYY-MM-DD — inclusive lower bound on incomeDate */
+  from?: string;
+  /** ISO date YYYY-MM-DD — inclusive upper bound on incomeDate */
+  to?: string;
 }
 
 export function getIncomes(projectId: string, params: GetIncomesParams = {}) {
@@ -37,6 +41,8 @@ export function getIncomes(projectId: string, params: GetIncomesParams = {}) {
   if (params.isActive !== undefined) {
     query.set("isActive", String(params.isActive));
   }
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
 
   const qs = query.toString();
   const url = qs ? `/projects/${projectId}/incomes?${qs}` : `/projects/${projectId}/incomes`;

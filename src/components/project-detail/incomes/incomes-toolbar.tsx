@@ -25,6 +25,10 @@ interface IncomesToolbarProps {
   categories: CategoryResponse[]
   categoryId: string
   onCategoryChange: (id: string) => void
+  dateFrom: string
+  dateTo: string
+  onDateFromChange: (value: string) => void
+  onDateToChange: (value: string) => void
   onCreateManual: () => void
   onCreateWithAi: () => void
   onBulkImport: () => void
@@ -42,6 +46,10 @@ export function IncomesToolbar({
   categories,
   categoryId,
   onCategoryChange,
+  dateFrom,
+  dateTo,
+  onDateFromChange,
+  onDateToChange,
   onCreateManual,
   onCreateWithAi,
   onBulkImport,
@@ -110,6 +118,20 @@ export function IncomesToolbar({
             <SelectItem value="50">50</SelectItem>
           </SelectContent>
         </Select>
+        <Input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => onDateFromChange(e.target.value)}
+          className="h-8 text-sm w-auto"
+          aria-label={t("common.dateFrom")}
+        />
+        <Input
+          type="date"
+          value={dateTo}
+          onChange={(e) => onDateToChange(e.target.value)}
+          className="h-8 text-sm w-auto"
+          aria-label={t("common.dateTo")}
+        />
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Button

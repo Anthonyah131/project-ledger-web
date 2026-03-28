@@ -39,6 +39,8 @@ export function useProjectExpenses(projectId: string) {
   const [query, setQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")
   const [activeStatus, setActiveStatus] = useState<ExpenseActiveStatusFilter>("active")
+  const [dateFrom, setDateFrom] = useState("")
+  const [dateTo, setDateTo] = useState("")
 
   // Modals
   const [createOpen, setCreateOpen] = useState(false)
@@ -58,6 +60,8 @@ export function useProjectExpenses(projectId: string) {
         sortBy,
         sortDirection,
         isActive: toIsActiveParam(activeStatus),
+        from: dateFrom || undefined,
+        to: dateTo || undefined,
       })
       setExpenses(data.items)
       setTotalCount(data.totalCount)
@@ -66,7 +70,7 @@ export function useProjectExpenses(projectId: string) {
     } finally {
       setLoading(false)
     }
-  }, [projectId, page, pageSize, sort, activeStatus, t])
+  }, [projectId, page, pageSize, sort, activeStatus, dateFrom, dateTo, t])
 
   useEffect(() => {
     fetchExpenses()
@@ -90,7 +94,7 @@ export function useProjectExpenses(projectId: string) {
     return result
   }, [expenses, debouncedQuery, selectedCategoryId])
 
-  const hasSearch = !!debouncedQuery || !!selectedCategoryId
+  const hasSearch = !!debouncedQuery || !!selectedCategoryId || !!dateFrom || !!dateTo
 
   // ── CRUD ──────────────────────────────────────────────────
 
@@ -203,6 +207,16 @@ export function useProjectExpenses(projectId: string) {
     setPage(1)
   }, [])
 
+  const handleDateFromChange = useCallback((value: string) => {
+    setDateFrom(value)
+    setPage(1)
+  }, [])
+
+  const handleDateToChange = useCallback((value: string) => {
+    setDateTo(value)
+    setPage(1)
+  }, [])
+
   return {
     expenses: filtered,
     total: hasSearch ? filtered.length : totalCount,
@@ -214,6 +228,8 @@ export function useProjectExpenses(projectId: string) {
     selectedCategoryId, setSelectedCategoryId,
     activeStatus,
     sort,
+    dateFrom,
+    dateTo,
     createOpen, setCreateOpen,
     bulkImportOpen, setBulkImportOpen,
     editTarget, setEditTarget,
@@ -226,6 +242,8 @@ export function useProjectExpenses(projectId: string) {
     handlePageSizeChange,
     handleSortChange,
     handleActiveStatusChange,
+    handleDateFromChange,
+    handleDateToChange,
     refetch: fetchExpenses,
   }
 }

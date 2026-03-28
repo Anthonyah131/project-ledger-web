@@ -48,7 +48,7 @@ export function SettingsShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col gap-8 md:flex-row">
         {/* Sidebar */}
-        <aside className="shrink-0 md:w-52">
+        <aside className="shrink-0 bg-card md:w-52 p-2 rounded-md">
           <nav className="flex flex-col" aria-label={t("settings.shell.sectionsLabel")}>
             {SECTIONS.map((section) => {
               const isActive =

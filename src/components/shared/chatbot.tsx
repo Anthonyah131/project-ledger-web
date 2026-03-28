@@ -149,8 +149,8 @@ export default function Chatbot() {
         <div
           className={cn(
             'fixed bottom-24 right-6 z-50 flex flex-col',
-            'w-[min(90vw,420px)] h-[560px]',
-            'rounded-xl border border-border bg-background shadow-2xl',
+            'w-[min(90vw,420px)] h-140',
+            'rounded-xl border border-border bg-card shadow-2xl',
             'animate-in slide-in-from-bottom-4 fade-in duration-200'
           )}
         >
@@ -194,7 +194,7 @@ export default function Chatbot() {
                   <Bot className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <p className="text-sm font-medium">{t('chatbot.greeting')}</p>
-                <p className="text-xs text-muted-foreground max-w-[240px]">
+                <p className="text-xs text-muted-foreground max-w-60">
                   {t('chatbot.greetingSubtitle')}
                 </p>
               </div>
@@ -257,9 +257,9 @@ export default function Chatbot() {
                   placeholder={t('chatbot.inputPlaceholder')}
                   rows={1}
                   className={cn(
-                    'w-full resize-none rounded-lg border border-border bg-background px-3 py-2.5 text-sm',
+                    'w-full resize-none rounded-lg border border-border bg-muted px-3 py-2.5 text-sm',
                     'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary',
-                    'transition-colors min-h-[40px] max-h-[120px]'
+                    'transition-colors min-h-10 max-h-30'
                   )}
                   style={{ fieldSizing: 'content' } as React.CSSProperties}
                   disabled={sending}
@@ -279,7 +279,7 @@ export default function Chatbot() {
                 onClick={handleSend}
                 disabled={!input.trim() || sending}
                 className={cn(
-                  'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg',
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
                   'bg-primary text-primary-foreground transition-all',
                   'hover:bg-primary/90 active:scale-95',
                   'disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100'
