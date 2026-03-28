@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop, Moon, Sun } from "lucide-react";
+import { Laptop, Moon, Sun, Sparkles } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/context/theme-context";
@@ -29,6 +29,14 @@ export function SettingsAppearanceView() {
       previewInner: "bg-zinc-800",
     },
     {
+      value: "cosmic" as const,
+      title: t("settings.appearance.cosmicTitle"),
+      description: t("settings.appearance.cosmicDescription"),
+      icon: Sparkles,
+      preview: "cosmic-preview border-cyan-500/30",
+      previewInner: "bg-slate-800/60 backdrop-blur-sm border border-cyan-500/20",
+    },
+    {
       value: "system" as const,
       title: t("settings.appearance.systemTitle"),
       description: t("settings.appearance.systemDescription"),
@@ -49,7 +57,7 @@ export function SettingsAppearanceView() {
 
       <Separator className="my-4" />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {OPTIONS.map((option) => {
           const isSelected = option.value === theme;
 

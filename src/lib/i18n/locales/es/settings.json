@@ -80,6 +80,8 @@
       "lightDescription": "Para espacios iluminados.",
       "darkTitle": "Oscuro",
       "darkDescription": "Reduce fatiga visual.",
+      "cosmicTitle": "Cosmic",
+      "cosmicDescription": "Glassmorphism con nebulosa.",
       "systemTitle": "Sistema",
       "systemDescription": "Se adapta automáticamente."
     },
