@@ -1,7 +1,7 @@
 {
   "reports": {
     "title": "Reportes",
-    "subtitle": "Genera reportes detallados por proyecto, método de pago, ingresos, partners o workspace.",
+    "subtitle": "Genera reportes detallados por proyecto, método de pago, ingresos o partners.",
     "from": "Desde",
     "to": "Hasta",
     "generate": "Generar",
@@ -20,17 +20,12 @@
       "incomes": "Ingresos",
       "paymentMethods": "Métodos de pago",
       "partnerBalances": "Balance partners",
-      "partnerGeneral": "Partner general",
-      "workspace": "Workspace"
+      "partnerGeneral": "Partner general"
     },
     "projectLabel": "Proyecto",
     "partnerLabel": "Partner",
-    "workspaceLabel": "Workspace",
     "selectProjectPlaceholder": "Selecciona proyecto",
     "selectPartnerPlaceholder": "Selecciona partner",
-    "selectWorkspacePlaceholder": "Selecciona workspace",
-    "referenceCurrency": "Moneda de referencia",
-    "referenceCurrencyPlaceholder": "ej. USD",
     "paymentMethodsLabel": "Métodos de pago",
     "paymentMethodsAll": "Todos",
     "paymentMethodsAllLabel": "Todos los métodos",
@@ -46,9 +41,7 @@
       "selectProjectToGenerate": "Selecciona un proyecto para generar el reporte.",
       "selectProjectToExport": "Selecciona un proyecto para exportar.",
       "selectPartnerToGenerate": "Selecciona un partner para generar el reporte.",
-      "selectPartnerToExport": "Selecciona un partner para exportar.",
-      "selectWorkspaceToGenerate": "Selecciona un workspace para generar el reporte.",
-      "selectWorkspaceToExport": "Selecciona un workspace para exportar."
+      "selectPartnerToExport": "Selecciona un partner para exportar."
     },
     "errors": {
       "generate": "Error al generar reporte",
@@ -148,22 +141,6 @@
       "altNet": "neto",
       "showingOf": "Mostrando {shown} de {total} ingresos. Exporta el reporte completo en Excel o PDF para ver todos los ingresos.",
       "noMonthDetail": "Sin detalle de ingresos para este mes."
-    },
-    "workspace": {
-      "totalExpensesCount": "Total gastos",
-      "workspaceLabel": "Workspace",
-      "projectsLabel": "Proyectos",
-      "noCurrencyHint": "No se proporcionó moneda de referencia. Los totales consolidados no están disponibles. Cada proyecto muestra sus montos en su propia moneda.",
-      "projectBreakdownTitle": "Desglose por proyecto",
-      "projectBreakdownDesc": "Resumen financiero de cada proyecto del workspace",
-      "expensesLabel": "Gastos",
-      "incomesLabel": "Ingresos",
-      "netBalanceLabel": "Balance neto",
-      "expensesAndProjects": "{expenses} gastos · {projects} proyecto",
-      "expensesAndProjectsPlural": "{expenses} gastos · {projects} proyectos",
-      "categoryBreakdownTitle": "Desglose por categoría",
-      "categoryBreakdownDesc": "Gasto consolidado por categoría entre todos los proyectos",
-      "monthlyTrendDesc": "Evolución mensual de gastos, ingresos y balance neto del workspace"
     },
     "partnerBalances": {
       "warningTitle": "{count} transacción(es) sin tipos de cambio configurados",

@@ -123,6 +123,11 @@
     "admin": "Administración",
     "partners": "Partners",
     "help": "Ayuda",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "sections": {
+      "main": "Principal",
+      "assistant": "Asistente",
+      "support": "Soporte"
+    }
   }
 }

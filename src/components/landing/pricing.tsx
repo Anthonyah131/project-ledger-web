@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,12 +11,18 @@ import { getPlanDescription, getPlanFeatureGroups } from "@/data/site-data";
 import { useAuth } from "@/context/auth-context";
 import { useLanguage } from "@/context/language-context";
 import * as planService from "@/services/plan-service";
+import { useSectionReveal } from "@/hooks/animations/use-section-reveal";
+import { useScrollSheetTransition } from "@/hooks/animations/use-scroll-sheet-transition";
 import type { PlanResponse } from "@/types/plan";
 
 export function Pricing() {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { t, locale } = useLanguage();
+
+  const containerRef = useRef<HTMLElement | null>(null);
+  useSectionReveal(containerRef, { stagger: 0.15 });
+  useScrollSheetTransition(containerRef, { nextSelector: "[data-lm-section='cta']" });
 
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,10 +78,10 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="px-6 py-28">
+    <section id="pricing" ref={containerRef} className="px-6 py-28" data-lm-section="pricing">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl text-center" data-lm-reveal="section-header">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             {t("nav.pricing")}
           </p>
@@ -95,7 +101,7 @@ export function Pricing() {
         )}
 
         {/* Cards */}
-        <div className="mt-16 grid gap-6 lg:grid-cols-3">
+        <div className="mt-16 grid gap-6 lg:grid-cols-3" data-lm-reveal="pricing-grid">
           {loading && (
             <div className="col-span-full flex items-center justify-center rounded-2xl border border-border bg-card p-8 text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -112,9 +118,10 @@ export function Pricing() {
             return (
               <div
                 key={plan.id}
-                className={`relative flex flex-col rounded-2xl border p-8 transition-all ${
+                data-lm-reveal="pricing-card"
+                className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-2xl focus-within:ring-2 focus-within:ring-primary/40 ${
                   plan.id === highlightedPlanId
-                    ? "border-primary bg-primary/10 shadow-xl shadow-primary/20"
+                    ? "border-primary bg-primary/10 shadow-xl shadow-primary/20 motion-safe:hover:shadow-primary/25"
                     : "border-border bg-card hover:border-primary/30"
                 }`}
               >
@@ -182,7 +189,7 @@ export function Pricing() {
                     type="button"
                     onClick={() => handleCheckout(plan)}
                     disabled={isAuthLoading}
-                    className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
+                    className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                       plan.id === highlightedPlanId
                         ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 hover:bg-primary/90"
                         : "border border-border bg-muted text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
@@ -194,7 +201,7 @@ export function Pricing() {
                 ) : (
                   <Link
                     href={isAuthenticated ? "/dashboard" : "/register"}
-                    className={`inline-flex h-11 items-center justify-center rounded-xl text-sm font-semibold transition-all ${
+                    className={`inline-flex h-11 items-center justify-center rounded-xl text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                       plan.id === highlightedPlanId
                         ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 hover:bg-primary/90"
                         : "border border-border bg-muted text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary"

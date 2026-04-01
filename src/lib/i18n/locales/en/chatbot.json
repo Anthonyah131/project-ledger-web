@@ -14,6 +14,7 @@
     "upgradeToPremium": "Upgrade plan",
     "send": "Send message",
     "newConversation": "New conversation",
-    "realTimeData": "Real-time data consulted"
+    "realTimeData": "Real-time data consulted",
+    "sidebarButton": "Assistant"
   }
 }

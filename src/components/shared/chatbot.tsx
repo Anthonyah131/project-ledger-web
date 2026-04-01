@@ -1,72 +1,29 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '@/context/auth-context'
+import { useEffect, useRef } from 'react'
 import { useLanguage } from '@/context/language-context'
-import { getUserProfile } from '@/services/plan-service'
-import { sendChatbotMessage, type ChatHistoryEntry } from '@/services/chatbot-service'
+import { MAX_CHARS, useChatbot } from '@/hooks/chatbot/use-chatbot'
+import { useChatbotPanel } from '@/hooks/chatbot/use-chatbot-panel'
 import { cn } from '@/lib/utils'
-import { Bot, Send, X, Loader2, MessageSquare, RotateCcw } from 'lucide-react'
-
-// ─── Premium detection ────────────────────────────────────────────────────────
-
-const PREMIUM_PLAN_ID = 'f59a2b7b-5edf-4e8b-9d99-d6adf8adf4ac'
-const PREMIUM_SLUGS = ['premium', 'pro', 'enterprise']
-
-function isPremiumPlan(planId?: string | null, planSlug?: string | null) {
-  if (planId && planId === PREMIUM_PLAN_ID) return true
-  if (planSlug && PREMIUM_SLUGS.includes(planSlug.toLowerCase())) return true
-  return false
-}
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Message {
-  id: string
-  role: 'user' | 'bot'
-  text: string
-  provider?: string
-  model?: string
-  toolCallsExecuted?: number
-  usedFinancialContext?: boolean
-}
-
-const MAX_CHARS = 4000
+import { Bot, Send, X, Loader2, RotateCcw } from 'lucide-react'
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Chatbot() {
   const { t } = useLanguage()
-  const { user, isAuthenticated, isLoading } = useAuth()
-  const [isPremium, setIsPremium] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [history, setHistory] = useState<ChatHistoryEntry[]>([])
-  const [input, setInput] = useState('')
-  const [sending, setSending] = useState(false)
+  const {
+    isPremium,
+    messages,
+    input,
+    sending,
+    charsLeft,
+    setClampedInput,
+    sendMessage,
+    startNewConversation,
+  } = useChatbot()
+  const { isOpen, closePanel } = useChatbotPanel()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-
-  // ── Check premium status ──────────────────────────────────────────────────
-  useEffect(() => {
-    if (isLoading) return
-    if (!isAuthenticated || !user?.id) {
-      setIsPremium(false)
-      return
-    }
-
-    let cancelled = false
-    getUserProfile()
-      .then((profile) => {
-        if (cancelled) return
-        setIsPremium(isPremiumPlan(profile.planId, profile.plan?.slug))
-      })
-      .catch(() => {
-        if (!cancelled) setIsPremium(false)
-      })
-
-    return () => { cancelled = true }
-  }, [isAuthenticated, user?.id, isLoading])
 
   // ── Auto-scroll to bottom on new messages ─────────────────────────────────
   useEffect(() => {
@@ -84,63 +41,12 @@ export default function Chatbot() {
 
   if (!isPremium) return null
 
-  // ── Send message ──────────────────────────────────────────────────────────
-  async function handleSend() {
-    const text = input.trim()
-    if (!text || sending) return
-
-    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', text }
-    setMessages((prev) => [...prev, userMsg])
-    setInput('')
-    setSending(true)
-
-    try {
-      const data = await sendChatbotMessage(text, history)
-      const botMsg: Message = {
-        id: crypto.randomUUID(),
-        role: 'bot',
-        text: data.response,
-        provider: data.provider,
-        model: data.model,
-        toolCallsExecuted: data.toolCallsExecuted,
-        usedFinancialContext: data.usedFinancialContext,
-      }
-      setMessages((prev) => [...prev, botMsg])
-      setHistory((prev) => [
-        ...prev,
-        { role: 'user', content: text },
-        { role: 'assistant', content: data.response },
-      ])
-    } catch (err: unknown) {
-      const isServiceUnavailable =
-        err instanceof Error && err.message.includes('503')
-      const botMsg: Message = {
-        id: crypto.randomUUID(),
-        role: 'bot',
-        text: isServiceUnavailable
-          ? t('chatbot.unavailable')
-          : t('chatbot.errorMessage'),
-      }
-      setMessages((prev) => [...prev, botMsg])
-    } finally {
-      setSending(false)
-    }
-  }
-
-  function handleNewConversation() {
-    setMessages([])
-    setHistory([])
-    setInput('')
-  }
-
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSend()
+      sendMessage()
     }
   }
-
-  const charsLeft = MAX_CHARS - input.length
 
   return (
     <>
@@ -148,8 +54,10 @@ export default function Chatbot() {
       {isOpen && (
         <div
           className={cn(
-            'fixed bottom-24 right-6 z-50 flex flex-col',
-            'w-[min(90vw,420px)] h-140',
+            'fixed inset-x-3 bottom-3 top-20 z-50 flex flex-col',
+            'sm:inset-x-auto sm:right-6 sm:top-auto sm:bottom-6',
+            'sm:w-[min(92vw,420px)]',
+            'h-[calc(100dvh-6rem)] sm:h-[min(78vh,760px)]',
             'rounded-xl border border-border bg-card shadow-2xl',
             'animate-in slide-in-from-bottom-4 fade-in duration-200'
           )}
@@ -168,7 +76,7 @@ export default function Chatbot() {
             <div className="flex items-center gap-1">
               {messages.length > 0 && (
                 <button
-                  onClick={handleNewConversation}
+                  onClick={startNewConversation}
                   className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
                   aria-label={t('chatbot.newConversation')}
                   title={t('chatbot.newConversation')}
@@ -177,7 +85,7 @@ export default function Chatbot() {
                 </button>
               )}
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closePanel}
                 className="rounded-md p-1 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
                 aria-label={t('chatbot.closeChat')}
               >
@@ -252,7 +160,7 @@ export default function Chatbot() {
                 <textarea
                   ref={inputRef}
                   value={input}
-                  onChange={(e) => setInput(e.target.value.slice(0, MAX_CHARS))}
+                  onChange={(e) => setClampedInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={t('chatbot.inputPlaceholder')}
                   rows={1}
@@ -276,7 +184,7 @@ export default function Chatbot() {
                 )}
               </div>
               <button
-                onClick={handleSend}
+                onClick={sendMessage}
                 disabled={!input.trim() || sending}
                 className={cn(
                   'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
@@ -293,24 +201,6 @@ export default function Chatbot() {
         </div>
       )}
 
-      {/* ── Floating button ───────────────────────────────────────────────── */}
-      <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={cn(
-          'fixed bottom-6 right-6 z-50',
-          'flex h-14 w-14 items-center justify-center rounded-full shadow-lg',
-          'bg-primary text-primary-foreground transition-all duration-200',
-          'hover:shadow-xl hover:scale-105 active:scale-95',
-          'animate-in slide-in-from-bottom-4 fade-in duration-300'
-        )}
-        aria-label={isOpen ? t('chatbot.closeAssistant') : t('chatbot.openAssistant')}
-      >
-        {isOpen ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <MessageSquare className="h-6 w-6" />
-        )}
-      </button>
     </>
   )
 }

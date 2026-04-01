@@ -1,11 +1,16 @@
 "use client";
 
+import { useRef } from "react";
 import { ChevronRight, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
+import { useHeroEntrance } from "@/hooks/animations/use-hero-entrance";
 
 export function Hero() {
   const { t } = useLanguage();
+  const containerRef = useRef<HTMLElement | null>(null);
+  useHeroEntrance(containerRef);
 
   const navItems = [
     t("landing.mockDashboard.nav.dashboard"),
@@ -28,15 +33,25 @@ export function Hero() {
   ];
 
   return (
-    <section className="flex flex-col items-center px-6 pb-24 pt-40 text-center">
+    <section
+      ref={containerRef}
+      className="flex flex-col items-center px-6 pb-24 pt-40 text-center"
+      data-lm-section="hero"
+    >
       {/* Badge */}
-      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary">
+      <div
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary"
+        data-lm-reveal="badge"
+      >
         <Sparkles className="h-3 w-3" />
         {t("landing.badge")}
       </div>
 
       {/* Headline */}
-      <h1 className="mx-auto max-w-4xl text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+      <h1
+        className="mx-auto max-w-4xl text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+        data-lm-reveal="headline"
+      >
         {t("landing.heroTitlePart1")}{" "}
         <span className="relative inline-block">
           <span className="relative z-10 text-primary">{t("landing.heroTitleHighlight")}</span>
@@ -46,12 +61,15 @@ export function Hero() {
       </h1>
 
       {/* Subheadline */}
-      <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
+      <p
+        className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground"
+        data-lm-reveal="subtitle"
+      >
         {t("landing.heroSubtitle")}
       </p>
 
       {/* CTAs */}
-      <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+      <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row" data-lm-reveal="cta-row">
         <Link
           href="/register"
           className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-primary/50"
@@ -68,14 +86,14 @@ export function Hero() {
       </div>
 
       {/* Social proof */}
-      <p className="mt-8 text-xs text-muted-foreground">
+      <p className="mt-8 text-xs text-muted-foreground" data-lm-reveal="social-proof">
         {t("landing.freePlanBadge")} ·{" "}
         <span className="font-semibold text-primary">{t("landing.noTimeLimit")}</span>{" "}
         · {t("landing.upgradeAnytime")}
       </p>
 
       {/* Mock dashboard */}
-      <div className="relative mt-20 w-full max-w-5xl">
+      <div className="relative mt-20 w-full max-w-5xl" data-lm-reveal="dashboard-mock">
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/20">
           {/* Window chrome */}
           <div className="flex h-10 items-center gap-2 border-b border-border bg-muted px-4">
@@ -162,6 +180,51 @@ export function Hero() {
 
         {/* Glow effect */}
         <div className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-primary/10 blur-2xl" />
+      </div>
+
+      <div className="mt-10 grid w-full max-w-5xl gap-4 md:grid-cols-2" data-lm-reveal="hero-assets">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card/80 p-3 backdrop-blur">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Hero image placeholder
+          </p>
+          <div className="relative aspect-16/10 overflow-hidden rounded-xl border border-border/60 bg-background/60">
+            <Image
+              src="/placeholders/landing-hero-shot.svg"
+              alt="Placeholder de imagen para hero"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority={false}
+            />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Reemplazar por: public/placeholders/landing-hero-shot.webp (ideal 1920x1200)
+          </p>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-border bg-card/80 p-3 backdrop-blur">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Hero video placeholder
+          </p>
+          <div className="relative aspect-16/10 overflow-hidden rounded-xl border border-border/60 bg-background/60">
+            <video
+              className="h-full w-full object-cover"
+              poster="/placeholders/landing-hero-video-poster.svg"
+              autoPlay
+              muted
+              loop
+              playsInline
+            >
+              <source src="/placeholders/landing-hero-loop.mp4" type="video/mp4" />
+            </video>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/50 to-transparent p-3">
+              <p className="text-xs text-white/90">Video demo recomendado: 6-10s, 24fps, sin audio</p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Reemplazar por: public/placeholders/landing-hero-loop.mp4 y poster webp
+          </p>
+        </div>
       </div>
     </section>
   );

@@ -1,14 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
 
 export function Navbar() {
   const { t } = useLanguage();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md transition-[border-color,background-color,box-shadow] duration-300 ${
+        isScrolled
+          ? "border-border bg-background/95 shadow-sm shadow-black/10"
+          : "border-border/50 bg-background/80"
+      }`}
+      data-lm-section="navbar"
+      data-lm-reveal="shell"
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">

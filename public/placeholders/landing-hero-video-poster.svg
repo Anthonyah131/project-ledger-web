@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Landing hero video poster placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#081018" />
+      <stop offset="60%" stop-color="#15273e" />
+      <stop offset="100%" stop-color="#213b5d" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)" />
+  <circle cx="350" cy="200" r="240" fill="#22d3ee" opacity="0.12" />
+  <circle cx="1260" cy="790" r="260" fill="#a855f7" opacity="0.12" />
+
+  <rect x="240" y="140" width="1120" height="720" rx="36" fill="#0b1422" stroke="#35597f" />
+  <polygon points="760,430 760,570 880,500" fill="#22d3ee" opacity="0.92" />
+
+  <text x="800" y="635" fill="#d3e2f1" font-size="44" text-anchor="middle" font-family="Arial, sans-serif">
+    Video Placeholder
+  </text>
+  <text x="800" y="680" fill="#9eb7d4" font-size="25" text-anchor="middle" font-family="Arial, sans-serif">
+    Reemplazar por landing-hero-loop.mp4 (6-10s, 24fps, <= 2MB)
+  </text>
+</svg>

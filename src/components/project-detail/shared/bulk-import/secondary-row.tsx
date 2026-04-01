@@ -3,6 +3,7 @@
 import { memo, useState } from "react"
 import { Controller, useFieldArray, useWatch } from "react-hook-form"
 import { ArrowRightLeft, GitBranch, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +20,7 @@ import { getExchangeRate } from "@/services/exchange-rate-service"
 import { toastApiError } from "@/lib/error-utils"
 import type { BulkImportMode } from "@/hooks/forms/use-bulk-import-form"
 import type { ObligationResponse } from "@/types/obligation"
+import type { PaymentMethodResponse } from "@/types/payment-method"
 
 // ─── Split Entry ───────────────────────────────────────────────────────────────
 
@@ -131,9 +133,9 @@ const SplitEntry = memo(function SplitEntry({
             size="sm"
             className="h-6 text-[10px] px-1.5 ml-auto shrink-0"
             onClick={handleAutoProportional}
-            title={t("bulkImport.autoProportional")}
+            title={t("bulkImport.splitAutoCurrency")}
           >
-            {t("bulkImport.autoProportional")}
+            {t("bulkImport.splitAutoCurrency")}
           </Button>
         )}
       </div>
@@ -194,6 +196,7 @@ export interface SecondaryRowProps {
   alternativeCurrencyCodes: string[]
   partnersEnabled: boolean
   obligations: ObligationResponse[]
+  paymentMethods: PaymentMethodResponse[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any
   showExchangeRate: boolean
@@ -208,6 +211,7 @@ export const SecondaryRow = memo(function SecondaryRow({
   alternativeCurrencyCodes,
   partnersEnabled,
   obligations,
+  paymentMethods,
   form,
   showExchangeRate,
   showAccountAmount,
@@ -237,6 +241,8 @@ export const SecondaryRow = memo(function SecondaryRow({
 
   const watchedObligationId = useWatch({ control: form.control, name: `items.${index}.obligationId` })
   const watchedOriginalCurrency = useWatch({ control: form.control, name: `items.${index}.originalCurrency` })
+  const watchedPaymentMethodId = useWatch({ control: form.control, name: `items.${index}.paymentMethodId` })
+  const selectedPaymentMethod = paymentMethods.find((pm) => pm.id === watchedPaymentMethodId)
   const selectedObligation = obligations.find((o) => o.id === watchedObligationId)
   const showObligationEquivalent =
     mode === "expenses" &&
@@ -246,12 +252,31 @@ export const SecondaryRow = memo(function SecondaryRow({
 
   const unpaidObligations = obligations.filter((o) => o.status !== "paid")
 
+  const normalizedProjectCurrency = String(projectCurrency ?? "").trim().toUpperCase()
+  const normalizedOriginalCurrency = String(watchedOriginalCurrency ?? "").trim().toUpperCase()
+  const availableCurrencyCodes = Array.from(
+    new Set(
+      [
+        normalizedProjectCurrency,
+        normalizedOriginalCurrency,
+        ...alternativeCurrencyCodes.map((code) => code.trim().toUpperCase()),
+        ...paymentMethods
+          .map((pm) => (pm.currency ?? "").trim().toUpperCase())
+          .filter((code) => code.length > 0),
+      ].filter((code) => code.length > 0),
+    ),
+  )
+
   async function handleAutoMainRate() {
     const amount = Number(watchedAmount)
-    if (!amount || amount <= 0 || !pmCurrency || !projectCurrency) return
+    if (!amount || amount <= 0 || !normalizedOriginalCurrency || !normalizedProjectCurrency) return
     setRateLoading(true)
     try {
-      const resp = await getExchangeRate({ from: pmCurrency, to: projectCurrency, amount })
+      const resp = await getExchangeRate({
+        from: normalizedOriginalCurrency,
+        to: normalizedProjectCurrency,
+        amount,
+      })
       form.setValue(`items.${index}.exchangeRate`, String(resp.rate))
       form.setValue(`items.${index}.convertedAmount`, String(resp.convertedAmount))
     } catch (err) {
@@ -283,10 +308,135 @@ export const SecondaryRow = memo(function SecondaryRow({
     }
   }
 
+  function handleDistributeSplits() {
+    const partnerCount = splitFields.length
+    if (partnerCount === 0) return
+
+    if (splitType === "percentage") {
+      const base = parseFloat((100 / partnerCount).toFixed(4))
+      let assigned = 0
+
+      splitFields.forEach((_, sIndex) => {
+        const value =
+          sIndex === partnerCount - 1
+            ? parseFloat((100 - assigned).toFixed(4))
+            : base
+        assigned = parseFloat((assigned + value).toFixed(4))
+        form.setValue(`items.${index}.splits.${sIndex}.splitValue`, String(value), {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
+      })
+    } else {
+      const totalAmount = Number(watchedConvertedAmount)
+      if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
+        toast.warning(t("bulkImport.splitRequiresProjectAmount"))
+        return
+      }
+
+      const base = parseFloat((totalAmount / partnerCount).toFixed(4))
+      let assigned = 0
+
+      splitFields.forEach((_, sIndex) => {
+        const value =
+          sIndex === partnerCount - 1
+            ? parseFloat((totalAmount - assigned).toFixed(4))
+            : base
+        assigned = parseFloat((assigned + value).toFixed(4))
+        form.setValue(`items.${index}.splits.${sIndex}.splitValue`, String(value), {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
+      })
+    }
+
+    if (ceFields.length > 0) {
+      splitFields.forEach((_, sIndex) => {
+        ceFields.forEach((_, ceIndex) => {
+          const parentCEAmount = Number(
+            form.getValues(`items.${index}.currencyExchanges.${ceIndex}.convertedAmount`),
+          )
+          const parentCERate = form.getValues(
+            `items.${index}.currencyExchanges.${ceIndex}.exchangeRate`,
+          )
+          if (!Number.isFinite(parentCEAmount) || parentCEAmount <= 0) return
+
+          const base = parseFloat((parentCEAmount / partnerCount).toFixed(4))
+          const prevAssigned = Array.from({ length: sIndex }).reduce<number>(
+            (sum, _, prevIdx) => {
+              const v = Number(
+                form.getValues(
+                  `items.${index}.splits.${prevIdx}.currencyExchanges.${ceIndex}.convertedAmount`,
+                ),
+              )
+              return sum + (Number.isFinite(v) ? v : 0)
+            },
+            0,
+          )
+
+          const splitCEAmount =
+            sIndex === partnerCount - 1
+              ? parseFloat((parentCEAmount - prevAssigned).toFixed(4))
+              : base
+
+          form.setValue(
+            `items.${index}.splits.${sIndex}.currencyExchanges.${ceIndex}.convertedAmount`,
+            String(splitCEAmount),
+            { shouldValidate: true, shouldDirty: true },
+          )
+          if (parentCERate) {
+            form.setValue(
+              `items.${index}.splits.${sIndex}.currencyExchanges.${ceIndex}.exchangeRate`,
+              parentCERate,
+              { shouldValidate: true, shouldDirty: true },
+            )
+          }
+        })
+      })
+    }
+  }
+
   return (
     <div className="px-4 sm:px-5 pt-3 pb-4 border-t border-dashed border-border/30 bg-muted/20 space-y-4">
       {/* Row 1: converted amount + description + notes + exchange rate + account amount */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {mode === "incomes" && (
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              {t("bulkImport.colCurrency")}
+            </p>
+            <Controller
+              control={form.control}
+              name={`items.${index}.originalCurrency`}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="h-8 text-xs w-full">
+                    <SelectValue placeholder={t("bulkImport.colCurrency")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCurrencyCodes.map((code) => (
+                      <SelectItem key={code} value={code} className="text-xs">
+                        {code}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+        )}
+
+        {mode === "incomes" && selectedPaymentMethod?.currency && (
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              {t("bulkImport.colPaymentMethod")}
+            </p>
+            <div className="h-8 rounded-md border border-border/60 bg-background px-2.5 text-xs flex items-center text-muted-foreground">
+              {selectedPaymentMethod.currency}
+            </div>
+          </div>
+        )}
+
         {/* Converted amount (moved from primary row) */}
         <div className="space-y-1.5">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
@@ -381,7 +531,7 @@ export const SecondaryRow = memo(function SecondaryRow({
         {showExchangeRate && (
           <div className="space-y-1.5">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              {pmCurrency} → {projectCurrency} {t("bulkImport.colExchangeRate")}
+              {normalizedOriginalCurrency} → {normalizedProjectCurrency} {t("bulkImport.colExchangeRate")}
             </p>
             <div className="flex gap-1.5">
               <Input
@@ -534,6 +684,17 @@ export const SecondaryRow = memo(function SecondaryRow({
                 </Select>
               )}
             />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-6 text-[11px] px-2"
+              onClick={handleDistributeSplits}
+            >
+              {splitType === "percentage"
+                ? t("bulkImport.splitAutoDistributePercentage")
+                : t("bulkImport.splitAutoDistributeFixed")}
+            </Button>
           </div>
           <div className="flex flex-wrap gap-2">
             {splitFields.map((field, sIndex) => (

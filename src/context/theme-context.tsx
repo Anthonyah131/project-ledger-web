@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -30,13 +31,14 @@ function applyThemeToDom(resolvedTheme: ResolvedTheme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [theme, setThemeState] = useState<ThemePreference>(() => {
     if (typeof window === "undefined") return "cosmic";
     const stored = localStorage.getItem(STORAGE_KEY);
     return isThemePreference(stored) ? stored : "cosmic";
   });
 
-  const resolvedTheme: ResolvedTheme = theme;
+  const resolvedTheme: ResolvedTheme = pathname === "/" ? "cosmic" : theme;
 
   useEffect(() => {
     applyThemeToDom(resolvedTheme);

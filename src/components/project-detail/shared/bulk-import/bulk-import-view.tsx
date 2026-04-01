@@ -167,7 +167,7 @@ export function BulkImportView({
 
           {/* Column header + "jump to bottom" — overflow-x only (no vertical scroll: show all rows) */}
           <div className="overflow-x-auto">
-            <div className="min-w-[560px]">
+            <div className="min-w-140">
               {/* Column header row - Desktop */}
               <div
                 className={cn(

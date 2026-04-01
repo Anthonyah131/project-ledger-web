@@ -8,6 +8,7 @@ import {
   IconDashboard,
   IconFolder,
   IconHelp,
+  IconMessageCircle,
   IconSettings,
   IconShieldDollar,
   IconUserShield,
@@ -19,10 +20,14 @@ import { useLanguage } from "@/context/language-context"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavSecondary } from "@/components/dashboard/nav-secondary"
 import { NavUser } from "@/components/dashboard/nav-user"
+import { useChatbotPanel } from "@/hooks/chatbot/use-chatbot-panel"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -32,7 +37,9 @@ import {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
   const { t } = useLanguage()
+  const { openPanel } = useChatbotPanel()
   const homeUrl = user?.isAdmin ? "/admin/users" : "/dashboard"
+  const isAdmin = Boolean(user?.isAdmin)
 
   const navMain = useMemo(
     () =>
@@ -74,8 +81,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
-        <NavSecondary items={navSecondary} className="mt-auto" />
+        <NavMain items={navMain} sectionLabel={t("nav.sections.main")} />
+        {!isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t("nav.sections.assistant")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton onClick={openPanel} tooltip={t("chatbot.sidebarButton")}>
+                    <IconMessageCircle />
+                    <span>{t("chatbot.sidebarButton")}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        <NavSecondary items={navSecondary} sectionLabel={t("nav.sections.support")} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

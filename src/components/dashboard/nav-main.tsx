@@ -7,6 +7,7 @@ import { type Icon } from "@tabler/icons-react"
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -14,17 +15,20 @@ import {
 
 export function NavMain({
   items,
+  sectionLabel,
 }: {
   items: {
     title: string
     url: string
     icon?: Icon
   }[]
+  sectionLabel?: string
 }) {
   const pathname = usePathname()
 
   return (
     <SidebarGroup>
+      {sectionLabel ? <SidebarGroupLabel>{sectionLabel}</SidebarGroupLabel> : null}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (

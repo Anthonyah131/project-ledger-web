@@ -15,7 +15,10 @@ import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { BulkExpenseItem } from "@/types/expense"
 import type { BulkIncomeItem } from "@/types/income"
-import type { SplitInput, CurrencyExchangeRequest } from "@/types/expense"
+import {
+  useBulkImportExpenseItemProcessor,
+  useBulkImportIncomeItemProcessor,
+} from "@/hooks/forms/use-bulk-import-item-processors"
 
 export type BulkImportMode = "expenses" | "incomes"
 
@@ -37,13 +40,14 @@ interface UseBulkImportFormOptions {
 }
 
 function createEmptyRow(
+  projectCurrency: string,
   alternativeCurrencyCodes: string[] = [],
   assignedPartners: ProjectPartnerResponse[] = [],
 ): BulkImportItemFormValues {
   return {
     title: "",
     originalAmount: "",
-    originalCurrency: "",
+    originalCurrency: projectCurrency,
     date: "",
     categoryId: "",
     paymentMethodId: "",
@@ -89,6 +93,11 @@ export function useBulkImportForm({
   const { t } = useLanguage()
   const [submitting, setSubmitting] = useState(false)
   const [parseResult, setParseResult] = useState<ParseResult | null>(null)
+  const processExpenseItem = useBulkImportExpenseItemProcessor()
+  const processIncomeItem = useBulkImportIncomeItemProcessor({
+    paymentMethods,
+    projectCurrency,
+  })
 
   const form = useForm<BulkImportFormValues>({
     resolver: zodResolver(bulkImportSchema(t)),
@@ -114,7 +123,7 @@ export function useBulkImportForm({
       }
 
       const newItems: BulkImportItemFormValues[] = result.rows.map((row) => ({
-        ...createEmptyRow(alternativeCurrencyCodes, assignedPartners),
+        ...createEmptyRow(projectCurrency || "", alternativeCurrencyCodes, assignedPartners),
         title: row.title,
         originalAmount: row.amount !== null ? String(row.amount) : "",
         date: row.date,
@@ -131,8 +140,8 @@ export function useBulkImportForm({
 
   const addRow = useCallback(() => {
     if (fields.length >= BULK_IMPORT_MAX_ITEMS) return
-    append(createEmptyRow(alternativeCurrencyCodes, assignedPartners))
-  }, [fields.length, append, alternativeCurrencyCodes, assignedPartners])
+    append(createEmptyRow(projectCurrency, alternativeCurrencyCodes, assignedPartners))
+  }, [fields.length, append, projectCurrency, alternativeCurrencyCodes, assignedPartners])
 
   const removeRow = useCallback(
     (index: number) => {
@@ -171,122 +180,34 @@ export function useBulkImportForm({
     [form],
   )
 
-  // ── Submit ───────────────────────────────────────────────────
-
-  const processItem = useCallback(
-    (values: BulkImportItemFormValues, itemMode: BulkImportMode): BulkExpenseItem | BulkIncomeItem => {
-      const amount = Number(values.originalAmount)
-      const effectiveRate = parseFloat((Number(values.exchangeRate) || 1).toFixed(6))
-      const convertedAmount = Number(values.convertedAmount)
-      const finalConvertedAmount =
-        Number.isFinite(convertedAmount) && convertedAmount > 0
-          ? convertedAmount
-          : parseFloat((amount * effectiveRate).toFixed(2))
-
-      const currencyExchanges: CurrencyExchangeRequest[] = (values.currencyExchanges ?? [])
-        .map((item) => ({
-          currencyCode: item.currencyCode.trim(),
-          exchangeRate: parseFloat(Number(item.exchangeRate).toFixed(6)),
-          convertedAmount: Number(item.convertedAmount),
-        }))
-        .filter(
-          (item) =>
-            item.currencyCode.length > 0 &&
-            Number.isFinite(item.exchangeRate) &&
-            item.exchangeRate > 0 &&
-            Number.isFinite(item.convertedAmount) &&
-            item.convertedAmount > 0,
-        )
-
-      const splitType = (values.splitType ?? "percentage") as "percentage" | "fixed"
-      const splits: SplitInput[] = (values.splits ?? [])
-        .filter((s) => Number(s.splitValue) > 0)
-        .map((s) => {
-          const splitValue = Number(s.splitValue)
-          const resolvedAmount =
-            splitType === "percentage"
-              ? parseFloat(((finalConvertedAmount * splitValue) / 100).toFixed(2))
-              : splitValue
-          const entry: SplitInput = {
-            partnerId: s.partnerId,
-            splitType,
-            splitValue,
-            resolvedAmount,
-          }
-          const formCEs = (s.currencyExchanges ?? []).filter(
-            (ce) =>
-              ce.currencyCode &&
-              Number(ce.exchangeRate) > 0 &&
-              Number(ce.convertedAmount) > 0,
-          )
-          if (formCEs.length > 0) {
-            entry.currencyExchanges = formCEs.map((ce) => ({
-              currencyCode: ce.currencyCode,
-              exchangeRate: Number(ce.exchangeRate),
-              convertedAmount: Number(ce.convertedAmount),
-            }))
-          } else if (currencyExchanges.length > 0) {
-            entry.currencyExchanges = currencyExchanges.map((ce) => ({
-              currencyCode: ce.currencyCode,
-              exchangeRate: ce.exchangeRate,
-              convertedAmount: parseFloat(
-                splitType === "percentage"
-                  ? ((ce.convertedAmount * splitValue) / 100).toFixed(4)
-                  : finalConvertedAmount > 0
-                    ? ((ce.convertedAmount * splitValue) / finalConvertedAmount).toFixed(4)
-                    : "0",
-              ),
-            }))
-          }
-          return entry
-        })
-
-      const item: BulkExpenseItem = {
-        title: values.title,
-        originalAmount: amount,
-        originalCurrency: values.originalCurrency,
-        date: values.date,
-        categoryId: values.categoryId,
-        paymentMethodId: values.paymentMethodId,
-        exchangeRate: effectiveRate,
-        convertedAmount: finalConvertedAmount,
-      }
-
-      if (values.description?.trim()) item.description = values.description
-      if (values.notes?.trim()) item.notes = values.notes
-      if (currencyExchanges.length > 0) item.currencyExchanges = currencyExchanges
-      if (splits.length > 0) item.splits = splits
-
-      // Account amount handling (for incomes or when PM currency differs)
-      const accountAmountVal = Number(values.accountAmount)
-      if (Number.isFinite(accountAmountVal) && accountAmountVal > 0) {
-        item.accountAmount = accountAmountVal
-      }
-
-      // Obligation fields (expenses only)
-      if (itemMode === "expenses" && values.obligationId?.trim()) {
-        item.obligationId = values.obligationId.trim()
-        const equivAmt = Number(values.obligationEquivalentAmount)
-        if (Number.isFinite(equivAmt) && equivAmt > 0) {
-          item.obligationEquivalentAmount = equivAmt
-        }
-      }
-
-      return item
-    },
-    [],
-  )
-
   const onSubmit = useCallback(
     async (values: BulkImportFormValues) => {
       setSubmitting(true)
       try {
-        const items = values.items.map((v) => processItem(v, mode))
+        if (mode === "expenses") {
+          const items = values.items.map((value) => processExpenseItem(value))
+          if (onSubmitExpenses) {
+            await onSubmitExpenses({ items: items as BulkExpenseItem[] })
+          }
+        } else {
+          const items: BulkIncomeItem[] = []
 
-        if (mode === "expenses" && onSubmitExpenses) {
-          await onSubmitExpenses({ items: items as BulkExpenseItem[] })
-        } else if (mode === "incomes" && onSubmitIncomes) {
-          await onSubmitIncomes({ items: items as BulkIncomeItem[] })
+          for (let index = 0; index < values.items.length; index += 1) {
+            const result = processIncomeItem(values.items[index])
+            if (result.error) {
+              form.setError(`items.${index}.${result.error.field}`, {
+                type: "manual",
+                message: t(result.error.messageKey),
+              })
+              toast.error(t(result.error.messageKey))
+              return
+            }
+            items.push(result.item as BulkIncomeItem)
+          }
+
+          if (onSubmitIncomes) {
+            await onSubmitIncomes({ items })
+          }
         }
 
         form.reset()
@@ -296,7 +217,16 @@ export function useBulkImportForm({
         setSubmitting(false)
       }
     },
-    [mode, processItem, onSubmitExpenses, onSubmitIncomes, onClose, form],
+    [
+      form,
+      mode,
+      onClose,
+      onSubmitExpenses,
+      onSubmitIncomes,
+      processExpenseItem,
+      processIncomeItem,
+      t,
+    ],
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

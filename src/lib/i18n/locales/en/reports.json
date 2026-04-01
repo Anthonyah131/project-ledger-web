@@ -1,7 +1,7 @@
 {
   "reports": {
     "title": "Reports",
-    "subtitle": "Generate detailed reports by project, payment method, income, partners, or workspace.",
+    "subtitle": "Generate detailed reports by project, payment method, income, or partners.",
     "from": "From",
     "to": "To",
     "generate": "Generate",
@@ -20,17 +20,12 @@
       "incomes": "Income",
       "paymentMethods": "Payment methods",
       "partnerBalances": "Partner balances",
-      "partnerGeneral": "General partner",
-      "workspace": "Workspace"
+      "partnerGeneral": "General partner"
     },
     "projectLabel": "Project",
     "partnerLabel": "Partner",
-    "workspaceLabel": "Workspace",
     "selectProjectPlaceholder": "Select project",
     "selectPartnerPlaceholder": "Select partner",
-    "selectWorkspacePlaceholder": "Select workspace",
-    "referenceCurrency": "Reference currency",
-    "referenceCurrencyPlaceholder": "e.g. USD",
     "paymentMethodsLabel": "Payment methods",
     "paymentMethodsAll": "All",
     "paymentMethodsAllLabel": "All methods",
@@ -46,9 +41,7 @@
       "selectProjectToGenerate": "Select a project to generate the report.",
       "selectProjectToExport": "Select a project to export.",
       "selectPartnerToGenerate": "Select a partner to generate the report.",
-      "selectPartnerToExport": "Select a partner to export.",
-      "selectWorkspaceToGenerate": "Select a workspace to generate the report.",
-      "selectWorkspaceToExport": "Select a workspace to export."
+      "selectPartnerToExport": "Select a partner to export."
     },
     "errors": {
       "generate": "Error generating report",
@@ -148,22 +141,6 @@
       "altNet": "net",
       "showingOf": "Showing {shown} of {total} income entries. Export the full report to Excel or PDF to see all income.",
       "noMonthDetail": "No income detail for this month."
-    },
-    "workspace": {
-      "totalExpensesCount": "Total expenses",
-      "workspaceLabel": "Workspace",
-      "projectsLabel": "Projects",
-      "noCurrencyHint": "No reference currency was provided. Consolidated totals are not available. Each project shows its amounts in its own currency.",
-      "projectBreakdownTitle": "Project breakdown",
-      "projectBreakdownDesc": "Financial summary of each project in the workspace",
-      "expensesLabel": "Expenses",
-      "incomesLabel": "Income",
-      "netBalanceLabel": "Net balance",
-      "expensesAndProjects": "{expenses} expenses · {projects} project",
-      "expensesAndProjectsPlural": "{expenses} expenses · {projects} projects",
-      "categoryBreakdownTitle": "Category breakdown",
-      "categoryBreakdownDesc": "Consolidated spending by category across all projects",
-      "monthlyTrendDesc": "Monthly evolution of expenses, income and net balance for the workspace"
     },
     "partnerBalances": {
       "warningTitle": "{count} transaction(s) missing exchange rate configuration",

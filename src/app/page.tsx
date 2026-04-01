@@ -3,15 +3,17 @@ import { Features } from "@/components/landing/features";
 import { Footer } from "@/components/landing/footer";
 import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
+import { LandingMotionBootstrap } from "@/components/landing/landing-motion-bootstrap";
 import { Navbar } from "@/components/landing/navbar";
 import { Pricing } from "@/components/landing/pricing";
 import { Stats } from "@/components/landing/stats";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-lm-page="landing">
       <Navbar />
       <main>
+        <LandingMotionBootstrap />
         <Hero />
         <Stats />
         <Features />

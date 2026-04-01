@@ -7,7 +7,7 @@
 // 3) Project income report (per project)
 // 4) Partner balances report (per project, partners-enabled only)
 // 5) Partner general report (per partner)
-// 6) Workspace report (per workspace, admin only)
+// 6) (removed) Workspace report
 
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useSearchParams } from "next/navigation"
@@ -19,7 +19,6 @@ import { usePaymentMethodReport } from "@/hooks/reports/use-payment-method-repor
 import { useIncomeReport } from "@/hooks/reports/use-income-report"
 import { usePartnerBalancesReport } from "@/hooks/reports/use-partner-balances-report"
 import { usePartnerGeneralReport } from "@/hooks/reports/use-partner-general-report"
-import { useWorkspaceReport } from "@/hooks/reports/use-workspace-report"
 import { isIsoDateString } from "@/lib/date-utils"
 
 import { ReportsExpensesTab } from "@/views/reports/tabs/reports-expenses-tab"
@@ -27,15 +26,14 @@ import { ReportsPaymentMethodsTab } from "@/views/reports/tabs/reports-payment-m
 import { ReportsIncomesTab } from "@/views/reports/tabs/reports-incomes-tab"
 import { ReportsPartnerBalancesTab } from "@/views/reports/tabs/reports-partner-balances-tab"
 import { ReportsPartnerGeneralTab } from "@/views/reports/tabs/reports-partner-general-tab"
-import { ReportsWorkspaceTab } from "@/views/reports/tabs/reports-workspace-tab"
 import { useLanguage } from "@/context/language-context"
 
-const VALID_TABS = ["expenses", "payment-methods", "incomes", "partner-balances", "partner-general", "workspace"] as const
+const VALID_TABS = ["expenses", "payment-methods", "incomes", "partner-balances", "partner-general"] as const
 
 export function ReportsView() {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
-  const { projects, paymentMethods, workspaces, partners, loading: catalogsLoading } = useReportsCatalogs()
+  const { projects, paymentMethods, partners, loading: catalogsLoading } = useReportsCatalogs()
 
   // ── Hooks ──────────────────────────────────────────────────────────────
   const {
@@ -93,17 +91,6 @@ export function ReportsView() {
     fetchReport: fetchPartnerGeneralReport,
     exportReport: exportPartnerGeneralReport,
   } = usePartnerGeneralReport()
-
-  const {
-    report: workspaceReport,
-    loading: workspaceLoading,
-    exporting: workspaceExporting,
-    filters: workspaceFilters,
-    dateRangeError: workspaceDateRangeError,
-    updateFilter: updateWorkspaceFilter,
-    fetchReport: fetchWorkspaceReport,
-    exportReport: exportWorkspaceReport,
-  } = useWorkspaceReport()
 
   const prefillAppliedRef = useRef(false)
   const autoGeneratePendingRef = useRef(false)
@@ -213,16 +200,6 @@ export function ReportsView() {
     [exportPartnerGeneralReport],
   )
 
-  const handleWorkspaceChange = useCallback(
-    (value: string) => updateWorkspaceFilter("workspaceId", value),
-    [updateWorkspaceFilter],
-  )
-
-  const handleWorkspaceCurrencyChange = useCallback(
-    (value: string) => updateWorkspaceFilter("currency", value),
-    [updateWorkspaceFilter],
-  )
-
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
       {/* Page heading */}
@@ -236,13 +213,12 @@ export function ReportsView() {
       </div>
 
       <Tabs defaultValue={initialTab}>
-        <TabsList variant="line">
+        <TabsList variant="line" className="w-full flex-wrap gap-y-1 p-3">
           <TabsTrigger value="expenses">{t("reports.tabs.expenses")}</TabsTrigger>
           <TabsTrigger value="incomes">{t("reports.tabs.incomes")}</TabsTrigger>
           <TabsTrigger value="payment-methods">{t("reports.tabs.paymentMethods")}</TabsTrigger>
           <TabsTrigger value="partner-balances">{t("reports.tabs.partnerBalances")}</TabsTrigger>
           <TabsTrigger value="partner-general">{t("reports.tabs.partnerGeneral")}</TabsTrigger>
-          <TabsTrigger value="workspace">{t("reports.tabs.workspace")}</TabsTrigger>
         </TabsList>
 
         <ReportsExpensesTab
@@ -325,23 +301,6 @@ export function ReportsView() {
           onExport={handlePartnerGeneralExport}
         />
 
-        <ReportsWorkspaceTab
-          workspaces={workspaces}
-          from={workspaceFilters.from}
-          to={workspaceFilters.to}
-          workspaceId={workspaceFilters.workspaceId}
-          currency={workspaceFilters.currency}
-          dateRangeError={workspaceDateRangeError}
-          loading={workspaceLoading}
-          exporting={workspaceExporting}
-          report={workspaceReport}
-          onFromChange={(value) => updateWorkspaceFilter("from", value)}
-          onToChange={(value) => updateWorkspaceFilter("to", value)}
-          onWorkspaceChange={handleWorkspaceChange}
-          onCurrencyChange={handleWorkspaceCurrencyChange}
-          onGenerate={fetchWorkspaceReport}
-          onExport={exportWorkspaceReport}
-        />
       </Tabs>
     </div>
   )

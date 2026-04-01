@@ -14,7 +14,6 @@ import type {
   ProjectIncomeReportResponse,
   PartnerBalancesReportResponse,
   PaymentMethodReportResponse,
-  WorkspaceReportResponse,
   PartnerGeneralReportResponse,
 } from "@/types/report";
 
@@ -233,37 +232,3 @@ export async function getPartnerGeneralReport(
   return downloadBlobReport(path);
 }
 
-// ─── Workspace report (JSON / Excel / PDF) ──────────────────────────────────
-
-export interface WorkspaceReportParams extends ReportDateRange {
-  currency?: string;
-  format?: ReportFormat;
-}
-
-/**
- * GET /api/workspaces/{workspaceId}/reports/summary
- *
- * When format=json, returns the parsed JSON response.
- * When format=excel or pdf, triggers a browser download.
- * Pass `currency` to enable consolidated totals across projects.
- */
-export async function getWorkspaceReport(
-  workspaceId: string,
-  params: WorkspaceReportParams = {},
-): Promise<WorkspaceReportResponse | void> {
-  const format = params.format ?? "json";
-
-  const query = new URLSearchParams();
-  if (params.from) query.set("from", params.from);
-  if (params.to) query.set("to", params.to);
-  if (params.currency) query.set("currency", params.currency);
-  query.set("format", format);
-
-  const path = `/workspaces/${workspaceId}/reports/summary?${query.toString()}`;
-
-  if (format === "json") {
-    return api.get<WorkspaceReportResponse>(path);
-  }
-
-  return downloadBlobReport(path);
-}

@@ -33,8 +33,8 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
     return (
       <div className="bg-card rounded-xl border border-violet-500/20 overflow-hidden shadow-sm">
         <div className="flex">
-          <div className="w-1.5 bg-gradient-to-b from-violet-500 to-purple-600 shrink-0" />
-          <div className="flex-1 px-6 py-5 bg-gradient-to-r from-violet-500/5 to-transparent">
+          <div className="w-1.5 bg-linear-to-b from-violet-500 to-purple-600 shrink-0" />
+          <div className="flex-1 px-6 py-5 bg-linear-to-r from-violet-500/5 to-transparent">
             <Skeleton className="h-6 w-48" />
             <div className="flex items-center gap-2 mt-3">
               <Skeleton className="h-5 w-12 rounded-full" />
@@ -51,9 +51,9 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
     <div className="bg-card rounded-xl border border-violet-500/20 overflow-hidden shadow-sm shadow-violet-500/5">
       <div className="flex">
         {/* Vivid gradient accent bar */}
-        <div className="w-1.5 shrink-0 bg-gradient-to-b from-violet-500 via-purple-600 to-fuchsia-600" />
+        <div className="w-1.5 shrink-0 bg-linear-to-b from-violet-500 via-purple-600 to-fuchsia-600" />
 
-        <div className="flex-1 flex items-start justify-between px-6 py-5 bg-gradient-to-r from-violet-500/5 via-transparent to-transparent">
+        <div className="flex-1 flex items-start justify-between px-6 py-5 bg-linear-to-r from-violet-500/5 via-transparent to-transparent">
           {/* Info */}
           <div>
             <div className="flex items-center gap-2.5">
@@ -78,7 +78,7 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
                 className={cn(
                   "text-[11px] font-semibold",
                   project.userRole === "owner"
-                    ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 shadow-sm shadow-violet-500/30"
+                    ? "bg-linear-to-r from-violet-600 to-purple-600 text-white border-0 shadow-sm shadow-violet-500/30"
                     : "bg-violet-500/10 text-violet-600 dark:text-violet-300 border-violet-500/30"
                 )}
               >

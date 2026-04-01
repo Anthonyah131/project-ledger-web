@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,6 +17,7 @@ import {
 
 export function NavSecondary({
   items,
+  sectionLabel,
   ...props
 }: {
   items: {
@@ -23,11 +25,13 @@ export function NavSecondary({
     url: string
     icon: Icon
   }[]
+  sectionLabel?: string
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const pathname = usePathname()
 
   return (
     <SidebarGroup {...props}>
+      {sectionLabel ? <SidebarGroupLabel>{sectionLabel}</SidebarGroupLabel> : null}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (

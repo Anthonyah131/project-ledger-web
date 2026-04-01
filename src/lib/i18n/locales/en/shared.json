@@ -123,6 +123,11 @@
     "admin": "Administration",
     "partners": "Partners",
     "help": "Help",
-    "users": "Users"
+    "users": "Users",
+    "sections": {
+      "main": "Main",
+      "assistant": "Assistant",
+      "support": "Support"
+    }
   }
 }

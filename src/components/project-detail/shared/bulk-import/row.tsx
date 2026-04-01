@@ -73,7 +73,12 @@ export const BulkImportRow = memo(function BulkImportRow({
 
   const selectedPM = paymentMethods.find((p) => p.id === watchedPM)
   const pmCurrency = selectedPM?.currency ?? ""
-  const showExchangeRate = pmCurrency !== "" && pmCurrency !== projectCurrency
+  const normalizedOriginalCurrency = String(watchedCurrency ?? "").trim().toUpperCase()
+  const normalizedProjectCurrency = String(projectCurrency ?? "").trim().toUpperCase()
+  const showExchangeRate =
+    normalizedOriginalCurrency.length > 0 &&
+    normalizedProjectCurrency.length > 0 &&
+    normalizedOriginalCurrency !== normalizedProjectCurrency
   const showAccountAmount =
     mode === "incomes" &&
     pmCurrency !== "" &&
@@ -97,13 +102,15 @@ export const BulkImportRow = memo(function BulkImportRow({
 
   // Sync originalCurrency from selected payment method
   useEffect(() => {
+    if (mode !== "expenses") return
+
     if (pmCurrency && getValues(`items.${index}.originalCurrency`) !== pmCurrency) {
       setValue(`items.${index}.originalCurrency`, pmCurrency)
       if (pmCurrency === projectCurrency) {
         setValue(`items.${index}.exchangeRate`, "1")
       }
     }
-  }, [pmCurrency, index, setValue, getValues, projectCurrency])
+  }, [mode, pmCurrency, index, setValue, getValues, projectCurrency])
 
   // Auto-calculate convertedAmount = amount × rate
   useEffect(() => {
@@ -433,6 +440,7 @@ export const BulkImportRow = memo(function BulkImportRow({
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           partnersEnabled={partnersEnabled}
           obligations={obligations}
+          paymentMethods={paymentMethods}
           form={form}
           showExchangeRate={showExchangeRate}
           showAccountAmount={showAccountAmount}

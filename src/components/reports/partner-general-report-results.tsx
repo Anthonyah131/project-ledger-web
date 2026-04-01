@@ -51,7 +51,7 @@ export function PartnerGeneralReportResults({ report }: Props) {
       {/* ── Stat strip ─────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-xl border bg-border overflow-hidden">
         <StatCell
-          label={t("reports.workspace.projectsLabel")}
+          label={t("reports.pm.projectsLabel")}
           value={String(totalProjects)}
           icon={<FolderKanban className="size-3.5" />}
         />
@@ -84,7 +84,7 @@ export function PartnerGeneralReportResults({ report }: Props) {
       {/* ── Payment methods ───────────────────────────────────── */}
       {report.paymentMethods.length > 0 && (
         <div className="rounded-xl border bg-card overflow-hidden">
-          <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border bg-gradient-to-r from-cyan-500/5 to-transparent">
+          <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border bg-linear-to-r from-cyan-500/5 to-transparent">
             <CreditCard className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
             <h3 className="text-sm font-semibold text-foreground">
               {t("reports.partnerGeneral.paymentMethodsTitle")}
