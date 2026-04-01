@@ -30,8 +30,8 @@ async def run_test():
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:3000/login
-        await page.goto("http://localhost:3000/login", wait_until="commit", timeout=10000)
+        # -> Navigate to https://project-ledger-web.vercel.app/login
+        await page.goto("https://project-ledger-web.vercel.app/login", wait_until="commit", timeout=10000)
         
         # -> Wait for the email input to be stable/visible, fill the email and password, and submit the login form.
         frame = context.pages[-1]
@@ -154,7 +154,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/div[4]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        await page.goto("http://localhost:3000/payment-methods", wait_until="commit", timeout=10000)
+        await page.goto("https://project-ledger-web.vercel.app/payment-methods", wait_until="commit", timeout=10000)
         
         # -> Click the '+ New' button on Payment methods to create a new payment method that can be used as the Destination account for the income.
         frame = context.pages[-1]

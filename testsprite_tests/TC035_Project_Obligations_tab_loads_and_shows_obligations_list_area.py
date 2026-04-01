@@ -30,8 +30,8 @@ async def run_test():
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:3000/login
-        await page.goto("http://localhost:3000/login", wait_until="commit", timeout=10000)
+        # -> Navigate to https://project-ledger-web.vercel.app/login
+        await page.goto("https://project-ledger-web.vercel.app/login", wait_until="commit", timeout=10000)
         
         # -> Wait for the page to stabilize, fill the email and password fields, and submit the login form to reach the dashboard.
         frame = context.pages[-1]
@@ -63,7 +63,7 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # -> Open the New Project page (create project) so the project can be created and then open it to reach the Obligations tab.
-        await page.goto("http://localhost:3000/projects/new", wait_until="commit", timeout=10000)
+        await page.goto("https://project-ledger-web.vercel.app/projects/new", wait_until="commit", timeout=10000)
         
         # -> Click the Obligations tab to open the Obligations view and verify list or empty state.
         frame = context.pages[-1]

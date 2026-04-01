@@ -30,8 +30,8 @@ async def run_test():
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:3000/login
-        await page.goto("http://localhost:3000/login", wait_until="commit", timeout=10000)
+        # -> Navigate to https://project-ledger-web.vercel.app/login
+        await page.goto("https://project-ledger-web.vercel.app/login", wait_until="commit", timeout=10000)
         
         # -> Wait for the email input to be stable, fill email and password, and submit the login form (click Log in).
         frame = context.pages[-1]

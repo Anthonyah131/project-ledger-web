@@ -30,8 +30,8 @@ async def run_test():
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:3000/login
-        await page.goto("http://localhost:3000/login", wait_until="commit", timeout=10000)
+        # -> Navigate to https://project-ledger-web.vercel.app/login
+        await page.goto("https://project-ledger-web.vercel.app/login", wait_until="commit", timeout=10000)
         
         # -> Wait for the email input to be stable, fill email and password, submit the login form.
         frame = context.pages[-1]
@@ -51,7 +51,7 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # -> Wait for the login process to complete, then navigate to /partners and verify the partners directory shows a list or an empty state.
-        await page.goto("http://localhost:3000/partners", wait_until="commit", timeout=10000)
+        await page.goto("https://project-ledger-web.vercel.app/partners", wait_until="commit", timeout=10000)
         
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]
