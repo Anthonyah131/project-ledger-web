@@ -1,0 +1,60 @@
+name: TestSprite E2E Tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: https://project-ledger-web.vercel.app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Playwright and dependencies
+        run: |
+          pip install playwright
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Replace localhost with deployed URL in test files
+        run: |
+          find testsprite_tests -name "*.py" -exec \
+            sed -i "s|http://localhost:3000|$BASE_URL|g" {} +
+
+      - name: Run TestSprite tests
+        run: |
+          PASS=0
+          FAIL=0
+          ERRORS=""
+
+          for test_file in testsprite_tests/TC*.py; do
+            test_name=$(basename "$test_file")
+            echo "Running: $test_name"
+            if python "$test_file" 2>&1; then
+              echo "✓ PASS: $test_name"
+              PASS=$((PASS + 1))
+            else
+              echo "✗ FAIL: $test_name"
+              FAIL=$((FAIL + 1))
+              ERRORS="$ERRORS\n- $test_name"
+            fi
+          done
+
+          echo ""
+          echo "Results: $PASS passed, $FAIL failed"
+
+          if [ $FAIL -gt 0 ]; then
+            echo -e "Failed tests:$ERRORS"
+            exit 1
+          fi

@@ -46,6 +46,18 @@ export function usePinnedTextNarrative(
       if (reduceMotion) return;
 
       const stepCount = phases.length;
+      const phaseWeights = phases.map((_, index) => (index === stepCount - 1 ? 1.6 : 1));
+      const totalPhaseWeight = phaseWeights.reduce((sum, weight) => sum + weight, 0);
+      const phaseStarts = phaseWeights.map((_, index) => {
+        const precedingWeight = phaseWeights
+          .slice(0, index)
+          .reduce((sum, weight) => sum + weight, 0);
+
+        return precedingWeight / totalPhaseWeight;
+      });
+      const phaseEnds = phaseWeights.map((weight, index) => {
+        return phaseStarts[index] + weight / totalPhaseWeight;
+      });
 
       const getViewportTier = () => {
         if (window.matchMedia("(min-width: 1024px)").matches) return "desktop" as const;
@@ -123,19 +135,25 @@ export function usePinnedTextNarrative(
           return;
         }
 
-        const segment = clampedProgress * (stepCount - 1);
-        const currentIndex = Math.floor(segment);
-        const nextIndex = Math.min(stepCount - 1, currentIndex + 1);
-        const mix = segment - currentIndex;
+        const currentIndex = phaseStarts.findIndex((start, index) => {
+          return clampedProgress >= start && clampedProgress < phaseEnds[index];
+        });
+        const safeCurrentIndex = currentIndex === -1 ? stepCount - 1 : currentIndex;
+        const currentStart = phaseStarts[safeCurrentIndex];
+        const currentEnd = phaseEnds[safeCurrentIndex];
+        const currentSpan = Math.max(currentEnd - currentStart, 0.0001);
+        const nextIndex = Math.min(stepCount - 1, safeCurrentIndex + 1);
+        const mix = (clampedProgress - currentStart) / currentSpan;
         const transitionWindow = 0.2;
         const transitionStart = 1 - transitionWindow;
-        const inTransition = mix >= transitionStart;
+        const hasNextPhase = safeCurrentIndex < stepCount - 1;
+        const inTransition = hasNextPhase && mix >= transitionStart;
         const localMix = inTransition
           ? (mix - transitionStart) / transitionWindow
           : 0;
 
         phases.forEach((phase, index) => {
-          if (index === currentIndex) {
+          if (index === safeCurrentIndex) {
             gsap.set(phase, {
               autoAlpha: inTransition ? 1 - localMix : 1,
               y: inTransition ? -16 * localMix : 0,
@@ -155,7 +173,7 @@ export function usePinnedTextNarrative(
         });
 
         markers.forEach((marker, index) => {
-          if (index === currentIndex) {
+          if (index === safeCurrentIndex) {
             gsap.set(marker, {
               autoAlpha: inTransition ? 1 - localMix * 0.48 : 1,
               x: inTransition ? 8 - 8 * localMix : 8,

@@ -6,11 +6,9 @@
 import {
   BarChart3,
   Bot,
+  Coins,
   CreditCard,
   FileSearch,
-  LayoutDashboard,
-  MessageSquare,
-  Receipt,
   Users,
 } from "lucide-react";
 
@@ -176,7 +174,7 @@ export function getPlanFeatureGroups(
 
 export function getPlanFeatures(slug: string, t: TFn, maxItems = 6): string[] {
   const { limits, capabilities } = getPlanFeatureGroups(slug, t, maxItems, maxItems);
-  const features = [...limits, ...capabilities];
+  const features = [...capabilities, ...limits];
   if (features.length === 0) return [t("billing.plans.default.description")];
   return features.slice(0, maxItems);
 }
@@ -244,9 +242,9 @@ export function getFaqCategories(t: TFn) {
 export function getFeatures(t: TFn) {
   return [
     {
-      icon: LayoutDashboard,
-      title: t("landing.features.dashboard.title"),
-      description: t("landing.features.dashboard.description"),
+      icon: Users,
+      title: t("landing.features.partners.title"),
+      description: t("landing.features.partners.description"),
     },
     {
       icon: CreditCard,
@@ -259,9 +257,9 @@ export function getFeatures(t: TFn) {
       description: t("landing.features.ocr.description"),
     },
     {
-      icon: Users,
-      title: t("landing.features.team.title"),
-      description: t("landing.features.team.description"),
+      icon: Coins,
+      title: t("landing.features.multiCurrency.title"),
+      description: t("landing.features.multiCurrency.description"),
     },
     {
       icon: BarChart3,
@@ -272,16 +270,6 @@ export function getFeatures(t: TFn) {
       icon: Bot,
       title: t("landing.features.chatbot.title"),
       description: t("landing.features.chatbot.description"),
-    },
-    {
-      icon: Receipt,
-      title: t("landing.features.categories.title"),
-      description: t("landing.features.categories.description"),
-    },
-    {
-      icon: MessageSquare,
-      title: t("landing.features.history.title"),
-      description: t("landing.features.history.description"),
     },
   ];
 }

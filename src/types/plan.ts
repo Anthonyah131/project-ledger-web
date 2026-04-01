@@ -22,6 +22,7 @@ export interface PlanPermissionsDto {
   canUseApi: boolean;
   canUseMultiCurrency: boolean;
   canSetBudgets: boolean;
+  canUsePartners: boolean;
 }
 
 export interface PlanLimitsDto {
@@ -33,6 +34,8 @@ export interface PlanLimitsDto {
   maxTeamMembersPerProject: number | null;
   maxAlternativeCurrenciesPerProject: number | null;
   maxIncomesPerMonth: number | null;
+  /** -1 = unlimited, 0 = feature not available */
+  maxDocumentReadsPerMonth: number | null;
 }
 
 export interface PlanResponse {
@@ -92,6 +95,7 @@ export interface Plan {
   canUseApi: boolean;
   canUseMultiCurrency: boolean;
   canSetBudgets: boolean;
+  canUsePartners: boolean;
 
   // ─── Numeric limits (JSONB) ────────────────────────────────
   /** Numeric limits in JSON; null = no limits applied */

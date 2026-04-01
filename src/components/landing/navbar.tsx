@@ -1,27 +1,60 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
 
+const HIDE_THRESHOLD = 120;
+const HOVER_REVEAL_ZONE = 20;
+
 export function Navbar() {
   const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const prevScrollY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 60);
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      const prev = prevScrollY.current;
+
+      setIsScrolled(currentY > 60);
+
+      if (currentY < HIDE_THRESHOLD) {
+        setIsVisible(true);
+      } else if (currentY > prev) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+
+      prevScrollY.current = currentY;
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (e.clientY < HOVER_REVEAL_ZONE) setIsVisible(true);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onMouseMove);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md transition-[border-color,background-color,box-shadow] duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md duration-300 transition-[transform,border-color,background-color,box-shadow] motion-reduce:transition-[border-color,background-color,box-shadow] ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      } ${
         isScrolled
           ? "border-border bg-background/95 shadow-sm shadow-black/10"
           : "border-border/50 bg-background/80"
       }`}
+      aria-hidden={!isVisible}
+      inert={!isVisible}
       data-lm-section="navbar"
       data-lm-reveal="shell"
     >

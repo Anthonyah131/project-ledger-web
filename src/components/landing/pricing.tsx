@@ -151,22 +151,6 @@ export function Pricing() {
                 </div>
 
                 <div className="mb-8 flex flex-1 flex-col gap-5">
-                  {hasPlanLimits && (
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        {t("billing.limits")}
-                      </p>
-                      <ul className="flex flex-col gap-2.5">
-                        {planLimits.map((limit) => (
-                          <li key={`${plan.id}-limit-${limit}`} className="flex items-center gap-2.5 text-sm">
-                            <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.id === highlightedPlanId ? "text-primary" : "text-muted-foreground"}`} />
-                            {limit}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
                   {hasPlanCapabilities && (
                     <div>
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -177,6 +161,22 @@ export function Pricing() {
                           <li key={`${plan.id}-feature-${feature}`} className="flex items-center gap-2.5 text-sm">
                             <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.id === highlightedPlanId ? "text-primary" : "text-muted-foreground"}`} />
                             {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {hasPlanLimits && (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {t("billing.limits")}
+                      </p>
+                      <ul className="flex flex-col gap-2.5">
+                        {planLimits.map((limit) => (
+                          <li key={`${plan.id}-limit-${limit}`} className="flex items-center gap-2.5 text-sm">
+                            <CheckCircle2 className={`h-4 w-4 shrink-0 ${plan.id === highlightedPlanId ? "text-primary" : "text-muted-foreground"}`} />
+                            {limit}
                           </li>
                         ))}
                       </ul>

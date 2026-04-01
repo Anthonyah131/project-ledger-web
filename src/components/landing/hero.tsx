@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { ChevronRight, Sparkles } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
 import { useHeroEntrance } from "@/hooks/animations/use-hero-entrance";
@@ -182,50 +181,6 @@ export function Hero() {
         <div className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-primary/10 blur-2xl" />
       </div>
 
-      <div className="mt-10 grid w-full max-w-5xl gap-4 md:grid-cols-2" data-lm-reveal="hero-assets">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card/80 p-3 backdrop-blur">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Hero image placeholder
-          </p>
-          <div className="relative aspect-16/10 overflow-hidden rounded-xl border border-border/60 bg-background/60">
-            <Image
-              src="/placeholders/landing-hero-shot.svg"
-              alt="Placeholder de imagen para hero"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={false}
-            />
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Reemplazar por: public/placeholders/landing-hero-shot.webp (ideal 1920x1200)
-          </p>
-        </div>
-
-        <div className="overflow-hidden rounded-2xl border border-border bg-card/80 p-3 backdrop-blur">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Hero video placeholder
-          </p>
-          <div className="relative aspect-16/10 overflow-hidden rounded-xl border border-border/60 bg-background/60">
-            <video
-              className="h-full w-full object-cover"
-              poster="/placeholders/landing-hero-video-poster.svg"
-              autoPlay
-              muted
-              loop
-              playsInline
-            >
-              <source src="/placeholders/landing-hero-loop.mp4" type="video/mp4" />
-            </video>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/50 to-transparent p-3">
-              <p className="text-xs text-white/90">Video demo recomendado: 6-10s, 24fps, sin audio</p>
-            </div>
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Reemplazar por: public/placeholders/landing-hero-loop.mp4 y poster webp
-          </p>
-        </div>
-      </div>
     </section>
   );
 }

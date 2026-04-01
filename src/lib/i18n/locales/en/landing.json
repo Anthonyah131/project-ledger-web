@@ -4,7 +4,7 @@
     "heroTitlePart1": "Financial control of",
     "heroTitleHighlight": "projects",
     "heroTitlePart2": "without friction",
-    "heroSubtitle": "Project Ledger lets you record expenses and income, manage payment methods, collaborate as a team and analyze your cash flow — all in one place, with AI that reads your receipts",
+    "heroSubtitle": "Manage projects with partners and splits, record expenses with OCR, operate across multiple currencies, and make decisions with Aria in one platform.",
     "ctaPrimary": "Start free — no card needed",
     "ctaSecondary": "View features",
     "freePlanBadge": "Free plan available forever",
@@ -19,28 +19,36 @@
     "viewFeature": "View {feature}",
     "features": {
       "dashboard": {
-        "title": "Per-project dashboard",
-        "description": "Centralize expenses, income and budget for each project in a clear panel. See the financial status in real time without opening spreadsheets."
+        "title": "Real-time project control",
+        "description": "Track balance, budget, obligations, and key movements for each project from one unified panel."
+      },
+      "partners": {
+        "title": "Partners & Splits",
+        "description": "Set partner percentages, settle balances, and close distributions without manual calculations or external sheets."
       },
       "paymentMethods": {
-        "title": "Payment methods with multi-currency",
-        "description": "Record which account or card each transaction comes from. Multi-currency support with automatic conversion to the project's currency."
+        "title": "Payment methods mapped to real cash flow",
+        "description": "Track where each movement comes from or goes to across card, bank transfer, cash, or account with full traceability."
       },
       "ocr": {
-        "title": "AI OCR — automatic capture",
-        "description": "Photograph a receipt or invoice and AI extracts the title, amount, date, reference number and more. Review and save in seconds."
+        "title": "AI OCR for receipts and invoices",
+        "description": "Scan receipts and let AI prefill title, amount, date, and reference so you can register faster with fewer errors."
+      },
+      "multiCurrency": {
+        "title": "Multiple currencies per project",
+        "description": "Operate in international scenarios and auto-convert to the project's base currency to keep financial reporting consistent."
       },
       "team": {
-        "title": "Shared team projects",
-        "description": "Invite collaborators with read or edit permissions. Everyone works on the same data in real time, without conflicts."
+        "title": "Role-based collaboration",
+        "description": "Invite members with project-level permissions so teams work on shared, auditable financial data."
       },
       "reports": {
-        "title": "Reports and analytics",
-        "description": "Generate expense and income reports by category, payment method, date range and more. Export and share with one click."
+        "title": "Exportable reports for professional closing",
+        "description": "Generate analysis by category, method, and period, then export results for clients, partners, or accounting workflows."
       },
       "chatbot": {
-        "title": "AI chatbot on your data",
-        "description": "Ask the AI assistant (Aria) about your projects and payment methods. Available exclusively on the Premium plan."
+        "title": "Aria AI chatbot",
+        "description": "Ask about anomalies, trends, and recommendations on your financial data to speed up strategic decisions."
       },
       "categories": {
         "title": "Expenses and income by category",
@@ -52,30 +60,31 @@
       }
     },
     "howItWorks": {
-      "title": "From zero to full control in minutes",
-      "subtitle": "No steep learning curves. Set it up once, use it every day.",
+      "title": "From financial chaos to actionable control",
+      "subtitle": "A clear workflow to configure, register, collect, and close each project using real data.",
+      "stepLabel": "Step {number}",
       "step1": {
-        "title": "Create your free account",
-        "description": "Sign up in seconds. No credit card. The Free plan gives you immediate access to 2 projects and essential features."
+        "title": "Create your project and team",
+        "description": "Define the project, currency, and members in minutes so you start with a clear operational base from day one."
       },
       "step2": {
-        "title": "Set up your project",
-        "description": "Create a project, define its currency, payment methods and categories. Invite your team if you work collaboratively."
+        "title": "Register with OCR",
+        "description": "Scan receipts with AI or enter movements manually to capture expenses and income without repetitive admin work."
       },
       "step3": {
-        "title": "Record with AI or manually",
-        "description": "Upload a photo of the receipt so AI fills the form, or enter it manually. Every transaction is organized instantly."
+        "title": "Manage obligations",
+        "description": "Track pending receivables and commitments per project to prevent cash leakage and keep operations moving."
       },
       "step4": {
-        "title": "Analyze and decide better",
-        "description": "Check reports, ask the AI chatbot about your cash flow and make decisions based on real data."
+        "title": "Close and analyze",
+        "description": "Consolidate reports, execute partner splits, and validate outcomes with Aria to close cycles with confidence."
       }
     },
     "stats": {
-      "plans": { "value": "3 plans", "label": "Free, Basic and Premium" },
-      "speed": { "value": "< 30 s", "label": "To record an expense with AI" },
-      "currency": { "value": "Multi-currency", "label": "Automatic conversion" },
-      "control": { "value": "100%", "label": "Control of your cash flow" }
+      "plans": { "value": "Up to 3", "label": "simultaneous projects on Free" },
+      "speed": { "value": "Up to 10", "label": "OCR reads per month on Basic" },
+      "currency": { "value": "Up to 3", "label": "currencies per project on Basic" },
+      "control": { "value": "Unlimited", "label": "projects and OCR on Premium" }
     },
     "ctaSubtitleFull": "Start today with the Free plan — no card, no expiration date. Upgrade whenever your project needs it.",
     "mockDashboard": {

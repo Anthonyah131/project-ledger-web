@@ -43,10 +43,6 @@ export function HowItWorks() {
           data-lm-story="shell"
         >
           <div className="relative rounded-3xl border border-border bg-card/90 p-8 shadow-xl shadow-black/10 backdrop-blur">
-            <div className="mb-5 inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-              Scroll Story
-            </div>
-
             <div className="relative min-h-64 md:min-h-72" data-lm-story="pin">
               {steps.map(({ number, title, description }, index) => (
                 <article
@@ -55,7 +51,7 @@ export function HowItWorks() {
                   data-lm-story="phase"
                   data-lm-step-index={String(index)}
                 >
-                  <p className="text-sm font-semibold text-primary">Paso {number}</p>
+                  <p className="text-sm font-semibold text-primary">{t("landing.howItWorks.stepLabel", { number })}</p>
                   <h3 className="mt-3 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                     {title}
                   </h3>
@@ -85,7 +81,7 @@ export function HowItWorks() {
               {steps.map(({ number, title, description }, index) => (
                 <div
                   key={number}
-                  className="relative pl-16 will-change-transform"
+                  className="relative pl-16"
                   data-lm-story="marker"
                   data-lm-step-index={String(index)}
                 >
@@ -98,21 +94,6 @@ export function HowItWorks() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Steps */}
-        <div className="relative mt-20 grid gap-8 lg:grid-cols-4" data-lm-reveal="steps-grid">
-          <div className="absolute left-0 right-0 top-12 hidden h-px bg-border lg:block" />
-
-          {steps.map(({ number, title, description }) => (
-            <div key={`card-${number}`} className="relative flex flex-col items-center text-center" data-lm-reveal="step-item">
-              <div className="relative z-10 mb-6 flex h-20 w-20 flex-col items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 shadow-md shadow-primary/10">
-                <span className="text-xl font-bold text-primary">{number}</span>
-              </div>
-              <h3 className="mb-2 text-base font-semibold text-foreground">{title}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-            </div>
-          ))}
         </div>
       </div>
     </section>
