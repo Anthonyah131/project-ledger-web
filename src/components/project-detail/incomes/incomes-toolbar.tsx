@@ -101,11 +101,11 @@ export function IncomesToolbar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="incomedate:desc">{t("incomes.sortDateDesc")}</SelectItem>
-            <SelectItem value="incomedate:asc">{t("incomes.sortDateAsc")}</SelectItem>
+            <SelectItem value="incomeDate:desc">{t("incomes.sortDateDesc")}</SelectItem>
+            <SelectItem value="incomeDate:asc">{t("incomes.sortDateAsc")}</SelectItem>
             <SelectItem value="title:asc">{t("incomes.sortTitleAZ")}</SelectItem>
-            <SelectItem value="amount:desc">{t("incomes.sortAmountDesc")}</SelectItem>
-            <SelectItem value="createdat:desc">{t("incomes.sortRecentlyCreated")}</SelectItem>
+            <SelectItem value="convertedAmount:desc">{t("incomes.sortAmountDesc")}</SelectItem>
+            <SelectItem value="createdAt:desc">{t("incomes.sortRecentlyCreated")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>

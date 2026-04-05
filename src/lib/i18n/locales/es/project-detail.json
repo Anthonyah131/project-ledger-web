@@ -440,6 +440,7 @@
       "load": "Error al cargar liquidaciones",
       "loadBalance": "Error al cargar balances",
       "loadSuggestions": "Error al calcular sugerencias",
+      "loadHistory": "Error al cargar historial del partner",
       "create": "Error al registrar liquidación",
       "update": "Error al actualizar liquidación",
       "delete": "Error al eliminar liquidación"

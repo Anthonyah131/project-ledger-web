@@ -72,7 +72,7 @@ export function HelpPageClient() {
   const faqCategories = getFaqCategories(t);
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden rounded-xl border border-border bg-linear-to-br from-primary/5 via-background to-background px-6 py-12 mb-8">
         {/* decorative circle */}

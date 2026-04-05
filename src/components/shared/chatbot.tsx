@@ -16,6 +16,7 @@ export default function Chatbot() {
     messages,
     input,
     sending,
+    isStreaming,
     charsLeft,
     setClampedInput,
     sendMessage,
@@ -97,14 +98,22 @@ export default function Chatbot() {
           {/* Messages */}
           <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
             {messages.length === 0 && (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                  <Bot className="h-6 w-6 text-muted-foreground" />
+              <div className="flex flex-col gap-1 items-start">
+                <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3.5 py-2.5 text-sm leading-relaxed text-foreground flex flex-col gap-2">
+                  <p className="font-medium">{t('chatbot.greeting')} 👋</p>
+                  <p>{t('chatbot.welcomeBody')}</p>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs text-muted-foreground">{t('chatbot.welcomeExamplesLabel')}</p>
+                    <ul className="flex flex-col gap-1">
+                      <li className="text-xs bg-background rounded-lg px-2.5 py-1.5 border border-border">
+                        &ldquo;{t('chatbot.welcomeExample1')}&rdquo;
+                      </li>
+                      <li className="text-xs bg-background rounded-lg px-2.5 py-1.5 border border-border">
+                        &ldquo;{t('chatbot.welcomeExample2')}&rdquo;
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-                <p className="text-sm font-medium">{t('chatbot.greeting')}</p>
-                <p className="text-xs text-muted-foreground max-w-60">
-                  {t('chatbot.greetingSubtitle')}
-                </p>
               </div>
             )}
 
@@ -141,8 +150,8 @@ export default function Chatbot() {
               </div>
             ))}
 
-            {/* Typing indicator */}
-            {sending && (
+            {/* Typing indicator — only while waiting for the first token */}
+            {sending && !isStreaming && (
               <div className="flex items-start">
                 <div className="rounded-2xl rounded-tl-sm bg-muted px-3.5 py-2.5">
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />

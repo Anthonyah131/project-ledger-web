@@ -440,6 +440,7 @@
       "load": "Error loading settlements",
       "loadBalance": "Error loading balances",
       "loadSuggestions": "Error calculating suggestions",
+      "loadHistory": "Error loading partner history",
       "create": "Error recording settlement",
       "update": "Error updating settlement",
       "delete": "Error deleting settlement"

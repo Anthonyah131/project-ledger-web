@@ -29,7 +29,7 @@ export function useProjectIncomes(projectId: string) {
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const [sort, setSort] = useState("incomedate:desc")
+  const [sort, setSort] = useState("incomeDate:desc")
 
   const [query, setQuery] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState("")

@@ -1,10 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/context/auth-context'
 import { useLanguage } from '@/context/language-context'
 import { getUserProfile } from '@/services/plan-service'
-import { sendChatbotMessage, type ChatHistoryEntry } from '@/services/chatbot-service'
+import { streamChatbotMessage, type ChatHistoryEntry, type ChatbotStreamMeta } from '@/services/chatbot-service'
 
 const PREMIUM_PLAN_ID = 'f59a2b7b-5edf-4e8b-9d99-d6adf8adf4ac'
 const PREMIUM_SLUGS = ['premium', 'pro', 'enterprise']
@@ -36,6 +36,9 @@ export function useChatbot() {
   const [history, setHistory] = useState<ChatHistoryEntry[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
+
+  const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     if (isLoading) return
@@ -63,7 +66,7 @@ export function useChatbot() {
     setInput(value.slice(0, MAX_CHARS))
   }, [])
 
-  const sendMessage = useCallback(async () => {
+  const sendMessage = useCallback(() => {
     const text = input.trim()
     if (!text || sending) return
 
@@ -72,40 +75,77 @@ export function useChatbot() {
     setInput('')
     setSending(true)
 
-    try {
-      const data = await sendChatbotMessage(text, history)
-      const botMsg: ChatbotMessage = {
-        id: crypto.randomUUID(),
-        role: 'bot',
-        text: data.response,
-        provider: data.provider,
-        model: data.model,
-        toolCallsExecuted: data.toolCallsExecuted,
-        usedFinancialContext: data.usedFinancialContext,
-      }
-      setMessages((prev) => [...prev, botMsg])
-      setHistory((prev) => [
-        ...prev,
-        { role: 'user', content: text },
-        { role: 'assistant', content: data.response },
-      ])
-    } catch (err: unknown) {
-      const isServiceUnavailable =
-        err instanceof Error && err.message.includes('503')
-      const botMsg: ChatbotMessage = {
-        id: crypto.randomUUID(),
-        role: 'bot',
-        text: isServiceUnavailable
-          ? t('chatbot.unavailable')
-          : t('chatbot.errorMessage'),
-      }
-      setMessages((prev) => [...prev, botMsg])
-    } finally {
-      setSending(false)
-    }
+    const botId = crypto.randomUUID()
+    let accumulated = ''
+    let hasStartedStreaming = false
+    let metaInfo: Partial<Pick<ChatbotMessage, 'provider' | 'model' | 'toolCallsExecuted' | 'usedFinancialContext'>> = {}
+
+    const abort = new AbortController()
+    abortRef.current = abort
+
+    streamChatbotMessage(
+      text,
+      history,
+      {
+        onMeta: (meta: ChatbotStreamMeta) => {
+          metaInfo = {
+            provider: meta.provider,
+            model: meta.model,
+            toolCallsExecuted: meta.toolCallsExecuted,
+            usedFinancialContext: meta.usedFinancialContext,
+          }
+        },
+        onChunk: (chunk: string) => {
+          accumulated += chunk
+          if (!hasStartedStreaming) {
+            hasStartedStreaming = true
+            setIsStreaming(true)
+          }
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === botId)
+            if (!exists) {
+              return [...prev, { id: botId, role: 'bot', text: accumulated, ...metaInfo }]
+            }
+            return prev.map((m) => m.id === botId ? { ...m, text: accumulated, ...metaInfo } : m)
+          })
+        },
+        onError: (msg: string) => {
+          const isUnavailable = msg === 'ChatbotNoProvidersEnabled' || msg.includes('http_503') || msg.includes('503')
+          const errorText = isUnavailable ? t('chatbot.unavailable') : t('chatbot.errorMessage')
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === botId)
+            if (exists) {
+              return prev.map((m) => m.id === botId ? { ...m, text: errorText } : m)
+            }
+            return [...prev, { id: botId, role: 'bot', text: errorText }]
+          })
+          setIsStreaming(false)
+        },
+        onDone: () => {
+          if (accumulated) {
+            setMessages((prev) =>
+              prev.map((m) => m.id === botId ? { ...m, ...metaInfo } : m)
+            )
+            setHistory((prev) => [
+              ...prev,
+              { role: 'user', content: text },
+              { role: 'assistant', content: accumulated },
+            ])
+          }
+          setIsStreaming(false)
+          setSending(false)
+          abortRef.current = null
+        },
+      },
+      abort.signal,
+    )
   }, [history, input, sending, t])
 
   const startNewConversation = useCallback(() => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setIsStreaming(false)
+    setSending(false)
     setMessages([])
     setHistory([])
     setInput('')
@@ -118,6 +158,7 @@ export function useChatbot() {
     messages,
     input,
     sending,
+    isStreaming,
     charsLeft,
     setClampedInput,
     sendMessage,

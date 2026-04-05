@@ -37,13 +37,13 @@ export const socialLinks = [
   {
     id: "linkedin",
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/anthonyah131",
+    href: "https://www.linkedin.com/in/anthonyah-webdev/",
     icon: "linkedin",
   },
   {
     id: "instagram",
     label: "Instagram",
-    href: "https://www.instagram.com/anthonyah131",
+    href: "https://www.instagram.com/anthah_131/",
     icon: "instagram",
   },
   {
@@ -112,7 +112,7 @@ export function getContactChannels(t: TFn) {
       id: "linkedin",
       label: t("site.contact.linkedin.label"),
       description: t("site.contact.linkedin.description"),
-      href: "https://www.linkedin.com/in/anthonyah131",
+      href: "https://www.linkedin.com/in/anthonyah-webdev/",
       newTab: true,
       icon: "linkedin",
       cta: t("site.contact.linkedin.cta"),
@@ -121,7 +121,7 @@ export function getContactChannels(t: TFn) {
       id: "instagram",
       label: t("site.contact.instagram.label"),
       description: t("site.contact.instagram.description"),
-      href: "https://www.instagram.com/anthonyah131",
+      href: "https://www.instagram.com/anthah_131/",
       newTab: true,
       icon: "instagram",
       cta: t("site.contact.instagram.cta"),

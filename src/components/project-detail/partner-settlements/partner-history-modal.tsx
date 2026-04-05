@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { useLanguage } from "@/context/language-context"
-import { Loader2, ArrowUpRight, ArrowDownLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { Loader2, ArrowUpRight, ArrowDownLeft, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -63,7 +63,7 @@ export function PartnerHistoryModal({
       })
       setHistory(data)
     } catch (err) {
-      toastApiError(err, "Error al cargar historial")
+      toastApiError(err, t("partnerSettlements.errors.loadHistory"))
     } finally {
       setLoading(false)
     }
@@ -81,7 +81,7 @@ export function PartnerHistoryModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg max-w-[95vw] max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-x-hidden overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="space-y-1">
           <DialogTitle className="text-base sm:text-lg pr-6">{t("partnerSettlements.historyTitle", { name: partnerName })}</DialogTitle>
           <DialogDescription className="text-xs sm:text-sm">
@@ -94,14 +94,14 @@ export function PartnerHistoryModal({
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : !history ? null : (
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 w-full min-w-0">
             {/* Settlements */}
             {history.settlements.length > 0 && (
               <section>
                 <h3 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-2">
                   {t("partnerSettlements.settlementsSection")}
                 </h3>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 w-full min-w-0">
                   {history.settlements.map((s) => (
                     <SettlementHistoryRow key={s.id} item={s} projectCurrency={projectCurrency} />
                   ))}
@@ -125,7 +125,7 @@ export function PartnerHistoryModal({
                   {t("partnerSettlements.noTransactions")}
                 </p>
               ) : (
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 w-full min-w-0">
                   {history.transactions.items.map((t) => (
                     <TransactionHistoryRow
                       key={t.transactionId}
@@ -176,7 +176,6 @@ export function PartnerHistoryModal({
 
 function SettlementHistoryRow({
   item,
-  projectCurrency,
 }: {
   item: PartnerHistorySettlementItem
   projectCurrency: string
@@ -184,7 +183,7 @@ function SettlementHistoryRow({
   const { t } = useLanguage()
   const isPaid = item.type === "settlement_paid"
   return (
-    <div className="flex items-start sm:items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg border border-border/50 bg-muted/30">
+    <div className="flex items-start sm:items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg border border-border/50 bg-muted/30 overflow-hidden w-full min-w-0">
       {isPaid ? (
         <ArrowUpRight className="size-4 text-rose-500 shrink-0 mt-0.5 sm:mt-0" />
       ) : (
@@ -224,25 +223,25 @@ function TransactionHistoryRow({
   const { t } = useLanguage()
   const isExpense = item.type === "expense"
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2.5 sm:py-2.5 rounded-lg border border-border/50">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2.5 rounded-lg border border-border/50 overflow-hidden w-full min-w-0">
       <div className="flex-1 min-w-0">
         {/* Title row with badge */}
-        <div className="flex items-start sm:items-center gap-2">
+        <div className="flex items-start sm:items-center gap-2 min-w-0">
           <Badge
             variant="outline"
             className={`text-[9px] sm:text-[10px] py-0 px-1 sm:px-1.5 shrink-0 ${isExpense ? "text-rose-600 border-rose-500/40" : "text-emerald-600 border-emerald-500/40"}`}
           >
             {isExpense ? t("partnerSettlements.expenseLabel") : t("partnerSettlements.incomeLabel")}
           </Badge>
-          <p className="text-xs sm:text-sm text-foreground truncate font-medium">{item.title}</p>
+          <p className="text-xs sm:text-sm text-foreground truncate font-medium min-w-0">{item.title}</p>
         </div>
         {/* Date and paying partner */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-          <p className="text-[10px] sm:text-[11px] text-muted-foreground">{formatDate(item.date)}</p>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 min-w-0">
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground shrink-0">{formatDate(item.date)}</p>
           {item.payingPartner && (
             <>
               <span className="text-muted-foreground/40 hidden sm:inline">·</span>
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate min-w-0">
                 {t("partnerSettlements.payingPartnerPrefix")} {item.payingPartner}
               </p>
             </>

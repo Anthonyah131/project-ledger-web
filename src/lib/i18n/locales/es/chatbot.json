@@ -15,6 +15,10 @@
     "send": "Enviar mensaje",
     "newConversation": "Nueva conversación",
     "realTimeData": "Datos consultados en tiempo real",
-    "sidebarButton": "Asistente"
+    "sidebarButton": "Asistente",
+    "welcomeBody": "Puedo ayudarte con información sobre tus proyectos, ingresos, gastos y más.",
+    "welcomeExamplesLabel": "Por ejemplo, puedes preguntarme:",
+    "welcomeExample1": "¿Cuál es el saldo actual del proyecto X?",
+    "welcomeExample2": "¿Cuánto se ha gastado este mes?"
   }
 }
