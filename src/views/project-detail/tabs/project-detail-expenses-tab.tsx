@@ -58,6 +58,7 @@ interface ExpensesTabState {
   setBulkImportOpen: (v: boolean) => void
   editTarget: ExpenseResponse | null
   deleteTarget: ExpenseResponse | null
+  duplicateSource: ExpenseResponse | null
 }
 
 interface ProjectDetailExpensesTabProps {
@@ -83,6 +84,7 @@ interface ProjectDetailExpensesTabProps {
   onSave: (id: string, data: UpdateExpenseRequest) => void
   onDelete: (expense: ExpenseResponse) => void
   onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void
+  onDuplicate: (expense: ExpenseResponse) => void
 }
 
 export function ProjectDetailExpensesTab({
@@ -108,6 +110,7 @@ export function ProjectDetailExpensesTab({
   onSave,
   onDelete,
   onToggleActive,
+  onDuplicate,
 }: ProjectDetailExpensesTabProps) {
   const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<ExpenseResponse | null>(null)
@@ -166,6 +169,7 @@ export function ProjectDetailExpensesTab({
                   onDelete={onDeleteSelect}
                   onToggleActive={onToggleActive}
                   onView={setViewTarget}
+                  onDuplicate={onDuplicate}
                 />
               </div>
             )}
@@ -184,6 +188,7 @@ export function ProjectDetailExpensesTab({
 
       {exp.createOpen && (
         <CreateExpenseModal
+          key={exp.duplicateSource?.id ?? "new"}
           projectId={projectId}
           mode={createMode}
           open={exp.createOpen}
@@ -196,6 +201,7 @@ export function ProjectDetailExpensesTab({
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           partnersEnabled={partnersEnabled}
           assignedPartners={assignedPartners}
+          sourceExpense={exp.duplicateSource ?? undefined}
         />
       )}
 

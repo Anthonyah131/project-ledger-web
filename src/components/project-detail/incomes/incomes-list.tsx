@@ -22,6 +22,7 @@ interface IncomesListProps {
   onDelete: (income: IncomeResponse) => void
   onToggleActive: (income: IncomeResponse, isActive: boolean) => void | Promise<void>
   onView?: (income: IncomeResponse) => void
+  onDuplicate?: (income: IncomeResponse) => void
 }
 
 function IncomesListComponent({
@@ -32,6 +33,7 @@ function IncomesListComponent({
   onDelete,
   onToggleActive,
   onView,
+  onDuplicate,
 }: IncomesListProps) {
   const { t } = useLanguage()
   const activatingIdsRef = useRef<Set<string>>(new Set())
@@ -192,6 +194,8 @@ function IncomesListComponent({
                 activatingLabel={t("common.activating")}
                 isActivating={isActivating}
                 disabled={isActivating}
+                onDuplicate={onDuplicate ? () => onDuplicate(income) : undefined}
+                duplicateLabel={t("incomes.duplicate")}
                 onEdit={() => onEdit(income)}
                 onDelete={() => onDelete(income)}
                 stopPropagation
@@ -279,6 +283,8 @@ function IncomesListComponent({
                 activatingLabel={t("common.activating")}
                 isActivating={isActivating}
                 disabled={isActivating}
+                onDuplicate={onDuplicate ? () => onDuplicate(income) : undefined}
+                duplicateLabel={t("incomes.duplicate")}
                 onEdit={() => onEdit(income)}
                 onDelete={() => onDelete(income)}
                 stopPropagation

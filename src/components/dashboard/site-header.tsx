@@ -1,5 +1,8 @@
+"use client"
+
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { CommandPalette } from "@/components/dashboard/command-palette"
 
 export function SiteHeader() {
   return (
@@ -10,6 +13,9 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
+        <div className="ml-auto flex items-center gap-2">
+          <CommandPalette />
+        </div>
       </div>
     </header>
   )

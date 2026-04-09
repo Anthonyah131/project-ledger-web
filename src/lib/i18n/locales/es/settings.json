@@ -21,7 +21,7 @@
     "profileUpdatedDescription": "Tus cambios se guardaron correctamente.",
     "profileUpdateError": "No se pudo actualizar el perfil",
     "languageUpdated": "Idioma actualizado",
-    "languageUpdatedDescription": "Recargando la aplicación para aplicar el cambio...",
+    "languageUpdatedDescription": "El idioma se ha cambiado correctamente",
     "themeLabel": "Tema",
     "themeLight": "Claro",
     "themeDark": "Oscuro",

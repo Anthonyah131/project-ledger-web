@@ -8,7 +8,7 @@ import type {
   CreateWorkspaceRequest,
   UpdateWorkspaceRequest,
 } from "@/types/workspace"
-import type { PagedProjectsResponse } from "@/types/project"
+import type { ProjectsPagedResponse } from "@/types/project"
 
 // ─── Workspaces ────────────────────────────────────────────────────────────────
 
@@ -41,7 +41,7 @@ export function getWorkspaceProjects(
   } = {}
 ) {
   const qs = new URLSearchParams({ page: String(page), pageSize: String(pageSize), sortBy, sortDirection })
-  return api.get<PagedProjectsResponse>(`/workspaces/${workspaceId}/projects?${qs}`)
+  return api.get<ProjectsPagedResponse>(`/workspaces/${workspaceId}/projects?${qs}`)
 }
 
 // ─── Workspace ↔ Project assignment ────────────────────────────────────────────

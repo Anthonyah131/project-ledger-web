@@ -47,6 +47,7 @@ export function useProjectExpenses(projectId: string) {
   const [bulkImportOpen, setBulkImportOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ExpenseResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ExpenseResponse | null>(null)
+  const [duplicateSource, setDuplicateSource] = useState<ExpenseResponse | null>(null)
 
   // ── Fetch ─────────────────────────────────────────────────
 
@@ -234,6 +235,7 @@ export function useProjectExpenses(projectId: string) {
     bulkImportOpen, setBulkImportOpen,
     editTarget, setEditTarget,
     deleteTarget, setDeleteTarget,
+    duplicateSource, setDuplicateSource,
     mutateCreate,
     mutateBulkCreate,
     mutateUpdate,

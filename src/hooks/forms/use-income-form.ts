@@ -67,6 +67,7 @@ interface UseCreateIncomeFormOptions {
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
   projectCurrency: string
+  sourceIncome?: IncomeResponse
 }
 
 export function useCreateIncomeForm({
@@ -75,6 +76,7 @@ export function useCreateIncomeForm({
   categories,
   paymentMethods,
   projectCurrency,
+  sourceIncome,
 }: UseCreateIncomeFormOptions) {
   const { t } = useLanguage()
   const defaultCategoryId =
@@ -83,24 +85,52 @@ export function useCreateIncomeForm({
 
   const form = useForm<CreateIncomeFormValues>({
     resolver: zodResolver(createIncomeSchema(t)),
-    defaultValues: {
-      title: "",
-      originalAmount: "",
-      originalCurrency: normalizeCurrencyCode(projectCurrency) || "CRC",
-      incomeDate: "",
-      categoryId: defaultCategoryId,
-      paymentMethodId: defaultPaymentMethodId,
-      exchangeRate: "1",
-      convertedAmount: "",
-      description: "",
-      notes: "",
-      receiptNumber: "",
-      isActive: true,
-      currencyExchanges: [],
-      accountAmount: "",
-      splitType: "percentage",
-      splits: [],
-    },
+    defaultValues: sourceIncome
+      ? {
+          title: sourceIncome.title,
+          originalAmount: String(sourceIncome.originalAmount),
+          originalCurrency: sourceIncome.originalCurrency,
+          incomeDate: "",
+          categoryId: sourceIncome.categoryId,
+          paymentMethodId: sourceIncome.paymentMethodId,
+          exchangeRate: String(sourceIncome.exchangeRate),
+          convertedAmount: String(sourceIncome.convertedAmount),
+          description: sourceIncome.description ?? "",
+          notes: sourceIncome.notes ?? "",
+          receiptNumber: "",
+          isActive: true,
+          currencyExchanges: (sourceIncome.currencyExchanges ?? []).map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: String(ce.exchangeRate),
+            convertedAmount: String(ce.convertedAmount),
+          })),
+          accountAmount: "",
+          splitType: sourceIncome.splits?.[0]?.splitType ?? "percentage",
+          splits: (sourceIncome.splits ?? []).map((s) => ({
+            partnerId: s.partnerId,
+            partnerName: s.partnerName,
+            splitValue: String(s.splitValue),
+            currencyExchanges: [],
+          })),
+        }
+      : {
+          title: "",
+          originalAmount: "",
+          originalCurrency: normalizeCurrencyCode(projectCurrency) || "CRC",
+          incomeDate: "",
+          categoryId: defaultCategoryId,
+          paymentMethodId: defaultPaymentMethodId,
+          exchangeRate: "1",
+          convertedAmount: "",
+          description: "",
+          notes: "",
+          receiptNumber: "",
+          isActive: true,
+          currencyExchanges: [],
+          accountAmount: "",
+          splitType: "percentage",
+          splits: [],
+        },
   })
 
   const watchCurrency = useWatch({ control: form.control, name: "originalCurrency" })

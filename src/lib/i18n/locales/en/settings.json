@@ -21,7 +21,7 @@
     "profileUpdatedDescription": "Your changes were saved successfully.",
     "profileUpdateError": "Could not update profile",
     "languageUpdated": "Language updated",
-    "languageUpdatedDescription": "Reloading application to apply the change...",
+    "languageUpdatedDescription": "Language has been changed successfully",
     "themeLabel": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",

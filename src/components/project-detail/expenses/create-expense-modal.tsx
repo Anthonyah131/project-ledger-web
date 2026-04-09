@@ -23,7 +23,7 @@ import { FormModal } from "@/components/shared/form-modal"
 import { ExpenseFormFields } from "./expense-form-fields"
 import { useLanguage } from "@/context/language-context"
 import { useExpenseDocumentExtraction } from "@/hooks/forms/use-expense-document-extraction"
-import type { CreateExpenseRequest } from "@/types/expense"
+import type { CreateExpenseRequest, ExpenseResponse } from "@/types/expense"
 import type { CategoryResponse } from "@/types/category"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ObligationResponse } from "@/types/obligation"
@@ -43,6 +43,7 @@ interface CreateExpenseModalProps {
   alternativeCurrencyCodes?: string[]
   partnersEnabled?: boolean
   assignedPartners?: ProjectPartnerResponse[]
+  sourceExpense?: ExpenseResponse
 }
 
 export function CreateExpenseModal({
@@ -58,6 +59,7 @@ export function CreateExpenseModal({
   alternativeCurrencyCodes,
   partnersEnabled = false,
   assignedPartners = [],
+  sourceExpense,
 }: CreateExpenseModalProps) {
   const {
     form,
@@ -67,7 +69,7 @@ export function CreateExpenseModal({
     watchAmount,
     watchExchangeRate,
     watchConvertedAmount,
-  } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods })
+  } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods, sourceExpense })
   const { t } = useLanguage()
   const isAiMode = mode === "ai"
 

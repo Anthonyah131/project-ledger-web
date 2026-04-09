@@ -54,6 +54,7 @@
     "reload": "Recargar",
     "upgrade": "Mejorar plan",
     "tryAgain": "Intentar de nuevo",
+    "duplicate": "Duplicar",
     "copiedToClipboard": "Copiado al portapapeles",
     "noLimit": "Sin límite",
     "auto": "Auto",
@@ -105,6 +106,26 @@
       "categoryRequired": "Categoría es requerida",
       "typeRequired": "Tipo es requerido",
       "percentageRange": "Debe ser un número entre 1 y 100"
+    }
+  },
+  "commandPalette": {
+    "placeholder": "Buscar o ejecutar un comando...",
+    "empty": "Sin resultados",
+    "trigger": "Buscar...",
+    "groups": {
+      "navigation": "Navegación",
+      "projects": "Proyectos",
+      "partners": "Partners",
+      "paymentMethods": "Métodos de pago",
+      "quickActions": "Acciones rápidas",
+      "expenses": "Gastos",
+      "incomes": "Ingresos"
+    },
+    "actions": {
+      "newProject": "Nuevo proyecto",
+      "goToSettings": "Configuración",
+      "goToReports": "Reportes",
+      "goToBilling": "Facturación"
     }
   },
   "nav": {

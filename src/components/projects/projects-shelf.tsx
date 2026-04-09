@@ -17,6 +17,7 @@ import {
   ListSkeleton,
 } from "./project-states"
 import { useLanguage } from "@/context/language-context"
+import type { ProjectResponse } from "@/types/project"
 
 const CreateProjectModal = dynamic(() =>
   import("./create-project-modal").then((mod) => mod.CreateProjectModal)
@@ -37,6 +38,12 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
   const { t } = useLanguage()
   const {
     projects,
+    pinnedProjects,
+    pinnedIds,
+    pinnedCount,
+    canPin,
+    pinLoading,
+    togglePin,
     total,
     globalIndex,
     loading,
@@ -58,37 +65,23 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
     handleSortChange,
   } = useProjects({ workspaceId, projectIds, onProjectMutated })
 
-  const handleOpenCreate = useCallback(() => {
-    setCreateOpen(true)
-  }, [setCreateOpen])
-
-  const handleCloseCreate = useCallback(() => {
-    setCreateOpen(false)
-  }, [setCreateOpen])
-
-  const handleSelectEdit = useCallback((project: (typeof projects)[number]) => {
-    setEditProject(project)
-  }, [setEditProject])
-
-  const handleCloseEdit = useCallback(() => {
-    setEditProject(null)
-  }, [setEditProject])
-
-  const handleSelectDelete = useCallback((project: (typeof projects)[number]) => {
-    setDeleteTarget(project)
-  }, [setDeleteTarget])
-
-  const handleCloseDelete = useCallback(() => {
-    setDeleteTarget(null)
-  }, [setDeleteTarget])
-
-  const handleShare = useCallback((project: (typeof projects)[number]) => {
+  const handleOpenCreate = useCallback(() => setCreateOpen(true), [setCreateOpen])
+  const handleCloseCreate = useCallback(() => setCreateOpen(false), [setCreateOpen])
+  const handleSelectEdit = useCallback((project: ProjectResponse) => setEditProject(project), [setEditProject])
+  const handleCloseEdit = useCallback(() => setEditProject(null), [setEditProject])
+  const handleSelectDelete = useCallback((project: ProjectResponse) => setDeleteTarget(project), [setDeleteTarget])
+  const handleCloseDelete = useCallback(() => setDeleteTarget(null), [setDeleteTarget])
+  const handleShare = useCallback((project: ProjectResponse) => {
     router.push(`/projects/${project.id}/members`)
   }, [router])
-
-  const handleDisconnect = useCallback(async (project: (typeof projects)[number]) => {
+  const handleDisconnect = useCallback(async (project: ProjectResponse) => {
     if (onDisconnect) await onDisconnect(project.id)
   }, [onDisconnect])
+
+  const isEmpty = !loading && projects.length === 0 && pinnedProjects.length === 0
+
+  // Count label includes pinned on page 1
+  const displayTotal = page === 1 ? total + pinnedProjects.length : total
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -99,7 +92,12 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
             {t("projects.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} {total === 1 ? t("projects.countSingular") : t("projects.countPlural")}
+            {displayTotal} {displayTotal === 1 ? t("projects.countSingular") : t("projects.countPlural")}
+            {pinnedCount > 0 && (
+              <span className="ml-2 text-[11px] tabular-nums">
+                · {pinnedCount}/6 {t("projects.pinnedSection").toLowerCase()}
+              </span>
+            )}
           </p>
         </div>
         <Button onClick={handleOpenCreate} size="sm">
@@ -126,25 +124,35 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
       <div className="mt-4 bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
           viewMode === "shelf" ? <ShelfSkeleton /> : <ListSkeleton />
-        ) : projects.length === 0 ? (
+        ) : isEmpty ? (
           <EmptyState hasSearch={hasSearch} onCreate={handleOpenCreate} />
         ) : viewMode === "shelf" ? (
           <ShelfView
             projects={projects}
+            pinnedProjects={pinnedProjects}
             onEdit={handleSelectEdit}
             onDelete={handleSelectDelete}
             onShare={handleShare}
             onDisconnect={onDisconnect ? handleDisconnect : undefined}
+            onTogglePin={togglePin}
             globalIndex={globalIndex}
+            pinnedIds={pinnedIds}
+            canPin={canPin}
+            pinLoading={pinLoading}
           />
         ) : (
           <ListView
             projects={projects}
+            pinnedProjects={pinnedProjects}
             onEdit={handleSelectEdit}
             onDelete={handleSelectDelete}
             onShare={handleShare}
             onDisconnect={onDisconnect ? handleDisconnect : undefined}
+            onTogglePin={togglePin}
             globalIndex={globalIndex}
+            pinnedIds={pinnedIds}
+            canPin={canPin}
+            pinLoading={pinLoading}
           />
         )}
 

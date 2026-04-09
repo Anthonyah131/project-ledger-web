@@ -9,6 +9,7 @@ import { DocumentExtractionFeedback } from "@/components/project-detail/shared/d
 import type {
   CreateIncomeRequest,
   IncomeDocumentKind,
+  IncomeResponse,
 } from "@/types/income"
 import type { CategoryResponse } from "@/types/category"
 import type { CurrencyResponse } from "@/types/currency"
@@ -30,6 +31,7 @@ interface CreateIncomeModalProps {
   alternativeCurrencyCodes?: string[]
   partnersEnabled?: boolean
   assignedPartners?: ProjectPartnerResponse[]
+  sourceIncome?: IncomeResponse
 }
 
 export function CreateIncomeModal({
@@ -45,6 +47,7 @@ export function CreateIncomeModal({
   alternativeCurrencyCodes,
   partnersEnabled = false,
   assignedPartners = [],
+  sourceIncome,
 }: CreateIncomeModalProps) {
   const {
     form,
@@ -61,6 +64,7 @@ export function CreateIncomeModal({
       categories,
       paymentMethods,
       projectCurrency,
+      sourceIncome,
     })
 
   const { t } = useLanguage()

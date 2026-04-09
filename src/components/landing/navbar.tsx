@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, FileText } from "lucide-react";
+import { ChevronRight, FileText, Globe } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
+import { setLanguage } from "@/lib/api-client";
 
 const HIDE_THRESHOLD = 120;
 const HOVER_REVEAL_ZONE = 20;
 
 export function Navbar() {
-  const { t } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const prevScrollY = useRef(0);
@@ -84,6 +85,18 @@ export function Navbar() {
 
         {/* CTAs */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const next = locale === "es" ? "en" : "es";
+              setLocale(next);
+              setLanguage(next);
+            }}
+            className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Change language"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase">{locale}</span>
+          </button>
           <Link
             href="/login"
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"

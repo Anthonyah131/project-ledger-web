@@ -46,6 +46,7 @@ interface UseCreateExpenseFormOptions {
   onClose: () => void
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
+  sourceExpense?: ExpenseResponse
 }
 
 export function useCreateExpenseForm({
@@ -53,6 +54,7 @@ export function useCreateExpenseForm({
   onClose,
   categories,
   paymentMethods,
+  sourceExpense,
 }: UseCreateExpenseFormOptions) {
   const { t } = useLanguage()
   const defaultCategoryId =
@@ -61,25 +63,54 @@ export function useCreateExpenseForm({
 
   const form = useForm<CreateExpenseFormValues>({
     resolver: zodResolver(createExpenseSchema(t)),
-    defaultValues: {
-      title: "",
-      originalAmount: "",
-      originalCurrency: paymentMethods[0]?.currency ?? "CRC",
-      expenseDate: "",
-      categoryId: defaultCategoryId,
-      paymentMethodId: defaultPaymentMethodId,
-      exchangeRate: "1",
-      convertedAmount: "",
-      description: "",
-      receiptNumber: "",
-      notes: "",
-      isActive: true,
-      obligationId: "",
-      obligationEquivalentAmount: "",
-      currencyExchanges: [],
-      splitType: "percentage",
-      splits: [],
-    },
+    defaultValues: sourceExpense
+      ? {
+          title: sourceExpense.title,
+          originalAmount: String(sourceExpense.originalAmount),
+          originalCurrency: sourceExpense.originalCurrency,
+          expenseDate: "",
+          categoryId: sourceExpense.categoryId,
+          paymentMethodId: sourceExpense.paymentMethodId,
+          exchangeRate: String(sourceExpense.exchangeRate),
+          convertedAmount: String(sourceExpense.convertedAmount),
+          description: sourceExpense.description ?? "",
+          receiptNumber: "",
+          notes: sourceExpense.notes ?? "",
+          isActive: true,
+          obligationId: sourceExpense.obligationId ?? "",
+          obligationEquivalentAmount: "",
+          currencyExchanges: (sourceExpense.currencyExchanges ?? []).map((ce) => ({
+            currencyCode: ce.currencyCode,
+            exchangeRate: String(ce.exchangeRate),
+            convertedAmount: String(ce.convertedAmount),
+          })),
+          splitType: sourceExpense.splits?.[0]?.splitType ?? "percentage",
+          splits: (sourceExpense.splits ?? []).map((s) => ({
+            partnerId: s.partnerId,
+            partnerName: s.partnerName,
+            splitValue: String(s.splitValue),
+            currencyExchanges: [],
+          })),
+        }
+      : {
+          title: "",
+          originalAmount: "",
+          originalCurrency: paymentMethods[0]?.currency ?? "CRC",
+          expenseDate: "",
+          categoryId: defaultCategoryId,
+          paymentMethodId: defaultPaymentMethodId,
+          exchangeRate: "1",
+          convertedAmount: "",
+          description: "",
+          receiptNumber: "",
+          notes: "",
+          isActive: true,
+          obligationId: "",
+          obligationEquivalentAmount: "",
+          currencyExchanges: [],
+          splitType: "percentage",
+          splits: [],
+        },
   })
 
   const watchCurrency = useWatch({ control: form.control, name: "originalCurrency" })

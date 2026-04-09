@@ -69,8 +69,8 @@ export function ProjectDetailView({ projectId }: Props) {
     mutateSettlementCreate, mutateSettlementUpdate, mutateSettlementDelete,
   } = useProjectDetailView(projectId);
 
-  const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget } = exp;
-  const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget } = inc;
+  const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget, setDuplicateSource: setExpenseDuplicateSource } = exp;
+  const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget, setDuplicateSource: setIncomeDuplicateSource } = inc;
   const isOwner = detail.project?.userRole === "owner";
   const canManageBudget = detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
   const canManageAlternativeCurrencies =
@@ -113,10 +113,17 @@ export function ProjectDetailView({ projectId }: Props) {
     setExpenseCreateOpen(true);
   }, [setExpenseCreateOpen]);
 
+  const handleExpenseDuplicate = useCallback((expense: import("@/types/expense").ExpenseResponse) => {
+    setExpenseDuplicateSource(expense);
+    setExpenseCreateMode("manual");
+    setExpenseCreateOpen(true);
+  }, [setExpenseDuplicateSource, setExpenseCreateOpen]);
+
   const handleExpenseCreateClose = useCallback(() => {
     setExpenseCreateOpen(false);
+    setExpenseDuplicateSource(null);
     setExpenseCreateMode("manual");
-  }, [setExpenseCreateOpen]);
+  }, [setExpenseCreateOpen, setExpenseDuplicateSource]);
 
   const handleExpenseEditClose = useCallback(() => setExpenseEditTarget(null), [setExpenseEditTarget]);
   const handleExpenseDeleteClose = useCallback(() => setExpenseDeleteTarget(null), [setExpenseDeleteTarget]);
@@ -132,10 +139,17 @@ export function ProjectDetailView({ projectId }: Props) {
     setIncomeCreateOpen(true);
   }, [setIncomeCreateOpen]);
 
+  const handleIncomeDuplicate = useCallback((income: import("@/types/income").IncomeResponse) => {
+    setIncomeDuplicateSource(income);
+    setIncomeCreateMode("manual");
+    setIncomeCreateOpen(true);
+  }, [setIncomeDuplicateSource, setIncomeCreateOpen]);
+
   const handleIncomeCreateClose = useCallback(() => {
     setIncomeCreateOpen(false);
+    setIncomeDuplicateSource(null);
     setIncomeCreateMode("manual");
-  }, [setIncomeCreateOpen]);
+  }, [setIncomeCreateOpen, setIncomeDuplicateSource]);
 
   const handleIncomeEditClose = useCallback(() => setIncomeEditTarget(null), [setIncomeEditTarget]);
   const handleIncomeDeleteClose = useCallback(() => setIncomeDeleteTarget(null), [setIncomeDeleteTarget]);
@@ -233,6 +247,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onSave={mutateExpenseUpdate}
           onDelete={mutateExpenseDelete}
           onToggleActive={mutateExpenseActiveState}
+          onDuplicate={handleExpenseDuplicate}
         />
 
         <ProjectDetailIncomesTab
@@ -258,6 +273,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onSave={mutateIncomeUpdate}
           onDelete={mutateIncomeDelete}
           onToggleActive={mutateIncomeActiveState}
+          onDuplicate={handleIncomeDuplicate}
         />
 
         <ProjectDetailObligationsTab

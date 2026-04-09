@@ -41,6 +41,7 @@ export function useProjectIncomes(projectId: string) {
   const [bulkImportOpen, setBulkImportOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<IncomeResponse | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<IncomeResponse | null>(null)
+  const [duplicateSource, setDuplicateSource] = useState<IncomeResponse | null>(null)
 
   const fetchIncomes = useCallback(async () => {
     try {
@@ -215,6 +216,8 @@ export function useProjectIncomes(projectId: string) {
     setEditTarget,
     deleteTarget,
     setDeleteTarget,
+    duplicateSource,
+    setDuplicateSource,
     mutateCreate,
     mutateBulkCreate,
     mutateUpdate,

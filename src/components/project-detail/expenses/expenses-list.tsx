@@ -22,9 +22,10 @@ interface ExpensesListProps {
   onDelete: (expense: ExpenseResponse) => void
   onToggleActive: (expense: ExpenseResponse, isActive: boolean) => void | Promise<void>
   onView?: (expense: ExpenseResponse) => void
+  onDuplicate?: (expense: ExpenseResponse) => void
 }
 
-function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive, onView }: ExpensesListProps) {
+function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEdit, onDelete, onToggleActive, onView, onDuplicate }: ExpensesListProps) {
   const { t } = useLanguage()
   const activatingIdsRef = useRef<Set<string>>(new Set())
   const [activatingIds, setActivatingIds] = useState<Set<string>>(() => new Set())
@@ -199,6 +200,8 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
                 activatingLabel={t("common.activating")}
                 isActivating={isActivating}
                 disabled={isActivating}
+                onDuplicate={onDuplicate ? () => onDuplicate(expense) : undefined}
+                duplicateLabel={t("expenses.duplicate")}
                 onEdit={() => onEdit(expense)}
                 onDelete={() => onDelete(expense)}
                 stopPropagation
@@ -286,6 +289,8 @@ function ExpensesListComponent({ expenses, projectCurrency, paymentMethods, onEd
                 activatingLabel={t("common.activating")}
                 isActivating={isActivating}
                 disabled={isActivating}
+                onDuplicate={onDuplicate ? () => onDuplicate(expense) : undefined}
+                duplicateLabel={t("expenses.duplicate")}
                 onEdit={() => onEdit(expense)}
                 onDelete={() => onDelete(expense)}
                 stopPropagation

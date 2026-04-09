@@ -87,9 +87,6 @@ export function useSettingsProfile() {
     toast.success(t("settings.languageUpdated"), {
       description: t("settings.languageUpdatedDescription"),
     })
-    setTimeout(() => {
-      window.location.reload()
-    }, 1000)
   }
 
   return {

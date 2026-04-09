@@ -38,16 +38,30 @@ export interface ProjectResponse {
   updatedAt: string;
 }
 
-/** Paged response from GET /projects */
-export interface PagedProjectsResponse {
+/** Project response enriched with pin metadata (inside pinned[] array) */
+export interface PinnedProjectResponse extends ProjectResponse {
+  pinnedAt: string; // ISO 8601
+}
+
+/** Paged response from GET /projects and GET /workspaces/{id}/projects */
+export interface ProjectsPagedResponse {
+  /** Pinned projects for this user (only populated on page 1) */
+  pinned: PinnedProjectResponse[];
+  /** Total pinned projects for the user (0-6, present on all pages) */
+  pinnedCount: number;
+  /** Non-pinned items for the current page */
   items: ProjectResponse[];
   page: number;
   pageSize: number;
+  /** Count of non-pinned projects (pinned excluded) */
   totalCount: number;
   totalPages: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
 }
+
+/** @deprecated Use ProjectsPagedResponse */
+export type PagedProjectsResponse = ProjectsPagedResponse;
 
 // ─── Request bodies ────────────────────────────────────────────────────────────
 

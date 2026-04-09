@@ -4,7 +4,8 @@
 import { api } from "@/lib/api-client";
 import type {
   ProjectResponse,
-  PagedProjectsResponse,
+  ProjectsPagedResponse,
+  PinnedProjectResponse,
   CreateProjectRequest,
   UpdateProjectRequest,
   UpdateProjectSettingsRequest,
@@ -27,14 +28,22 @@ export interface GetProjectsParams {
   signal?: AbortSignal;
 }
 
-export function getProjects({ page = 1, pageSize = 200, sortBy = "createdAt", sortDirection = "desc", signal }: GetProjectsParams = {}) {
+export function getProjects({ page = 1, pageSize = 12, sortBy = "updatedAt", sortDirection = "desc", signal }: GetProjectsParams = {}) {
   const qs = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
     sortBy,
     sortDirection,
   });
-  return api.get<PagedProjectsResponse>(`/projects?${qs}`, { signal });
+  return api.get<ProjectsPagedResponse>(`/projects?${qs}`, { signal });
+}
+
+export function pinProject(projectId: string) {
+  return api.put<{ projectId: string; pinnedAt: string }>(`/projects/${projectId}/pin`, {});
+}
+
+export function unpinProject(projectId: string) {
+  return api.delete<void>(`/projects/${projectId}/pin`);
 }
 
 export function getProject(projectId: string) {

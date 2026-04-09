@@ -58,6 +58,7 @@ interface IncomesTabState {
   setBulkImportOpen: (v: boolean) => void
   editTarget: IncomeResponse | null
   deleteTarget: IncomeResponse | null
+  duplicateSource: IncomeResponse | null
 }
 
 interface ProjectDetailIncomesTabProps {
@@ -83,6 +84,7 @@ interface ProjectDetailIncomesTabProps {
   onSave: (id: string, data: UpdateIncomeRequest) => void
   onDelete: (income: IncomeResponse) => void
   onToggleActive: (income: IncomeResponse, isActive: boolean) => void
+  onDuplicate: (income: IncomeResponse) => void
 }
 
 export function ProjectDetailIncomesTab({
@@ -108,6 +110,7 @@ export function ProjectDetailIncomesTab({
   onSave,
   onDelete,
   onToggleActive,
+  onDuplicate,
 }: ProjectDetailIncomesTabProps) {
   const { t } = useLanguage()
   const [viewTarget, setViewTarget] = useState<IncomeResponse | null>(null)
@@ -165,6 +168,7 @@ export function ProjectDetailIncomesTab({
                   onDelete={onDeleteSelect}
                   onToggleActive={onToggleActive}
                   onView={setViewTarget}
+                  onDuplicate={onDuplicate}
                 />
               </div>
             )}
@@ -183,6 +187,7 @@ export function ProjectDetailIncomesTab({
 
       {inc.createOpen && (
         <CreateIncomeModal
+          key={inc.duplicateSource?.id ?? "new"}
           projectId={projectId}
           mode={createMode}
           open={inc.createOpen}
@@ -195,6 +200,7 @@ export function ProjectDetailIncomesTab({
           alternativeCurrencyCodes={alternativeCurrencyCodes}
           partnersEnabled={partnersEnabled}
           assignedPartners={assignedPartners}
+          sourceIncome={inc.duplicateSource ?? undefined}
         />
       )}
 

@@ -3,6 +3,7 @@
 import {
   ArrowRight,
   CheckCircle2,
+  Copy,
   Loader2,
   MoreHorizontal,
   Pencil,
@@ -50,6 +51,9 @@ interface ItemActionMenuProps {
   align?: "start" | "center" | "end";
   /** Use the "ghost" trigger style (Button variant). When false, uses a custom minimal trigger. */
   variant?: "ghost" | "minimal";
+  /** If provided, renders a "Duplicate" option before Edit */
+  onDuplicate?: () => void;
+  duplicateLabel?: string;
   /** Disable the trigger and all actions */
   disabled?: boolean;
 }
@@ -68,6 +72,8 @@ export function ItemActionMenu({
   shareLabel,
   onDisconnect,
   disconnectLabel,
+  onDuplicate,
+  duplicateLabel,
   editLabel,
   deleteLabel,
   stopPropagation = false,
@@ -82,6 +88,7 @@ export function ItemActionMenu({
   const _activatingLabel = activatingLabel ?? t("common.activating")
   const _shareLabel = shareLabel ?? t("common.manageAccess")
   const _disconnectLabel = disconnectLabel ?? t("common.disconnectFromWorkspace")
+  const _duplicateLabel = duplicateLabel ?? t("common.duplicate")
   const _editLabel = editLabel ?? t("common.edit")
   const _deleteLabel = deleteLabel ?? t("common.delete")
 
@@ -163,6 +170,15 @@ export function ItemActionMenu({
             <DropdownMenuItem onSelect={() => runAfterMenuClose(onDisconnect)}>
               <Unlink className="size-4" />
               {_disconnectLabel}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {onDuplicate && (
+          <>
+            <DropdownMenuItem onSelect={() => runAfterMenuClose(onDuplicate)}>
+              <Copy className="size-4" />
+              {_duplicateLabel}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
