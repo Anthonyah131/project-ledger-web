@@ -358,6 +358,10 @@
       "set": "Budget configured",
       "deleted": "Budget deleted"
     },
+    "badge": {
+      "ariaLabel": "Budget: {pct}% used",
+      "viewDetail": "View budget"
+    },
     "errors": {
       "load": "Error loading budget",
       "save": "Error saving budget",

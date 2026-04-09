@@ -15,17 +15,21 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { ProjectResponse } from "@/types/project"
+import type { ProjectBudgetResponse } from "@/types/project-budget"
 import { useLanguage } from "@/context/language-context"
+import { BudgetProgressBadge, BudgetProgressBadgeSkeleton } from "@/components/shared/budget-progress-badge"
 
 interface ProjectHeaderProps {
   project: ProjectResponse | null
   loading: boolean
+  budget?: ProjectBudgetResponse | null
+  budgetLoading?: boolean
   onEdit: () => void
   onDelete: () => void
   onShare?: () => void
 }
 
-export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: ProjectHeaderProps) {
+export function ProjectHeader({ project, loading, budget, budgetLoading, onEdit, onDelete, onShare }: ProjectHeaderProps) {
   const router = useRouter()
   const { t } = useLanguage()
 
@@ -88,6 +92,21 @@ export function ProjectHeader({ project, loading, onEdit, onDelete, onShare }: P
                 {t("projects.createdAt", { date: formatDate(project.createdAt) })}
               </span>
             </div>
+
+            {/* Budget progress indicator */}
+            {budgetLoading ? (
+              <div className="mt-2">
+                <BudgetProgressBadgeSkeleton compact />
+              </div>
+            ) : budget ? (
+              <div className="mt-2">
+                <BudgetProgressBadge
+                  budget={budget}
+                  currencyCode={project.currencyCode}
+                  compact
+                />
+              </div>
+            ) : null}
           </div>
 
           {/* Actions */}

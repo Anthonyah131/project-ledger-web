@@ -7,6 +7,7 @@ import type {
   DashboardMonthlySummaryResponse,
   DashboardMonthlyTopCategoriesResponse,
   DashboardMonthlyTrendResponse,
+  DashboardProjectsPagedResponse,
 } from "@/types/dashboard"
 
 function buildDashboardQuery(month: string, projectId: string) {
@@ -52,6 +53,31 @@ export function getDashboardMonthlyPaymentMethods(
   signal?: AbortSignal,
 ) {
   return api.get<DashboardMonthlyPaymentMethodsResponse>(`/dashboard/monthly-payment-methods?${buildDashboardQuery(month, projectId)}`, {
+    signal,
+  })
+}
+
+export interface GetDashboardProjectsParams {
+  page?: number
+  pageSize?: number
+  q?: string
+  signal?: AbortSignal
+}
+
+export function getDashboardProjects({
+  page = 1,
+  pageSize = 20,
+  q = "",
+  signal,
+}: GetDashboardProjectsParams = {}) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  })
+  if (q) {
+    qs.set("q", q)
+  }
+  return api.get<DashboardProjectsPagedResponse>(`/dashboard/projects?${qs}`, {
     signal,
   })
 }

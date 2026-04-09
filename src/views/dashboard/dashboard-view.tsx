@@ -1,7 +1,8 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { Loader2, PinIcon } from "lucide-react"
 
 import { DashboardMonthlyCategoriesChart } from "@/components/dashboard/monthly/dashboard-monthly-categories-chart"
 import { DashboardMonthlyErrorCard } from "@/components/dashboard/monthly/dashboard-monthly-error-card"
@@ -11,6 +12,7 @@ import { DashboardMonthlyLoading } from "@/components/dashboard/monthly/dashboar
 import { DashboardMonthlyPaymentMethodsChart } from "@/components/dashboard/monthly/dashboard-monthly-payment-methods-chart"
 import { DashboardMonthlySummaryCards } from "@/components/dashboard/monthly/dashboard-monthly-summary-cards"
 import { DashboardMonthlyTrendChart } from "@/components/dashboard/monthly/dashboard-monthly-trend-chart"
+import { DashboardMonthlyBudgetWidget } from "@/components/dashboard/monthly/dashboard-monthly-budget-widget"
 import { useDateFormat } from "@/hooks/use-date-format"
 import { EmptyState } from "@/components/shared/empty-state"
 import {
@@ -40,6 +42,8 @@ export function DashboardView() {
     projectsLoading,
     loading,
     error,
+    budget,
+    budgetLoading,
     canGoPrevious,
     canGoNext,
     setSelectedMonth,
@@ -47,7 +51,27 @@ export function DashboardView() {
     goNextMonth,
     reload,
     setSelectedProjectId,
+    loadMoreProjects,
+    projectsHasNextPage,
+    projectsLoadMoreLoading,
   } = useMonthlyOverview()
+
+  const observer = useRef<IntersectionObserver | null>(null)
+  const lastProjectElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (projectsLoadMoreLoading) return
+      if (observer.current) observer.current.disconnect()
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && projectsHasNextPage) {
+          loadMoreProjects()
+        }
+      })
+
+      if (node) observer.current.observe(node)
+    },
+    [projectsLoadMoreLoading, projectsHasNextPage, loadMoreProjects]
+  )
 
   const monthLabel = formatMonthLabel(data?.navigation.current_month ?? selectedMonth)
   const displayName = user?.fullName?.trim() || "Usuario"
@@ -120,9 +144,25 @@ export function DashboardView() {
               <SelectValue placeholder={t("dashboard.selectProject")} />
             </SelectTrigger>
             <SelectContent>
-              {projects.map((project) => (
-                <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
-              ))}
+              {projects.map((project, index) => {
+                const isLast = index === projects.length - 1
+                return (
+                  <SelectItem key={project.id} value={project.id}>
+                    <div
+                      className="flex items-center gap-2"
+                      ref={isLast ? lastProjectElementRef : undefined}
+                    >
+                      {project.isPinned && <PinIcon className="size-3 text-muted-foreground mr-1" />}
+                      <span className="truncate">{project.name}</span>
+                    </div>
+                  </SelectItem>
+                )
+              })}
+              {projectsLoadMoreLoading && (
+                <div className="flex w-full items-center justify-center p-2">
+                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                </div>
+              )}
             </SelectContent>
           </Select>
         </section>
@@ -163,6 +203,17 @@ export function DashboardView() {
               currencyCode={data.currency_code}
             />
           </section>
+
+          {selectedProjectId && (
+            <section>
+              <DashboardMonthlyBudgetWidget
+                budget={budget}
+                loading={budgetLoading}
+                currencyCode={data.currency_code}
+                projectId={selectedProjectId}
+              />
+            </section>
+          )}
 
           <section>
             <DashboardMonthlyPaymentMethodsChart

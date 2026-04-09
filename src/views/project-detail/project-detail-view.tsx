@@ -5,7 +5,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // ── Hook ─────────────────────────────────────────────
 import { useProjectDetailView } from "@/hooks/projects/use-project-detail-view";
@@ -44,9 +44,16 @@ type CreateEntryMode = "manual" | "ai";
 export function ProjectDetailView({ projectId }: Props) {
   const { t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
   const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
-  const [activeTab, setActiveTab] = useState("expenses");
+
+  // Honour ?tab=<name> from deep-links (e.g. dashboard budget widget)
+  const VALID_TABS = ["expenses", "incomes", "obligations", "categories", "budget", "partners", "settings"];
+  const tabParam = searchParams.get("tab") ?? "";
+  const initialTab = VALID_TABS.includes(tabParam) ? tabParam : "expenses";
+  const [activeTab, setActiveTab] = useState(initialTab);
+
   const [settingsSection, setSettingsSection] =
     useState<ProjectSettingsSection>("general");
 
@@ -205,6 +212,8 @@ export function ProjectDetailView({ projectId }: Props) {
       <ProjectHeader
         project={detail.project}
         loading={detail.loading}
+        budget={bud.budget}
+        budgetLoading={bud.loading}
         onEdit={handleEditProject}
         onDelete={mutateProjectDeleteOpen}
         onShare={isOwner ? handleShareProject : undefined}

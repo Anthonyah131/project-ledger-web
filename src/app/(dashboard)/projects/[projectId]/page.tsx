@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { ProjectDetailView } from "@/views/project-detail/project-detail-view"
 
 interface Props {
@@ -6,5 +7,9 @@ interface Props {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { projectId } = await params
-  return <ProjectDetailView projectId={projectId} />
+  return (
+    <Suspense>
+      <ProjectDetailView projectId={projectId} />
+    </Suspense>
+  )
 }

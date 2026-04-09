@@ -9,15 +9,17 @@ import {
   getDashboardMonthlySummary,
   getDashboardMonthlyTopCategories,
   getDashboardMonthlyTrend,
+  getDashboardProjects,
 } from "@/services/dashboard-service"
-import { getProjects } from "@/services/project-service"
+import { getProjectBudget } from "@/services/budget-service"
 import type {
   DashboardMonthlySummaryResponse,
   DashboardPaymentMethodSplit,
   DashboardTopCategory,
   DashboardTrendDay,
+  DashboardProjectItemDto,
 } from "@/types/dashboard"
-import type { ProjectResponse } from "@/types/project"
+import type { ProjectBudgetResponse } from "@/types/project-budget"
 
 const MONTH_KEY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/
 const PROJECT_STORAGE_KEY = "project-ledger:last-project-id"
@@ -205,13 +207,19 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
   const [trendByDay, setTrendByDay] = useState<DashboardTrendDay[]>([])
   const [topCategories, setTopCategories] = useState<DashboardTopCategory[]>([])
   const [paymentMethodSplit, setPaymentMethodSplit] = useState<DashboardPaymentMethodSplit[]>([])
-  const [projects, setProjects] = useState<ProjectResponse[]>([])
+  const [projects, setProjects] = useState<DashboardProjectItemDto[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState(() => readStoredProjectId())
   const [projectsLoading, setProjectsLoading] = useState(false)
+  const [projectsPage, setProjectsPage] = useState(1)
+  const [projectsHasNextPage, setProjectsHasNextPage] = useState(false)
+  const [projectsLoadMoreLoading, setProjectsLoadMoreLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [budget, setBudget] = useState<ProjectBudgetResponse | null>(null)
+  const [budgetLoading, setBudgetLoading] = useState(false)
 
   const abortRef = useRef<AbortController | null>(null)
+  const projectsFetchingIdRef = useRef(0)
 
   const loadMonth = useCallback(async (month: string, projectId: string) => {
     if (!isValidMonthKey(month)) {
@@ -277,35 +285,70 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     }
   }, [t])
 
-  const loadProjects = useCallback(async () => {
+  const loadProjects = useCallback(async (pageToLoad = 1) => {
     if (!enabled) return
 
+    const fetchId = ++projectsFetchingIdRef.current
+
     try {
-      setProjectsLoading(true)
-      const response = await getProjects()
-      const data = response.items
-      setProjects(data)
+      if (pageToLoad === 1) {
+        setProjectsLoading(true)
+      } else {
+        setProjectsLoadMoreLoading(true)
+      }
 
-      const availableIds = new Set(data.map((project) => project.id))
-      const storedId = readStoredProjectId()
+      const response = await getDashboardProjects({ page: pageToLoad, pageSize: 20 })
 
-      setSelectedProjectId((current) => {
-        const resolved = current && availableIds.has(current)
-          ? current
-          : storedId && availableIds.has(storedId)
-            ? storedId
-            : data[0]?.id ?? ""
-        if (resolved) {
-          storeProjectId(resolved)
-        }
-        return resolved
+      if (fetchId !== projectsFetchingIdRef.current) return
+
+      const newPinned = pageToLoad === 1 ? (response.pinned ?? []) : []
+      const newItems = response.items ?? []
+      const data = [...newPinned, ...newItems]
+
+      setProjects((prev) => {
+        if (pageToLoad === 1) return data
+        return [...prev, ...newItems]
       })
+
+      setProjectsPage(pageToLoad)
+      setProjectsHasNextPage(response.hasNextPage)
+
+      // Initialize selected project only on page 1 load
+      if (pageToLoad === 1) {
+        const availableIds = new Set(data.map((project) => project.id))
+        const storedId = readStoredProjectId()
+
+        setSelectedProjectId((current) => {
+          const resolved = current && availableIds.has(current)
+            ? current
+            : storedId && availableIds.has(storedId)
+              ? storedId
+              : data[0]?.id ?? ""
+          if (resolved) {
+            storeProjectId(resolved)
+          }
+          return resolved
+        })
+      }
     } catch (err) {
-      toastApiError(err, t("dashboard.errors.loadProjects"))
+      if (fetchId === projectsFetchingIdRef.current && pageToLoad === 1) {
+        toastApiError(err, t("dashboard.errors.loadProjects"))
+      }
     } finally {
-      setProjectsLoading(false)
+      if (fetchId === projectsFetchingIdRef.current) {
+        if (pageToLoad === 1) {
+          setProjectsLoading(false)
+        } else {
+          setProjectsLoadMoreLoading(false)
+        }
+      }
     }
   }, [enabled, t])
+
+  const loadMoreProjects = useCallback(() => {
+    if (projectsLoading || projectsLoadMoreLoading || !projectsHasNextPage) return
+    void loadProjects(projectsPage + 1)
+  }, [projectsLoading, projectsLoadMoreLoading, projectsHasNextPage, projectsPage, loadProjects])
 
   const data = useMemo(() => {
     if (!summaryData) return null
@@ -382,6 +425,35 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     }
   }, [])
 
+  // ─── Budget: fetch reactively when selectedProjectId changes ────────────
+  useEffect(() => {
+    if (!enabled || !selectedProjectId) {
+      setBudget(null)
+      return
+    }
+
+    let cancelled = false
+    setBudgetLoading(true)
+
+    getProjectBudget(selectedProjectId)
+      .then((data) => {
+        if (!cancelled) setBudget(data)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        // 404 means no budget configured — treat as null, not an error
+        if (err instanceof ApiClientError && err.status === 404) {
+          setBudget(null)
+        }
+        // silently ignore other errors (dashboard shouldn't block on budget)
+      })
+      .finally(() => {
+        if (!cancelled) setBudgetLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [enabled, selectedProjectId])
+
   const handleSelectProjectId = useCallback((value: string) => {
     setSelectedProjectId(value)
     if (value) {
@@ -396,12 +468,17 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     selectedProjectId,
     selectedProjectName,
     projectsLoading,
+    projectsLoadMoreLoading,
+    projectsHasNextPage,
     loading,
     error,
+    budget,
+    budgetLoading,
     canGoPrevious,
     canGoNext,
     setSelectedMonth,
     setSelectedProjectId: handleSelectProjectId,
+    loadMoreProjects,
     goPreviousMonth,
     goNextMonth,
     reload,

@@ -358,6 +358,10 @@
       "set": "Presupuesto configurado",
       "deleted": "Presupuesto eliminado"
     },
+    "badge": {
+      "ariaLabel": "Presupuesto: {pct}% utilizado",
+      "viewDetail": "Ver presupuesto"
+    },
     "errors": {
       "load": "Error al cargar presupuesto",
       "save": "Error al guardar presupuesto",

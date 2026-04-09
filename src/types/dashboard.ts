@@ -95,3 +95,22 @@ export interface DashboardMonthlyPaymentMethodsResponse {
   project_id: string
   payment_method_split: DashboardPaymentMethodSplit[]
 }
+
+export interface DashboardProjectItemDto {
+  id: string
+  name: string
+  currencyCode: string
+  isPinned: boolean
+  pinnedAt: string | null
+}
+
+export interface DashboardProjectsPagedResponse {
+  pinned: DashboardProjectItemDto[]
+  items: DashboardProjectItemDto[]
+  page: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
