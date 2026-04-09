@@ -31,7 +31,7 @@ export function useReportsCatalogs() {
     ])
 
     if (projectsResult.status === "fulfilled") {
-      setProjects(projectsResult.value.items)
+      setProjects([...projectsResult.value.pinned, ...projectsResult.value.items])
     } else {
       setProjects([])
       toastApiError(projectsResult.reason, t("reports.errors.loadProjects"))

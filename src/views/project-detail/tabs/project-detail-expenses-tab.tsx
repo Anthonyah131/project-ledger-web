@@ -24,12 +24,19 @@ import type { ObligationResponse } from "@/types/obligation"
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useLanguage } from "@/context/language-context"
+import { getCurrentMonthKey, getMonthBounds } from "@/lib/date-utils"
 
 const CreateExpenseModal = dynamic(() =>
   import("@/components/project-detail/expenses/create-expense-modal").then((mod) => mod.CreateExpenseModal)
 )
 const EditExpenseModal = dynamic(() =>
   import("@/components/project-detail/expenses/edit-expense-modal").then((mod) => mod.EditExpenseModal)
+)
+const ExpensesCalendar = dynamic(() =>
+  import("@/components/project-detail/expenses/expenses-calendar").then((mod) => mod.ExpensesCalendar)
+)
+const ExpensesCalendarDaySheet = dynamic(() =>
+  import("@/components/project-detail/expenses/expenses-calendar-day-sheet").then((mod) => mod.ExpensesCalendarDaySheet)
 )
 
 interface ExpensesTabState {
@@ -112,9 +119,40 @@ export function ProjectDetailExpensesTab({
   onToggleActive,
   onDuplicate,
 }: ProjectDetailExpensesTabProps) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [viewTarget, setViewTarget] = useState<ExpenseResponse | null>(null)
   const [view, setView] = useState<"list" | "import">("list")
+
+  // Calendar state
+  const [viewMode, setViewMode] = useState<"list" | "calendar">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`expenses:view-mode:${projectId}`)
+      return (saved as "list" | "calendar") || "list"
+    }
+    return "list"
+  })
+  const [calendarMonth, setCalendarMonth] = useState<string>(getCurrentMonthKey())
+  const [calendarDayDetail, setCalendarDayDetail] = useState<string | null>(null)
+
+  // Handle viewMode change and month bounds
+  const handleViewModeChange = (mode: "list" | "calendar") => {
+    setViewMode(mode)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`expenses:view-mode:${projectId}`, mode)
+    }
+    if (mode === "calendar") {
+      const { from, to } = getMonthBounds(calendarMonth)
+      exp.handleDateFromChange(from)
+      exp.handleDateToChange(to)
+    }
+  }
+
+  const handleCalendarMonthChange = (month: string) => {
+    setCalendarMonth(month)
+    const { from, to } = getMonthBounds(month)
+    exp.handleDateFromChange(from)
+    exp.handleDateToChange(to)
+  }
 
   return (
     <TabsContent value="expenses" className="flex flex-col gap-4">
@@ -153,10 +191,38 @@ export function ProjectDetailExpensesTab({
               onCreateManual={onCreateManual}
               onCreateWithAi={onCreateWithAi}
               onBulkImport={() => setView("import")}
+              viewMode={viewMode}
+              onViewModeChange={handleViewModeChange}
             />
 
             {exp.loading ? (
               <ExpensesSkeleton />
+            ) : viewMode === "calendar" ? (
+              <>
+                <ExpensesCalendar
+                  expenses={exp.expenses}
+                  month={calendarMonth}
+                  onMonthChange={handleCalendarMonthChange}
+                  onDayClick={setCalendarDayDetail}
+                  projectCurrency={projectCurrency}
+                  locale={locale}
+                />
+                <ExpensesCalendarDaySheet
+                  date={calendarDayDetail}
+                  expenses={
+                    calendarDayDetail
+                      ? exp.expenses.filter((e) => e.expenseDate === calendarDayDetail)
+                      : []
+                  }
+                  open={calendarDayDetail !== null}
+                  onOpenChange={(v) => !v && setCalendarDayDetail(null)}
+                  onCreate={onCreateManual}
+                  onEdit={onEditSelect}
+                  onDelete={onDeleteSelect}
+                  projectCurrency={projectCurrency}
+                  locale={locale}
+                />
+              </>
             ) : exp.expenses.length === 0 ? (
               <ExpensesEmptyState hasSearch={exp.hasSearch} onCreate={onCreateManual} />
             ) : (
@@ -202,6 +268,7 @@ export function ProjectDetailExpensesTab({
           partnersEnabled={partnersEnabled}
           assignedPartners={assignedPartners}
           sourceExpense={exp.duplicateSource ?? undefined}
+          defaultDate={viewMode === "calendar" ? calendarDayDetail ?? undefined : undefined}
         />
       )}
 

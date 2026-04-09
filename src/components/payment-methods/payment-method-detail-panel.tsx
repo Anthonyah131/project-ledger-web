@@ -329,20 +329,24 @@ function PaymentMethodDetailPanelComponent({
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="p-4 bg-linear-to-br from-rose-500/5 to-transparent border-b md:border-b-0 md:border-r border-rose-500/15">
             <p className="text-xs uppercase tracking-wide text-rose-500 dark:text-rose-400 font-medium">{t("paymentMethods.totalFilteredExpenses")}</p>
-            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingExpenses
-                ? t("common.loading")
-                : `${paymentMethod.currency} ${formatAmount(expenses.totalActiveAmount, "0.00")}`}
-            </p>
+            {loadingExpenses ? (
+              <Skeleton className="h-7 w-36 mt-1" />
+            ) : (
+              <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+                {`${paymentMethod.currency} ${formatAmount(expenses.totalActiveAmount, "0.00")}`}
+              </p>
+            )}
             <p className="text-[10px] text-muted-foreground/60 mt-0.5">{t("paymentMethods.movements", { count: expenses.totalCount })}</p>
           </div>
           <div className="p-4 bg-linear-to-br from-emerald-500/5 to-transparent">
             <p className="text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-400 font-medium">{t("paymentMethods.totalFilteredIncomes")}</p>
-            <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
-              {loadingIncomes
-                ? t("common.loading")
-                : `${paymentMethod.currency} ${formatAmount(incomes.totalActiveAmount, "0.00")}`}
-            </p>
+            {loadingIncomes ? (
+              <Skeleton className="h-7 w-36 mt-1" />
+            ) : (
+              <p className="text-lg font-bold text-foreground mt-1 tabular-nums">
+                {`${paymentMethod.currency} ${formatAmount(incomes.totalActiveAmount, "0.00")}`}
+              </p>
+            )}
             <p className="text-[10px] text-muted-foreground/60 mt-0.5">{t("paymentMethods.movements", { count: incomes.totalCount })}</p>
           </div>
         </div>

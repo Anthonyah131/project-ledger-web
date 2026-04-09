@@ -71,6 +71,22 @@
     "statusReminderBadge": "Reminder",
     "moreExchanges": "more",
     "duplicate": "Duplicate expense",
+    "view": {
+      "list": "List",
+      "calendar": "Calendar",
+      "toggleAria": "Change view"
+    },
+    "calendar": {
+      "prev": "Previous month",
+      "next": "Next month",
+      "today": "Today",
+      "monthTitle": "{month} {year}",
+      "dayTotal": "Day total",
+      "empty": "No expenses this day",
+      "moreExpenses": "+{count} more",
+      "createForDay": "Create expense on this day",
+      "daySummaryAria": "{count} expenses, total {total}"
+    },
     "actionMenuAria": "Expense actions",
     "viewDetail": "View detail",
     "activateLabel": "Activate movement",

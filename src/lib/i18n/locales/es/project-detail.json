@@ -71,6 +71,22 @@
     "statusReminderBadge": "Recordatorio",
     "moreExchanges": "más",
     "duplicate": "Duplicar gasto",
+    "view": {
+      "list": "Lista",
+      "calendar": "Calendario",
+      "toggleAria": "Cambiar vista"
+    },
+    "calendar": {
+      "prev": "Mes anterior",
+      "next": "Mes siguiente",
+      "today": "Hoy",
+      "monthTitle": "{month} {year}",
+      "dayTotal": "Total del día",
+      "empty": "Sin gastos este día",
+      "moreExpenses": "+{count} más",
+      "createForDay": "Crear gasto en este día",
+      "daySummaryAria": "{count} gastos, total {total}"
+    },
     "actionMenuAria": "Acciones del gasto",
     "viewDetail": "Ver detalle",
     "activateLabel": "Activar movimiento",

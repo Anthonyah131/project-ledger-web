@@ -1,31 +1,30 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { getProjects } from "@/services/project-service"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { getPartners } from "@/services/partner-service"
-import { getPaymentMethods } from "@/services/payment-method-service"
 import { globalSearch } from "@/services/search-service"
-import type { ProjectResponse } from "@/types/project"
+import { useProjectLookup } from "@/hooks/use-project-lookup"
+import { usePaymentMethodLookup } from "@/hooks/use-payment-method-lookup"
 import type { PartnerResponse } from "@/types/partner"
-import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { GlobalSearchResponse } from "@/services/search-service"
 
 export function useCommandPalette() {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
 
-  const [projects, setProjects] = useState<ProjectResponse[]>([])
   const [partners, setPartners] = useState<PartnerResponse[]>([])
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodResponse[]>([])
   const [searchResults, setSearchResults] = useState<GlobalSearchResponse | null>(null)
 
-  const [loadingProjects, setLoadingProjects] = useState(false)
   const [loadingPartners, setLoadingPartners] = useState(false)
 
   const partnerDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const partnerAbortRef = useRef<AbortController | null>(null)
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchAbortRef = useRef<AbortController | null>(null)
+
+  // Lookup hooks — only fetch while palette is open
+  const projectLookup = useProjectLookup(query, open)
+  const paymentMethodLookup = usePaymentMethodLookup(query, open)
 
   // Ctrl+K / Cmd+K global shortcut
   useEffect(() => {
@@ -39,28 +38,13 @@ export function useCommandPalette() {
     return () => document.removeEventListener("keydown", handler)
   }, [])
 
-  // Reset when closed
+  // Reset partner + search results when closed
   useEffect(() => {
     if (!open) {
       setQuery("")
       setPartners([])
       setSearchResults(null)
     }
-  }, [open])
-
-  // Load projects + payment methods once when palette opens
-  useEffect(() => {
-    if (!open) return
-
-    setLoadingProjects(true)
-    getProjects({ pageSize: 200, sortBy: "name", sortDirection: "asc" })
-      .then((res) => setProjects(res.items ?? []))
-      .catch(() => {})
-      .finally(() => setLoadingProjects(false))
-
-    getPaymentMethods()
-      .then((res) => setPaymentMethods(res))
-      .catch(() => {})
   }, [open])
 
   // Debounced partner search
@@ -124,34 +108,25 @@ export function useCommandPalette() {
     }
   }, [query, open])
 
-  // Filter projects client-side
-  const filteredProjects = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    const list = q
-      ? projects.filter((p) => p.name.toLowerCase().includes(q))
-      : projects
-    return list.slice(0, 5)
-  }, [projects, query])
-
-  // Filter payment methods client-side
-  const filteredPaymentMethods = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    const list = q
-      ? paymentMethods.filter((pm) => pm.name.toLowerCase().includes(q))
-      : paymentMethods
-    return list.slice(0, 4)
-  }, [paymentMethods, query])
-
   return {
     open,
     setOpen,
     query,
     setQuery,
-    filteredProjects,
+    // Projects
+    pinnedProjects: projectLookup.pinned,
+    projects: projectLookup.items,
+    projectsHasNextPage: projectLookup.hasNextPage,
+    projectsLoadMore: projectLookup.loadMore,
+    loadingProjects: projectLookup.loading,
+    // Payment methods
+    paymentMethods: paymentMethodLookup.items,
+    paymentMethodsHasNextPage: paymentMethodLookup.hasNextPage,
+    paymentMethodsLoadMore: paymentMethodLookup.loadMore,
+    // Partners (server-side debounced search)
     partners,
-    filteredPaymentMethods,
-    searchResults,
-    loadingProjects,
     loadingPartners,
+    // Global search
+    searchResults,
   }
 }

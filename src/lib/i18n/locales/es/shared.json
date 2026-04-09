@@ -112,6 +112,7 @@
     "placeholder": "Buscar o ejecutar un comando...",
     "empty": "Sin resultados",
     "trigger": "Buscar...",
+    "moreResultsAvailable": "Más resultados disponibles...",
     "groups": {
       "navigation": "Navegación",
       "projects": "Proyectos",

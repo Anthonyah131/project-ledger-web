@@ -166,6 +166,27 @@ export interface PaymentMethodBalanceResponse {
   balance: number;
 }
 
+// ─── Lookup (lightweight list) ─────────────────────────────────────────────────
+
+/** Minimal payment method shape returned by GET /payment-methods/lookup */
+export interface PaymentMethodLookupItem {
+  id: string;
+  name: string;
+  type: PaymentMethodType;
+  currency: string;
+}
+
+/** Response from GET /payment-methods/lookup */
+export interface PaymentMethodsLookupResponse {
+  items: PaymentMethodLookupItem[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 // ─── DB model ──────────────────────────────────────────────────────────────────
 
 export interface PaymentMethod {

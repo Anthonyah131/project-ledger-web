@@ -5,6 +5,7 @@ import { api } from "@/lib/api-client";
 import type {
   ProjectResponse,
   ProjectsPagedResponse,
+  ProjectsLookupResponse,
   PinnedProjectResponse,
   CreateProjectRequest,
   UpdateProjectRequest,
@@ -36,6 +37,19 @@ export function getProjects({ page = 1, pageSize = 12, sortBy = "updatedAt", sor
     sortDirection,
   });
   return api.get<ProjectsPagedResponse>(`/projects?${qs}`, { signal });
+}
+
+export interface GetProjectsLookupParams {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  signal?: AbortSignal;
+}
+
+export function getProjectsLookup({ search, page = 1, pageSize = 20, signal }: GetProjectsLookupParams = {}) {
+  const qs = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (search) qs.set("search", search);
+  return api.get<ProjectsLookupResponse>(`/projects/lookup?${qs}`, { signal });
 }
 
 export function pinProject(projectId: string) {

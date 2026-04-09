@@ -160,3 +160,97 @@ export function formatDateLabel(value: string, locale?: string): string {
     locale,
   })
 }
+
+/** Returns current month as YYYY-MM. */
+export function getCurrentMonthKey(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  return `${year}-${month}`
+}
+
+/** Add/subtract months from a month key (YYYY-MM). Returns new YYYY-MM. */
+export function addMonths(monthKey: string, delta: number): string {
+  const parsed = parseMonthKey(monthKey)
+  if (!parsed) return monthKey
+
+  const newDate = new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth() + delta, 1))
+  const year = newDate.getUTCFullYear()
+  const month = String(newDate.getUTCMonth() + 1).padStart(2, "0")
+  return `${year}-${month}`
+}
+
+/** Returns first and last day of month as YYYY-MM-DD. */
+export function getMonthBounds(monthKey: string): { from: string; to: string } {
+  const parsed = parseMonthKey(monthKey)
+  if (!parsed) return { from: "", to: "" }
+
+  const year = parsed.getUTCFullYear()
+  const month = parsed.getUTCMonth()
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+
+  const formatYmd = (d: Date) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
+  }
+
+  return {
+    from: formatYmd(firstDay),
+    to: formatYmd(lastDay),
+  }
+}
+
+/** Format month key (YYYY-MM) as "Mes YYYY" long format. */
+export function formatMonthLong(monthKey: string, locale?: string): string {
+  return formatMonthKey(monthKey, monthKey, locale)
+}
+
+/** Get names of weekdays (short) in given locale. Mon-Sun. */
+export function getWeekdayNamesShort(locale?: string): string[] {
+  const baseDate = new Date(Date.UTC(2024, 0, 1)) // Monday, Jan 1, 2024
+  const names: string[] = []
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(Date.UTC(2024, 0, 1 + i))
+    try {
+      const name = d.toLocaleDateString(locale, {
+        weekday: "short",
+        timeZone: "UTC",
+      })
+      names.push(name)
+    } catch {
+      names.push(String(i + 1))
+    }
+  }
+
+  return names
+}
+
+/** Generate 42 dates (6 weeks × 7 days) covering month, starting on Monday. Returns YYYY-MM-DD. */
+export function getMonthGrid(monthKey: string): string[] {
+  const parsed = parseMonthKey(monthKey)
+  if (!parsed) return []
+
+  const year = parsed.getUTCFullYear()
+  const month = parsed.getUTCMonth()
+  const firstDay = new Date(year, month, 1)
+  const weekday = firstDay.getDay() // 0=Sun, 1=Mon, etc
+  const startOffset = weekday === 0 ? 6 : weekday - 1 // Adjust to Mon=0
+
+  const grid: string[] = []
+  let date = new Date(year, month, 1)
+  date.setDate(date.getDate() - startOffset)
+
+  for (let i = 0; i < 42; i++) {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, "0")
+    const d = String(date.getDate()).padStart(2, "0")
+    grid.push(`${y}-${m}-${d}`)
+    date.setDate(date.getDate() + 1)
+  }
+
+  return grid
+}

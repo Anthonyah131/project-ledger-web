@@ -47,6 +47,7 @@ interface UseCreateExpenseFormOptions {
   categories: CategoryResponse[]
   paymentMethods: PaymentMethodResponse[]
   sourceExpense?: ExpenseResponse
+  defaultDate?: string // YYYY-MM-DD format, for calendar view
 }
 
 export function useCreateExpenseForm({
@@ -55,6 +56,7 @@ export function useCreateExpenseForm({
   categories,
   paymentMethods,
   sourceExpense,
+  defaultDate,
 }: UseCreateExpenseFormOptions) {
   const { t } = useLanguage()
   const defaultCategoryId =
@@ -68,7 +70,7 @@ export function useCreateExpenseForm({
           title: sourceExpense.title,
           originalAmount: String(sourceExpense.originalAmount),
           originalCurrency: sourceExpense.originalCurrency,
-          expenseDate: "",
+          expenseDate: defaultDate ?? "",
           categoryId: sourceExpense.categoryId,
           paymentMethodId: sourceExpense.paymentMethodId,
           exchangeRate: String(sourceExpense.exchangeRate),
@@ -96,7 +98,7 @@ export function useCreateExpenseForm({
           title: "",
           originalAmount: "",
           originalCurrency: paymentMethods[0]?.currency ?? "CRC",
-          expenseDate: "",
+          expenseDate: defaultDate ?? "",
           categoryId: defaultCategoryId,
           paymentMethodId: defaultPaymentMethodId,
           exchangeRate: "1",

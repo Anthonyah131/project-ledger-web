@@ -63,6 +63,38 @@ export interface ProjectsPagedResponse {
 /** @deprecated Use ProjectsPagedResponse */
 export type PagedProjectsResponse = ProjectsPagedResponse;
 
+// ─── Lookup (lightweight list) ─────────────────────────────────────────────────
+
+/** Minimal project shape returned by GET /projects/lookup */
+export interface ProjectLookupItem {
+  id: string;
+  name: string;
+  workspaceId: string | null;
+  workspaceName: string | null;
+}
+
+/** Pinned entry in the lookup response */
+export interface PinnedProjectLookupItem extends ProjectLookupItem {
+  pinnedAt: string;
+}
+
+/** Response from GET /projects/lookup */
+export interface ProjectsLookupResponse {
+  /** Pinned projects matching the search. Only populated on page 1. */
+  pinned: PinnedProjectLookupItem[];
+  /** Total pinned projects for the user (independent of search). */
+  pinnedCount: number;
+  /** Non-pinned items for the current page. */
+  items: ProjectLookupItem[];
+  page: number;
+  pageSize: number;
+  /** Count of non-pinned results (pinned excluded). */
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 // ─── Request bodies ────────────────────────────────────────────────────────────
 
 export interface CreateProjectRequest {

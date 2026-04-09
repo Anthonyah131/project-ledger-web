@@ -9,6 +9,7 @@ import {
   IconCreditCard,
   IconDashboard,
   IconFolder,
+  IconPin,
   IconPlus,
   IconReceipt,
   IconSettings,
@@ -40,9 +41,14 @@ export function CommandPalette() {
     setOpen,
     query,
     setQuery,
-    filteredProjects,
+    pinnedProjects,
+    projects,
+    projectsHasNextPage,
+    projectsLoadMore,
     partners,
-    filteredPaymentMethods,
+    paymentMethods,
+    paymentMethodsHasNextPage,
+    paymentMethodsLoadMore,
     searchResults,
   } = useCommandPalette()
 
@@ -70,6 +76,8 @@ export function CommandPalette() {
       action: () => router.push("/projects?new=1"),
     },
   ]
+
+  const hasProjects = pinnedProjects.length > 0 || projects.length > 0
 
   return (
     <>
@@ -132,12 +140,29 @@ export function CommandPalette() {
             ))}
           </CommandGroup>
 
-          {/* Projects */}
-          {filteredProjects.length > 0 && (
+          {/* Projects (pinned first, then rest) */}
+          {hasProjects && (
             <>
               <CommandSeparator />
               <CommandGroup heading={t("commandPalette.groups.projects")}>
-                {filteredProjects.map((project) => (
+                {pinnedProjects.map((project) => (
+                  <CommandItem
+                    key={project.id}
+                    value={`project-${project.id}-${project.name}`}
+                    onSelect={() =>
+                      runCommand(() => router.push(`/projects/${project.id}`))
+                    }
+                  >
+                    <IconPin className="text-muted-foreground" />
+                    {project.name}
+                    {project.workspaceName && (
+                      <span className="ml-auto text-xs text-muted-foreground">
+                        {project.workspaceName}
+                      </span>
+                    )}
+                  </CommandItem>
+                ))}
+                {projects.map((project) => (
                   <CommandItem
                     key={project.id}
                     value={`project-${project.id}-${project.name}`}
@@ -154,6 +179,15 @@ export function CommandPalette() {
                     )}
                   </CommandItem>
                 ))}
+                {projectsHasNextPage && (
+                  <CommandItem
+                    value="load-more-projects"
+                    onSelect={projectsLoadMore}
+                    className="text-xs text-muted-foreground italic justify-center"
+                  >
+                    {t("commandPalette.moreResultsAvailable")}
+                  </CommandItem>
+                )}
               </CommandGroup>
             </>
           )}
@@ -185,11 +219,11 @@ export function CommandPalette() {
           )}
 
           {/* Payment Methods */}
-          {filteredPaymentMethods.length > 0 && (
+          {paymentMethods.length > 0 && (
             <>
               <CommandSeparator />
               <CommandGroup heading={t("commandPalette.groups.paymentMethods")}>
-                {filteredPaymentMethods.map((pm) => (
+                {paymentMethods.map((pm) => (
                   <CommandItem
                     key={pm.id}
                     value={`pm-${pm.id}-${pm.name}`}
@@ -206,6 +240,15 @@ export function CommandPalette() {
                     )}
                   </CommandItem>
                 ))}
+                {paymentMethodsHasNextPage && (
+                  <CommandItem
+                    value="load-more-payment-methods"
+                    onSelect={paymentMethodsLoadMore}
+                    className="text-xs text-muted-foreground italic justify-center"
+                  >
+                    {t("commandPalette.moreResultsAvailable")}
+                  </CommandItem>
+                )}
               </CommandGroup>
             </>
           )}

@@ -223,6 +223,7 @@ export function ReportsView() {
 
         <ReportsExpensesTab
           projects={projects}
+          catalogsLoading={catalogsLoading}
           from={expenseFilters.from}
           to={expenseFilters.to}
           projectId={expenseFilters.projectId}
@@ -239,6 +240,7 @@ export function ReportsView() {
 
         <ReportsIncomesTab
           projects={projects}
+          catalogsLoading={catalogsLoading}
           from={incomeFilters.from}
           to={incomeFilters.to}
           projectId={incomeFilters.projectId}
@@ -255,6 +257,7 @@ export function ReportsView() {
 
         <ReportsPaymentMethodsTab
           paymentMethods={paymentMethods}
+          catalogsLoading={catalogsLoading}
           from={paymentMethodFilters.from}
           to={paymentMethodFilters.to}
           paymentMethodIds={paymentMethodFilters.paymentMethodIds}
@@ -271,6 +274,7 @@ export function ReportsView() {
 
         <ReportsPartnerBalancesTab
           projects={projects}
+          catalogsLoading={catalogsLoading}
           from={partnerBalancesFilters.from}
           to={partnerBalancesFilters.to}
           projectId={partnerBalancesFilters.projectId}
@@ -287,6 +291,7 @@ export function ReportsView() {
 
         <ReportsPartnerGeneralTab
           partners={partners}
+          catalogsLoading={catalogsLoading}
           from={partnerGeneralFilters.from}
           to={partnerGeneralFilters.to}
           partnerId={partnerGeneralFilters.partnerId}

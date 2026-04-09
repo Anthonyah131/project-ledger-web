@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ChevronDownIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ReportFilters } from "@/components/reports/report-filters"
 import { PaymentMethodReportResults } from "@/components/reports/payment-method-report-results"
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
@@ -21,6 +22,7 @@ import { useLanguage } from "@/context/language-context"
 
 interface ReportsPaymentMethodsTabProps {
   paymentMethods: PaymentMethodResponse[]
+  catalogsLoading?: boolean
   from: string
   to: string
   paymentMethodIds: string[]
@@ -37,6 +39,7 @@ interface ReportsPaymentMethodsTabProps {
 
 export function ReportsPaymentMethodsTab({
   paymentMethods,
+  catalogsLoading,
   from,
   to,
   paymentMethodIds,
@@ -88,46 +91,50 @@ export function ReportsPaymentMethodsTab({
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.paymentMethodsLabel")}</Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="w-64 justify-between font-normal">
-                <span className="truncate">{triggerLabel}</span>
-                <ChevronDownIcon className="size-4 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-72">
-              <DropdownMenuCheckboxItem
-                checked={allSelected}
-                onCheckedChange={selectAll}
-                onSelect={(e) => e.preventDefault()}
-              >
-                {t("reports.paymentMethodsAllLabel")}
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuSeparator />
-              {paymentMethods.map((pm) => (
+          {catalogsLoading ? (
+            <Skeleton className="h-8 w-64 rounded-md" />
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-64 justify-between font-normal">
+                  <span className="truncate">{triggerLabel}</span>
+                  <ChevronDownIcon className="size-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-72">
                 <DropdownMenuCheckboxItem
-                  key={pm.id}
-                  checked={allSelected || paymentMethodIds.includes(pm.id)}
-                  onCheckedChange={() => toggleMethod(pm.id)}
+                  checked={allSelected}
+                  onCheckedChange={selectAll}
                   onSelect={(e) => e.preventDefault()}
                 >
-                  <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5">
-                      <span>{pm.name}</span>
-                      <Badge variant="secondary" className="text-[9px] font-mono px-1 py-0">
-                        {pm.currency}
-                      </Badge>
-                    </div>
-                    {pm.partner && (
-                      <span className="text-[10px] text-muted-foreground">
-                        {pm.partner.name}
-                      </span>
-                    )}
-                  </div>
+                  {t("reports.paymentMethodsAllLabel")}
                 </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                {paymentMethods.map((pm) => (
+                  <DropdownMenuCheckboxItem
+                    key={pm.id}
+                    checked={allSelected || paymentMethodIds.includes(pm.id)}
+                    onCheckedChange={() => toggleMethod(pm.id)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span>{pm.name}</span>
+                        <Badge variant="secondary" className="text-[9px] font-mono px-1 py-0">
+                          {pm.currency}
+                        </Badge>
+                      </div>
+                      {pm.partner && (
+                        <span className="text-[10px] text-muted-foreground">
+                          {pm.partner.name}
+                        </span>
+                      )}
+                    </div>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </ReportFilters>
 

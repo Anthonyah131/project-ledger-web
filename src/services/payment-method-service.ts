@@ -3,6 +3,7 @@
 import { api } from "@/lib/api-client";
 import type {
   PaymentMethodResponse,
+  PaymentMethodsLookupResponse,
   CreatePaymentMethodRequest,
   UpdatePaymentMethodRequest,
   PaymentMethodExpensesResponse,
@@ -13,6 +14,19 @@ import type {
 } from "@/types/payment-method";
 
 // ─── Payment Methods ───────────────────────────────────────────────────────────
+
+export interface GetPaymentMethodsLookupParams {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  signal?: AbortSignal;
+}
+
+export function getPaymentMethodsLookup({ search, page = 1, pageSize = 20, signal }: GetPaymentMethodsLookupParams = {}) {
+  const qs = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (search) qs.set("search", search);
+  return api.get<PaymentMethodsLookupResponse>(`/payment-methods/lookup?${qs}`, { signal });
+}
 
 export function getPaymentMethods() {
   return api.get<PaymentMethodResponse[]>("/payment-methods");

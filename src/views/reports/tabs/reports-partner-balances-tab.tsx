@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ReportFilters } from "@/components/reports/report-filters"
 import { PartnerBalancesReportResults } from "@/components/reports/partner-balances-report-results"
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
@@ -19,6 +20,7 @@ import { useLanguage } from "@/context/language-context"
 
 interface ReportsPartnerBalancesTabProps {
   projects: ProjectResponse[]
+  catalogsLoading?: boolean
   from: string
   to: string
   projectId: string
@@ -35,6 +37,7 @@ interface ReportsPartnerBalancesTabProps {
 
 export function ReportsPartnerBalancesTab({
   projects,
+  catalogsLoading,
   from,
   to,
   projectId,
@@ -69,24 +72,28 @@ export function ReportsPartnerBalancesTab({
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.projectLabel")}</Label>
-          <Select value={projectId} onValueChange={onProjectChange}>
-            <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder={t("reports.selectProjectPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {partnerProjects.length === 0 ? (
-                <SelectItem value="__none" disabled>
-                  {t("reports.noProjectsWithPartners")}
-                </SelectItem>
-              ) : (
-                partnerProjects.map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
+          {catalogsLoading ? (
+            <Skeleton className="h-8 w-52 rounded-md" />
+          ) : (
+            <Select value={projectId} onValueChange={onProjectChange}>
+              <SelectTrigger size="sm" className="w-52">
+                <SelectValue placeholder={t("reports.selectProjectPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {partnerProjects.length === 0 ? (
+                  <SelectItem value="__none" disabled>
+                    {t("reports.noProjectsWithPartners")}
                   </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
+                ) : (
+                  partnerProjects.map((project) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      {project.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </ReportFilters>
 

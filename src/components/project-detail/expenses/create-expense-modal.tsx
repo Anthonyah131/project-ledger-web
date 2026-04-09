@@ -44,6 +44,7 @@ interface CreateExpenseModalProps {
   partnersEnabled?: boolean
   assignedPartners?: ProjectPartnerResponse[]
   sourceExpense?: ExpenseResponse
+  defaultDate?: string
 }
 
 export function CreateExpenseModal({
@@ -60,6 +61,7 @@ export function CreateExpenseModal({
   partnersEnabled = false,
   assignedPartners = [],
   sourceExpense,
+  defaultDate,
 }: CreateExpenseModalProps) {
   const {
     form,
@@ -69,7 +71,7 @@ export function CreateExpenseModal({
     watchAmount,
     watchExchangeRate,
     watchConvertedAmount,
-  } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods, sourceExpense })
+  } = useCreateExpenseForm({ onCreate, onClose, categories, paymentMethods, sourceExpense, defaultDate })
   const { t } = useLanguage()
   const isAiMode = mode === "ai"
 

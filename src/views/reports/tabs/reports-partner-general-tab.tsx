@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ReportFilters } from "@/components/reports/report-filters"
 import { PartnerGeneralReportResults } from "@/components/reports/partner-general-report-results"
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
@@ -18,6 +19,7 @@ import { useLanguage } from "@/context/language-context"
 
 interface ReportsPartnerGeneralTabProps {
   partners: PartnerResponse[]
+  catalogsLoading?: boolean
   from: string
   to: string
   partnerId: string
@@ -34,6 +36,7 @@ interface ReportsPartnerGeneralTabProps {
 
 export function ReportsPartnerGeneralTab({
   partners,
+  catalogsLoading,
   from,
   to,
   partnerId,
@@ -63,24 +66,28 @@ export function ReportsPartnerGeneralTab({
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.partnerLabel")}</Label>
-          <Select value={partnerId} onValueChange={onPartnerChange}>
-            <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder={t("reports.selectPartnerPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {partners.length === 0 ? (
-                <SelectItem value="__none" disabled>
-                  {t("reports.noPartnersRegistered")}
-                </SelectItem>
-              ) : (
-                partners.map((partner) => (
-                  <SelectItem key={partner.id} value={partner.id}>
-                    {partner.name}
+          {catalogsLoading ? (
+            <Skeleton className="h-8 w-52 rounded-md" />
+          ) : (
+            <Select value={partnerId} onValueChange={onPartnerChange}>
+              <SelectTrigger size="sm" className="w-52">
+                <SelectValue placeholder={t("reports.selectPartnerPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {partners.length === 0 ? (
+                  <SelectItem value="__none" disabled>
+                    {t("reports.noPartnersRegistered")}
                   </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
+                ) : (
+                  partners.map((partner) => (
+                    <SelectItem key={partner.id} value={partner.id}>
+                      {partner.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </ReportFilters>
 

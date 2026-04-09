@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ReportFilters } from "@/components/reports/report-filters"
 import { IncomeReportResults } from "@/components/reports/income-report-results"
 import { ReportEmptyPrompt, ReportNoData, ReportSkeleton } from "@/components/reports/report-states"
@@ -18,6 +19,7 @@ import { useLanguage } from "@/context/language-context"
 
 interface ReportsIncomesTabProps {
   projects: ProjectResponse[]
+  catalogsLoading?: boolean
   from: string
   to: string
   projectId: string
@@ -34,6 +36,7 @@ interface ReportsIncomesTabProps {
 
 export function ReportsIncomesTab({
   projects,
+  catalogsLoading,
   from,
   to,
   projectId,
@@ -63,18 +66,22 @@ export function ReportsIncomesTab({
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.projectLabel")}</Label>
-          <Select value={projectId} onValueChange={onProjectChange}>
-            <SelectTrigger size="sm" className="w-52">
-              <SelectValue placeholder={t("reports.selectProjectPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {projects.map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {catalogsLoading ? (
+            <Skeleton className="h-8 w-52 rounded-md" />
+          ) : (
+            <Select value={projectId} onValueChange={onProjectChange}>
+              <SelectTrigger size="sm" className="w-52">
+                <SelectValue placeholder={t("reports.selectProjectPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </ReportFilters>
 

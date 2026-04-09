@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
+import { getCurrentMonthKey, getMonthBounds } from "@/lib/date-utils"
 import { TabsContent } from "@/components/ui/tabs"
 import { MovementDetailSheet } from "@/components/project-detail/shared/movement-detail-sheet"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
@@ -24,6 +25,13 @@ import type {
 import type { PaymentMethodResponse } from "@/types/payment-method"
 import type { ProjectPartnerResponse } from "@/types/project-partner"
 import { useLanguage } from "@/context/language-context"
+
+const IncomesCalendar = dynamic(() =>
+  import("@/components/project-detail/incomes/incomes-calendar").then((mod) => mod.IncomesCalendar)
+)
+const IncomesCalendarDaySheet = dynamic(() =>
+  import("@/components/project-detail/incomes/incomes-calendar-day-sheet").then((mod) => mod.IncomesCalendarDaySheet)
+)
 
 const CreateIncomeModal = dynamic(() =>
   import("@/components/project-detail/incomes/create-income-modal").then((mod) => mod.CreateIncomeModal)
@@ -112,9 +120,39 @@ export function ProjectDetailIncomesTab({
   onToggleActive,
   onDuplicate,
 }: ProjectDetailIncomesTabProps) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [viewTarget, setViewTarget] = useState<IncomeResponse | null>(null)
   const [view, setView] = useState<"list" | "import">("list")
+
+  // Calendar state
+  const [viewMode, setViewMode] = useState<"list" | "calendar">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`incomes:view-mode:${projectId}`)
+      return (saved as "list" | "calendar") || "list"
+    }
+    return "list"
+  })
+  const [calendarMonth, setCalendarMonth] = useState<string>(getCurrentMonthKey())
+  const [calendarDayDetail, setCalendarDayDetail] = useState<string | null>(null)
+
+  const handleViewModeChange = (mode: "list" | "calendar") => {
+    setViewMode(mode)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`incomes:view-mode:${projectId}`, mode)
+    }
+    if (mode === "calendar") {
+      const { from, to } = getMonthBounds(calendarMonth)
+      inc.handleDateFromChange(from)
+      inc.handleDateToChange(to)
+    }
+  }
+
+  const handleCalendarMonthChange = (month: string) => {
+    setCalendarMonth(month)
+    const { from, to } = getMonthBounds(month)
+    inc.handleDateFromChange(from)
+    inc.handleDateToChange(to)
+  }
 
   return (
     <TabsContent value="incomes" className="flex flex-col gap-4">
@@ -152,10 +190,38 @@ export function ProjectDetailIncomesTab({
               onCreateManual={onCreateManual}
               onCreateWithAi={onCreateWithAi}
               onBulkImport={() => setView("import")}
+              viewMode={viewMode}
+              onViewModeChange={handleViewModeChange}
             />
 
             {inc.loading ? (
               <IncomesSkeleton />
+            ) : viewMode === "calendar" ? (
+              <>
+                <IncomesCalendar
+                  incomes={inc.incomes}
+                  month={calendarMonth}
+                  onMonthChange={handleCalendarMonthChange}
+                  onDayClick={setCalendarDayDetail}
+                  projectCurrency={projectCurrency}
+                  locale={locale}
+                />
+                <IncomesCalendarDaySheet
+                  date={calendarDayDetail}
+                  incomes={
+                    calendarDayDetail
+                      ? inc.incomes.filter((i) => i.incomeDate === calendarDayDetail)
+                      : []
+                  }
+                  open={calendarDayDetail !== null}
+                  onOpenChange={(v) => !v && setCalendarDayDetail(null)}
+                  onCreate={onCreateManual}
+                  onEdit={onEditSelect}
+                  onDelete={onDeleteSelect}
+                  projectCurrency={projectCurrency}
+                  locale={locale}
+                />
+              </>
             ) : inc.incomes.length === 0 ? (
               <IncomesEmptyState hasSearch={inc.hasSearch} onCreate={onCreateManual} />
             ) : (
