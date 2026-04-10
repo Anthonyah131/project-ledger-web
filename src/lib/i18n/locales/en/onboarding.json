@@ -1,0 +1,32 @@
+{
+  "onboarding": {
+    "setupGuide": "Setup guide",
+    "allDone": "All set! You can now use the system.",
+    "steps": {
+      "partner": {
+        "title": "Create your first partner",
+        "description": "Partners are external entities like clients or suppliers you work with."
+      },
+      "paymentMethod": {
+        "title": "Add a payment method",
+        "description": "Add a bank account, card, or cash method to manage your transactions."
+      },
+      "linkPMToPartner": {
+        "title": "Link payment method to partner",
+        "description": "Associate your payment method with a partner to track accounts per entity."
+      },
+      "project": {
+        "title": "Create your first project",
+        "description": "Projects are your main workspace for managing finances."
+      },
+      "assignPartner": {
+        "title": "Link partner to project",
+        "description": "Assign your partner to the project from the project settings."
+      },
+      "linkPaymentMethod": {
+        "title": "Link payment method to project",
+        "description": "Link your payment method to the project to start recording transactions."
+      }
+    }
+  }
+}

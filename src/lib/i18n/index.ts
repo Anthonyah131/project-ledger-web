@@ -17,6 +17,7 @@ import esChatbot from "./locales/es/chatbot.json"
 import esLanding from "./locales/es/landing.json"
 import esHelp from "./locales/es/help.json"
 import esSite from "./locales/es/site.json"
+import esOnboarding from "./locales/es/onboarding.json"
 
 // EN
 import enShared from "./locales/en/shared.json"
@@ -35,6 +36,7 @@ import enChatbot from "./locales/en/chatbot.json"
 import enLanding from "./locales/en/landing.json"
 import enHelp from "./locales/en/help.json"
 import enSite from "./locales/en/site.json"
+import enOnboarding from "./locales/en/onboarding.json"
 
 export type Locale = "es" | "en";
 
@@ -52,13 +54,13 @@ function mergeTranslations(...parts: Record<string, unknown>[]): Translations {
 const es = mergeTranslations(
   esShared, esAuth, esDashboard, esProjects, esProjectDetail,
   esPartners, esPaymentMethods, esBilling, esReports, esSettings,
-  esWorkspaces, esAdmin, esChatbot, esLanding, esHelp, esSite,
+  esWorkspaces, esAdmin, esChatbot, esLanding, esHelp, esSite, esOnboarding,
 )
 
 const en = mergeTranslations(
   enShared, enAuth, enDashboard, enProjects, enProjectDetail,
   enPartners, enPaymentMethods, enBilling, enReports, enSettings,
-  enWorkspaces, enAdmin, enChatbot, enLanding, enHelp, enSite,
+  enWorkspaces, enAdmin, enChatbot, enLanding, enHelp, enSite, enOnboarding,
 )
 
 const locales: Record<Locale, Translations> = { es, en };

@@ -505,6 +505,17 @@
       "colOwner": "Propietario",
       "unlinkTitle": "Desvincular",
       "unlinkAriaLabel": "Desvincular {name}"
+    },
+    "toast": {
+      "linked": "Método de pago vinculado",
+      "linkedDesc": "{name} fue vinculado al proyecto.",
+      "unlinked": "Método de pago desvinculado",
+      "unlinkedDesc": "{name} fue desvinculado del proyecto."
+    },
+    "errors": {
+      "load": "Error al cargar los métodos de pago del proyecto.",
+      "link": "No se pudo vincular el método de pago.",
+      "unlink": "No se pudo desvincular el método de pago."
     }
   },
   "movementDetail": {

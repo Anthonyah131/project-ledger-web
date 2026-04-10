@@ -3,9 +3,11 @@
 // views/payment-methods/payment-method-detail-view.tsx
 // Vista de detalle para un método de pago individual
 
+import { useEffect, useRef } from "react"
 import { usePaymentMethodDetail } from "@/hooks/payment-methods/use-payment-method-detail"
 import { PaymentMethodDetailPanel } from "@/components/payment-methods/payment-method-detail-panel"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useOnboardingContext } from "@/context/onboarding-context"
 
 interface Props {
   paymentMethodId: string
@@ -13,6 +15,8 @@ interface Props {
 
 export function PaymentMethodDetailView({ paymentMethodId }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { refreshProgress } = useOnboardingContext()
   const {
     paymentMethod,
     expenses,
@@ -62,6 +66,17 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     handleUnlinkPartner,
   } = usePaymentMethodDetail(paymentMethodId)
 
+  // Auto-open link partner dialog when navigated from onboarding checklist
+  const onboardingAutoOpened = useRef(false)
+  useEffect(() => {
+    if (searchParams.get("onboarding") !== "1") return
+    if (onboardingAutoOpened.current) return
+    if (loadingDetail || !paymentMethod) return
+    if (paymentMethod.partner) return // already linked
+    onboardingAutoOpened.current = true
+    openLinkPartnerDialog()
+  }, [loadingDetail, paymentMethod, searchParams, openLinkPartnerDialog])
+
   const handleBack = () => {
     router.push("/payment-methods")
   }
@@ -75,9 +90,12 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
     return deleted
   }
 
+  const defaultTab = searchParams.get("onboarding") === "1" ? "partner" : "expenses"
+
   return (
     <PaymentMethodDetailPanel
       paymentMethod={paymentMethod}
+      defaultTab={defaultTab}
       expenses={expenses}
       incomes={incomes}
       projects={projects}
@@ -122,7 +140,7 @@ export function PaymentMethodDetailView({ paymentMethodId }: Props) {
       linkPartnerOpen={linkPartnerOpen}
       setLinkPartnerOpen={setLinkPartnerOpen}
       openLinkPartnerDialog={openLinkPartnerDialog}
-      onLinkPartner={handleLinkPartner}
+      onLinkPartner={async (partnerId) => { await handleLinkPartner(partnerId); refreshProgress() }}
       onUnlinkPartner={handleUnlinkPartner}
     />
   )

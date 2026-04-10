@@ -71,6 +71,7 @@ interface PaymentMethodDetailTabsProps {
   onOpenIncomeProject: (projectId: string) => void
   onOpenProjectCard: (projectId: string) => void
   partnerTab: PartnerTabProps
+  defaultTab?: string
 }
 
 function PartnerLinkList({
@@ -172,10 +173,11 @@ export function PaymentMethodDetailTabs({
   onOpenIncomeProject,
   onOpenProjectCard,
   partnerTab,
+  defaultTab = "expenses",
 }: PaymentMethodDetailTabsProps) {
   const { t } = useLanguage()
   return (
-    <Tabs defaultValue="expenses">
+    <Tabs defaultValue={defaultTab}>
       <TabsList variant="line">
         <TabsTrigger value="expenses">{t("paymentMethods.tabExpenses")}</TabsTrigger>
         <TabsTrigger value="incomes">{t("paymentMethods.tabIncomes")}</TabsTrigger>

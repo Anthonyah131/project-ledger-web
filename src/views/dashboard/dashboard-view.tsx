@@ -2,7 +2,7 @@
 
 import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, PinIcon } from "lucide-react"
+import { ArrowRight, FolderPlus, HandCoins, Link2, Loader2, PinIcon, Rocket, UserRoundPlus } from "lucide-react"
 
 import { DashboardMonthlyCategoriesChart } from "@/components/dashboard/monthly/dashboard-monthly-categories-chart"
 import { DashboardMonthlyErrorCard } from "@/components/dashboard/monthly/dashboard-monthly-error-card"
@@ -13,8 +13,8 @@ import { DashboardMonthlyPaymentMethodsChart } from "@/components/dashboard/mont
 import { DashboardMonthlySummaryCards } from "@/components/dashboard/monthly/dashboard-monthly-summary-cards"
 import { DashboardMonthlyTrendChart } from "@/components/dashboard/monthly/dashboard-monthly-trend-chart"
 import { DashboardMonthlyBudgetWidget } from "@/components/dashboard/monthly/dashboard-monthly-budget-widget"
+import { Button } from "@/components/ui/button"
 import { useDateFormat } from "@/hooks/use-date-format"
-import { EmptyState } from "@/components/shared/empty-state"
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { useAuth } from "@/context/auth-context"
 import { useLanguage } from "@/context/language-context"
+import { useOnboardingContext } from "@/context/onboarding-context"
 import { useMonthlyOverview } from "@/hooks/dashboard/use-monthly-overview"
 import type { DashboardAlert, DashboardTrendDay } from "@/types/dashboard"
 
@@ -32,6 +33,7 @@ export function DashboardView() {
   const { formatMonthLabel } = useDateFormat()
   const router = useRouter()
   const { user } = useAuth()
+  const { openWizard } = useOnboardingContext()
 
   const {
     selectedMonth,
@@ -169,14 +171,82 @@ export function DashboardView() {
       )}
 
       {!projectsLoading && projects.length === 0 && (
-        <div className="rounded-2xl border border-border/70 bg-card/80 px-4 py-6">
-          <EmptyState
-            hasSearch={false}
-            onCreate={() => router.push("/workspaces")}
-            title={t("dashboard.noProjects")}
-            description={t("dashboard.noProjectsWorkspaceRequired")}
-            createLabel={t("dashboard.createWorkspace")}
-          />
+        <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/90 px-5 py-7 sm:px-8 sm:py-10">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.14),transparent_35%),radial-gradient(circle_at_85%_10%,hsl(var(--accent)/0.16),transparent_40%)]" />
+
+          <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-6 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <Rocket className="size-3.5 text-primary" />
+              {t("onboarding.setupGuide")}
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-foreground sm:text-2xl">{t("dashboard.noProjects")}</h3>
+              <p className="mx-auto max-w-xl text-sm text-muted-foreground sm:text-base">
+                {t("dashboard.noProjectsSetupHint")}
+              </p>
+            </div>
+
+            <ol className="flex w-full flex-wrap items-start justify-center gap-y-4">
+              <li className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-2 px-3 py-1">
+                  <span className="inline-flex size-9 items-center justify-center rounded-full bg-primary/12 text-primary">
+                    <UserRoundPlus className="size-4" />
+                  </span>
+                  <span className="max-w-24 text-center text-xs font-medium text-foreground leading-snug">1. {t("onboarding.steps.partner.title")}</span>
+                </div>
+                <ArrowRight className="mb-5 size-4 shrink-0 text-muted-foreground/60" />
+              </li>
+
+              <li className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-2 px-3 py-1">
+                  <span className="inline-flex size-9 items-center justify-center rounded-full bg-primary/12 text-primary">
+                    <HandCoins className="size-4" />
+                  </span>
+                  <span className="max-w-24 text-center text-xs font-medium text-foreground leading-snug">2. {t("onboarding.steps.paymentMethod.title")}</span>
+                </div>
+                <ArrowRight className="mb-5 size-4 shrink-0 text-muted-foreground/60" />
+              </li>
+
+              <li className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-2 px-3 py-1">
+                  <span className="inline-flex size-9 items-center justify-center rounded-full bg-primary/12 text-primary">
+                    <FolderPlus className="size-4" />
+                  </span>
+                  <span className="max-w-24 text-center text-xs font-medium text-foreground leading-snug">3. {t("onboarding.steps.project.title")}</span>
+                </div>
+                <ArrowRight className="mb-5 size-4 shrink-0 text-muted-foreground/60" />
+              </li>
+
+              <li className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-2 px-3 py-1">
+                  <span className="inline-flex size-9 items-center justify-center rounded-full bg-accent/40 text-foreground">
+                    <Link2 className="size-4" />
+                  </span>
+                  <span className="max-w-24 text-center text-xs font-medium text-foreground leading-snug">4. {t("onboarding.steps.assignPartner.title")}</span>
+                </div>
+                <ArrowRight className="mb-5 size-4 shrink-0 text-muted-foreground/60" />
+              </li>
+
+              <li className="flex items-center">
+                <div className="flex flex-col items-center gap-2 px-3 py-1">
+                  <span className="inline-flex size-9 items-center justify-center rounded-full bg-accent/40 text-foreground">
+                    <Link2 className="size-4" />
+                  </span>
+                  <span className="max-w-24 text-center text-xs font-medium text-foreground leading-snug">5. {t("onboarding.steps.linkPaymentMethod.title")}</span>
+                </div>
+              </li>
+            </ol>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <Button size="sm" onClick={openWizard} className="min-w-36">
+                {t("onboarding.setupGuide")}
+              </Button>
+              <Button size="sm" variant="outline" className="min-w-36" onClick={() => router.push("/projects?onboarding=1")}>
+                {t("dashboard.startNow")}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 

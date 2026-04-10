@@ -65,7 +65,7 @@ function DashboardMonthlyBudgetWidgetComponent({
         <div className="flex items-center gap-2.5">
           <div
             className={cn(
-              "size-8 rounded-xl bg-gradient-to-br flex items-center justify-center shrink-0 border",
+              "size-8 rounded-xl bg-linear-to-br flex items-center justify-center shrink-0 border",
               iconBgClass,
             )}
           >

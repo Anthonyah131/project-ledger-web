@@ -58,6 +58,11 @@ function storeProjectId(projectId: string) {
   localStorage.setItem(PROJECT_STORAGE_KEY, projectId)
 }
 
+function clearStoredProjectId() {
+  if (typeof window === "undefined") return
+  localStorage.removeItem(PROJECT_STORAGE_KEY)
+}
+
 function normalizeNavigation(raw: unknown): DashboardMonthlySummaryResponse["navigation"] {
   const data = typeof raw === "object" && raw !== null ? raw as Record<string, unknown> : {}
   return {
@@ -276,6 +281,15 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     } catch (err) {
       if (isAbortError(err)) return
 
+      if (err instanceof ApiClientError && err.status === 403) {
+        setSummaryData(null)
+        setTrendByDay([])
+        setTopCategories([])
+        setPaymentMethodSplit([])
+        setError(t("dashboard.errors.noProjectSelected"))
+        return
+      }
+
       const message = toastApiError(err, t("dashboard.errors.loadMonthly"))
       setError(message)
     } finally {
@@ -366,6 +380,11 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     return projects.find((project) => project.id === selectedProjectId)?.name ?? t("dashboard.defaultProjectName")
   }, [projects, selectedProjectId, t])
 
+  const selectedProjectIsAvailable = useMemo(() => {
+    if (!selectedProjectId) return false
+    return projects.some((project) => project.id === selectedProjectId)
+  }, [projects, selectedProjectId])
+
   const currentMonthKey = getCurrentMonthKey()
 
   const canGoPrevious = !loading
@@ -401,13 +420,36 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
   }, [enabled, loadProjects])
 
   useEffect(() => {
+    if (!enabled || projectsLoading) return
+
+    if (projects.length === 0) {
+      if (selectedProjectId) {
+        setSelectedProjectId("")
+        clearStoredProjectId()
+      }
+      return
+    }
+
+    if (selectedProjectId && selectedProjectIsAvailable) return
+
+    const fallbackProjectId = projects[0]?.id ?? ""
+    setSelectedProjectId(fallbackProjectId)
+
+    if (fallbackProjectId) {
+      storeProjectId(fallbackProjectId)
+    } else {
+      clearStoredProjectId()
+    }
+  }, [enabled, projects, projectsLoading, selectedProjectId, selectedProjectIsAvailable])
+
+  useEffect(() => {
     if (!enabled) {
       abortRef.current?.abort()
       setLoading(false)
       return
     }
 
-    if (!selectedProjectId) {
+    if (projectsLoading || !selectedProjectId || !selectedProjectIsAvailable) {
       setSummaryData(null)
       setTrendByDay([])
       setTopCategories([])
@@ -417,7 +459,7 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     }
 
     void loadMonth(selectedMonth, selectedProjectId)
-  }, [enabled, loadMonth, selectedMonth, selectedProjectId])
+  }, [enabled, loadMonth, projectsLoading, selectedMonth, selectedProjectId, selectedProjectIsAvailable])
 
   useEffect(() => {
     return () => {
@@ -427,7 +469,7 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
 
   // ─── Budget: fetch reactively when selectedProjectId changes ────────────
   useEffect(() => {
-    if (!enabled || !selectedProjectId) {
+    if (!enabled || projectsLoading || !selectedProjectId || !selectedProjectIsAvailable) {
       setBudget(null)
       return
     }
@@ -452,7 +494,7 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
       })
 
     return () => { cancelled = true }
-  }, [enabled, selectedProjectId])
+  }, [enabled, projectsLoading, selectedProjectId, selectedProjectIsAvailable])
 
   const handleSelectProjectId = useCallback((value: string) => {
     setSelectedProjectId(value)

@@ -1,10 +1,12 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { Plus } from "lucide-react"
 import dynamic from "next/dynamic"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/context/language-context"
+import { useOnboardingContext } from "@/context/onboarding-context"
 import { usePaymentMethods } from "@/hooks/payment-methods/use-payment-methods"
 import { PaymentMethodsToolbar } from "./payment-methods-toolbar"
 import { PaymentMethodsShelfView } from "./payment-methods-shelf-view"
@@ -25,7 +27,9 @@ const EditPaymentMethodModal = dynamic(() =>
 )
 
 export function PaymentMethodsPanel() {
+  const searchParams = useSearchParams()
   const { t } = useLanguage()
+  const { refreshProgress } = useOnboardingContext()
   const {
     paymentMethods,
     total,
@@ -47,6 +51,13 @@ export function PaymentMethodsPanel() {
     handleSortChange,
     handleTypeFilterChange,
   } = usePaymentMethods()
+
+  // Auto-open create modal when navigated from onboarding checklist
+  useEffect(() => {
+    if (searchParams.get("onboarding") === "1") {
+      setCreateOpen(true)
+    }
+  }, [searchParams, setCreateOpen])
 
   const handleOpenCreate = useCallback(() => {
     setCreateOpen(true)
@@ -146,7 +157,7 @@ export function PaymentMethodsPanel() {
         <CreatePaymentMethodModal
           open={createOpen}
           onClose={handleCloseCreate}
-          onCreate={mutateCreate}
+          onCreate={async (data) => { await mutateCreate(data); refreshProgress() }}
         />
       )}
       {!!editTarget && (

@@ -3,7 +3,7 @@
 // views/project-detail/project-detail-view.tsx
 // Orchestrator for the project-detail page — header + resource tabs.
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -34,6 +34,7 @@ import {
   type ProjectSettingsSection,
 } from "@/views/project-detail/tabs/project-detail-settings-tab";
 import { useLanguage } from "@/context/language-context";
+import { useOnboardingContext } from "@/context/onboarding-context";
 
 interface Props {
   projectId: string;
@@ -44,6 +45,7 @@ type CreateEntryMode = "manual" | "ai";
 export function ProjectDetailView({ projectId }: Props) {
   const { t } = useLanguage();
   const router = useRouter();
+  const { refreshProgress } = useOnboardingContext();
   const searchParams = useSearchParams();
   const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
   const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
@@ -54,8 +56,24 @@ export function ProjectDetailView({ projectId }: Props) {
   const initialTab = VALID_TABS.includes(tabParam) ? tabParam : "expenses";
   const [activeTab, setActiveTab] = useState(initialTab);
 
+  const VALID_SECTIONS: ProjectSettingsSection[] = ["general", "currencies", "partners", "payment-methods"];
+  const sectionParam = searchParams.get("section") ?? "";
+  const initialSection: ProjectSettingsSection = VALID_SECTIONS.includes(sectionParam as ProjectSettingsSection)
+    ? (sectionParam as ProjectSettingsSection)
+    : "general";
   const [settingsSection, setSettingsSection] =
-    useState<ProjectSettingsSection>("general");
+    useState<ProjectSettingsSection>(initialSection);
+
+  // Sync activeTab + settingsSection when searchParams change (soft navigation)
+  useEffect(() => {
+    const tp = searchParams.get("tab") ?? "";
+    if (VALID_TABS.includes(tp)) setActiveTab(tp);
+    const sp = searchParams.get("section") ?? "";
+    if (VALID_SECTIONS.includes(sp as ProjectSettingsSection)) {
+      setSettingsSection(sp as ProjectSettingsSection);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const {
     detail,
@@ -75,6 +93,21 @@ export function ProjectDetailView({ projectId }: Props) {
     mutateBudgetSet, mutateBudgetDelete,
     mutateSettlementCreate, mutateSettlementUpdate, mutateSettlementDelete,
   } = useProjectDetailView(projectId);
+
+  // Auto-open the right modal when navigated from onboarding checklist
+  const onboardingAutoOpened = useRef(false);
+  useEffect(() => {
+    if (searchParams.get("onboarding") !== "1") return;
+    if (onboardingAutoOpened.current) return;
+    if (activeTab === "settings" && settingsSection === "partners") {
+      onboardingAutoOpened.current = true;
+      ppp.openAssignDialog();
+    } else if (activeTab === "settings" && settingsSection === "payment-methods") {
+      onboardingAutoOpened.current = true;
+      ppm.openAddDialog();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, settingsSection, ppp, ppm]);
 
   const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget, setDuplicateSource: setExpenseDuplicateSource } = exp;
   const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget, setDuplicateSource: setIncomeDuplicateSource } = inc;
@@ -364,13 +397,13 @@ export function ProjectDetailView({ projectId }: Props) {
           onAssignClose={handleAssignClose}
           onRemoveSelectPartner={ppp.setRemoveTarget}
           onRemoveClosePartner={handleRemoveClosePartner}
-          onAssign={ppp.handleAssign}
+          onAssign={async (partnerId) => { await ppp.handleAssign(partnerId); refreshProgress() }}
           onRemovePartner={ppp.handleRemove}
           // Payment methods
           ppm={ppmState}
           onAddOpen={ppm.openAddDialog}
           onAddClose={handleAddClose}
-          onLink={ppm.handleLink}
+          onLink={async (pmId, pmName) => { await ppm.handleLink(pmId, pmName); refreshProgress() }}
           onRemoveSelectPM={ppm.setRemoveTarget}
           onRemoveClosePM={handleRemoveClosePM}
           onUnlink={ppm.handleUnlink}

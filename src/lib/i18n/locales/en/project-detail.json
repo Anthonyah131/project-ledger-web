@@ -505,6 +505,17 @@
       "colOwner": "Owner",
       "unlinkTitle": "Unlink",
       "unlinkAriaLabel": "Unlink {name}"
+    },
+    "toast": {
+      "linked": "Payment method linked",
+      "linkedDesc": "{name} was linked to the project.",
+      "unlinked": "Payment method unlinked",
+      "unlinkedDesc": "{name} was unlinked from the project."
+    },
+    "errors": {
+      "load": "Failed to load project payment methods.",
+      "link": "Could not link the payment method.",
+      "unlink": "Could not unlink the payment method."
     }
   },
   "movementDetail": {

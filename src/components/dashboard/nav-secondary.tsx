@@ -18,6 +18,7 @@ import {
 export function NavSecondary({
   items,
   sectionLabel,
+  extraItems,
   ...props
 }: {
   items: {
@@ -26,6 +27,7 @@ export function NavSecondary({
     icon: Icon
   }[]
   sectionLabel?: string
+  extraItems?: React.ReactNode
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const pathname = usePathname()
 
@@ -47,6 +49,7 @@ export function NavSecondary({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          {extraItems}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

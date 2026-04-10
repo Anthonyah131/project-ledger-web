@@ -18,6 +18,8 @@
     "projectAnalyzed": "Proyecto analizado",
     "selectProject": "Selecciona un proyecto",
     "noProjects": "Aún no tienes proyectos",
+    "noProjectsSetupHint": "No necesitas un workspace para comenzar. Sigue esta guía rápida para dejar todo listo.",
+    "startNow": "Comenzar ahora",
     "noProjectsWorkspaceRequired": "Para crear un proyecto necesitas un workspace. Crea tu primer workspace para comenzar.",
     "createWorkspace": "Crear workspace",
     "selectProjectDescription": "Selecciona un proyecto para cargar el dashboard mensual.",

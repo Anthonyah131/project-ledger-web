@@ -4,8 +4,8 @@
 // Main orchestrator for the partners list page (CRUD).
 
 import dynamic from "next/dynamic"
-import { memo, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { memo, useCallback, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Plus, Mail, Phone, Users } from "lucide-react"
 import { usePartners } from "@/hooks/partners/use-partners"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { PartnersList } from "./partners-list"
 import { cn } from "@/lib/utils"
 import type { PartnerResponse } from "@/types/partner"
 import { useLanguage } from "@/context/language-context"
+import { useOnboardingContext } from "@/context/onboarding-context"
 
 const CreatePartnerModal = dynamic(() =>
   import("./create-partner-modal").then((m) => m.CreatePartnerModal),
@@ -178,7 +179,9 @@ function PartnersEmptyState({ hasSearch, onCreate }: {
 
 export function PartnersPanel() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { t } = useLanguage()
+  const { refreshProgress } = useOnboardingContext()
   const {
     partners,
     totalCount,
@@ -198,6 +201,13 @@ export function PartnersPanel() {
     handlePageSizeChange,
     handleSortChange,
   } = usePartners()
+
+  // Auto-open create modal when navigated from onboarding checklist
+  useEffect(() => {
+    if (searchParams.get("onboarding") === "1") {
+      setCreateOpen(true)
+    }
+  }, [searchParams, setCreateOpen])
 
   const handleOpenCreate = useCallback(() => setCreateOpen(true), [setCreateOpen])
   const handleCloseCreate = useCallback(() => setCreateOpen(false), [setCreateOpen])
@@ -291,7 +301,7 @@ export function PartnersPanel() {
         <CreatePartnerModal
           open={createOpen}
           onClose={handleCloseCreate}
-          onCreate={mutateCreate}
+          onCreate={async (data) => { await mutateCreate(data); refreshProgress() }}
         />
       )}
       {!!editTarget && (

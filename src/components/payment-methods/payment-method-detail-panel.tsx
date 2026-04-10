@@ -93,6 +93,7 @@ interface PaymentMethodDetailPanelProps {
   openLinkPartnerDialog: () => void
   onLinkPartner: (partnerId: string) => Promise<void>
   onUnlinkPartner: () => Promise<void>
+  defaultTab?: string
 }
 
 function PaymentMethodDetailPanelComponent({
@@ -142,6 +143,7 @@ function PaymentMethodDetailPanelComponent({
   openLinkPartnerDialog,
   onLinkPartner,
   onUnlinkPartner,
+  defaultTab,
 }: PaymentMethodDetailPanelProps) {
   const router = useRouter()
   const { t } = useLanguage()
@@ -389,6 +391,7 @@ function PaymentMethodDetailPanelComponent({
         onOpenExpenseProject={(expenseProjectId) => router.push(`/projects/${expenseProjectId}`)}
         onOpenIncomeProject={(incomeProjectId) => router.push(`/projects/${incomeProjectId}`)}
         onOpenProjectCard={(cardProjectId) => router.push(`/projects/${cardProjectId}`)}
+        defaultTab={defaultTab}
         partnerTab={{
           currentPartner: paymentMethod.partner,
           partners,

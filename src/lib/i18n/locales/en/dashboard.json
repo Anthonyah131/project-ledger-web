@@ -18,6 +18,8 @@
     "projectAnalyzed": "Analyzed project",
     "selectProject": "Select a project",
     "noProjects": "No projects yet",
+    "noProjectsSetupHint": "You do not need a workspace to get started. Follow this quick setup guide.",
+    "startNow": "Start now",
     "noProjectsWorkspaceRequired": "To create a project you need a workspace. Create your first workspace to get started.",
     "createWorkspace": "Create workspace",
     "selectProjectDescription": "Select a project to load the monthly dashboard.",

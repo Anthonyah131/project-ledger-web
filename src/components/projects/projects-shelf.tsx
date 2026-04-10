@@ -1,9 +1,9 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { Plus } from "lucide-react"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useProjects } from "@/hooks/projects/use-projects"
 import { ProjectsToolbar } from "./projects-toolbar"
@@ -17,6 +17,7 @@ import {
   ListSkeleton,
 } from "./project-states"
 import { useLanguage } from "@/context/language-context"
+import { useOnboardingContext } from "@/context/onboarding-context"
 import type { ProjectResponse } from "@/types/project"
 
 const CreateProjectModal = dynamic(() =>
@@ -35,7 +36,9 @@ interface ProjectsShelfProps {
 
 export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProjectMutated }: ProjectsShelfProps = {}) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { t } = useLanguage()
+  const { refreshProgress } = useOnboardingContext()
   const {
     projects,
     pinnedProjects,
@@ -64,6 +67,13 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
     handleCurrencyChange,
     handleSortChange,
   } = useProjects({ workspaceId, projectIds, onProjectMutated })
+
+  // Auto-open create modal when navigated from onboarding checklist
+  useEffect(() => {
+    if (searchParams.get("onboarding") === "1") {
+      setCreateOpen(true)
+    }
+  }, [searchParams, setCreateOpen])
 
   const handleOpenCreate = useCallback(() => setCreateOpen(true), [setCreateOpen])
   const handleCloseCreate = useCallback(() => setCreateOpen(false), [setCreateOpen])
@@ -173,7 +183,7 @@ export function ProjectsShelf({ workspaceId, projectIds, onDisconnect, onProject
         <CreateProjectModal
           open={createOpen}
           onClose={handleCloseCreate}
-          onCreate={mutateCreate}
+          onCreate={async (data) => { await mutateCreate(data); refreshProgress() }}
         />
       )}
       {!!editProject && (

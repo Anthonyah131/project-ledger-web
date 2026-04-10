@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SiteHeader } from "@/components/dashboard/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Chatbot from "@/components/shared/chatbot";
+import { OnboardingProvider } from "@/context/onboarding-context";
 
 export default function DashboardLayout({
   children,
@@ -16,14 +17,16 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <SiteHeader />
-          <main className="flex flex-1 flex-col gap-0 px-3 py-6 lg:px-4">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-      <Chatbot />
+      <OnboardingProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <SiteHeader />
+            <main className="flex flex-1 flex-col gap-0 px-3 py-6 lg:px-4">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+        <Chatbot />
+      </OnboardingProvider>
     </AuthGuard>
   );
 }

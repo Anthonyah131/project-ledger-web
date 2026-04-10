@@ -9,6 +9,7 @@ import {
   IconFolder,
   IconHelp,
   IconMessageCircle,
+  IconRocket,
   IconSettings,
   IconShieldDollar,
   IconUserShield,
@@ -17,6 +18,7 @@ import {
 
 import { useAuth } from "@/context/auth-context"
 import { useLanguage } from "@/context/language-context"
+import { useOnboardingContext } from "@/context/onboarding-context"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavSecondary } from "@/components/dashboard/nav-secondary"
 import { NavUser } from "@/components/dashboard/nav-user"
@@ -38,6 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
   const { t } = useLanguage()
   const { openPanel } = useChatbotPanel()
+  const { openWizard } = useOnboardingContext()
   const homeUrl = user?.isAdmin ? "/admin/users" : "/dashboard"
   const isAdmin = Boolean(user?.isAdmin)
 
@@ -97,7 +100,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-        <NavSecondary items={navSecondary} sectionLabel={t("nav.sections.support")} className="mt-auto" />
+        <NavSecondary
+          items={navSecondary}
+          sectionLabel={t("nav.sections.support")}
+          className="mt-auto"
+          extraItems={
+            !isAdmin ? (
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={openWizard} tooltip={t("onboarding.setupGuide")}>
+                  <IconRocket />
+                  <span>{t("onboarding.setupGuide")}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ) : null
+          }
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

@@ -1,0 +1,32 @@
+{
+  "onboarding": {
+    "setupGuide": "Guía de configuración",
+    "allDone": "¡Todo configurado! Ya puedes usar el sistema.",
+    "steps": {
+      "partner": {
+        "title": "Crear tu primer socio",
+        "description": "Los socios son entidades externas como clientes o proveedores con los que trabajas."
+      },
+      "paymentMethod": {
+        "title": "Agregar un método de pago",
+        "description": "Agrega una cuenta bancaria, tarjeta o método en efectivo para gestionar tus transacciones."
+      },
+      "linkPMToPartner": {
+        "title": "Vincular método de pago a socio",
+        "description": "Asocia tu método de pago a un socio para llevar un control de las cuentas por entidad."
+      },
+      "project": {
+        "title": "Crear tu primer proyecto",
+        "description": "Los proyectos son tu espacio principal para gestionar finanzas."
+      },
+      "assignPartner": {
+        "title": "Vincular socio al proyecto",
+        "description": "Asigna tu socio al proyecto desde la configuración del proyecto."
+      },
+      "linkPaymentMethod": {
+        "title": "Vincular método de pago al proyecto",
+        "description": "Vincula tu método de pago al proyecto para poder registrar transacciones."
+      }
+    }
+  }
+}
