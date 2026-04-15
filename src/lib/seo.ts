@@ -4,7 +4,7 @@ export const SITE_URL = "https://project-ledger-web.vercel.app";
 export const SITE_NAME = "Project Ledger";
 export const SITE_DESCRIPTION =
   "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.";
-export const DEFAULT_OG_IMAGE = "/og-image.png";
+export const DEFAULT_OG_IMAGE = "/og-image.jpeg";
 
 export function createMetadata({
   title,

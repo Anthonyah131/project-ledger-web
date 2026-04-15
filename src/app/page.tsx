@@ -23,7 +23,7 @@ const jsonLd = {
   "@type": "Organization",
   name: "Project Ledger",
   url: "https://project-ledger-web.vercel.app",
-  logo: "https://project-ledger-web.vercel.app/og-image.png",
+  logo: "https://project-ledger-web.vercel.app/og-image.jpeg",
   description:
     "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
   sameAs: [

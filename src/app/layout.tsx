@@ -34,7 +34,7 @@ export const metadata: Metadata = {
       "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpeg",
         width: 1200,
         height: 630,
         alt: "Project Ledger",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Project Ledger — Manage Your Projects with Intelligence",
     description:
       "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpeg"],
   },
   alternates: {
     canonical: "https://project-ledger-web.vercel.app",
