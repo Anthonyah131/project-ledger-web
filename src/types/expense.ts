@@ -106,6 +106,7 @@ export interface CreateExpenseRequest {
   originalCurrency: string;
   exchangeRate?: number;
   convertedAmount?: number | null;
+  accountAmount?: number | null;
   title: string;
   description?: string | null;
   expenseDate: string;           // "YYYY-MM-DD"
@@ -128,6 +129,7 @@ export interface UpdateExpenseRequest {
   originalCurrency: string;
   exchangeRate?: number;
   convertedAmount?: number | null;
+  accountAmount?: number | null;
   title: string;
   description?: string | null;
   expenseDate: string;           // "YYYY-MM-DD"

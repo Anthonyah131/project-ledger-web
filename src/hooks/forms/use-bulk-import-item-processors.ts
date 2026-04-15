@@ -158,6 +158,9 @@ export function useBulkImportExpenseItemProcessor() {
       }
     }
 
+    const parsedAccountAmount = parsePositiveAmount(values.accountAmount)
+    if (parsedAccountAmount) item.accountAmount = parsedAccountAmount
+
     return item
   }, [])
 }
