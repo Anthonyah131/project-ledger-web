@@ -17,9 +17,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project Ledger — Gestiona tus proyectos con inteligencia",
+  metadataBase: new URL("https://project-ledger-web.vercel.app"),
+  title: {
+    default: "Project Ledger — Manage Your Projects with Intelligence",
+    template: "%s | Project Ledger",
+  },
   description:
-    "La plataforma todo-en-uno para gestionar proyectos, rastrear presupuestos y tomar decisiones estratégicas con IA.",
+    "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
+  authors: [{ name: "Project Ledger", url: "https://project-ledger-web.vercel.app" }],
+  openGraph: {
+    type: "website",
+    siteName: "Project Ledger",
+    url: "https://project-ledger-web.vercel.app",
+    title: "Project Ledger — Manage Your Projects with Intelligence",
+    description:
+      "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Project Ledger",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Project Ledger — Manage Your Projects with Intelligence",
+    description:
+      "The all-in-one platform to manage projects, track budgets, and make strategic decisions powered by AI.",
+    images: ["/og-image.png"],
+  },
+  alternates: {
+    canonical: "https://project-ledger-web.vercel.app",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

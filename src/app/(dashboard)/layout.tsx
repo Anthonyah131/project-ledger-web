@@ -3,6 +3,12 @@
 // AuthGuard handles session verification, loading and redirects.
 // For admin-only sub-sections, add a nested layout with <AuthGuard requireAdmin>.
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SiteHeader } from "@/components/dashboard/site-header";
