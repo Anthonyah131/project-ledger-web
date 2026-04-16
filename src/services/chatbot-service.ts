@@ -12,8 +12,6 @@ export interface ChatHistoryEntry {
 
 export interface ChatbotStreamMeta {
   type: "meta";
-  provider?: string;
-  model?: string;
   usedFinancialContext?: boolean;
   toolCallsExecuted?: number;
 }
@@ -54,6 +52,12 @@ export function streamChatbotMessage(
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
       callbacks.onError("network");
+      callbacks.onDone();
+      return;
+    }
+
+    if (response.status === 429) {
+      callbacks.onError("http_429");
       callbacks.onDone();
       return;
     }

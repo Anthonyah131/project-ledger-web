@@ -53,6 +53,10 @@
     "user": "Usuario",
     "reload": "Recargar",
     "upgrade": "Mejorar plan",
+    "planLocked": {
+      "title": "Función no disponible en tu plan",
+      "description": "Mejora tu plan para desbloquear esta función."
+    },
     "tryAgain": "Intentar de nuevo",
     "duplicate": "Duplicar",
     "copiedToClipboard": "Copiado al portapapeles",

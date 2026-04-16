@@ -79,6 +79,7 @@ interface ProjectDetailExpensesTabProps {
   createMode: "manual" | "ai"
   partnersEnabled?: boolean
   assignedPartners?: ProjectPartnerResponse[]
+  canUseOcr?: boolean
   onCreateManual: () => void
   onCreateWithAi: () => void
   onCreateClose: () => void
@@ -103,6 +104,7 @@ export function ProjectDetailExpensesTab({
   projectCurrency,
   alternativeCurrencyCodes,
   createMode,
+  canUseOcr = true,
   partnersEnabled = false,
   assignedPartners = [],
   onCreateManual,
@@ -188,6 +190,7 @@ export function ProjectDetailExpensesTab({
               onDateToChange={exp.handleDateToChange}
               categoryId={exp.selectedCategoryId}
               onCategoryChange={exp.setSelectedCategoryId}
+              canUseOcr={canUseOcr}
               onCreateManual={onCreateManual}
               onCreateWithAi={onCreateWithAi}
               onBulkImport={() => setView("import")}

@@ -7,6 +7,7 @@ export interface PlanSummaryDto {
   id: string;
   name: string;
   slug: string;
+  permissions: PlanPermissionsDto;
 }
 
 // ─── API response types (GET /api/plans) ────────────────────────────────────

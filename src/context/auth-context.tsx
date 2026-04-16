@@ -26,12 +26,15 @@ import {
 import * as authService from "@/services/auth-service";
 import * as userService from "@/services/user-service";
 import type { User } from "@/types/user";
+import type { PlanPermissionsDto } from "@/types/plan";
 
 // ─── Context shape ─────────────────────────────────────────────────────────────
 
 interface AuthContextValue {
   /** The currently authenticated user, or null */
   user: User | null;
+  /** Plan permissions for the authenticated user; null when unauthenticated or plan has no permissions */
+  permissions: PlanPermissionsDto | null;
   /** True while the initial session check is in progress */
   isLoading: boolean;
   /** True when a login/register/logout action is in progress */
@@ -59,6 +62,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [permissions, setPermissions] = useState<PlanPermissionsDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
@@ -75,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const profile = await userService.getUserProfile();
             setUser(profile as unknown as User);
+            setPermissions(profile.plan?.permissions ?? null);
             return;
           } catch {
             if (!refresh) {
@@ -142,6 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await userService.getUserProfile();
       const nextUser = profile as unknown as User;
       setUser(nextUser);
+      setPermissions(profile.plan?.permissions ?? null);
       return nextUser;
     } catch (error) {
       clearTokens();
@@ -169,6 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = useCallback(async () => {
     const profile = await userService.getUserProfile();
     setUser(profile as unknown as User);
+    setPermissions(profile.plan?.permissions ?? null);
   }, []);
 
   const logout = useCallback(async () => {
@@ -182,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       clearTokens();
       setUser(null);
+      setPermissions(null);
     }
   }, []);
 
@@ -193,6 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       clearTokens();
       setUser(null);
+      setPermissions(null);
     }
   }, []);
 
@@ -201,6 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
+      permissions,
       isLoading,
       isActionLoading,
       isAuthenticated: !!user,
@@ -211,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       logoutAll,
     }),
-    [user, isLoading, isActionLoading, login, loginWithAccessToken, register, refreshUser, logout, logoutAll],
+    [user, permissions, isLoading, isActionLoading, login, loginWithAccessToken, register, refreshUser, logout, logoutAll],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

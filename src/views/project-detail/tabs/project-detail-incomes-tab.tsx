@@ -80,6 +80,7 @@ interface ProjectDetailIncomesTabProps {
   createMode: "manual" | "ai"
   partnersEnabled?: boolean
   assignedPartners?: ProjectPartnerResponse[]
+  canUseOcr?: boolean
   onCreateManual: () => void
   onCreateWithAi: () => void
   onCreateClose: () => void
@@ -104,6 +105,7 @@ export function ProjectDetailIncomesTab({
   projectCurrency,
   alternativeCurrencyCodes,
   createMode,
+  canUseOcr = true,
   partnersEnabled = false,
   assignedPartners = [],
   onCreateManual,
@@ -187,6 +189,7 @@ export function ProjectDetailIncomesTab({
               dateTo={inc.dateTo}
               onDateFromChange={inc.handleDateFromChange}
               onDateToChange={inc.handleDateToChange}
+              canUseOcr={canUseOcr}
               onCreateManual={onCreateManual}
               onCreateWithAi={onCreateWithAi}
               onBulkImport={() => setView("import")}

@@ -29,6 +29,7 @@ interface IncomesToolbarProps {
   dateTo: string
   onDateFromChange: (value: string) => void
   onDateToChange: (value: string) => void
+  canUseOcr?: boolean
   onCreateManual: () => void
   onCreateWithAi: () => void
   onBulkImport: () => void
@@ -52,6 +53,7 @@ export function IncomesToolbar({
   dateTo,
   onDateFromChange,
   onDateToChange,
+  canUseOcr = true,
   onCreateManual,
   onCreateWithAi,
   onBulkImport,
@@ -213,14 +215,16 @@ export function IncomesToolbar({
           <Table2 className="size-3.5" />
           {t("bulkImport.title")}
         </Button>
-        <Button
-          onClick={onCreateWithAi}
-          size="sm"
-          variant="outline"
-          className="border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60"
-        >
-          {t("incomes.withAI")}
-        </Button>
+        {canUseOcr && (
+          <Button
+            onClick={onCreateWithAi}
+            size="sm"
+            variant="outline"
+            className="border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60"
+          >
+            {t("incomes.withAI")}
+          </Button>
+        )}
       </div>
     </div>
   )

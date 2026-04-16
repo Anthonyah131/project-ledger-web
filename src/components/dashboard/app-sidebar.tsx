@@ -37,7 +37,8 @@ import {
 } from "@/components/ui/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth()
+  const { user, permissions } = useAuth()
+  // permissions used only for chatbot gate below
   const { t } = useLanguage()
   const { openPanel } = useChatbotPanel()
   const { openWizard } = useOnboardingContext()
@@ -85,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} sectionLabel={t("nav.sections.main")} />
-        {!isAdmin && (
+        {!isAdmin && permissions?.canUseApi && (
           <SidebarGroup>
             <SidebarGroupLabel>{t("nav.sections.assistant")}</SidebarGroupLabel>
             <SidebarGroupContent>

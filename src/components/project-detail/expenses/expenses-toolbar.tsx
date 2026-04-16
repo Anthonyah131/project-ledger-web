@@ -29,6 +29,7 @@ interface ExpensesToolbarProps {
   dateTo: string
   onDateFromChange: (value: string) => void
   onDateToChange: (value: string) => void
+  canUseOcr?: boolean
   onCreateManual: () => void
   onCreateWithAi: () => void
   onBulkImport: () => void
@@ -52,6 +53,7 @@ export function ExpensesToolbar({
   dateTo,
   onDateFromChange,
   onDateToChange,
+  canUseOcr = true,
   onCreateManual,
   onCreateWithAi,
   onBulkImport,
@@ -213,14 +215,16 @@ export function ExpensesToolbar({
           <Table2 className="size-3.5" />
           {t("bulkImport.title")}
         </Button>
-        <Button
-          onClick={onCreateWithAi}
-          size="sm"
-          variant="outline"
-          className="border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60"
-        >
-          {t("expenses.withAI")}
-        </Button>
+        {canUseOcr && (
+          <Button
+            onClick={onCreateWithAi}
+            size="sm"
+            variant="outline"
+            className="border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60"
+          >
+            {t("expenses.withAI")}
+          </Button>
+        )}
       </div>
     </div>
   )

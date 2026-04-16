@@ -27,11 +27,13 @@ import { ReportsIncomesTab } from "@/views/reports/tabs/reports-incomes-tab"
 import { ReportsPartnerBalancesTab } from "@/views/reports/tabs/reports-partner-balances-tab"
 import { ReportsPartnerGeneralTab } from "@/views/reports/tabs/reports-partner-general-tab"
 import { useLanguage } from "@/context/language-context"
+import { useAuth } from "@/context/auth-context"
 
 const VALID_TABS = ["expenses", "payment-methods", "incomes", "partner-balances", "partner-general"] as const
 
 export function ReportsView() {
   const { t } = useLanguage()
+  const { permissions } = useAuth()
   const searchParams = useSearchParams()
   const { projects, paymentMethods, partners, loading: catalogsLoading } = useReportsCatalogs()
 
@@ -200,6 +202,8 @@ export function ReportsView() {
     [exportPartnerGeneralReport],
   )
 
+  const canExport = permissions?.canExportData !== false
+
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
       {/* Page heading */}
@@ -236,6 +240,7 @@ export function ReportsView() {
           onProjectChange={handleProjectChange}
           onGenerate={fetchExpenseReport}
           onExport={exportExpenseReport}
+          canExport={canExport}
         />
 
         <ReportsIncomesTab
@@ -253,6 +258,7 @@ export function ReportsView() {
           onProjectChange={handleIncomeProjectChange}
           onGenerate={fetchIncomeReport}
           onExport={exportIncomeReport}
+          canExport={canExport}
         />
 
         <ReportsPaymentMethodsTab
@@ -270,6 +276,7 @@ export function ReportsView() {
           onPaymentMethodsChange={handlePaymentMethodsFilterChange}
           onGenerate={fetchPaymentMethodReport}
           onExport={exportPaymentMethodReport}
+          canExport={canExport}
         />
 
         <ReportsPartnerBalancesTab
@@ -287,6 +294,7 @@ export function ReportsView() {
           onProjectChange={handlePartnerBalancesProjectChange}
           onGenerate={fetchPartnerBalancesReport}
           onExport={exportPartnerBalancesReport}
+          canExport={canExport}
         />
 
         <ReportsPartnerGeneralTab
@@ -304,6 +312,7 @@ export function ReportsView() {
           onPartnerChange={handlePartnerGeneralChange}
           onGenerate={fetchPartnerGeneralReport}
           onExport={handlePartnerGeneralExport}
+          canExport={canExport}
         />
 
       </Tabs>

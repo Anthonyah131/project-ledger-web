@@ -32,6 +32,7 @@ interface ReportsPartnerGeneralTabProps {
   onPartnerChange: (value: string) => void
   onGenerate: () => void
   onExport: (format: "excel" | "pdf") => void
+  canExport?: boolean
 }
 
 export function ReportsPartnerGeneralTab({
@@ -49,6 +50,7 @@ export function ReportsPartnerGeneralTab({
   onPartnerChange,
   onGenerate,
   onExport,
+  canExport,
 }: ReportsPartnerGeneralTabProps) {
   const { t } = useLanguage()
   return (
@@ -63,6 +65,7 @@ export function ReportsPartnerGeneralTab({
         loading={loading}
         exporting={exporting}
         dateRangeError={dateRangeError}
+        canExport={canExport}
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.partnerLabel")}</Label>

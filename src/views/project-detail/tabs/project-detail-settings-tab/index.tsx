@@ -51,6 +51,9 @@ export interface ProjectDetailSettingsTabProps {
   // Navigation (controlled from parent)
   activeSection: ProjectSettingsSection
   onSectionChange: (section: ProjectSettingsSection) => void
+  // Plan permission gates
+  canUseMultiCurrency?: boolean
+  canUsePartners?: boolean
   // General
   project: ProjectResponse | null
   isOwner: boolean
@@ -91,6 +94,8 @@ export interface ProjectDetailSettingsTabProps {
 export function ProjectDetailSettingsTab({
   activeSection,
   onSectionChange,
+  canUseMultiCurrency = true,
+  canUsePartners = true,
   project,
   isOwner,
   onSaveProject,
@@ -125,8 +130,12 @@ export function ProjectDetailSettingsTab({
 
   const SECTIONS = [
     { key: "general" as ProjectSettingsSection, title: t("projects.settingsTab.general"), icon: Pencil },
-    { key: "currencies" as ProjectSettingsSection, title: t("projects.settingsTab.currencies"), icon: Globe },
-    { key: "partners" as ProjectSettingsSection, title: t("projects.settingsTab.partners"), icon: Users },
+    ...(canUseMultiCurrency
+      ? [{ key: "currencies" as ProjectSettingsSection, title: t("projects.settingsTab.currencies"), icon: Globe }]
+      : []),
+    ...(canUsePartners
+      ? [{ key: "partners" as ProjectSettingsSection, title: t("projects.settingsTab.partners"), icon: Users }]
+      : []),
     { key: "payment-methods" as ProjectSettingsSection, title: t("projects.settingsTab.paymentMethods"), icon: CreditCard },
   ]
 

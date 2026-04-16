@@ -35,6 +35,7 @@ import {
 } from "@/views/project-detail/tabs/project-detail-settings-tab";
 import { useLanguage } from "@/context/language-context";
 import { useOnboardingContext } from "@/context/onboarding-context";
+import { useAuth } from "@/context/auth-context";
 
 interface Props {
   projectId: string;
@@ -46,6 +47,7 @@ export function ProjectDetailView({ projectId }: Props) {
   const { t } = useLanguage();
   const router = useRouter();
   const { refreshProgress } = useOnboardingContext();
+  const { permissions } = useAuth();
   const searchParams = useSearchParams();
   const [expenseCreateMode, setExpenseCreateMode] = useState<CreateEntryMode>("manual");
   const [incomeCreateMode, setIncomeCreateMode] = useState<CreateEntryMode>("manual");
@@ -112,13 +114,14 @@ export function ProjectDetailView({ projectId }: Props) {
   const { setCreateOpen: setExpenseCreateOpen, setEditTarget: setExpenseEditTarget, setDeleteTarget: setExpenseDeleteTarget, setDuplicateSource: setExpenseDuplicateSource } = exp;
   const { setCreateOpen: setIncomeCreateOpen, setEditTarget: setIncomeEditTarget, setDeleteTarget: setIncomeDeleteTarget, setDuplicateSource: setIncomeDuplicateSource } = inc;
   const isOwner = detail.project?.userRole === "owner";
-  const canManageBudget = detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
-  const canManageAlternativeCurrencies =
-    detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
-  const canDeleteBudget = detail.project?.userRole === "owner";
+  const isEditor = detail.project?.userRole === "editor";
+  const canManageBudget = (isOwner || isEditor) && permissions?.canSetBudgets !== false;
+  const canDeleteBudget = isOwner && permissions?.canSetBudgets !== false;
+  const canManageAlternativeCurrencies = (isOwner || isEditor) && permissions?.canUseMultiCurrency !== false;
   const partnersEnabled = detail.project?.partnersEnabled ?? false;
-  const canEditSettlements =
-    detail.project?.userRole === "owner" || detail.project?.userRole === "editor";
+  const canUsePartners = permissions?.canUsePartners !== false;
+  const canEditSettlements = isOwner || isEditor;
+  const canUseOcr = permissions?.canUseOcr !== false;
 
   const alternativeCurrencyCodes = useMemo(
     () => pac.currencies.map((currency) => currency.currencyCode),
@@ -249,7 +252,7 @@ export function ProjectDetailView({ projectId }: Props) {
         budgetLoading={bud.loading}
         onEdit={handleEditProject}
         onDelete={mutateProjectDeleteOpen}
-        onShare={isOwner ? handleShareProject : undefined}
+        onShare={isOwner && permissions?.canShareProjects !== false ? handleShareProject : undefined}
       />
 
       {/* Tabs */}
@@ -260,7 +263,7 @@ export function ProjectDetailView({ projectId }: Props) {
           <TabsTrigger value="obligations">{t("projects.tabs.obligations")}</TabsTrigger>
           <TabsTrigger value="categories">{t("projects.tabs.categories")}</TabsTrigger>
           <TabsTrigger value="budget">{t("projects.tabs.budget")}</TabsTrigger>
-          {partnersEnabled && (
+          {partnersEnabled && canUsePartners && (
             <TabsTrigger value="partners">{t("projects.tabs.partners")}</TabsTrigger>
           )}
           <TabsTrigger value="settings">{t("projects.tabs.settings")}</TabsTrigger>
@@ -277,6 +280,7 @@ export function ProjectDetailView({ projectId }: Props) {
           createMode={expenseCreateMode}
           partnersEnabled={detail.project?.partnersEnabled ?? false}
           assignedPartners={ppp.assignedPartners}
+          canUseOcr={canUseOcr}
           onCreateManual={handleExpenseCreateManual}
           onCreateWithAi={handleExpenseCreateAi}
           onCreateClose={handleExpenseCreateClose}
@@ -303,6 +307,7 @@ export function ProjectDetailView({ projectId }: Props) {
           createMode={incomeCreateMode}
           partnersEnabled={detail.project?.partnersEnabled ?? false}
           assignedPartners={ppp.assignedPartners}
+          canUseOcr={canUseOcr}
           onCreateManual={handleIncomeCreateManual}
           onCreateWithAi={handleIncomeCreateAi}
           onCreateClose={handleIncomeCreateClose}
@@ -357,7 +362,7 @@ export function ProjectDetailView({ projectId }: Props) {
           onDelete={mutateBudgetDelete}
         />
 
-        {partnersEnabled && (
+        {partnersEnabled && canUsePartners && (
           <ProjectDetailPartnersTab
             projectId={projectId}
             sel={sel}
@@ -384,6 +389,8 @@ export function ProjectDetailView({ projectId }: Props) {
           allCurrencies={pac.allCurrencies}
           currenciesLoading={pac.loading}
           currenciesCatalogLoading={pac.catalogLoading}
+          canUseMultiCurrency={permissions?.canUseMultiCurrency !== false}
+          canUsePartners={canUsePartners}
           canManageCurrencies={!!canManageAlternativeCurrencies}
           hasExistingMovements={(exp.total > 0 || inc.total > 0)}
           onAddCurrency={handleAddCurrency}

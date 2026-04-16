@@ -13,6 +13,7 @@ import { MembersList } from "@/components/members/members-list"
 import { MembersSkeleton, MembersEmptyState } from "@/components/members/member-states"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
 import { useLanguage } from "@/context/language-context"
+import { useAuth } from "@/context/auth-context"
 
 const AddMemberModal = dynamic(() =>
   import("@/components/members/add-member-modal").then((mod) => mod.AddMemberModal)
@@ -25,6 +26,7 @@ interface Props {
 export function MembersView({ projectId }: Props) {
   const router = useRouter()
   const { t } = useLanguage()
+  const { permissions } = useAuth()
   const {
     members,
     loading,
@@ -76,10 +78,12 @@ export function MembersView({ projectId }: Props) {
             </p>
           </div>
         </div>
-        <Button onClick={handleOpenAdd} size="sm">
-          <Plus className="size-3.5" />
-          {t("members.add")}
-        </Button>
+        {permissions?.canShareProjects !== false && (
+          <Button onClick={handleOpenAdd} size="sm">
+            <Plus className="size-3.5" />
+            {t("members.add")}
+          </Button>
+        )}
       </div>
 
       {/* Content */}

@@ -27,6 +27,7 @@ interface ReportFiltersProps {
   loading: boolean
   exporting: boolean
   dateRangeError?: string | null
+  canExport?: boolean
   /** Extra controls to render between dates and actions */
   children?: React.ReactNode
 }
@@ -41,6 +42,7 @@ export function ReportFilters({
   loading,
   exporting,
   dateRangeError,
+  canExport = true,
   children,
 }: ReportFiltersProps) {
   const { t } = useLanguage()
@@ -92,41 +94,43 @@ export function ReportFilters({
             {t("reports.generate")}
           </Button>
 
-          <div className="flex items-center gap-1.5">
-            <Select
-              value={exportFormat}
-              onValueChange={(v) => setExportFormat(v as "excel" | "pdf")}
-              disabled={loading || exporting || hasDateRangeError}
-            >
-              <SelectTrigger size="sm" className="w-36" aria-label={t("reports.filters.exportFormatAria")}>
-                <SelectValue placeholder={t("reports.format")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="excel">
-                  <FileSpreadsheet className="size-3.5" />
-                  {t("reports.excel")}
-                </SelectItem>
-                <SelectItem value="pdf">
-                  <FileText className="size-3.5" />
-                  {t("reports.pdf")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          {canExport && (
+            <div className="flex items-center gap-1.5">
+              <Select
+                value={exportFormat}
+                onValueChange={(v) => setExportFormat(v as "excel" | "pdf")}
+                disabled={loading || exporting || hasDateRangeError}
+              >
+                <SelectTrigger size="sm" className="w-36" aria-label={t("reports.filters.exportFormatAria")}>
+                  <SelectValue placeholder={t("reports.format")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="excel">
+                    <FileSpreadsheet className="size-3.5" />
+                    {t("reports.excel")}
+                  </SelectItem>
+                  <SelectItem value="pdf">
+                    <FileText className="size-3.5" />
+                    {t("reports.pdf")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Button
-              size="sm"
-              variant="secondary"
-              disabled={!exportFormat || loading || exporting || hasDateRangeError}
-              onClick={() => exportFormat && onExport(exportFormat)}
-            >
-              {exporting ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Download className="size-3.5" />
-              )}
-              {t("reports.download")}
-            </Button>
-          </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                disabled={!exportFormat || loading || exporting || hasDateRangeError}
+                onClick={() => exportFormat && onExport(exportFormat)}
+              >
+                {exporting ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Download className="size-3.5" />
+                )}
+                {t("reports.download")}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -137,9 +141,11 @@ export function ReportFilters({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
-        {t("reports.exportHint")}
-      </p>
+      {canExport && (
+        <p className="text-xs text-muted-foreground">
+          {t("reports.exportHint")}
+        </p>
+      )}
     </div>
   )
 }

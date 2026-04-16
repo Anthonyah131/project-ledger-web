@@ -10,6 +10,7 @@
     "openAssistant": "Open assistant",
     "unavailable": "The assistant is not available right now. Try again in a few minutes",
     "errorMessage": "An error occurred while processing your message. Please try again",
+    "rateLimitMessage": "Too many requests. Please wait a moment before sending another message",
     "premiumRequired": "This feature requires a paid plan",
     "upgradeToPremium": "Upgrade plan",
     "send": "Send message",

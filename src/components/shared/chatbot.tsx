@@ -135,15 +135,10 @@ export default function Chatbot() {
                 >
                   {msg.text}
                 </div>
-                {msg.role === 'bot' && msg.provider && (
-                  <div className="flex flex-col gap-0.5 px-1">
-                    {(msg.toolCallsExecuted ?? 0) > 0 && (
-                      <p className="text-[10px] font-medium text-primary">
-                        ⚡ {t('chatbot.realTimeData')}
-                      </p>
-                    )}
-                    <p className="text-[10px] text-muted-foreground">
-                      {msg.provider} · {msg.model}
+                {msg.role === 'bot' && (msg.toolCallsExecuted ?? 0) > 0 && (
+                  <div className="px-1">
+                    <p className="text-[10px] font-medium text-primary">
+                      ⚡ {t('chatbot.realTimeData')}
                     </p>
                   </div>
                 )}

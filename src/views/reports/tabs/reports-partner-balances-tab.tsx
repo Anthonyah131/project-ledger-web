@@ -33,6 +33,7 @@ interface ReportsPartnerBalancesTabProps {
   onProjectChange: (value: string) => void
   onGenerate: () => void
   onExport: (format: "excel" | "pdf") => void
+  canExport?: boolean
 }
 
 export function ReportsPartnerBalancesTab({
@@ -50,6 +51,7 @@ export function ReportsPartnerBalancesTab({
   onProjectChange,
   onGenerate,
   onExport,
+  canExport,
 }: ReportsPartnerBalancesTabProps) {
   const { t } = useLanguage()
   const partnerProjects = useMemo(
@@ -69,6 +71,7 @@ export function ReportsPartnerBalancesTab({
         loading={loading}
         exporting={exporting}
         dateRangeError={dateRangeError}
+        canExport={canExport}
       >
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs text-muted-foreground">{t("reports.projectLabel")}</Label>

@@ -1,13 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/context/auth-context'
 import { useLanguage } from '@/context/language-context'
-import { getUserProfile } from '@/services/plan-service'
 import { streamChatbotMessage, type ChatHistoryEntry, type ChatbotStreamMeta } from '@/services/chatbot-service'
-
-const PREMIUM_PLAN_ID = 'f59a2b7b-5edf-4e8b-9d99-d6adf8adf4ac'
-const PREMIUM_SLUGS = ['premium', 'pro', 'enterprise']
 
 export const MAX_CHARS = 4000
 
@@ -15,23 +11,16 @@ export interface ChatbotMessage {
   id: string
   role: 'user' | 'bot'
   text: string
-  provider?: string
-  model?: string
   toolCallsExecuted?: number
   usedFinancialContext?: boolean
 }
 
-function isPremiumPlan(planId?: string | null, planSlug?: string | null) {
-  if (planId && planId === PREMIUM_PLAN_ID) return true
-  if (planSlug && PREMIUM_SLUGS.includes(planSlug.toLowerCase())) return true
-  return false
-}
-
 export function useChatbot() {
   const { t } = useLanguage()
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { isLoading, permissions } = useAuth()
 
-  const [isPremium, setIsPremium] = useState(false)
+  const isPremium = !isLoading && permissions?.canUseApi === true
+
   const [messages, setMessages] = useState<ChatbotMessage[]>([])
   const [history, setHistory] = useState<ChatHistoryEntry[]>([])
   const [input, setInput] = useState('')
@@ -39,28 +28,6 @@ export function useChatbot() {
   const [isStreaming, setIsStreaming] = useState(false)
 
   const abortRef = useRef<AbortController | null>(null)
-
-  useEffect(() => {
-    if (isLoading) return
-    if (!isAuthenticated || !user?.id) {
-      setIsPremium(false)
-      return
-    }
-
-    let cancelled = false
-    getUserProfile()
-      .then((profile) => {
-        if (cancelled) return
-        setIsPremium(isPremiumPlan(profile.planId, profile.plan?.slug))
-      })
-      .catch(() => {
-        if (!cancelled) setIsPremium(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [isAuthenticated, user?.id, isLoading])
 
   const setClampedInput = useCallback((value: string) => {
     setInput(value.slice(0, MAX_CHARS))
@@ -78,7 +45,7 @@ export function useChatbot() {
     const botId = crypto.randomUUID()
     let accumulated = ''
     let hasStartedStreaming = false
-    let metaInfo: Partial<Pick<ChatbotMessage, 'provider' | 'model' | 'toolCallsExecuted' | 'usedFinancialContext'>> = {}
+    let metaInfo: Partial<Pick<ChatbotMessage, 'toolCallsExecuted' | 'usedFinancialContext'>> = {}
 
     const abort = new AbortController()
     abortRef.current = abort
@@ -89,8 +56,6 @@ export function useChatbot() {
       {
         onMeta: (meta: ChatbotStreamMeta) => {
           metaInfo = {
-            provider: meta.provider,
-            model: meta.model,
             toolCallsExecuted: meta.toolCallsExecuted,
             usedFinancialContext: meta.usedFinancialContext,
           }
@@ -110,8 +75,15 @@ export function useChatbot() {
           })
         },
         onError: (msg: string) => {
-          const isUnavailable = msg === 'ChatbotNoProvidersEnabled' || msg.includes('http_503') || msg.includes('503')
-          const errorText = isUnavailable ? t('chatbot.unavailable') : t('chatbot.errorMessage')
+          let errorText: string
+          if (msg === 'http_429') {
+            errorText = t('chatbot.rateLimitMessage')
+          } else if (msg === 'network' || msg.startsWith('http_')) {
+            errorText = t('chatbot.errorMessage')
+          } else {
+            // SSE error event — backend always sends user-friendly content
+            errorText = msg
+          }
           setMessages((prev) => {
             const exists = prev.some((m) => m.id === botId)
             if (exists) {

@@ -54,6 +54,10 @@
     "user": "User",
     "reload": "Reload",
     "upgrade": "Upgrade plan",
+    "planLocked": {
+      "title": "Feature not available on your plan",
+      "description": "Upgrade your plan to unlock this feature."
+    },
     "tryAgain": "Try again",
     "copiedToClipboard": "Copied to clipboard",
     "noLimit": "No limit",
