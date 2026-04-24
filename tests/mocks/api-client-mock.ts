@@ -46,7 +46,7 @@ export function mockResponse<T>(response: MockApiResponse<T>) {
   return {
     ok: response.ok,
     status: response.status,
-    headers: buildHeaders(response.headers ?? {}),
+    headers: buildHeaders(response.ok ? (response.headers ?? {}) : {}),
     json: vi.fn().mockResolvedValue(response.data),
     text: vi.fn().mockResolvedValue(JSON.stringify(response.data)),
   };
