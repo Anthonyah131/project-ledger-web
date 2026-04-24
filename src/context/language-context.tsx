@@ -42,8 +42,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // then apply the stored/browser locale after hydration to avoid mismatch.
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: resolve locale after hydration to avoid mismatch
   useEffect(() => {
     const resolved = resolveInitialLocale();
+    /* eslint-disable react-hooks/set-state-in-effect -- intentional */
     setLocaleState(resolved);
     document.documentElement.lang = resolved;
   }, []);

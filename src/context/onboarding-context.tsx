@@ -24,8 +24,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { progress, refresh } = useOnboardingProgress()
 
   // Auto-show on first visit (no dismissed flag)
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show onboarding on first visit
   useEffect(() => {
     if (localStorage.getItem(DISMISSED_KEY) !== "1") {
+      /* eslint-disable react-hooks/set-state-in-effect -- intentional */
       setVisible(true)
     }
   }, [])
