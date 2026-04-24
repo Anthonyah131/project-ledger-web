@@ -124,3 +124,30 @@ Las keys siguen el patrón `<namespace>.<grupo>.<variante>`:
 NEXT_PUBLIC_API_URL   # Backend base URL (default: http://localhost:5192/api)
 NEXT_PUBLIC_ENV       # "development" | "production" — enables debug logging in dev
 ```
+
+### Testing
+
+Vitest + Testing Library. **823 tests** covering components, services, hooks, utils y validations.
+
+```bash
+npm run test        # run once
+npm run test:watch  # watch mode
+```
+
+Test files live in `tests/` and mostly mirror the main source areas in `src/`, with some support folders and top-level test files:
+- `tests/components/` — component tests
+- `tests/services/` — service tests
+- `tests/hooks/` — hook tests
+- `tests/utils/` — utility tests
+- `tests/validations/` — Zod schema tests for `src/lib/validations/`
+- `tests/shared/` — shared component tests
+- `tests/mocks/` — test support utilities and mocks
+
+### CI/CD
+
+GitHub Actions workflow in `.github/workflows/ci.yml` runs on every push/PR to `main`:
+1. `npm ci` — install dependencies
+2. `npm run lint` — ESLint
+3. `npm run test` — Vitest
+
+Merge to `main` is blocked if any step fails.
