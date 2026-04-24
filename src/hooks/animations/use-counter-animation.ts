@@ -16,7 +16,7 @@ interface CounterItem {
 }
 
 interface UseCounterAnimationOptions {
-  containerRef: React.RefObject<HTMLElement | null>;
+  containerRef?: React.RefObject<HTMLElement | null>;
   selector?: string;
 }
 

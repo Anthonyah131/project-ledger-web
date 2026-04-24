@@ -1,7 +1,7 @@
 // types/payment-method.ts
 // Payment method model type definitions
 
-import type { CurrencyExchangeResponse } from "@/types/expense";
+import type { CurrencyExchangeResponse, SplitResponse } from "@/types/expense";
 
 export type PaymentMethodType = 'bank' | 'cash' | 'card';
 
@@ -70,6 +70,8 @@ export interface PaymentMethodExpenseItem {
   notes: string | null;
   isTemplate: boolean;
   isActive: boolean;
+  hasSplits: boolean;
+  splits: SplitResponse[] | null;
   currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
@@ -110,7 +112,9 @@ export interface PaymentMethodIncomeItem {
   incomeDate: string;
   receiptNumber: string | null;
   notes: string | null;
-  isActive: boolean;
+isActive: boolean;
+  hasSplits: boolean;
+  splits: SplitResponse[] | null;
   currencyExchanges: CurrencyExchangeResponse[];
   createdAt: string;
   updatedAt: string;
@@ -121,7 +125,6 @@ export interface PaymentMethodIncomeItem {
 
 export interface PaymentMethodIncomesResponse {
   items: PaymentMethodIncomeItem[];
-  /** Suma de accountAmount (en moneda del PM) de todos los ingresos filtrados (no solo la página). */
   totalActiveAmount: number;
   page: number;
   pageSize: number;
@@ -135,10 +138,13 @@ export interface PaymentMethodProjectItem {
   id: string;
   name: string;
   description: string | null;
+  currency: string;
   currencyCode: string;
   ownerUserId: string;
-  createdAt: string;
   updatedAt: string;
+  totalExpenseAmount: number;
+  totalIncomeAmount: number;
+  balance: number;
 }
 
 export interface PaymentMethodProjectsResponse {

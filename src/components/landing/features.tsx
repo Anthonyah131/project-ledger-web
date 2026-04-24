@@ -54,7 +54,7 @@ export function Features() {
         ease: "none",
         repeat: -1,
         modifiers: {
-          x: gsap.utils.unitize((x: number) => parseFloat(x) % totalWidth),
+          x: gsap.utils.unitize((x: number) => x % totalWidth),
         },
       });
 

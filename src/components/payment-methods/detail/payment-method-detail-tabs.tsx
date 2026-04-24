@@ -32,6 +32,7 @@ import { formatDate } from "@/lib/date-utils"
 import type {
   PaymentMethodExpenseItem,
   PaymentMethodExpensesResponse,
+  PaymentMethodIncomeItem,
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
   PaymentMethodPartnerSummary,

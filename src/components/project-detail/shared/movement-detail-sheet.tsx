@@ -25,12 +25,16 @@ import { formatDate } from "@/lib/date-utils"
 import { formatAmount } from "@/lib/format-utils"
 import type { ExpenseResponse } from "@/types/expense"
 import type { IncomeResponse } from "@/types/income"
-import type { PaymentMethodResponse } from "@/types/payment-method"
+import type {
+  PaymentMethodExpenseItem,
+  PaymentMethodIncomeItem,
+  PaymentMethodResponse,
+} from "@/types/payment-method"
 import { useLanguage } from "@/context/language-context"
 
 type Movement =
-  | { type: "expense"; data: ExpenseResponse }
-  | { type: "income"; data: IncomeResponse }
+  | { type: "expense"; data: ExpenseResponse | PaymentMethodExpenseItem }
+  | { type: "income"; data: IncomeResponse | PaymentMethodIncomeItem }
 
 interface MovementDetailSheetProps {
   movement: Movement | null
