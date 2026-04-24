@@ -236,10 +236,12 @@ export function ProjectDetailView({ projectId }: Props) {
     linkableLoading: ppm.linkableLoading,
     addOpen: ppm.addOpen,
     removeTarget: ppm.removeTarget,
-  }), [ppm.loading, ppm.linkedPMs, ppm.linkableItems, ppm.linkableLoading, ppm.addOpen, ppm.removeTarget]);
+    viewTarget: ppm.viewTarget,
+  }), [ppm.loading, ppm.linkedPMs, ppm.linkableItems, ppm.linkableLoading, ppm.addOpen, ppm.removeTarget, ppm.viewTarget]);
 
   const handleAddClose = useCallback(() => ppm.setAddOpen(false), [ppm]);
   const handleRemoveClosePM = useCallback(() => ppm.setRemoveTarget(null), [ppm]);
+  const handleViewClosePM = useCallback(() => ppm.setViewTarget(null), [ppm]);
   const handleDeleteProjectClose = useCallback(() => setDeleteProjectOpen(false), [setDeleteProjectOpen]);
 
   return (
@@ -414,6 +416,9 @@ export function ProjectDetailView({ projectId }: Props) {
           onRemoveSelectPM={ppm.setRemoveTarget}
           onRemoveClosePM={handleRemoveClosePM}
           onUnlink={ppm.handleUnlink}
+          onViewSelectPM={ppm.setViewTarget}
+          onViewClosePM={handleViewClosePM}
+          paymentMethods={ppm.paymentMethods}
         />
       </Tabs>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import {
   ensureGsapPluginsRegistered,
@@ -14,6 +15,8 @@ const gsap = ensureGsapPluginsRegistered();
  * Sequential entrance timeline for the Hero section.
  * Runs on mount (no scroll trigger):
  *   badge → headline → subtitle → cta-row → social-proof → dashboard-mock → hero-assets
+ *
+ * After entrance, adds continuous float to dashboard and parallax to glow.
  *
  * Respects prefers-reduced-motion: reverts to an instant opacity reveal.
  * Cleanup runs automatically on unmount via useGSAP.
@@ -39,27 +42,26 @@ export function useHeroEntrance(
         "[data-lm-reveal='hero-assets']",
       ];
 
-      // Resolve elements within the container to avoid global selector leaks
       const allEls = targets.flatMap((sel) =>
         Array.from(container.querySelectorAll<HTMLElement>(sel)),
       );
 
       if (!allEls.length) return;
 
+      const dashboardMock = container.querySelector<HTMLElement>(
+        "[data-lm-reveal='dashboard-mock']",
+      );
+      const heroGlow = container.querySelector<HTMLElement>(
+        "[data-lm-story='hero-glow']",
+      );
+
       if (reduceMotion) {
-        // Instant reveal — no translate, minimal opacity transition
         gsap.set(allEls, { opacity: 0 });
         gsap.to(allEls, { opacity: 1, duration: 0.1, stagger: 0 });
         return;
       }
 
-      // Hide all targets before paint
       gsap.set(allEls, { opacity: 0, y: 30 });
-
-      // dashboard-mock gets a subtle scale for a "rising" feel
-      const dashboardMock = container.querySelector<HTMLElement>(
-        "[data-lm-reveal='dashboard-mock']",
-      );
       if (dashboardMock) gsap.set(dashboardMock, { scale: 0.97 });
 
       const resolve = (sel: string) =>
@@ -67,7 +69,7 @@ export function useHeroEntrance(
 
       const tl = gsap.timeline({ delay: 0.15 });
       const dur = duration.base;
-      const over = 0.35; // overlap between items
+      const over = 0.35;
 
       tl.to(resolve("[data-lm-reveal='badge']"), {
         opacity: 1,
@@ -110,7 +112,62 @@ export function useHeroEntrance(
           resolve("[data-lm-reveal='hero-assets']"),
           { opacity: 1, y: 0, duration: dur, ease: ease.enter },
           `-=${duration.slow * 0.5}`,
-        );
+        )
+        .add(() => {
+          if (!dashboardMock) return;
+
+          gsap.to(dashboardMock, {
+            y: -10,
+            duration: 2.2,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          });
+
+          const dashboardSidebar = container.querySelector<HTMLElement>(
+            "[data-lm-story='dashboard-sidebar']",
+          );
+          const dashboardStats = container.querySelector<HTMLElement>(
+            "[data-lm-story='dashboard-stats']",
+          );
+          const dashboardTransactions = container.querySelector<HTMLElement>(
+            "[data-lm-story='dashboard-transactions']",
+          );
+          const dashboardChart = container.querySelector<HTMLElement>(
+            "[data-lm-story='dashboard-chart']",
+          );
+
+          const innerEls = [dashboardSidebar, dashboardStats, dashboardTransactions, dashboardChart].filter(Boolean) as HTMLElement[];
+
+          if (innerEls.length) {
+            gsap.set(innerEls, { opacity: 0, y: 16 });
+            gsap.to(innerEls, {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              stagger: 0.12,
+              ease: "power2.out",
+            });
+          }
+        }, "-=0.2");
+
+      if (heroGlow && dashboardMock) {
+        gsap.set(heroGlow, { y: 0 });
+
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          onUpdate: (self) => {
+            const progress = self.progress;
+            gsap.set(heroGlow, {
+              y: progress * 60,
+              opacity: 1 - progress * 0.7,
+            });
+          },
+        });
+      }
     },
     { scope: containerRef },
   );

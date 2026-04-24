@@ -6,6 +6,7 @@
 :root {
   --background: #1a1b1e;
   --foreground: #eeeeee;
+  scroll-behavior: smooth;
 
   --card: #181818; /* #222327 */
   --card-foreground: #eeeeee;

@@ -27,6 +27,7 @@ export function usePinnedTextNarrative(
 
       const shell = container.querySelector<HTMLElement>("[data-lm-story='shell']");
       const panel = container.querySelector<HTMLElement>("[data-lm-story='pin']");
+      const progressLineFill = container.querySelector<HTMLElement>("[data-lm-story='progress-line-fill']");
       const phases = Array.from(
         container.querySelectorAll<HTMLElement>("[data-lm-story='phase']"),
       );
@@ -38,12 +39,45 @@ export function usePinnedTextNarrative(
 
       const reduceMotion = getPrefersReducedMotion();
 
-      gsap.set(phases, { autoAlpha: 0, y: reduceMotion ? 0 : 24 });
-      gsap.set(phases[0], { autoAlpha: 1, y: 0 });
+      gsap.set(phases, {
+        autoAlpha: 0,
+        y: reduceMotion ? 0 : 28,
+        scale: 0.94,
+        rotateY: 6,
+        filter: "blur(3px)",
+      });
+      gsap.set(phases[0], {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        rotateY: 0,
+        filter: "blur(0px)",
+      });
       gsap.set(markers, { autoAlpha: 0.52, x: 0 });
       gsap.set(markers[0], { autoAlpha: 1, x: 8 });
 
       if (reduceMotion) return;
+
+      let breathingTween: gsap.core.Tween | null = null;
+      let activePhaseIndex = 0;
+
+      const startBreathing = (phaseEl: HTMLElement) => {
+        if (breathingTween) breathingTween.kill();
+        breathingTween = gsap.to(phaseEl, {
+          scale: 1.018,
+          duration: 1.4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+      };
+
+      const stopBreathing = () => {
+        if (breathingTween) {
+          breathingTween.kill();
+          breathingTween = null;
+        }
+      };
 
       const stepCount = phases.length;
       const phaseWeights = phases.map((_, index) => (index === stepCount - 1 ? 1.6 : 1));
@@ -98,7 +132,13 @@ export function usePinnedTextNarrative(
 
         if (!Number.isFinite(progress)) {
           phases.forEach((phase, index) => {
-            gsap.set(phase, { autoAlpha: index === 0 ? 1 : 0, y: index === 0 ? 0 : 24 });
+            gsap.set(phase, {
+              autoAlpha: index === 0 ? 1 : 0,
+              y: index === 0 ? 0 : 28,
+              scale: index === 0 ? 1 : 0.94,
+              rotateY: index === 0 ? 0 : 6,
+              filter: index === 0 ? "blur(0px)" : "blur(3px)",
+            });
           });
 
           markers.forEach((marker, index) => {
@@ -110,6 +150,10 @@ export function usePinnedTextNarrative(
             });
           });
 
+          activePhaseIndex = 0;
+          startBreathing(phases[0]);
+          if (progressLineFill) progressLineFill.style.height = "0%";
+
           return;
         }
 
@@ -118,10 +162,22 @@ export function usePinnedTextNarrative(
         if (clampedProgress >= 0.999) {
           phases.forEach((phase, index) => {
             if (index === stepCount - 1) {
-              gsap.set(phase, { autoAlpha: 1, y: 0 });
+              gsap.set(phase, {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                rotateY: 0,
+                filter: "blur(0px)",
+              });
               return;
             }
-            gsap.set(phase, { autoAlpha: 0, y: 24 });
+            gsap.set(phase, {
+              autoAlpha: 0,
+              y: 28,
+              scale: 0.94,
+              rotateY: 6,
+              filter: "blur(3px)",
+            });
           });
 
           markers.forEach((marker, index) => {
@@ -131,6 +187,13 @@ export function usePinnedTextNarrative(
             }
             gsap.set(marker, { autoAlpha: 0.52, x: 0, y: 0, scale: 0.97 });
           });
+
+          if (activePhaseIndex !== stepCount - 1) {
+            activePhaseIndex = stepCount - 1;
+            stopBreathing();
+            startBreathing(phases[stepCount - 1]);
+          }
+          if (progressLineFill) progressLineFill.style.height = "100%";
 
           return;
         }
@@ -144,7 +207,7 @@ export function usePinnedTextNarrative(
         const currentSpan = Math.max(currentEnd - currentStart, 0.0001);
         const nextIndex = Math.min(stepCount - 1, safeCurrentIndex + 1);
         const mix = (clampedProgress - currentStart) / currentSpan;
-        const transitionWindow = 0.2;
+        const transitionWindow = 0.22;
         const transitionStart = 1 - transitionWindow;
         const hasNextPhase = safeCurrentIndex < stepCount - 1;
         const inTransition = hasNextPhase && mix >= transitionStart;
@@ -155,8 +218,11 @@ export function usePinnedTextNarrative(
         phases.forEach((phase, index) => {
           if (index === safeCurrentIndex) {
             gsap.set(phase, {
-              autoAlpha: inTransition ? 1 - localMix : 1,
-              y: inTransition ? -16 * localMix : 0,
+              autoAlpha: inTransition ? 1 - localMix * 0.5 : 1,
+              y: inTransition ? -20 * localMix : 0,
+              scale: inTransition ? 1 - localMix * 0.06 : 1,
+              rotateY: inTransition ? -5 * localMix : 0,
+              filter: inTransition ? `blur(${localMix * 2}px)` : "blur(0px)",
             });
             return;
           }
@@ -164,12 +230,21 @@ export function usePinnedTextNarrative(
           if (index === nextIndex) {
             gsap.set(phase, {
               autoAlpha: inTransition ? localMix : 0,
-              y: inTransition ? 24 - 24 * localMix : 24,
+              y: inTransition ? 28 - 28 * localMix : 28,
+              scale: inTransition ? 0.94 + localMix * 0.06 : 0.94,
+              rotateY: inTransition ? 6 - 11 * localMix : 6,
+              filter: inTransition ? `blur(${3 - 3 * localMix}px)` : "blur(3px)",
             });
             return;
           }
 
-          gsap.set(phase, { autoAlpha: 0, y: 24 });
+          gsap.set(phase, {
+            autoAlpha: 0,
+            y: 28,
+            scale: 0.94,
+            rotateY: 6,
+            filter: "blur(3px)",
+          });
         });
 
         markers.forEach((marker, index) => {
@@ -195,6 +270,20 @@ export function usePinnedTextNarrative(
 
           gsap.set(marker, { autoAlpha: 0.52, x: 0, y: 0, scale: 0.97 });
         });
+
+        if (activePhaseIndex !== safeCurrentIndex && !inTransition) {
+          activePhaseIndex = safeCurrentIndex;
+          stopBreathing();
+          startBreathing(phases[safeCurrentIndex]);
+        }
+
+        if (progressLineFill) {
+          const totalSteps = stepCount - 1;
+          const stepProgress = safeCurrentIndex / totalSteps;
+          const transitionProgress = inTransition ? localMix / totalSteps : 0;
+          const lineProgress = Math.min(100, (stepProgress + transitionProgress) * 100);
+          progressLineFill.style.height = `${lineProgress}%`;
+        }
       };
 
       ScrollTrigger.create({
@@ -213,6 +302,8 @@ export function usePinnedTextNarrative(
           blendNarrative(self.progress);
         },
       });
+
+      startBreathing(phases[0]);
     },
     { scope: containerRef },
   );

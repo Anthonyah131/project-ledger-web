@@ -31,7 +31,7 @@ import {
   SortableSection,
   useDashboardLayout,
 } from "@/hooks/dashboard/use-dashboard-layout"
-import type { DashboardAlert, DashboardTrendDay } from "@/types/dashboard"
+import type { DashboardAlert, DashboardTopTransaction, DashboardTrendDay } from "@/types/dashboard"
 
 export function DashboardView() {
   const { t } = useLanguage()
@@ -46,6 +46,9 @@ export function DashboardView() {
     handleDragStart,
     handleDragEnd,
     isMobile,
+    isEditMode,
+    toggleEditMode,
+    saveLayout,
   } = useDashboardLayout()
 
   const {
@@ -128,6 +131,27 @@ export function DashboardView() {
     router.push(`/reports?${query.toString()}`)
   }, [router])
 
+  const handleOpenSummaryCard = useCallback((type: "expense" | "income" | "balance") => {
+    const query = new URLSearchParams()
+    query.set("type", type)
+    if (selectedProjectId) {
+      query.set("projectId", selectedProjectId)
+    }
+    router.push(`/reports?${query.toString()}`)
+  }, [router, selectedProjectId])
+
+  const handleOpenTransaction = useCallback((transaction: DashboardTopTransaction) => {
+    const query = new URLSearchParams({
+      from: transaction.date,
+      to: transaction.date,
+      autogenerate: "1",
+    })
+    if (selectedProjectId) {
+      query.set("projectId", selectedProjectId)
+    }
+    router.push(`/reports?${query.toString()}`)
+  }, [router, selectedProjectId])
+
   if (!user) return null
 
   return (
@@ -142,11 +166,15 @@ export function DashboardView() {
         loading={loading}
         canGoPrevious={canGoPrevious}
         canGoNext={canGoNext}
+        isEditMode={isEditMode}
         onGoPreviousMonth={goPreviousMonth}
         onGoNextMonth={goNextMonth}
         onSelectMonth={setSelectedMonth}
         onReload={reload}
         onOpenAlert={handleOpenAlert}
+        onToggleEditMode={toggleEditMode}
+        onSaveLayout={saveLayout}
+        onCancelEditMode={toggleEditMode}
       />
 
       {projects.length > 0 && (
@@ -278,20 +306,20 @@ export function DashboardView() {
           while (i < layout.length) {
             const sectionId = layout[i]
             if (sectionId === "summary-cards") {
-              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}><DashboardMonthlySummaryCards summary={data.summary} comparison={data.comparison} currencyCode={data.currency_code} /></SortableSection>)
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile} isEditMode={isEditMode}><DashboardMonthlySummaryCards summary={data.summary} comparison={data.comparison} currencyCode={data.currency_code} onOpenSummaryCard={handleOpenSummaryCard} /></SortableSection>)
             } else if (sectionId === "budget-widget") {
-              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}>{selectedProjectId ? <DashboardMonthlyBudgetWidget budget={budget} loading={budgetLoading} currencyCode={data.currency_code} projectId={selectedProjectId} /> : <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">{t("dashboard.selectProjectDescription")}</div>}</SortableSection>)
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile} isEditMode={isEditMode}>{selectedProjectId ? <DashboardMonthlyBudgetWidget budget={budget} loading={budgetLoading} currencyCode={data.currency_code} projectId={selectedProjectId} /> : <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">{t("dashboard.selectProjectDescription")}</div>}</SortableSection>)
             } else if (sectionId === "payment-top-row") {
               rows.push(
-                <SortableSection key={sectionId} id={sectionId} isMobile={isMobile}>
+                <SortableSection key={sectionId} id={sectionId} isMobile={isMobile} isEditMode={isEditMode}>
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
                     <DashboardMonthlyPaymentMethodsChart paymentMethodSplit={data.payment_method_split ?? []} currencyCode={data.currency_code} onOpenPaymentMethod={handleOpenPaymentMethod} />
-                    <DashboardMonthlyTopTransactions transactions={data.top_transactions ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} />
+                    <DashboardMonthlyTopTransactions transactions={data.top_transactions ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} onOpenTransaction={handleOpenTransaction} />
                   </div>
                 </SortableSection>
               )
             } else if (sectionId === "trend-chart") {
-              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}><DashboardMonthlyTrendChart trendByDay={data.trend_by_day ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} onOpenDayDetail={handleOpenTrendDay} dailyBudgetRate={data.daily_budget_rate} /></SortableSection>)
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile} isEditMode={isEditMode}><DashboardMonthlyTrendChart trendByDay={data.trend_by_day ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} onOpenDayDetail={handleOpenTrendDay} dailyBudgetRate={data.daily_budget_rate} /></SortableSection>)
             }
             i++
           }

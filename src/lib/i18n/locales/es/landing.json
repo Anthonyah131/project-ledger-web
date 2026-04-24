@@ -1,92 +1,16 @@
 {
   "landing": {
-    "badge": "OCR con IA + chatbot financiero integrado",
+    "badge": "Proyecto personal de portafolio — MVP",
     "heroTitlePart1": "Control financiero de",
     "heroTitleHighlight": "proyectos",
     "heroTitlePart2": "sin fricción",
     "heroSubtitle": "Gestiona proyectos con partners y splits, registra gastos con OCR, opera en múltiples monedas y toma decisiones con Aria en una sola plataforma.",
     "ctaPrimary": "Empezar gratis — sin tarjeta",
     "ctaSecondary": "Ver características",
-    "freePlanBadge": "Plan Free disponible para siempre",
+    "freePlanBadge": "Plan Free permanente",
     "noTimeLimit": "Sin límite de tiempo",
-    "upgradeAnytime": "Actualiza cuando lo necesites",
-    "featuresTitle": "Características",
-    "featuresSubtitle": "Finanzas de proyectos, bajo control",
-    "featuresDescription": "Cada herramienta que necesitas para registrar, entender y optimizar el flujo de dinero de tus proyectos",
-    "previous": "Anterior",
-    "next": "Siguiente",
-    "goToFeature": "Ir a {feature}",
-    "viewFeature": "Ver {feature}",
-    "features": {
-      "dashboard": {
-        "title": "Control por proyecto en tiempo real",
-        "description": "Visualiza balance, presupuesto, obligaciones y movimientos clave de cada proyecto desde un panel unificado."
-      },
-      "partners": {
-        "title": "Partners & Splits",
-        "description": "Define porcentajes por partner, liquida saldos y cierra repartos sin cálculos manuales ni hojas externas."
-      },
-      "paymentMethods": {
-        "title": "Cuentas conectadas al flujo real",
-        "description": "Controla de dónde sale o entra cada movimiento por cuenta, tarjeta, transferencia o efectivo con trazabilidad completa."
-      },
-      "ocr": {
-        "title": "OCR con IA para recibos y facturas",
-        "description": "Escanea comprobantes y deja que la IA complete título, monto, fecha y referencia para registrar más rápido y con menos errores."
-      },
-      "multiCurrency": {
-        "title": "Múltiples monedas por proyecto",
-        "description": "Opera en contextos internacionales y convierte automáticamente al tipo de moneda base del proyecto para mantener coherencia financiera."
-      },
-      "team": {
-        "title": "Colaboración con roles",
-        "description": "Invita miembros con permisos por proyecto para que el equipo opere sobre datos compartidos y auditables."
-      },
-      "reports": {
-        "title": "Reportes exportables para cierre profesional",
-        "description": "Genera análisis por categoría, método y período, y exporta resultados para clientes, socios o contabilidad."
-      },
-      "chatbot": {
-        "title": "Chatbot IA Aria",
-        "description": "Pregunta por anomalías, tendencias y recomendaciones sobre tus datos financieros y acelera decisiones estratégicas."
-      },
-      "categories": {
-        "title": "Gastos e ingresos por categoría",
-        "description": "Organiza cada movimiento con categorías personalizadas por proyecto. Mantén claridad contable sin complicaciones."
-      },
-      "history": {
-        "title": "Historial completo y trazable",
-        "description": "Nunca pierdas un registro. Cada gasto, ingreso y cambio queda guardado con fecha, responsable y referencia de comprobante."
-      }
-    },
-    "howItWorks": {
-      "title": "Del caos financiero al control accionable",
-      "subtitle": "Un flujo claro para configurar, registrar, cobrar y cerrar cada proyecto con datos reales.",
-      "stepLabel": "Paso {number}",
-      "step1": {
-        "title": "Crea tu proyecto y equipo",
-        "description": "Define proyecto, moneda y miembros en minutos para empezar con una base operativa clara desde el día uno."
-      },
-      "step2": {
-        "title": "Registra con OCR",
-        "description": "Escanea recibos con IA o registra manualmente para capturar gastos e ingresos sin perder tiempo en tareas repetitivas."
-      },
-      "step3": {
-        "title": "Gestiona obligaciones",
-        "description": "Monitorea cobros y compromisos pendientes por proyecto para evitar fugas de caja y mantener continuidad operativa."
-      },
-      "step4": {
-        "title": "Cierra y analiza",
-        "description": "Consolida reportes, ejecuta splits con partners y valida resultados con Aria para cerrar ciclos con confianza."
-      }
-    },
-    "stats": {
-      "plans": { "value": "Hasta 3", "label": "proyectos simultáneos en plan Free" },
-      "speed": { "value": "Hasta 10", "label": "lecturas OCR por mes en plan Basic" },
-      "currency": { "value": "Hasta 3", "label": "monedas por proyecto en plan Basic" },
-      "control": { "value": "Ilimitado", "label": "proyectos y OCR en plan Premium" }
-    },
-    "ctaSubtitleFull": "Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración. Actualiza cuando tu proyecto lo necesite.",
+    "upgradeAnytime": "Sin costo — proyecto de portafolio",
+    "ctaSubtitleFull": "Empieza hoy con el plan Free — sin tarjeta, sin fecha de expiración. Todas las funcionalidades disponibles sin costo.",
     "mockDashboard": {
       "nav": {
         "dashboard": "Dashboard",
@@ -95,11 +19,12 @@
         "paymentMethods": "Cuentas",
         "settings": "Configuración"
       },
-      "stats": {
-        "income": "Ingresos del mes",
-        "expenses": "Gastos del mes",
-        "balance": "Balance neto"
-      },
+    "stats": {
+      "plans": { "value": "Proyectos", "label": "crea y gestiona múltiples proyectos" },
+      "speed": { "value": "OCR con IA", "label": "registra gastos desde comprobantes" },
+      "currency": { "value": "Multi-moneda", "label": "soporte para múltiples divisas" },
+      "control": { "value": "IA integrada", "label": "asistente Aria para análisis" }
+    },
       "recentMovements": "Últimos movimientos",
       "expensesChart": "Gastos / mes",
       "transactions": {

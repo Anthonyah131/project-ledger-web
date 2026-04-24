@@ -25,6 +25,7 @@ export function useProjectPaymentMethods(projectId: string) {
   // ── Dialog state ─────────────────────────────────────────
   const [addOpen, setAddOpen] = useState(false)
   const [removeTarget, setRemoveTarget] = useState<ProjectPaymentMethodItem | null>(null)
+  const [viewTarget, setViewTarget] = useState<ProjectPaymentMethodItem | null>(null)
 
   // ── Fetch linked ─────────────────────────────────────────
 
@@ -134,6 +135,8 @@ export function useProjectPaymentMethods(projectId: string) {
     setAddOpen,
     removeTarget,
     setRemoveTarget,
+    viewTarget,
+    setViewTarget,
     paymentMethods,
     refetch: fetchLinked,
     openAddDialog,

@@ -55,9 +55,10 @@ interface ExpenseRowProps {
   expense: PaymentMethodExpenseItem
   paymentMethodCurrency: string
   onOpenProject: () => void
+  onView: (expense: PaymentMethodExpenseItem) => void
 }
 
-export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: ExpenseRowProps) {
+export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject, onView }: ExpenseRowProps) {
   const { t } = useLanguage()
   // Use accountAmount/accountCurrency (amount in the payment method's currency).
   // Fall back for historical expenses that don't have accountAmount yet.
@@ -70,7 +71,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
   const showOriginal = expense.originalCurrency !== accountCurrency
 
   return (
-    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-rose-500/5 transition-colors">
+    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-rose-500/5 transition-colors cursor-pointer" onClick={() => onView(expense)}>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-foreground truncate">{expense.title}</p>
         <div className="mt-1 text-xs text-muted-foreground flex flex-wrap items-center gap-2">
@@ -107,7 +108,7 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
         type="button"
         variant="outline"
         size="sm"
-        onClick={onOpenProject}
+        onClick={(e) => { e.stopPropagation(); onOpenProject() }}
         className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
       >
         {t("paymentMethods.viewProject")}
@@ -119,9 +120,10 @@ export function ExpenseRow({ expense, paymentMethodCurrency, onOpenProject }: Ex
 interface IncomeRowProps {
   income: PaymentMethodIncomeItem
   onOpenProject: () => void
+  onView: (income: PaymentMethodIncomeItem) => void
 }
 
-export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
+export function IncomeRow({ income, onOpenProject, onView }: IncomeRowProps) {
   const { t } = useLanguage()
   const accountAmount = income.accountAmount ?? income.originalAmount
   const accountCurrency = income.accountCurrency ?? income.originalCurrency
@@ -132,7 +134,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
     projectCurrency !== accountCurrency
 
   return (
-    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-emerald-500/5 transition-colors">
+    <div className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 hover:bg-emerald-500/5 transition-colors cursor-pointer" onClick={() => onView(income)}>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-foreground truncate">{income.title}</p>
         <div className="mt-1 text-xs text-muted-foreground flex flex-wrap items-center gap-2">
@@ -175,7 +177,7 @@ export function IncomeRow({ income, onOpenProject }: IncomeRowProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={onOpenProject}
+        onClick={(e) => { e.stopPropagation(); onOpenProject() }}
         className="border-cyan-500/30 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50"
       >
         {t("paymentMethods.viewProject")}

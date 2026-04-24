@@ -710,5 +710,16 @@
       "import": "Error importing transactions",
       "parse": "Error processing pasted data"
     }
+  },
+  "pmDetail": {
+    "pmTypes": {
+      "bank": "Bank",
+      "cash": "Cash",
+      "card": "Card"
+    },
+    "bankName": "Bank name",
+    "accountNumber": "Account number",
+    "partner": "Partner",
+    "description": "Description"
   }
 }

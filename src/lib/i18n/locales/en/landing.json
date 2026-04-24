@@ -1,92 +1,16 @@
 {
   "landing": {
-    "badge": "AI OCR + integrated financial chatbot",
+    "badge": "Portfolio MVP — personal project",
     "heroTitlePart1": "Financial control of",
     "heroTitleHighlight": "projects",
     "heroTitlePart2": "without friction",
     "heroSubtitle": "Manage projects with partners and splits, record expenses with OCR, operate across multiple currencies, and make decisions with Aria in one platform.",
     "ctaPrimary": "Start free — no card needed",
     "ctaSecondary": "View features",
-    "freePlanBadge": "Free plan available forever",
+    "freePlanBadge": "Permanent Free plan",
     "noTimeLimit": "No time limit",
-    "upgradeAnytime": "Upgrade whenever you need to",
-    "featuresTitle": "Features",
-    "featuresSubtitle": "Project finances, under control",
-    "featuresDescription": "Every tool you need to record, understand and optimize the money flow of your projects",
-    "previous": "Previous",
-    "next": "Next",
-    "goToFeature": "Go to {feature}",
-    "viewFeature": "View {feature}",
-    "features": {
-      "dashboard": {
-        "title": "Real-time project control",
-        "description": "Track balance, budget, obligations, and key movements for each project from one unified panel."
-      },
-      "partners": {
-        "title": "Partners & Splits",
-        "description": "Set partner percentages, settle balances, and close distributions without manual calculations or external sheets."
-      },
-      "paymentMethods": {
-        "title": "Payment methods mapped to real cash flow",
-        "description": "Track where each movement comes from or goes to across card, bank transfer, cash, or account with full traceability."
-      },
-      "ocr": {
-        "title": "AI OCR for receipts and invoices",
-        "description": "Scan receipts and let AI prefill title, amount, date, and reference so you can register faster with fewer errors."
-      },
-      "multiCurrency": {
-        "title": "Multiple currencies per project",
-        "description": "Operate in international scenarios and auto-convert to the project's base currency to keep financial reporting consistent."
-      },
-      "team": {
-        "title": "Role-based collaboration",
-        "description": "Invite members with project-level permissions so teams work on shared, auditable financial data."
-      },
-      "reports": {
-        "title": "Exportable reports for professional closing",
-        "description": "Generate analysis by category, method, and period, then export results for clients, partners, or accounting workflows."
-      },
-      "chatbot": {
-        "title": "Aria AI chatbot",
-        "description": "Ask about anomalies, trends, and recommendations on your financial data to speed up strategic decisions."
-      },
-      "categories": {
-        "title": "Expenses and income by category",
-        "description": "Organize each transaction with custom categories per project. Maintain accounting clarity without complications."
-      },
-      "history": {
-        "title": "Complete and traceable history",
-        "description": "Never lose a record. Every expense, income and change is saved with date, responsible party and receipt reference."
-      }
-    },
-    "howItWorks": {
-      "title": "From financial chaos to actionable control",
-      "subtitle": "A clear workflow to configure, register, collect, and close each project using real data.",
-      "stepLabel": "Step {number}",
-      "step1": {
-        "title": "Create your project and team",
-        "description": "Define the project, currency, and members in minutes so you start with a clear operational base from day one."
-      },
-      "step2": {
-        "title": "Register with OCR",
-        "description": "Scan receipts with AI or enter movements manually to capture expenses and income without repetitive admin work."
-      },
-      "step3": {
-        "title": "Manage obligations",
-        "description": "Track pending receivables and commitments per project to prevent cash leakage and keep operations moving."
-      },
-      "step4": {
-        "title": "Close and analyze",
-        "description": "Consolidate reports, execute partner splits, and validate outcomes with Aria to close cycles with confidence."
-      }
-    },
-    "stats": {
-      "plans": { "value": "Up to 3", "label": "simultaneous projects on Free" },
-      "speed": { "value": "Up to 10", "label": "OCR reads per month on Basic" },
-      "currency": { "value": "Up to 3", "label": "currencies per project on Basic" },
-      "control": { "value": "Unlimited", "label": "projects and OCR on Premium" }
-    },
-    "ctaSubtitleFull": "Start today with the Free plan — no card, no expiration date. Upgrade whenever your project needs it.",
+    "upgradeAnytime": "No cost — portfolio project",
+    "ctaSubtitleFull": "Start today with the Free plan — no card, no expiration date. All features available at no cost.",
     "mockDashboard": {
       "nav": {
         "dashboard": "Dashboard",
@@ -95,11 +19,12 @@
         "paymentMethods": "Payment methods",
         "settings": "Settings"
       },
-      "stats": {
-        "income": "Monthly income",
-        "expenses": "Monthly expenses",
-        "balance": "Net balance"
-      },
+    "stats": {
+      "plans": { "value": "Projects", "label": "create and manage multiple projects" },
+      "speed": { "value": "AI OCR", "label": "record expenses from receipts" },
+      "currency": { "value": "Multi-currency", "label": "support for multiple currencies" },
+      "control": { "value": "Integrated AI", "label": "Aria assistant for analysis" }
+    },
       "recentMovements": "Recent movements",
       "expensesChart": "Expenses / month",
       "transactions": {

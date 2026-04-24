@@ -14,12 +14,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { DeleteEntityModal } from "@/components/shared/delete-entity-modal"
+import { PaymentMethodDetailSheet } from "@/components/project-detail/shared/payment-method-detail-sheet"
 import { getPaymentMethodTypeLabel } from "@/lib/constants"
 import { useLanguage } from "@/context/language-context"
 import type {
   ProjectPaymentMethodItem,
   LinkablePaymentMethodItem,
 } from "@/types/project-partner"
+import type { PaymentMethodResponse } from "@/types/payment-method"
 
 // ── Internal sub-components ───────────────────────────────────────────────────
 
@@ -76,10 +78,12 @@ function PMList({
   linkedPMs,
   isOwner,
   onRemove,
+  onView,
 }: {
   linkedPMs: ProjectPaymentMethodItem[]
   isOwner: boolean
   onRemove: (pm: ProjectPaymentMethodItem) => void
+  onView: (pm: ProjectPaymentMethodItem) => void
 }) {
   const { t } = useLanguage()
   return (
@@ -87,7 +91,9 @@ function PMList({
       {linkedPMs.map((pm) => (
         <div
           key={pm.id}
-          className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/20"
+          role="listitem"
+          className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/20 cursor-pointer"
+          onClick={() => onView(pm)}
         >
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{pm.paymentMethodName}</p>
@@ -110,7 +116,7 @@ function PMList({
               variant="ghost"
               size="icon"
               className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-              onClick={() => onRemove(pm)}
+              onClick={(e) => { e.stopPropagation(); onRemove(pm) }}
             >
               <X className="size-3.5" />
             </Button>
@@ -246,6 +252,7 @@ interface PaymentMethodsState {
   linkableLoading: boolean
   addOpen: boolean
   removeTarget: ProjectPaymentMethodItem | null
+  viewTarget: ProjectPaymentMethodItem | null
 }
 
 export function PaymentMethodsSection({
@@ -257,6 +264,9 @@ export function PaymentMethodsSection({
   onRemoveSelect,
   onRemoveClose,
   onUnlink,
+  onViewSelect,
+  onViewClose,
+  paymentMethods,
 }: {
   ppm: PaymentMethodsState
   isOwner: boolean
@@ -266,6 +276,9 @@ export function PaymentMethodsSection({
   onRemoveSelect: (pm: ProjectPaymentMethodItem) => void
   onRemoveClose: () => void
   onUnlink: (pm: ProjectPaymentMethodItem) => Promise<boolean> | void
+  onViewSelect: (pm: ProjectPaymentMethodItem) => void
+  onViewClose: () => void
+  paymentMethods: PaymentMethodResponse[]
 }) {
   const { t } = useLanguage()
   return (
@@ -296,6 +309,7 @@ export function PaymentMethodsSection({
           linkedPMs={ppm.linkedPMs}
           isOwner={isOwner}
           onRemove={onRemoveSelect}
+          onView={onViewSelect}
         />
       )}
 
@@ -315,6 +329,12 @@ export function PaymentMethodsSection({
         title={t("projects.settingsTab.removePaymentMethodTitle")}
         description={t("projects.settingsTab.removePaymentMethodDescription")}
         getMessage={(pm) => t("projects.settingsTab.removePaymentMethodNamed", { name: pm.paymentMethodName })}
+      />
+
+      <PaymentMethodDetailSheet
+        paymentMethod={ppm.viewTarget ? paymentMethods.find((pm) => pm.id === ppm.viewTarget?.paymentMethodId) ?? null : null}
+        onClose={onViewClose}
+        onEdit={() => {}}
       />
     </div>
   )

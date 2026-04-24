@@ -75,7 +75,17 @@ export function HowItWorks() {
           </div>
 
           <div className="relative" data-lm-reveal="steps-grid">
-            <div className="absolute bottom-0 left-6 top-0 hidden w-px bg-border/80 lg:block" aria-hidden="true" />
+            <div
+              className="absolute bottom-0 left-6 top-0 hidden w-px bg-border/80 lg:block"
+              data-lm-story="progress-line"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute left-6 top-0 hidden w-px bg-primary/60 lg:block"
+              data-lm-story="progress-line-fill"
+              aria-hidden="true"
+              style={{ height: "0%" }}
+            />
 
             <div className="space-y-8 lg:space-y-10">
               {steps.map(({ number, title, description }, index) => (

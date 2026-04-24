@@ -7,6 +7,7 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { LandingMotionBootstrap } from "@/components/landing/landing-motion-bootstrap";
 import { Navbar } from "@/components/landing/navbar";
 import { Pricing } from "@/components/landing/pricing";
+import { ScrollProgressIndicator } from "@/components/landing/scroll-progress-indicator";
 import { Stats } from "@/components/landing/stats";
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <ScrollProgressIndicator />
       <Navbar />
       <main>
         <LandingMotionBootstrap />

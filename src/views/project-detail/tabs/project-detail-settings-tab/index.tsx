@@ -45,6 +45,7 @@ interface PaymentMethodsState {
   linkableLoading: boolean
   addOpen: boolean
   removeTarget: ProjectPaymentMethodItem | null
+  viewTarget: ProjectPaymentMethodItem | null
 }
 
 export interface ProjectDetailSettingsTabProps {
@@ -81,12 +82,15 @@ export interface ProjectDetailSettingsTabProps {
   onRemovePartner: (pp: ProjectPartnerResponse) => Promise<boolean> | void
   // Payment methods
   ppm: PaymentMethodsState
+  paymentMethods: import("@/types/payment-method").PaymentMethodResponse[]
   onAddOpen: () => void
   onAddClose: () => void
   onLink: (pmId: string, pmName: string) => Promise<void>
   onRemoveSelectPM: (pm: ProjectPaymentMethodItem) => void
   onRemoveClosePM: () => void
   onUnlink: (pm: ProjectPaymentMethodItem) => Promise<boolean> | void
+  onViewSelectPM: (pm: ProjectPaymentMethodItem) => void
+  onViewClosePM: () => void
 }
 
 // ── Main settings tab ─────────────────────────────────────────────────────────
@@ -119,12 +123,15 @@ export function ProjectDetailSettingsTab({
   onAssign,
   onRemovePartner,
   ppm,
+  paymentMethods,
   onAddOpen,
   onAddClose,
   onLink,
   onRemoveSelectPM,
   onRemoveClosePM,
   onUnlink,
+  onViewSelectPM,
+  onViewClosePM,
 }: ProjectDetailSettingsTabProps) {
   const { t } = useLanguage()
 
@@ -221,6 +228,9 @@ export function ProjectDetailSettingsTab({
               onRemoveSelect={onRemoveSelectPM}
               onRemoveClose={onRemoveClosePM}
               onUnlink={onUnlink}
+              onViewSelect={onViewSelectPM}
+              onViewClose={onViewClosePM}
+              paymentMethods={paymentMethods}
             />
           )}
         </div>

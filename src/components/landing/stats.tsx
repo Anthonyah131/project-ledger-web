@@ -5,6 +5,7 @@ import { getStats } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 import { useSectionReveal } from "@/hooks/animations/use-section-reveal";
 import { useScrollSheetTransition } from "@/hooks/animations/use-scroll-sheet-transition";
+import { useCounterAnimation } from "@/hooks/animations/use-counter-animation";
 
 export function Stats() {
   const { t } = useLanguage();
@@ -12,6 +13,7 @@ export function Stats() {
   const containerRef = useRef<HTMLElement | null>(null);
   useSectionReveal(containerRef, { stagger: 0.1 });
   useScrollSheetTransition(containerRef, { nextSelector: "[data-lm-section='features']" });
+  useCounterAnimation(containerRef, stats);
 
   return (
     <section ref={containerRef} className="border-y border-border bg-muted/30" data-lm-section="stats">

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Pagination } from "@/components/shared/pagination"
+import { MovementDetailSheet } from "@/components/project-detail/shared/movement-detail-sheet"
 import {
   EmptyBlock,
   ExpenseRow,
@@ -29,6 +30,7 @@ import {
 } from "./payment-method-detail-blocks"
 import { formatDate } from "@/lib/date-utils"
 import type {
+  PaymentMethodExpenseItem,
   PaymentMethodExpensesResponse,
   PaymentMethodIncomesResponse,
   PaymentMethodProjectsResponse,
@@ -48,6 +50,7 @@ interface PartnerTabProps {
 }
 
 interface PaymentMethodDetailTabsProps {
+  paymentMethod: { id: string; currency: string } | null
   expenses: PaymentMethodExpensesResponse
   incomes: PaymentMethodIncomesResponse
   projects: PaymentMethodProjectsResponse
@@ -150,6 +153,7 @@ function PartnerLinkList({
 }
 
 export function PaymentMethodDetailTabs({
+  paymentMethod,
   expenses,
   incomes,
   projects,
@@ -176,7 +180,9 @@ export function PaymentMethodDetailTabs({
   defaultTab = "expenses",
 }: PaymentMethodDetailTabsProps) {
   const { t } = useLanguage()
+  const [viewTarget, setViewTarget] = useState<{ type: "expense"; data: PaymentMethodExpenseItem } | { type: "income"; data: PaymentMethodIncomeItem } | null>(null)
   return (
+    <>
     <Tabs defaultValue={defaultTab}>
       <TabsList variant="line" className="w-full flex-wrap gap-y-1 p-2 sm:p-3">
         <TabsTrigger value="expenses">{t("paymentMethods.tabExpenses")}</TabsTrigger>
@@ -236,6 +242,7 @@ export function PaymentMethodDetailTabs({
                   expense={expense}
                   paymentMethodCurrency={paymentMethodCurrency}
                   onOpenProject={() => onOpenExpenseProject(expense.projectId)}
+                  onView={(exp) => setViewTarget({ type: "expense", data: exp })}
                 />
               ))}
             </div>
@@ -304,6 +311,7 @@ export function PaymentMethodDetailTabs({
                   key={income.id}
                   income={income}
                   onOpenProject={() => onOpenIncomeProject(income.projectId)}
+                  onView={(inc) => setViewTarget({ type: "income", data: inc })}
                 />
               ))}
             </div>
@@ -444,5 +452,14 @@ export function PaymentMethodDetailTabs({
         </Dialog>
       </TabsContent>
     </Tabs>
+
+    <MovementDetailSheet
+      movement={viewTarget}
+      projectCurrency={paymentMethodCurrency}
+      paymentMethods={paymentMethod ? [{ id: paymentMethod.id, name: "", type: "bank" as const, currency: paymentMethod.currency, bankName: null, accountNumber: null, description: null, partner_id: null, partner: null, createdAt: "", updatedAt: "" }] : []}
+      onClose={() => setViewTarget(null)}
+      onEdit={() => {}}
+    />
+    </>
   )
 }

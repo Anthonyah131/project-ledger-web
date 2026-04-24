@@ -369,6 +369,7 @@ function PaymentMethodDetailPanelComponent({
       />
 
       <PaymentMethodDetailTabs
+        paymentMethod={paymentMethod}
         expenses={expenses}
         incomes={incomes}
         projects={projects}

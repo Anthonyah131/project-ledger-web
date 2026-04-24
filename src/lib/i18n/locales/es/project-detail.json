@@ -710,5 +710,16 @@
       "import": "Error al importar movimientos",
       "parse": "Error al procesar los datos pegados"
     }
+  },
+  "pmDetail": {
+    "pmTypes": {
+      "bank": "Banco",
+      "cash": "Efectivo",
+      "card": "Tarjeta"
+    },
+    "bankName": "Banco",
+    "accountNumber": "Número de cuenta",
+    "partner": "Partner",
+    "description": "Descripción"
   }
 }

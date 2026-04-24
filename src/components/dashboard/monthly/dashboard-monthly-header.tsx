@@ -25,11 +25,15 @@ interface DashboardMonthlyHeaderProps {
   loading: boolean
   canGoPrevious: boolean
   canGoNext: boolean
+  isEditMode?: boolean
   onGoPreviousMonth: () => void
   onGoNextMonth: () => void
   onSelectMonth: (monthKey: string) => void
   onReload: () => void
   onOpenAlert?: (alert: DashboardAlert) => void
+  onToggleEditMode?: () => void
+  onSaveLayout?: () => void
+  onCancelEditMode?: () => void
 }
 
 export function DashboardMonthlyHeader({
@@ -42,11 +46,15 @@ export function DashboardMonthlyHeader({
   loading,
   canGoPrevious,
   canGoNext,
+  isEditMode,
   onGoPreviousMonth,
   onGoNextMonth,
   onSelectMonth,
   onReload,
   onOpenAlert,
+  onToggleEditMode,
+  onSaveLayout,
+  onCancelEditMode,
 }: DashboardMonthlyHeaderProps) {
   const { t, locale } = useLanguage()
 
@@ -80,40 +88,56 @@ export function DashboardMonthlyHeader({
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl border border-border/70 bg-background/65 p-2 xl:gap-2.5 xl:p-2.5">
-          <DashboardMonthlyAlertsIndicator alerts={alerts} onOpenAlert={onOpenAlert} />
+          {isEditMode ? (
+            <>
+              <Button variant="outline" size="sm" onClick={onCancelEditMode}>
+                {t("dashboard.cancelEditLayout")}
+              </Button>
+              <Button size="sm" onClick={onSaveLayout}>
+                {t("dashboard.saveLayout")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" onClick={onToggleEditMode}>
+                {t("dashboard.editLayout")}
+              </Button>
+              <DashboardMonthlyAlertsIndicator alerts={alerts} onOpenAlert={onOpenAlert} />
 
-          <Button
-            variant="outline"
-            size="icon-sm"
-            onClick={onGoPreviousMonth}
-            disabled={!canGoPrevious || loading}
-            aria-label={t("dashboard.previousMonth")}
-          >
-            <IconChevronLeft className="size-4" />
-          </Button>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                onClick={onGoPreviousMonth}
+                disabled={!canGoPrevious || loading}
+                aria-label={t("dashboard.previousMonth")}
+              >
+                <IconChevronLeft className="size-4" />
+              </Button>
 
-          <DashboardMonthlyPicker
-            selectedMonth={selectedMonth}
-            onSelectMonth={onSelectMonth}
-            loading={loading}
-          />
+              <DashboardMonthlyPicker
+                selectedMonth={selectedMonth}
+                onSelectMonth={onSelectMonth}
+                loading={loading}
+              />
 
-          {canGoNext && (
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={onGoNextMonth}
-              disabled={loading}
-              aria-label={t("dashboard.nextMonth")}
-            >
-              <IconChevronRight className="size-4" />
-            </Button>
+              {canGoNext && (
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={onGoNextMonth}
+                  disabled={loading}
+                  aria-label={t("dashboard.nextMonth")}
+                >
+                  <IconChevronRight className="size-4" />
+                </Button>
+              )}
+
+              <Button variant="outline" size="sm" onClick={onReload} disabled={loading}>
+                <IconRefresh className="size-4" />
+                {t("common.reload")}
+              </Button>
+            </>
           )}
-
-          <Button variant="outline" size="sm" onClick={onReload} disabled={loading}>
-            <IconRefresh className="size-4" />
-            {t("common.reload")}
-          </Button>
         </div>
       </div>
     </section>

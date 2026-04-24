@@ -14,22 +14,29 @@ interface DashboardMonthlyTopTransactionsProps {
   transactions: DashboardTopTransaction[]
   currencyCode: string
   scopeLabel: string
+  onOpenTransaction?: (transaction: DashboardTopTransaction) => void
 }
 
 function TransactionRow({
   transaction,
   currencyCode,
   isMobile,
+  onOpen,
 }: {
   transaction: DashboardTopTransaction
   currencyCode: string
   isMobile: boolean
+  onOpen?: (transaction: DashboardTopTransaction) => void
 }) {
   const isExpense = transaction.type === "expense"
   const sign = isExpense ? "-" : "+"
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/35 px-3 py-2.5 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm">
+    <button
+      type="button"
+      onClick={() => onOpen?.(transaction)}
+      className="flex w-full items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/35 px-3 py-2.5 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:bg-muted/55 hover:shadow-sm cursor-pointer"
+    >
       <div className="flex min-w-0 items-center gap-2.5">
         <div
           className={cn(
@@ -67,7 +74,7 @@ function TransactionRow({
         </p>
         <p className="text-[11px] text-muted-foreground">{transaction.date}</p>
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -75,6 +82,7 @@ export function DashboardMonthlyTopTransactions({
   transactions,
   currencyCode,
   scopeLabel,
+  onOpenTransaction,
 }: DashboardMonthlyTopTransactionsProps) {
   const isMobile = useIsMobile()
   const { t } = useLanguage()
@@ -85,7 +93,7 @@ export function DashboardMonthlyTopTransactions({
   )
 
   return (
-    <Card className="border-border/70 bg-card/80 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.18)]">
+    <Card className="border-border/40 bg-card/60 shadow-[0_4px_20px_0_rgba(140,92,255,0.08)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.15)]">
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle className="text-base font-semibold tracking-tight">
           {t("dashboard.monthly.topTransactions.title")}
@@ -116,6 +124,7 @@ export function DashboardMonthlyTopTransactions({
                   transaction={tx}
                   currencyCode={currencyCode}
                   isMobile={isMobile}
+                  onOpen={onOpenTransaction}
                 />
               ))}
             </div>

@@ -4,7 +4,7 @@
 // Reusable footer component driven entirely by site-data.ts
 
 import Link from "next/link";
-import { FileText, Github, Instagram, Linkedin, Lock, Mail } from "lucide-react";
+import { FileText, Github, Instagram, Linkedin, Mail } from "lucide-react";
 import { siteInfo, socialLinks, getFooterLinks } from "@/data/site-data";
 import { useLanguage } from "@/context/language-context";
 
@@ -107,10 +107,6 @@ export function AppFooter() {
             </a>
             .
           </p>
-          <div className="flex items-center gap-1.5">
-            <Lock className="h-3 w-3" />
-            <span>{t("site.footer.encrypted")}</span>
-          </div>
         </div>
       </div>
     </footer>

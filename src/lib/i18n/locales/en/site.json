@@ -3,10 +3,9 @@
     "description": "The all-in-one platform to manage projects, track budgets and make strategic decisions with AI.",
     "footer": {
       "madeBy": "Made by",
-      "encrypted": "Encrypted and secure data",
       "groups": {
         "product": "Product",
-        "company": "Company",
+        "company": "Project",
         "legal": "Legal"
       },
       "links": {
@@ -24,23 +23,23 @@
     },
     "contact": {
       "gmail": {
-        "label": "Send email",
-        "description": "Write to us directly at our support email.",
-        "cta": "Open Gmail"
+        "label": "Email",
+        "description": "Send me an email directly for questions or proposals.",
+        "cta": "Send email"
       },
       "github": {
         "label": "GitHub",
-        "description": "Report bugs or browse the project source code.",
+        "description": "Browse the source code, report bugs or contribute to the project.",
         "cta": "View repository"
       },
       "linkedin": {
         "label": "LinkedIn",
-        "description": "Connect with me on LinkedIn to talk about the project.",
+        "description": "Connect with me on LinkedIn to discuss the project or opportunities.",
         "cta": "View profile"
       },
       "instagram": {
         "label": "Instagram",
-        "description": "Follow me on Instagram for project updates.",
+        "description": "Follow me for project updates and behind the scenes.",
         "cta": "View profile"
       }
     },
@@ -49,19 +48,19 @@
         "category": "General",
         "q1": {
           "question": "What is Project Ledger?",
-          "answer": "Project Ledger is a SaaS platform for managing projects, tracking budgets and integrating AI assistance. It was designed as a portfolio project with production-grade features."
+          "answer": "Project Ledger is a personal portfolio project showcasing full-stack development skills. It lets you manage projects, track budgets and make decisions with AI assistance."
         },
         "q2": {
           "question": "Is it free?",
-          "answer": "Yes, we offer a permanent Free plan with up to 2 projects and basic features. We also have Basic ($9.99/month) and Premium ($19.99/month) plans with higher limits and advanced features."
+          "answer": "Yes, it's completely free. This project uses a permanent Free plan with no time limit. No payment or subscription required."
         },
         "q3": {
           "question": "Do I need a credit card to sign up?",
-          "answer": "No. You can create your account and use the Free plan without entering payment details. A card is only required if you decide to subscribe to a paid plan."
+          "answer": "No. You can create your account without entering any payment details."
         },
         "q4": {
           "question": "What technologies is it built with?",
-          "answer": "The frontend uses Next.js 15, React 19, Tailwind CSS and shadcn/ui. The backend uses Node.js with Express, Supabase (PostgreSQL) for the database and n8n for AI automation."
+          "answer": "The frontend uses Next.js 16, React 19, TypeScript and Tailwind CSS. The backend is a .NET REST API deployed on Azure with PostgreSQL (CockroachDB). OCR uses Azure Document Intelligence and the AI chatbot consumes free AI agents."
         }
       },
       "projects": {
@@ -72,7 +71,7 @@
         },
         "q2": {
           "question": "Can I invite other members to my projects?",
-          "answer": "Yes, from the project detail you can add members by email. Depending on your plan, you can have up to 5 members (Basic) or unlimited (Premium)."
+          "answer": "Yes, from the project detail you can add members by email with differentiated permissions."
         },
         "q3": {
           "question": "What types of expenses can I record?",
@@ -80,44 +79,44 @@
         },
         "q4": {
           "question": "Can I use multiple currencies?",
-          "answer": "Yes. The Free plan supports up to 3 currencies, while paid plans allow multi-currency without restrictions."
+          "answer": "Yes. Each project has a base currency and you can record movements in other currencies with automatic conversion."
         }
       },
       "billing": {
         "category": "Billing",
         "q1": {
-          "question": "How do I change my plan?",
-          "answer": "Go to \"Settings\" → \"Billing\" and select the desired plan. The change is applied immediately and prorated to the current billing cycle."
+          "question": "Can I subscribe to a paid plan?",
+          "answer": "No. Billing is disabled in this MVP. It's a portfolio project and all features are available for free."
         },
         "q2": {
-          "question": "Can I cancel at any time?",
-          "answer": "Yes, you can cancel your subscription whenever you want. You will continue to have access to your plan's features until the end of the paid period."
+          "question": "Are there paid plans?",
+          "answer": "Not at the moment. The product is in MVP phase and all features are available at no cost."
         },
         "q3": {
-          "question": "What payment methods do you accept?",
-          "answer": "Currently the payments module is a simulation for the portfolio. In a real production version, Stripe or PayPal would be integrated."
+          "question": "Where is the backend deployed?",
+          "answer": "The backend is a .NET REST API deployed on Azure. The database is PostgreSQL (CockroachDB) in the cloud."
         }
       },
       "security": {
         "category": "Security & privacy",
         "q1": {
           "question": "Is my data safe?",
-          "answer": "All data is stored in Supabase with encryption in transit (HTTPS/TLS) and at rest. We do not share your data with third parties."
+          "answer": "This is a personal portfolio project. Data is stored in PostgreSQL (CockroachDB) deployed on Azure and you have full control to delete your account whenever you want."
         },
         "q2": {
           "question": "How does authentication work?",
-          "answer": "We use JWT with access and refresh tokens managed by Supabase Auth. Sessions expire and rotate automatically."
+          "answer": "We use JWT with access and refresh tokens. Sessions expire and rotate automatically. Tokens are stored securely in the browser."
         },
         "q3": {
           "question": "Can I delete my account?",
-          "answer": "Yes. From Settings you can request the deletion of your account and all your associated data permanently."
+          "answer": "Yes. From Settings you can permanently delete your account and all associated data."
         }
       },
       "ai": {
         "category": "AI Assistant",
         "q1": {
           "question": "How does the AI assistant work?",
-          "answer": "The assistant is integrated via n8n and connects to language models like GPT. You can ask it questions about your projects, request financial analysis or check the history."
+          "answer": "Aria's chatbot consumes free AI agents. You can ask questions about your projects, request financial analysis or check the history."
         },
         "q2": {
           "question": "Does the assistant have access to my data?",

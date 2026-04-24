@@ -20,6 +20,7 @@ interface DashboardMonthlySummaryCardsProps {
   summary: DashboardSummary
   comparison: DashboardComparison
   currencyCode: string
+  onOpenSummaryCard?: (type: "expense" | "income" | "balance") => void
 }
 
 interface SummaryCardItem {
@@ -29,6 +30,7 @@ interface SummaryCardItem {
   icon: Icon
   footerIcon: Icon
   tone: "positive" | "warning" | "neutral"
+  type: "expense" | "income" | "balance"
 }
 
 function getToneClasses(tone: SummaryCardItem["tone"]) {
@@ -47,6 +49,7 @@ export function DashboardMonthlySummaryCards({
   summary,
   comparison,
   currencyCode,
+  onOpenSummaryCard,
 }: DashboardMonthlySummaryCardsProps) {
   const { t } = useLanguage()
   const { formatMonthLabel } = useDateFormat()
@@ -64,6 +67,7 @@ export function DashboardMonthlySummaryCards({
       icon: IconReceipt,
       footerIcon: comparison.spent_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: comparison.spent_delta <= 0 ? "positive" : "warning",
+      type: "expense",
     },
     {
       label: t("dashboard.monthlyIncome"),
@@ -76,6 +80,7 @@ export function DashboardMonthlySummaryCards({
       icon: IconCoins,
       footerIcon: comparison.income_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: comparison.income_delta >= 0 ? "positive" : "warning",
+      type: "income",
     },
     {
       label: t("dashboard.netBalance"),
@@ -86,17 +91,20 @@ export function DashboardMonthlySummaryCards({
       icon: summary.net_balance >= 0 ? IconArrowUpRight : IconArrowDownRight,
       footerIcon: comparison.net_delta >= 0 ? IconArrowUpRight : IconArrowDownRight,
       tone: summary.net_balance >= 0 ? "positive" : "warning",
+      type: "balance",
     },
   ]
 
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 xl:gap-3.5">
       {cards.map((card) => (
-        <Card
+        <button
           key={card.label}
-          className="group relative min-w-0 overflow-hidden border-border/70 bg-card/80 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.2)]"
+          type="button"
+          onClick={() => onOpenSummaryCard?.(card.type)}
+          disabled={!onOpenSummaryCard}
+          className="group relative min-w-0 overflow-hidden rounded-xl border border-border/40 bg-card/60 shadow-[0_4px_20px_0_rgba(140,92,255,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.15)] disabled:cursor-default disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_0_rgba(140,92,255,0.08)]"
         >
-          {/* Purple top accent bar */}
           <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
 
           <CardHeader className="min-w-0 pb-2 px-4 pt-4 xl:pb-2.5">
@@ -118,7 +126,7 @@ export function DashboardMonthlySummaryCards({
               <span className="min-w-0 wrap-break-word">{card.footer}</span>
             </div>
           </CardFooter>
-        </Card>
+        </button>
       ))}
     </div>
   )

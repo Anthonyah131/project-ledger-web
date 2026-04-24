@@ -103,9 +103,9 @@ export function Hero() {
           </div>
 
           {/* Dashboard mock */}
-          <div className="flex h-64 flex-col gap-0 sm:h-80 sm:flex-row">
+          <div className="flex h-64 flex-col gap-0 sm:h-80 sm:flex-row" data-lm-story="dashboard-inner">
             {/* Sidebar */}
-            <div className="hidden w-48 flex-col gap-1.5 border-r border-border bg-sidebar p-4 sm:flex">
+            <div className="hidden w-48 flex-col gap-1.5 border-r border-border bg-sidebar p-4 sm:flex" data-lm-story="dashboard-sidebar">
               {navItems.map((item, i) => (
                 <div
                   key={item}
@@ -123,7 +123,7 @@ export function Hero() {
             {/* Main content */}
             <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
               {/* Stats row */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3" data-lm-story="dashboard-stats">
                 {stats.map((s) => (
                   <div
                     key={s.label}
@@ -140,7 +140,7 @@ export function Hero() {
               {/* Recent transactions + chart */}
               <div className="flex flex-1 gap-3">
                 {/* Transactions list */}
-                <div className="flex-1 rounded-lg border border-border bg-background p-3">
+                <div className="flex-1 rounded-lg border border-border bg-background p-3" data-lm-story="dashboard-transactions">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("landing.mockDashboard.recentMovements")}
                   </p>
@@ -158,7 +158,7 @@ export function Hero() {
                 </div>
 
                 {/* Bar chart */}
-                <div className="hidden w-32 rounded-lg border border-border bg-background p-3 md:block lg:w-40">
+                <div className="hidden w-32 rounded-lg border border-border bg-background p-3 md:block lg:w-40" data-lm-story="dashboard-chart">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("landing.mockDashboard.expensesChart")}
                   </p>
@@ -178,7 +178,10 @@ export function Hero() {
         </div>
 
         {/* Glow effect */}
-        <div className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-primary/10 blur-2xl" />
+        <div
+          className="absolute inset-x-10 -bottom-4 -z-10 h-24 rounded-full bg-primary/10 blur-2xl"
+          data-lm-story="hero-glow"
+        />
       </div>
 
     </section>

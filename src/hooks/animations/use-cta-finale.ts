@@ -69,7 +69,21 @@ export function useCtaFinale(
                 duration: LANDING_MOTION_PRESETS.duration.fast,
               },
               "-=0.12",
-            );
+            )
+            .add(() => {
+              const primaryBtn = container.querySelector<HTMLElement>(
+                "[data-lm-story='cta-primary-btn']",
+              );
+              if (!primaryBtn || reduceMotion) return;
+
+              gsap.to(primaryBtn, {
+                boxShadow: "0 0 30px 8px rgba(255, 255, 255, 0.15)",
+                duration: 1.2,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1,
+              });
+            }, "-=0.4");
         },
       });
     },

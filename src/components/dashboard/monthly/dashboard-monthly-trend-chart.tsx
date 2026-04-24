@@ -188,7 +188,7 @@ export function DashboardMonthlyTrendChart({
   }, [onOpenDayDetail, trendByDay])
 
   return (
-    <Card className="border-border/70 bg-card/75 shadow-[0_4px_20px_0_rgba(140,92,255,0.1)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.18)]">
+    <Card className="border-border/40 bg-card/60 shadow-[0_4px_20px_0_rgba(140,92,255,0.08)] transition-all hover:shadow-[0_8px_32px_0_rgba(140,92,255,0.15)]">
       <CardHeader className="pb-2 xl:pb-3">
         <CardTitle>{t("dashboard.monthly.trendChart.title")}</CardTitle>
         <CardDescription>

@@ -1,12 +1,11 @@
 {
   "site": {
-    "description": "La plataforma todo-en-uno para gestionar proyectos, rastrear presupuestos y tomar decisiones estratégicas con IA.",
+    "description": "Plataforma de gestión financiera de proyectos con IA integrada.",
     "footer": {
       "madeBy": "Hecho por",
-      "encrypted": "Datos encriptados y seguros",
       "groups": {
         "product": "Producto",
-        "company": "Empresa",
+        "company": "Proyecto",
         "legal": "Legal"
       },
       "links": {
@@ -24,23 +23,23 @@
     },
     "contact": {
       "gmail": {
-        "label": "Enviar email",
-        "description": "Escríbenos directamente a nuestro correo de soporte.",
-        "cta": "Abrir Gmail"
+        "label": "Email",
+        "description": "Escríbeme directamente a mi correo para preguntas o propuestas.",
+        "cta": "Enviar email"
       },
       "github": {
         "label": "GitHub",
-        "description": "Reporta bugs o consulta el código fuente del proyecto.",
+        "description": "Explora el código fuente, reporta bugs o contribuye al proyecto.",
         "cta": "Ver repositorio"
       },
       "linkedin": {
         "label": "LinkedIn",
-        "description": "Conéctate conmigo en LinkedIn para hablar sobre el proyecto.",
+        "description": "Conéctame en LinkedIn para hablar sobre el proyecto o oportunidades.",
         "cta": "Ver perfil"
       },
       "instagram": {
         "label": "Instagram",
-        "description": "Sígueme en Instagram para actualizaciones del proyecto.",
+        "description": "Sígueme para actualizaciones del proyecto y behind the scenes.",
         "cta": "Ver perfil"
       }
     },
@@ -49,19 +48,19 @@
         "category": "General",
         "q1": {
           "question": "¿Qué es Project Ledger?",
-          "answer": "Project Ledger es una plataforma SaaS para gestionar proyectos, rastrear presupuestos e integrar asistencia con inteligencia artificial. Fue diseñada como proyecto de portafolio con funcionalidades de nivel producción."
+          "answer": "Project Ledger es un proyecto personal de portafolio que demuestra mis habilidades como desarrollador full-stack. Permite gestionar proyectos, rastrear presupuestos y tomar decisiones con asistencia de IA."
         },
         "q2": {
           "question": "¿Es gratuito?",
-          "answer": "Sí, ofrecemos un plan Free permanente con hasta 2 proyectos y funcionalidades básicas. También tenemos planes Basic ($9.99/mes) y Premium ($19.99/mes) con límites más altos y funciones avanzadas."
+          "answer": "Sí, es completamente gratuito. Este proyecto usa un plan Free sin límite de tiempo. No hay datos de pago ni suscripciones."
         },
         "q3": {
           "question": "¿Necesito tarjeta de crédito para registrarme?",
-          "answer": "No. Puedes crear tu cuenta y usar el plan Free sin ingresar datos de pago. Solo se requiere tarjeta si decides suscribirte a un plan de pago."
+          "answer": "No. Puedes crear tu cuenta sin ingresar ningún dato de pago."
         },
         "q4": {
           "question": "¿En qué tecnologías está construido?",
-          "answer": "El frontend usa Next.js 15, React 19, Tailwind CSS y shadcn/ui. El backend usa Node.js con Express, Supabase (PostgreSQL) para la base de datos y n8n para la automatización con IA."
+          "answer": "El frontend usa Next.js 16, React 19, TypeScript y Tailwind CSS. El backend es una API REST en .NET desplegada en Azure con PostgreSQL (CockroachDB). El OCR usa Azure Document Intelligence y el chatbot IA consume agentes gratuitos."
         }
       },
       "projects": {
@@ -72,7 +71,7 @@
         },
         "q2": {
           "question": "¿Puedo invitar a otros miembros a mis proyectos?",
-          "answer": "Sí, desde el detalle de un proyecto puedes agregar miembros por email. Dependiendo de tu plan, puedes tener hasta 5 miembros (Basic) o ilimitados (Premium)."
+          "answer": "Sí, desde el detalle de un proyecto puedes agregar miembros por email con permisos diferenciados."
         },
         "q3": {
           "question": "¿Qué tipos de gastos puedo registrar?",
@@ -80,48 +79,48 @@
         },
         "q4": {
           "question": "¿Puedo usar múltiples monedas?",
-          "answer": "Sí. El plan Free soporta hasta 3 divisas, mientras que los planes de pago permiten multi-moneda sin restricciones."
+          "answer": "Sí. Cada proyecto tiene una moneda base y puedes registrar movimientos en otras divisas con conversión automática."
         }
       },
       "billing": {
         "category": "Facturación",
         "q1": {
-          "question": "¿Cómo cambio mi plan?",
-          "answer": "Ve a \"Configuración\" → \"Facturación\" y selecciona el plan deseado. El cambio se aplica inmediatamente y se prorratea al ciclo de facturación actual."
+          "question": "¿Puedo suscribirme a un plan de pago?",
+          "answer": "No. La facturación está deshabilitada en este MVP. Es un proyecto de portafolio y todos los features están disponibles de forma gratuita."
         },
         "q2": {
-          "question": "¿Puedo cancelar en cualquier momento?",
-          "answer": "Sí, puedes cancelar tu suscripción cuando quieras. Seguirás teniendo acceso a las funciones de tu plan hasta el final del período pagado."
+          "question": "¿Hay planes pagos?",
+          "answer": "Por el momento no. El producto está en fase MVP y todas las funcionalidades son libres de cargo."
         },
         "q3": {
-          "question": "¿Qué métodos de pago aceptan?",
-          "answer": "Actualmente el módulo de pagos es una simulación para el portafolio. En una versión de producción real se integraría Stripe o PayPal."
+          "question": "¿Dónde está desplegado el backend?",
+          "answer": "El backend está desplegado en Azure como API REST en .NET. La base de datos es PostgreSQL (CockroachDB) en la nube."
         }
       },
       "security": {
         "category": "Seguridad y privacidad",
         "q1": {
           "question": "¿Mis datos están seguros?",
-          "answer": "Todos los datos se almacenan en Supabase con cifrado en tránsito (HTTPS/TLS) y en reposo. No compartimos tus datos con terceros."
+          "answer": "Este es un proyecto personal de portafolio. Los datos se almacenan en PostgreSQL (CockroachDB) desplegado en Azure y tienes control total para eliminar tu cuenta cuando quieras."
         },
         "q2": {
           "question": "¿Cómo funciona la autenticación?",
-          "answer": "Usamos JWT con tokens de acceso y refresco gestionados por Supabase Auth. Las sesiones expiran y se rotan automáticamente."
+          "answer": "Usamos JWT con tokens de acceso y refresco. Las sesiones expiran y se rotan automáticamente. Los tokens se almacenan de forma segura en el navegador."
         },
         "q3": {
           "question": "¿Puedo eliminar mi cuenta?",
-          "answer": "Sí. Desde Configuración puedes solicitar la eliminación de tu cuenta y todos tus datos asociados de forma permanente."
+          "answer": "Sí. Desde Configuración puedes eliminar tu cuenta de forma permanente y todos tus datos asociados."
         }
       },
       "ai": {
         "category": "Asistente IA",
         "q1": {
           "question": "¿Cómo funciona el asistente de IA?",
-          "answer": "El asistente está integrado mediante n8n y se conecta a modelos de lenguaje como GPT. Puedes hacerle preguntas sobre tus proyectos, pedir análisis financieros o consultar el historial."
+          "answer": "El chatbot Aria consume agentes de IA gratuitos. Puedes hacerle preguntas sobre tus proyectos, pedir análisis financieros o consultar el historial."
         },
         "q2": {
           "question": "¿El asistente tiene acceso a mis datos?",
-          "answer": "El asistente solo accede a los datos del proyecto activo en tu sesión. Nunca comparte información entre usuarios."
+          "answer": "El asistente solo accede a los datos del proyecto activo en tu sesión. No comparte información entre usuarios."
         }
       }
     }

@@ -30,4 +30,3 @@
 - Use `src/lib/api-client.ts` as the template for HTTP client behavior and request cancellation handling.
 - Use `src/services/project-service.ts` as the template for thin service-layer functions.
 - Use `src/lib/validations/expense.ts` as the template for Zod validation and inferred form value types.
-- Use `tests/hooks/projects/use-project-incomes.test.tsx` as the template for hook tests with mocked services.

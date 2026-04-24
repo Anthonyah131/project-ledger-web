@@ -51,16 +51,19 @@ function DashboardMonthlyBudgetWidgetComponent({
   return (
     <div
       className={cn(
-        "rounded-2xl border bg-card shadow-sm overflow-hidden",
+        "rounded-2xl border bg-card/60 shadow-sm overflow-hidden",
         cardBorderClass,
       )}
     >
       {/* Header */}
-      <div
+      <Link
+        href={projectId ? `/projects/${projectId}?tab=budget` : "#"}
         className={cn(
-          "flex items-center justify-between px-4 py-3 border-b",
+          "flex items-center justify-between px-4 py-3 border-b transition-colors",
           headerBorderClass,
+          projectId && "hover:bg-muted/30 cursor-pointer",
         )}
+        aria-label={t("budget.badge.viewDetail")}
       >
         <div className="flex items-center gap-2.5">
           <div
@@ -81,16 +84,12 @@ function DashboardMonthlyBudgetWidgetComponent({
         </div>
 
         {projectId && (
-          <Link
-            href={`/projects/${projectId}?tab=budget`}
-            className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors group"
-            aria-label={t("budget.badge.viewDetail")}
-          >
+          <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors group">
             {t("budget.badge.viewDetail")}
             <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          </span>
         )}
-      </div>
+      </Link>
 
       {/* Body */}
       <div className="px-4 py-3.5">

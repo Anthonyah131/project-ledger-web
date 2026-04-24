@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Ledger Web
+
+Dashboard de gestión financiera de proyectos construido con **Next.js 16** (App Router), **React 19** y **TypeScript**.
+
+El backend es una API REST .NET en `NEXT_PUBLIC_API_URL` (default: `http://localhost:5192/api`).
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuración
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Default | Descripción |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5192/api` | URL base del backend |
+| `NEXT_PUBLIC_ENV` | `development` | Activa logs de request/response |
 
-## Learn More
+## Arquitectura
 
-To learn more about Next.js, take a look at the following resources:
+```
+Page (src/app/(dashboard)/...)
+  → View (src/views/*-view.tsx)
+    → Orchestration Hook (src/hooks/.../use-*-view.ts)
+      → Domain Hooks (src/hooks/.../use-*.ts)
+        → Services (src/services/*-service.ts)
+          → API Client (src/lib/api-client.ts)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Services**: funciones puras para llamadas REST, sin estado
+- **Domain Hooks**: gestión de fetch + CRUD para un sub-recurso
+- **Orchestration Hooks**: coordinan múltiples domain hooks y refreshes cruzados
+- **Views**: componentes de página que consumen un orchestration hook
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Client (`src/lib/api-client.ts`)
 
-## Deploy on Vercel
+- Injecta `Authorization: Bearer` en cada request
+- Auto-refresca token en 401 con lock de concurrencia
+- `ApiClientError` tiene `.isPlanError` y `.isBusinessError`
+- Deduplicación de requests GET integrada
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Auth (`src/context/AuthContext.tsx`)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Tokens en localStorage (24h access, 7d refresh). Login/register/logout via context.
+
+## Forms
+
+1. Schema Zod en `src/lib/validations/{domain}.ts`
+2. Hook en `src/hooks/forms/use-{entity}-form.ts` (React Hook Form + zodResolver)
+3. Modal usa `form`, `onSubmit`, `handleClose` del hook
+
+## i18n
+
+Sistema propio (`createT`, `useLanguage`) con JSON por feature. **Sin librerías externas**.
+
+```
+src/lib/i18n/
+├── index.ts
+├── types.ts
+└── locales/
+    ├── es/  (fuente de verdad)
+    └── en/
+```
+
+Keys: `<namespace>.<grupo>.<variante>` (ej: `expenses.delete.title`)
+
+## Dates
+
+Usar siempre `formatDate()` de `src/lib/date-utils.ts`. No usar `new Date(dateString)` directamente para display.
+
+- `YYYY-MM-DD` → parseados como medianoche local (evita off-by-one de UTC)
+- Timestamps completos → `new Date()` normalmente
+
+## Convenciones
+
+- Path alias: `@/*` → `src/*`
+- Route groups: `(auth)` público, `(dashboard)` protegido con sidebar
+- Recursos project-scoped: `/projects/{id}/...` en la API
+- Toasts: `toast` (Sonner) para feedback, `toastApiError` para errores API
+- Plan errors (403) → upgrade prompts, no toasts genéricos
+
+## Linting
+
+```bash
+npm run lint
+npm run typecheck
+```
