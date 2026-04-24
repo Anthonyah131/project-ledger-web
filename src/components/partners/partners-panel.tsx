@@ -225,7 +225,7 @@ export function PartnersPanel() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-xl font-bold text-foreground tracking-tight">
-            Partners
+            {t("partners.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             <span className="font-bold text-violet-600 dark:text-violet-400">{totalCount}</span>{" "}
@@ -264,7 +264,7 @@ export function PartnersPanel() {
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-violet-500/10"
             role="list"
-            aria-label="Partners"
+            aria-label={t("partners.title")}
           >
             {partners.map((p) => (
               <PartnerCardMemo

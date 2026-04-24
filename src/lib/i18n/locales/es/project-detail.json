@@ -129,7 +129,7 @@
     "conceptLabel": "Concepto",
     "conceptPlaceholder": "Ej: Pago cliente ACME",
     "partnerLabel": "Partner",
-    "paymentMethodLabel": "Método de pago",
+    "paymentMethodLabel": "Cuenta",
     "ocrQuotaError": "No se pudo cargar la cuota OCR",
     "draftExtracted": "Borrador extraído",
     "draftExtractedDesc": "Revisa y ajusta los datos antes de crear el ingreso definitivo.",
@@ -180,7 +180,7 @@
     "accountAmountRequired": "Monto de cuenta requerido",
     "fields": {
       "paymentMethod": {
-        "required": "Método de pago es requerido"
+        "required": "Cuenta es requerida"
       },
       "accountAmount": {
         "mustBePositive": "El monto de cuenta debe ser mayor que 0.",
@@ -495,27 +495,27 @@
   },
   "projectPaymentMethods": {
     "link": {
-      "title": "Vincular método de pago",
-      "description": "Selecciona un método de pago para vincularlo al proyecto.",
+      "title": "Vincular cuenta",
+      "description": "Selecciona una cuenta para vincularla al proyecto.",
       "empty": "Todos tus métodos de pago ya están vinculados.",
       "button": "Vincular"
     },
     "list": {
-      "ariaLabel": "Métodos de pago del proyecto",
+      "ariaLabel": "Cuentas del proyecto",
       "colOwner": "Propietario",
       "unlinkTitle": "Desvincular",
       "unlinkAriaLabel": "Desvincular {name}"
     },
     "toast": {
-      "linked": "Método de pago vinculado",
-      "linkedDesc": "{name} fue vinculado al proyecto.",
-      "unlinked": "Método de pago desvinculado",
-      "unlinkedDesc": "{name} fue desvinculado del proyecto."
+      "linked": "Cuenta vinculada",
+      "linkedDesc": "{name} fue vinculada al proyecto.",
+      "unlinked": "Cuenta desvinculada",
+      "unlinkedDesc": "{name} fue desvinculada del proyecto."
     },
     "errors": {
-      "load": "Error al cargar los métodos de pago del proyecto.",
-      "link": "No se pudo vincular el método de pago.",
-      "unlink": "No se pudo desvincular el método de pago."
+      "load": "Error al cargar las cuentas del proyecto.",
+      "link": "No se pudo vincular la cuenta.",
+      "unlink": "No se pudo desvincular la cuenta."
     }
   },
   "movementDetail": {

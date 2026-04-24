@@ -1,7 +1,7 @@
 {
   "reports": {
     "title": "Reports",
-    "subtitle": "Generate detailed reports by project, payment method, income, or partners.",
+    "subtitle": "Generate detailed reports by project, payment method, income, or people.",
     "from": "From",
     "to": "To",
     "generate": "Generate",
@@ -19,20 +19,20 @@
       "expenses": "Expenses",
       "incomes": "Income",
       "paymentMethods": "Payment methods",
-      "partnerBalances": "Partner balances",
-      "partnerGeneral": "General partner"
+      "partnerBalances": "People balances",
+      "partnerGeneral": "General summary"
     },
     "projectLabel": "Project",
-    "partnerLabel": "Partner",
+    "partnerLabel": "Person",
     "selectProjectPlaceholder": "Select project",
-    "selectPartnerPlaceholder": "Select partner",
+    "selectPartnerPlaceholder": "Select person",
     "paymentMethodsLabel": "Payment methods",
     "paymentMethodsAll": "All",
     "paymentMethodsAllLabel": "All methods",
     "selectedOne": "1 selected",
     "selectedMany": "{count} selected",
-    "noProjectsWithPartners": "No projects with partners",
-    "noPartnersRegistered": "No partners registered",
+    "noProjectsWithPartners": "No projects with people",
+    "noPartnersRegistered": "No people registered",
     "toast": {
       "excelDownloaded": "Excel file downloaded",
       "pdfDownloaded": "PDF file downloaded"
@@ -40,8 +40,8 @@
     "warnings": {
       "selectProjectToGenerate": "Select a project to generate the report.",
       "selectProjectToExport": "Select a project to export.",
-      "selectPartnerToGenerate": "Select a partner to generate the report.",
-      "selectPartnerToExport": "Select a partner to export."
+      "selectPartnerToGenerate": "Select a person to generate the report.",
+      "selectPartnerToExport": "Select a person to export."
     },
     "errors": {
       "generate": "Error generating report",
@@ -133,7 +133,7 @@
       "avgPerIncome": "Avg. per income",
       "largestIncome": "Largest income",
       "categoryAnalysisDesc": "Income distribution by category over the period",
-      "pmAnalysisDesc": "Income distribution by payment method over the period",
+      "pmAnalysisDesc": "Income distribution by account over the period",
       "perIncome": "/ income",
       "monthlyDetailDesc": "Income broken down by month",
       "topIncomeTitle": "Largest income: {title}",
@@ -145,16 +145,16 @@
     "partnerBalances": {
       "warningTitle": "{count} transaction(s) missing exchange rate configuration",
       "warningDesc": "Totals in alternative currencies may be incomplete.",
-      "partnersLabel": "Partners",
+      "partnersLabel": "People",
       "settlementsLabel": "Settlements",
-      "partnerBalancesTitle": "Partner balances",
-      "partnerBalancesDesc": "Net balance per partner. Positive = owed to them, negative = they owe.",
+      "partnerBalancesTitle": "Balances per person",
+      "partnerBalancesDesc": "Net balance per person. Positive = owed to them, negative = they owe.",
       "owedBy": "Owed",
       "owes": "Owes",
       "settlementsTitle": "Settlements",
-      "settlementsDesc": "Partner payments recorded in the period",
+      "settlementsDesc": "Payments between people recorded in the period",
       "pairwiseTitle": "Pairwise balances",
-      "pairwiseDesc": "Gross and net breakdown between each pair of partners. Positive = A owes B.",
+      "pairwiseDesc": "Gross and net breakdown between each pair of people. Positive = A owes B.",
       "owesTo": "{owes} owes {owed}",
       "aOwesB": "{a} owes {b}",
       "settlementsAToB": "Settlements {a} → {b}"
@@ -176,7 +176,7 @@
       "colPaidBy": "Paid by",
       "colSplit": "Split",
       "colDirection": "Direction",
-      "colOtherPartner": "Other partner",
+      "colOtherPartner": "Other person",
       "transactionsHeader": "Transactions",
       "ofTotal": "of {total}",
       "settlementsHeader": "Settlements"

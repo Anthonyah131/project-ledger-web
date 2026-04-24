@@ -80,7 +80,7 @@
     "settingsTab": {
       "general": "General",
       "currencies": "Monedas",
-      "partners": "Partners",
+"partners": "Personas",
       "paymentMethods": "Métodos de pago",
       "sectionLabel": "Secciones de configuración del proyecto",
       "generalTitle": "Información del proyecto",
@@ -89,22 +89,22 @@
       "descriptionLabel": "Descripción",
       "currenciesTitle": "Monedas alternativas",
       "currenciesSubtitle": "Gestiona las monedas en las que se registran equivalencias para este proyecto.",
-      "partnersTitle": "Partners del proyecto",
-      "partnersSubtitle": "Asigna partners y controla la distribución de gastos e ingresos.",
+      "partnersTitle": "Personas del proyecto",
+      "partnersSubtitle": "Asigna personas y controla la distribución de gastos e ingresos.",
       "partnersSplits": "Splits por partners",
-      "assignPartner": "Asignar partner",
-      "removePartnerTitle": "Quitar partner del proyecto",
+      "assignPartner": "Asignar persona",
+      "removePartnerTitle": "Quitar persona del proyecto",
       "removePartnerDescription": "Sus cuentas ya no estarán disponibles para nuevos gastos e ingresos en este proyecto.",
-      "removePartnerNamed": "¿Quitar el partner \"{name}\" del proyecto?",
+      "removePartnerNamed": "¿Quitar la persona \"{name}\" del proyecto?",
       "paymentMethodsTitle": "Métodos de pago",
-      "paymentMethodsSubtitle": "Vincula métodos de pago de partners para usarlos en gastos e ingresos.",
+      "paymentMethodsSubtitle": "Vincula métodos de pago de personas para usarlos en gastos e ingresos.",
       "addPaymentMethod": "Agregar método de pago",
       "add": "Agregar",
       "noLinkedPaymentMethods": "Sin métodos de pago vinculados",
       "noLinkedPaymentMethodsDescription": "Vincula métodos de pago para usarlos en gastos e ingresos del proyecto.",
       "noLinkedPaymentMethodsViewer": "No hay métodos de pago vinculados a este proyecto.",
       "addPMDialogTitle": "Agregar método de pago",
-      "addPMDialogDescription": "Métodos de pago de partners asignados al proyecto que aún no están vinculados.",
+      "addPMDialogDescription": "Métodos de pago de personas asignadas al proyecto que aún no están vinculados.",
       "noAvailableToLink": "No hay métodos de pago disponibles para vincular.",
       "removePaymentMethodTitle": "Quitar método de pago",
       "removePaymentMethodDescription": "El método de pago ya no estará disponible en este proyecto para nuevos gastos e ingresos.",
@@ -117,8 +117,8 @@
       "updatedDesc": "\"{name}\" se guardó correctamente.",
       "deleted": "Proyecto eliminado",
       "deletedDesc": "\"{name}\" fue desactivado.",
-      "partnersEnabled": "Splits por partners activados",
-      "partnersDisabled": "Splits por partners desactivados"
+      "partnersEnabled": "Splits por personas activados",
+      "partnersDisabled": "Splits por personas desactivados"
     },
     "errors": {
       "load": "Error al cargar proyectos",
@@ -185,16 +185,16 @@
   },
   "projectPartners": {
     "toast": {
-      "assigned": "Partner asignado",
-      "assignedDesc": "\"{name}\" fue asignado al proyecto.",
-      "removed": "Partner quitado",
-      "removedDesc": "\"{name}\" fue quitado del proyecto.",
-      "cannotRemove": "No se puede quitar el partner"
+      "assigned": "Persona asignada",
+      "assignedDesc": "\"{name}\" fue asignada al proyecto.",
+      "removed": "Persona quitada",
+      "removedDesc": "\"{name}\" fue quitada del proyecto.",
+      "cannotRemove": "No se puede quitar la persona"
     },
     "errors": {
-      "load": "Error al cargar partners del proyecto",
-      "assign": "Error al asignar partner",
-      "remove": "Error al quitar partner"
+      "load": "Error al cargar personas del proyecto",
+      "assign": "Error al asignar persona",
+      "remove": "Error al quitar persona"
     }
   },
   "projectPaymentMethods": {

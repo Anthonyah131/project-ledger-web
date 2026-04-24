@@ -24,7 +24,7 @@ export function AppFooter() {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-start justify-between gap-8 sm:flex-row">
           {/* Brand */}
-          <div className="min-w-[200px]">
+          <div className="min-w-0 sm:min-w-[200px]">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm shadow-primary/30">
                 <FileText className="h-3.5 w-3.5" />
@@ -56,8 +56,9 @@ export function AppFooter() {
           </div>
 
           {/* Footer Link Groups */}
-          <div className={`grid gap-8 grid-cols-${footerLinks.length} sm:grid-cols-${footerLinks.length}`}
-            style={{ gridTemplateColumns: `repeat(${footerLinks.length}, minmax(120px, 1fr))` }}
+          <div
+            className="grid w-full gap-8 sm:gap-6"
+            style={{ gridTemplateColumns: `repeat(${footerLinks.length}, minmax(100px, 1fr))` }}
           >
             {footerLinks.map((group) => (
               <div key={group.group}>

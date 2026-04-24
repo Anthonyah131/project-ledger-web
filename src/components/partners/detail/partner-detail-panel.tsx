@@ -83,7 +83,7 @@ export function PartnerDetailPanel({ partnerId }: { partnerId: string }) {
       <div className="w-full max-w-7xl mx-auto">
         <div className="mb-6">
           <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2" onClick={() => router.push("/partners")}>
-            <ArrowLeft className="size-4" />Partners
+            <ArrowLeft className="size-4" />{t("nav.partners")}
           </Button>
         </div>
         <div className="flex flex-col items-center justify-center gap-2 py-20 text-center">

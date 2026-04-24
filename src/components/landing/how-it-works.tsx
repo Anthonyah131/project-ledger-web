@@ -29,7 +29,7 @@ export function HowItWorks() {
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             {t("nav.howItWorks")}
           </p>
-          <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {t("landing.howItWorks.title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
@@ -38,12 +38,12 @@ export function HowItWorks() {
         </div>
 
         <div
-          className="mt-16 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]"
+          className="mt-16 grid items-start gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10"
           data-lm-reveal="story-shell"
           data-lm-story="shell"
         >
-          <div className="relative rounded-3xl border border-border bg-card/90 p-8 shadow-xl shadow-black/10 backdrop-blur">
-            <div className="relative min-h-64 md:min-h-72" data-lm-story="pin">
+          <div className="relative rounded-2xl border border-border bg-card/90 p-6 shadow-xl shadow-black/10 backdrop-blur sm:rounded-3xl sm:p-8">
+            <div className="relative min-h-52 sm:min-h-64 md:min-h-72" data-lm-story="pin">
               {steps.map(({ number, title, description }, index) => (
                 <article
                   key={`phase-${number}`}
@@ -52,14 +52,14 @@ export function HowItWorks() {
                   data-lm-step-index={String(index)}
                 >
                   <p className="text-sm font-semibold text-primary">{t("landing.howItWorks.stepLabel", { number })}</p>
-                  <h3 className="mt-3 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                  <h3 className="mt-3 text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
                     {title}
                   </h3>
                   <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
                     {description}
                   </p>
 
-                  <div className="mt-8 flex items-center gap-2" aria-hidden="true">
+                  <div className="mt-6 flex items-center gap-2 sm:mt-8" aria-hidden="true">
                     {steps.map((item, markerIndex) => (
                       <span
                         key={`phase-dot-${item.number}`}
@@ -75,17 +75,17 @@ export function HowItWorks() {
           </div>
 
           <div className="relative" data-lm-reveal="steps-grid">
-            <div className="absolute bottom-0 left-6 top-0 w-px bg-border/80" aria-hidden="true" />
+            <div className="absolute bottom-0 left-6 top-0 hidden w-px bg-border/80 lg:block" aria-hidden="true" />
 
-            <div className="space-y-10">
+            <div className="space-y-8 lg:space-y-10">
               {steps.map(({ number, title, description }, index) => (
                 <div
                   key={number}
-                  className="relative pl-16"
+                  className="relative pl-14 lg:pl-16"
                   data-lm-story="marker"
                   data-lm-step-index={String(index)}
                 >
-                  <div className="absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-xl border border-primary/40 bg-primary/15 text-sm font-bold text-primary shadow-sm shadow-primary/20">
+                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary/15 text-sm font-bold text-primary shadow-sm shadow-primary/20 sm:h-11 sm:w-11">
                     {number}
                   </div>
                   <h4 className="text-base font-semibold text-foreground">{title}</h4>

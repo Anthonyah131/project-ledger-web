@@ -7,15 +7,17 @@ import { useLanguage } from "@/context/language-context"
 import {
   getDashboardMonthlyPaymentMethods,
   getDashboardMonthlySummary,
-  getDashboardMonthlyTopCategories,
+  getDashboardMonthlyTopTransactions,
   getDashboardMonthlyTrend,
   getDashboardProjects,
 } from "@/services/dashboard-service"
 import { getProjectBudget } from "@/services/budget-service"
 import type {
+  DashboardComparisonHistoryItem,
+  DashboardLastYearMonth,
   DashboardMonthlySummaryResponse,
   DashboardPaymentMethodSplit,
-  DashboardTopCategory,
+  DashboardTopTransaction,
   DashboardTrendDay,
   DashboardProjectItemDto,
 } from "@/types/dashboard"
@@ -120,6 +122,45 @@ function normalizeSummaryResponse(raw: unknown): DashboardMonthlySummaryResponse
   if (!navigation.previous_month) {
     navigation.previous_month = month
   }
+
+  const rawComparisonHistory = data.comparison_history ?? data.comparisonHistory
+  const comparisonHistory: DashboardComparisonHistoryItem[] = Array.isArray(rawComparisonHistory)
+    ? rawComparisonHistory.map((item: unknown) => {
+      const c = typeof item === "object" && item !== null ? item as Record<string, unknown> : {}
+      const s = typeof c.summary === "object" && c.summary !== null ? c.summary as Record<string, unknown> : {}
+      return {
+        month: String(c.month ?? ""),
+        summary: {
+          total_spent: Number(s.total_spent ?? s.totalSpent ?? 0),
+          total_income: Number(s.total_income ?? s.totalIncome ?? 0),
+          net_balance: Number(s.net_balance ?? s.netBalance ?? 0),
+        },
+      }
+    })
+    : []
+
+  const rawLastYear = data.last_year_month ?? data.lastYearMonth
+  let lastYearMonth: DashboardLastYearMonth | null | undefined = undefined
+  if (rawLastYear && typeof rawLastYear === "object") {
+    const ly = rawLastYear as Record<string, unknown>
+    const s = typeof ly.summary === "object" && ly.summary !== null ? ly.summary as Record<string, unknown> : {}
+    const c = typeof ly.comparison === "object" && ly.comparison !== null ? ly.comparison as Record<string, unknown> : {}
+    lastYearMonth = {
+      month: String(ly.month ?? ""),
+      summary: {
+        total_spent: Number(s.total_spent ?? s.totalSpent ?? 0),
+        total_income: Number(s.total_income ?? s.totalIncome ?? 0),
+        net_balance: Number(s.net_balance ?? s.netBalance ?? 0),
+      },
+      comparison: {
+        spent_delta: Number(c.spent_delta ?? c.spentDelta ?? 0),
+        spent_delta_percentage: Number(c.spent_delta_percentage ?? c.spentDeltaPercentage ?? 0),
+      },
+    }
+  } else if (rawLastYear === null) {
+    lastYearMonth = null
+  }
+
   return {
     month,
     currency_code: String(data.currency_code ?? data.currencyCode ?? ""),
@@ -129,6 +170,11 @@ function normalizeSummaryResponse(raw: unknown): DashboardMonthlySummaryResponse
     summary: normalizeSummary(data.summary),
     comparison: normalizeComparison(data.comparison, month),
     alerts: Array.isArray(data.alerts) ? data.alerts.map(normalizeAlert) : [],
+    days_elapsed: Number(data.days_elapsed ?? data.daysElapsed ?? 0) || undefined,
+    days_total: Number(data.days_total ?? data.daysTotal ?? 0) || undefined,
+    average_daily_spend: Number(data.average_daily_spend ?? data.averageDailySpend ?? 0) || undefined,
+    comparison_history: comparisonHistory.length > 0 ? comparisonHistory : undefined,
+    last_year_month: lastYearMonth,
   }
 }
 
@@ -153,29 +199,9 @@ function normalizeTrendResponse(raw: unknown) {
     currency_code: String(data.currency_code ?? data.currencyCode ?? ""),
     project_id: String(data.project_id ?? data.projectId ?? ""),
     trend_by_day: Array.isArray(items) ? items.map(normalizeTrendDay) : [],
-  }
-}
-
-function normalizeTopCategory(raw: unknown): DashboardTopCategory {
-  const data = typeof raw === "object" && raw !== null ? raw as Record<string, unknown> : {}
-  return {
-    category_id: String(data.category_id ?? data.categoryId ?? ""),
-    category_name: String(data.category_name ?? data.categoryName ?? ""),
-    total_amount: Number(data.total_amount ?? data.totalAmount ?? 0),
-    expense_count: Number(data.expense_count ?? data.expenseCount ?? 0),
-    percentage: Number(data.percentage ?? 0),
-    project_ids: (data.project_ids ?? data.projectIds ?? []) as string[],
-  }
-}
-
-function normalizeTopCategoriesResponse(raw: unknown) {
-  const data = typeof raw === "object" && raw !== null ? raw as Record<string, unknown> : {}
-  const items = Array.isArray(data.top_categories) ? data.top_categories : data.topCategories
-  return {
-    month: String(data.month ?? ""),
-    currency_code: String(data.currency_code ?? data.currencyCode ?? ""),
-    project_id: String(data.project_id ?? data.projectId ?? ""),
-    top_categories: Array.isArray(items) ? items.map(normalizeTopCategory) : [],
+    daily_budget_rate: Number(data.daily_budget_rate ?? data.dailyBudgetRate ?? 0) || null,
+    monthly_budget: Number(data.monthly_budget ?? data.monthlyBudget ?? 0) || null,
+    budget_alert_percentage: Number(data.budget_alert_percentage ?? data.budgetAlertPercentage ?? 0) || null,
   }
 }
 
@@ -201,6 +227,22 @@ function normalizePaymentMethodsResponse(raw: unknown) {
   }
 }
 
+function normalizeTopTransaction(raw: unknown): DashboardTopTransaction {
+  const data = typeof raw === "object" && raw !== null ? raw as Record<string, unknown> : {}
+  const txType = data.type as string | undefined
+  return {
+    id: String(data.id ?? ""),
+    type: txType === "income" ? "income" : "expense",
+    description: String(data.description ?? data.Description ?? ""),
+    amount: Number(data.amount ?? data.Amount ?? 0),
+    date: String(data.date ?? data.Date ?? ""),
+    category_id: String(data.category_id ?? data.categoryId ?? data.CategoryId ?? ""),
+    category_name: String(data.category_name ?? data.categoryName ?? data.CategoryName ?? ""),
+    payment_method_id: String(data.payment_method_id ?? data.paymentMethodId ?? data.PaymentMethodId ?? ""),
+    payment_method_name: String(data.payment_method_name ?? data.paymentMethodName ?? data.PaymentMethodName ?? ""),
+  }
+}
+
 interface UseMonthlyOverviewOptions {
   enabled?: boolean
 }
@@ -210,8 +252,11 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonthKey)
   const [summaryData, setSummaryData] = useState<DashboardMonthlySummaryResponse | null>(null)
   const [trendByDay, setTrendByDay] = useState<DashboardTrendDay[]>([])
-  const [topCategories, setTopCategories] = useState<DashboardTopCategory[]>([])
   const [paymentMethodSplit, setPaymentMethodSplit] = useState<DashboardPaymentMethodSplit[]>([])
+  const [topTransactions, setTopTransactions] = useState<DashboardTopTransaction[]>([])
+  const [trendBudgetRate, setTrendBudgetRate] = useState<number | null>(null)
+  const [trendMonthlyBudget, setTrendMonthlyBudget] = useState<number | null>(null)
+  const [trendBudgetAlertPct, setTrendBudgetAlertPct] = useState<number | null>(null)
   const [projects, setProjects] = useState<DashboardProjectItemDto[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState(() => readStoredProjectId())
   const [projectsLoading, setProjectsLoading] = useState(false)
@@ -245,36 +290,40 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     setError(null)
 
     try {
-      const [summaryResult, trendResult, categoriesResult, paymentMethodsResult] = await Promise.allSettled([
+      const [summaryResult, trendResult, paymentMethodsResult, topTransactionsResult] = await Promise.allSettled([
         getDashboardMonthlySummary(month, projectId, controller.signal),
         getDashboardMonthlyTrend(month, projectId, controller.signal),
-        getDashboardMonthlyTopCategories(month, projectId, controller.signal),
         getDashboardMonthlyPaymentMethods(month, projectId, controller.signal),
+        getDashboardMonthlyTopTransactions({ month, projectId, limit: 5, signal: controller.signal }),
       ])
 
       if (
         (summaryResult.status === "rejected" && isAbortError(summaryResult.reason))
         || (trendResult.status === "rejected" && isAbortError(trendResult.reason))
-        || (categoriesResult.status === "rejected" && isAbortError(categoriesResult.reason))
         || (paymentMethodsResult.status === "rejected" && isAbortError(paymentMethodsResult.reason))
+        || (topTransactionsResult.status === "rejected" && isAbortError(topTransactionsResult.reason))
       ) {
         return
       }
 
       if (summaryResult.status === "rejected") throw summaryResult.reason
       if (trendResult.status === "rejected") throw trendResult.reason
-      if (categoriesResult.status === "rejected") throw categoriesResult.reason
       if (paymentMethodsResult.status === "rejected") throw paymentMethodsResult.reason
 
       const summary = normalizeSummaryResponse(summaryResult.value)
       const trend = normalizeTrendResponse(trendResult.value)
-      const categories = normalizeTopCategoriesResponse(categoriesResult.value)
       const paymentMethods = normalizePaymentMethodsResponse(paymentMethodsResult.value)
+      const topTx = topTransactionsResult.status === "fulfilled"
+        ? (topTransactionsResult.value.transactions ?? []).map(normalizeTopTransaction)
+        : []
 
       setSummaryData(summary)
       setTrendByDay(trend.trend_by_day)
-      setTopCategories(categories.top_categories)
       setPaymentMethodSplit(paymentMethods.payment_method_split)
+      setTopTransactions(topTx)
+      setTrendBudgetRate(trend.daily_budget_rate)
+      setTrendMonthlyBudget(trend.monthly_budget)
+      setTrendBudgetAlertPct(trend.budget_alert_percentage)
 
       // Do not override selectedMonth with the API response's month —
       // that would fight against the user's navigation intent.
@@ -284,8 +333,8 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
       if (err instanceof ApiClientError && err.status === 403) {
         setSummaryData(null)
         setTrendByDay([])
-        setTopCategories([])
         setPaymentMethodSplit([])
+        setTopTransactions([])
         setError(t("dashboard.errors.noProjectSelected"))
         return
       }
@@ -370,10 +419,13 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     return {
       ...summaryData,
       trend_by_day: trendByDay,
-      top_categories: topCategories,
       payment_method_split: paymentMethodSplit,
+      top_transactions: topTransactions,
+      daily_budget_rate: trendBudgetRate,
+      monthly_budget: trendMonthlyBudget,
+      budget_alert_percentage: trendBudgetAlertPct,
     }
-  }, [paymentMethodSplit, summaryData, topCategories, trendByDay])
+  }, [paymentMethodSplit, summaryData, topTransactions, trendByDay, trendBudgetRate, trendMonthlyBudget, trendBudgetAlertPct])
 
   const selectedProjectName = useMemo(() => {
     if (!selectedProjectId) return t("dashboard.defaultProjectName")
@@ -452,8 +504,11 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     if (projectsLoading || !selectedProjectId || !selectedProjectIsAvailable) {
       setSummaryData(null)
       setTrendByDay([])
-      setTopCategories([])
       setPaymentMethodSplit([])
+      setTopTransactions([])
+      setTrendBudgetRate(null)
+      setTrendMonthlyBudget(null)
+      setTrendBudgetAlertPct(null)
       setError(null)
       return
     }
@@ -516,6 +571,7 @@ export function useMonthlyOverview({ enabled = true }: UseMonthlyOverviewOptions
     error,
     budget,
     budgetLoading,
+    topTransactions,
     canGoPrevious,
     canGoNext,
     setSelectedMonth,

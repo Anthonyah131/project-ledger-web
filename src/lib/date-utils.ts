@@ -241,7 +241,7 @@ export function getMonthGrid(monthKey: string): string[] {
   const startOffset = weekday === 0 ? 6 : weekday - 1 // Adjust to Mon=0
 
   const grid: string[] = []
-  let date = new Date(year, month, 1)
+  const date = new Date(year, month, 1)
   date.setDate(date.getDate() - startOffset)
 
   for (let i = 0; i < 42; i++) {

@@ -170,7 +170,7 @@ export function Features() {
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             {t("landing.featuresTitle")}
           </p>
-          <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {t("landing.featuresSubtitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
@@ -181,7 +181,7 @@ export function Features() {
         {/* Carousel stage */}
         <div
           ref={stageRef}
-          className="relative mt-16 flex h-96 items-center justify-center"
+          className="relative mt-12 flex h-80 items-center justify-center sm:mt-16 sm:h-96"
           data-lm-reveal="carousel-stage"
           role="group"
           aria-roledescription="carousel"
@@ -200,7 +200,7 @@ export function Features() {
                 onClick={() => setActive(i)}
                 style={{ transform: "translate3d(0, 0, 0)", opacity: 0 }}
                 data-lm-reveal="feature-card"
-                className="absolute w-75 cursor-pointer rounded-2xl border bg-card text-left shadow-2xl outline-none will-change-transform focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="absolute w-[300px] cursor-pointer rounded-2xl border bg-card text-left shadow-2xl outline-none will-change-transform focus-visible:ring-2 focus-visible:ring-primary/50 sm:w-75"
               >
                 {/* Card gradient top accent */}
                 <div className={`h-1.5 w-full rounded-t-2xl ${isActive ? "bg-primary" : "bg-border"}`} />

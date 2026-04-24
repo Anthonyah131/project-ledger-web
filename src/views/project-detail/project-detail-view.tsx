@@ -257,7 +257,7 @@ export function ProjectDetailView({ projectId }: Props) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line" className="w-full flex-wrap gap-y-1 p-3">
+        <TabsList variant="line" className="w-full flex-wrap gap-y-1 p-2 sm:p-3 text-xs sm:text-sm">
           <TabsTrigger value="expenses">{t("projects.tabs.expenses")}</TabsTrigger>
           <TabsTrigger value="incomes">{t("projects.tabs.incomes")}</TabsTrigger>
           <TabsTrigger value="obligations">{t("projects.tabs.obligations")}</TabsTrigger>

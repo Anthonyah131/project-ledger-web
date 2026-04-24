@@ -178,7 +178,7 @@ export function PaymentMethodDetailTabs({
   const { t } = useLanguage()
   return (
     <Tabs defaultValue={defaultTab}>
-      <TabsList variant="line">
+      <TabsList variant="line" className="w-full flex-wrap gap-y-1 p-2 sm:p-3">
         <TabsTrigger value="expenses">{t("paymentMethods.tabExpenses")}</TabsTrigger>
         <TabsTrigger value="incomes">{t("paymentMethods.tabIncomes")}</TabsTrigger>
         <TabsTrigger value="projects">{t("paymentMethods.tabProjects")}</TabsTrigger>

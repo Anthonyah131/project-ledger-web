@@ -46,6 +46,13 @@
         "categorySummary": "{count} categorías con gasto para la selección actual.",
         "footerCategories": "{count} categorías"
       },
+      "topTransactions": {
+        "title": "Transacciones principales",
+        "description": "Movimientos más grandes de {scope} este mes.",
+        "empty": "Sin transacciones registradas",
+        "emptyHint": "Agrega gastos o ingresos para ver las transacciones más grandes.",
+        "footerTotal": "{count} transacciones mostradas"
+      },
       "paymentMethodsChart": {
         "title": "Métodos de pago",
         "description": "Distribución del gasto total del mes por cuenta, tarjeta o método registrado.",
@@ -73,7 +80,8 @@
         "netShort": "Neto",
         "dayLabel": "Día {day}",
         "movements": "Movimientos: {total} ({expenses} gastos, {incomes} ingresos)",
-        "projects": "Proyectos: {count}"
+        "projects": "Proyectos: {count}",
+        "budgetLineLabel": "Presupuesto: {amount}/día"
       },
       "alertsIndicator": {
         "ariaLabelWithAlerts": "Ver alertas del mes ({count})",

@@ -126,10 +126,10 @@
       "description": "This action cannot be undone.",
       "confirm": "Delete income \"{name}\"?"
     },
-    "conceptLabel": "Concept",
-    "conceptPlaceholder": "e.g. ACME client payment",
+"conceptLabel": "Concept",
+    "conceptPlaceholder": "e.g. Client payment ACME",
     "partnerLabel": "Partner",
-    "paymentMethodLabel": "Payment method",
+    "paymentMethodLabel": "Account",
     "ocrQuotaError": "Could not load OCR quota",
     "draftExtracted": "Draft extracted",
     "draftExtractedDesc": "Review and adjust the data before creating the final income.",
@@ -180,7 +180,7 @@
     "accountAmountRequired": "Account amount required",
     "fields": {
       "paymentMethod": {
-        "required": "Payment method is required"
+        "required": "Account is required"
       },
       "accountAmount": {
         "mustBePositive": "Account amount must be greater than 0.",
@@ -495,27 +495,27 @@
   },
   "projectPaymentMethods": {
     "link": {
-      "title": "Link payment method",
-      "description": "Select a payment method to link to the project.",
-      "empty": "All your payment methods are already linked.",
+      "title": "Link account",
+      "description": "Select an account to link to the project.",
+      "empty": "All your accounts are already linked.",
       "button": "Link"
     },
     "list": {
-      "ariaLabel": "Project payment methods",
+      "ariaLabel": "Project accounts",
       "colOwner": "Owner",
       "unlinkTitle": "Unlink",
       "unlinkAriaLabel": "Unlink {name}"
     },
     "toast": {
-      "linked": "Payment method linked",
+      "linked": "Account linked",
       "linkedDesc": "{name} was linked to the project.",
-      "unlinked": "Payment method unlinked",
+      "unlinked": "Account unlinked",
       "unlinkedDesc": "{name} was unlinked from the project."
     },
     "errors": {
-      "load": "Failed to load project payment methods.",
-      "link": "Could not link the payment method.",
-      "unlink": "Could not unlink the payment method."
+      "load": "Failed to load project accounts.",
+      "link": "Could not link the account.",
+      "unlink": "Could not unlink the account."
     }
   },
   "movementDetail": {

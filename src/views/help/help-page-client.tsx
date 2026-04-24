@@ -72,15 +72,15 @@ export function HelpPageClient() {
   const faqCategories = getFaqCategories(t);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 min-w-0">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-xl border border-border bg-linear-to-br from-primary/5 via-background to-background px-6 py-12 mb-8">
+      <section className="relative overflow-hidden rounded-xl border border-border bg-linear-to-br from-primary/5 via-background to-background px-5 py-10 sm:px-6 sm:py-12 mb-8 shadow-sm shadow-primary/5">
         {/* decorative circle */}
         <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-primary/8 blur-2xl" />
 
-        <div className="relative flex items-start gap-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/30">
+        <div className="relative flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/30 ring-1 ring-primary/10">
             <MessageCircleQuestion className="h-6 w-6" />
           </div>
           <div>
@@ -99,7 +99,7 @@ export function HelpPageClient() {
         <h2 className="mb-4 text-base font-semibold text-foreground">
           {t("help.contactUs")}
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {contactChannels.map((ch) => {
             const Icon = ICON_MAP[ch.icon] ?? Mail;
             const style = CHANNEL_STYLES[ch.id] ?? {
@@ -114,7 +114,7 @@ export function HelpPageClient() {
                 href={ch.href}
                 target={ch.newTab ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className={`group flex flex-col gap-3 rounded-xl border p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${style.bg} ${style.border}`}
+                className={`group flex flex-col gap-3 rounded-xl border p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${style.bg} ${style.border}`}
               >
                 <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-background shadow-sm ${style.border} border`}>
                   <Icon className={`h-5 w-5 ${style.icon}`} />
@@ -127,7 +127,7 @@ export function HelpPageClient() {
                     {ch.description}
                   </p>
                 </div>
-                <span className={`inline-flex items-center gap-1 text-xs font-medium ${style.icon} group-hover:gap-1.5 transition-all`}>
+                <span className={`inline-flex items-center gap-1 text-xs font-semibold ${style.icon} group-hover:gap-1.5 transition-all`}>
                   {ch.cta}
                   <ExternalLink className="h-3 w-3" />
                 </span>
@@ -153,12 +153,12 @@ export function HelpPageClient() {
                 className="rounded-xl border border-border bg-card overflow-hidden"
               >
                 {/* Category header */}
-                <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-5 py-3.5">
+                <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3 sm:px-5 sm:py-3.5">
                   <CatIcon className="h-4 w-4 text-primary" />
                   <span className="text-sm font-semibold text-foreground">
                     {cat.category}
                   </span>
-                  <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                  <span className="ml-auto rounded-full bg-primary/8 px-2 py-0.5 text-xs text-foreground">
                     {cat.faqs.length} {t("help.questions")}
                   </span>
                 </div>
@@ -171,7 +171,7 @@ export function HelpPageClient() {
                       value={`${cat.id}-${idx}`}
                       className="border-border px-4"
                     >
-                      <AccordionTrigger className="text-left text-sm font-medium hover:no-underline py-4">
+                      <AccordionTrigger className="text-left text-sm font-medium text-foreground hover:no-underline py-4">
                         {faq.question}
                       </AccordionTrigger>
                       <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed">
@@ -187,9 +187,7 @@ export function HelpPageClient() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <div className="mt-16 -mx-4 lg:-mx-6">
-        <AppFooter />
-      </div>
+      <AppFooter />
     </div>
   );
 }

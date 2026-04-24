@@ -1,7 +1,7 @@
 {
   "reports": {
     "title": "Reportes",
-    "subtitle": "Genera reportes detallados por proyecto, método de pago, ingresos o partners.",
+    "subtitle": "Genera reportes detallados por proyecto, método de pago, ingresos o personas.",
     "from": "Desde",
     "to": "Hasta",
     "generate": "Generar",
@@ -19,20 +19,20 @@
       "expenses": "Gastos",
       "incomes": "Ingresos",
       "paymentMethods": "Métodos de pago",
-      "partnerBalances": "Balance partners",
-      "partnerGeneral": "Partner general"
+      "partnerBalances": "Balance de personas",
+      "partnerGeneral": "Resumen general"
     },
     "projectLabel": "Proyecto",
-    "partnerLabel": "Partner",
+    "partnerLabel": "Persona",
     "selectProjectPlaceholder": "Selecciona proyecto",
-    "selectPartnerPlaceholder": "Selecciona partner",
+    "selectPartnerPlaceholder": "Selecciona persona",
     "paymentMethodsLabel": "Métodos de pago",
     "paymentMethodsAll": "Todos",
     "paymentMethodsAllLabel": "Todos los métodos",
     "selectedOne": "1 seleccionado",
     "selectedMany": "{count} seleccionados",
-    "noProjectsWithPartners": "Sin proyectos con partners",
-    "noPartnersRegistered": "Sin partners registrados",
+    "noProjectsWithPartners": "Sin proyectos con personas",
+    "noPartnersRegistered": "Sin personas registradas",
     "toast": {
       "excelDownloaded": "Archivo Excel descargado",
       "pdfDownloaded": "Archivo PDF descargado"
@@ -40,8 +40,8 @@
     "warnings": {
       "selectProjectToGenerate": "Selecciona un proyecto para generar el reporte.",
       "selectProjectToExport": "Selecciona un proyecto para exportar.",
-      "selectPartnerToGenerate": "Selecciona un partner para generar el reporte.",
-      "selectPartnerToExport": "Selecciona un partner para exportar."
+      "selectPartnerToGenerate": "Selecciona una persona para generar el reporte.",
+      "selectPartnerToExport": "Selecciona una persona para exportar."
     },
     "errors": {
       "generate": "Error al generar reporte",
@@ -133,7 +133,7 @@
       "avgPerIncome": "Prom. por ingreso",
       "largestIncome": "Mayor ingreso",
       "categoryAnalysisDesc": "Distribución de ingresos por categoría en el periodo",
-      "pmAnalysisDesc": "Distribución de ingresos por método de pago en el periodo",
+      "pmAnalysisDesc": "Distribución de ingresos por cuenta en el periodo",
       "perIncome": "/ ingreso",
       "monthlyDetailDesc": "Ingresos desglosados por mes",
       "topIncomeTitle": "Mayor ingreso: {title}",
@@ -145,16 +145,16 @@
     "partnerBalances": {
       "warningTitle": "{count} transacción(es) sin tipos de cambio configurados",
       "warningDesc": "Los totales en monedas alternativas pueden estar incompletos.",
-      "partnersLabel": "Partners",
+      "partnersLabel": "Personas",
       "settlementsLabel": "Settlements",
-      "partnerBalancesTitle": "Balances por partner",
-      "partnerBalancesDesc": "Balance neto de cada partner. Positivo = le deben, negativo = debe.",
+      "partnerBalancesTitle": "Balances por persona",
+      "partnerBalancesDesc": "Balance neto de cada persona. Positivo = le deben, negativo = debe.",
       "owedBy": "Le deben",
       "owes": "Debe",
       "settlementsTitle": "Settlements",
-      "settlementsDesc": "Pagos entre partners registrados en el periodo",
+      "settlementsDesc": "Pagos entre personas registrados en el periodo",
       "pairwiseTitle": "Balances entre pares",
-      "pairwiseDesc": "Desglose bruto y neto entre cada par de partners. Positivo = A le debe a B.",
+      "pairwiseDesc": "Desglose bruto y neto entre cada par de personas. Positivo = A le debe a B.",
       "owesTo": "{owes} le debe a {owed}",
       "aOwesB": "{a} debe a {b}",
       "settlementsAToB": "Settlements {a} → {b}"
@@ -176,7 +176,7 @@
       "colPaidBy": "Pagó",
       "colSplit": "Split",
       "colDirection": "Dirección",
-      "colOtherPartner": "Otro partner",
+      "colOtherPartner": "Otra persona",
       "transactionsHeader": "Transacciones",
       "ofTotal": "de {total}",
       "settlementsHeader": "Settlements"

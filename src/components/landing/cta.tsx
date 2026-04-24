@@ -20,9 +20,9 @@ export function CTA() {
   ];
 
   return (
-    <section ref={containerRef} className="px-6 py-20" data-lm-section="cta">
+    <section ref={containerRef} className="px-4 py-16 sm:px-6 sm:py-20" data-lm-section="cta">
       <div
-        className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-primary/30 bg-primary/10 px-8 py-16 text-center"
+        className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-primary/30 bg-primary/10 px-6 py-12 text-center sm:rounded-3xl sm:px-8 sm:py-16"
         data-lm-reveal="cta-shell"
       >
         {/* Background glow */}
@@ -37,7 +37,7 @@ export function CTA() {
           <Sparkles className="h-6 w-6" />
         </div>
 
-        <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground" data-lm-reveal="cta-title">
+        <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl" data-lm-reveal="cta-title">
           {t("billing.ctaTitle")}
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground" data-lm-reveal="cta-subtitle">

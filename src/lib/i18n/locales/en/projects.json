@@ -58,7 +58,7 @@
     "incomes": "Income",
     "categories": "Categories",
     "obligations": "Obligations",
-    "partners": "Partners",
+    "partners": "People",
     "budget": "Budget",
     "settlements": "Settlements",
     "members": "Members",
@@ -74,13 +74,13 @@
       "obligations": "Obligations",
       "categories": "Categories",
       "budget": "Budget",
-      "partners": "Partners",
+      "partners": "People",
       "settings": "Settings"
     },
     "settingsTab": {
       "general": "General",
       "currencies": "Currencies",
-      "partners": "Partners",
+      "partners": "People",
       "paymentMethods": "Payment methods",
       "sectionLabel": "Project settings sections",
       "generalTitle": "Project information",
@@ -89,22 +89,22 @@
       "descriptionLabel": "Description",
       "currenciesTitle": "Alternative currencies",
       "currenciesSubtitle": "Manage currencies for tracking equivalences in this project.",
-      "partnersTitle": "Project partners",
-      "partnersSubtitle": "Assign partners and control expense and income distribution.",
+      "partnersTitle": "Project people",
+      "partnersSubtitle": "Assign people and control expense and income distribution.",
       "partnersSplits": "Partner splits",
-      "assignPartner": "Assign partner",
-      "removePartnerTitle": "Remove partner from project",
+      "assignPartner": "Assign person",
+      "removePartnerTitle": "Remove person from project",
       "removePartnerDescription": "Their accounts will no longer be available for new expenses and income in this project.",
-      "removePartnerNamed": "Remove partner \"{name}\" from project?",
+      "removePartnerNamed": "Remove person \"{name}\" from project?",
       "paymentMethodsTitle": "Payment methods",
-      "paymentMethodsSubtitle": "Link partner payment methods to use in expenses and income.",
+      "paymentMethodsSubtitle": "Link payment methods of people to use in expenses and income.",
       "addPaymentMethod": "Add payment method",
       "add": "Add",
       "noLinkedPaymentMethods": "No linked payment methods",
       "noLinkedPaymentMethodsDescription": "Link payment methods to use them in project expenses and income.",
       "noLinkedPaymentMethodsViewer": "No payment methods linked to this project.",
       "addPMDialogTitle": "Add payment method",
-      "addPMDialogDescription": "Partner payment methods assigned to the project that are not yet linked.",
+      "addPMDialogDescription": "Payment methods of people assigned to the project that are not yet linked.",
       "noAvailableToLink": "No payment methods available to link.",
       "removePaymentMethodTitle": "Remove payment method",
       "removePaymentMethodDescription": "The payment method will no longer be available in this project for new expenses and income.",
@@ -117,8 +117,8 @@
       "updatedDesc": "\"{name}\" was saved successfully.",
       "deleted": "Project deleted",
       "deletedDesc": "\"{name}\" was deactivated.",
-      "partnersEnabled": "Partner splits enabled",
-      "partnersDisabled": "Partner splits disabled"
+      "partnersEnabled": "People splits enabled",
+      "partnersDisabled": "People splits disabled"
     },
     "errors": {
       "load": "Error loading projects",
@@ -185,16 +185,16 @@
   },
   "projectPartners": {
     "toast": {
-      "assigned": "Partner assigned",
+      "assigned": "Person assigned",
       "assignedDesc": "\"{name}\" was assigned to the project.",
-      "removed": "Partner removed",
+      "removed": "Person removed",
       "removedDesc": "\"{name}\" was removed from the project.",
-      "cannotRemove": "Cannot remove partner"
+      "cannotRemove": "Cannot remove person"
     },
     "errors": {
-      "load": "Error loading project partners",
-      "assign": "Error assigning partner",
-      "remove": "Error removing partner"
+      "load": "Error loading people from project",
+      "assign": "Error assigning person",
+      "remove": "Error removing person"
     }
   },
   "projectPaymentMethods": {

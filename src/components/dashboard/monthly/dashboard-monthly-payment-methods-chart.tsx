@@ -81,7 +81,7 @@ export function DashboardMonthlyPaymentMethodsChart({
     if (!point) return null
 
     return (
-      <div className="grid min-w-44 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">
+      <div className="grid min-w-44 items-start gap-1.5 rounded-lg border px-2.5 py-2 text-xs shadow-xl" style={{ backgroundColor: "var(--popover)", borderColor: "var(--border)", color: "var(--popover-foreground)" }}>
         <div className="font-medium text-foreground">{point.name}</div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">

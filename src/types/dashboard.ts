@@ -35,15 +35,6 @@ export interface DashboardTrendDay {
   income_count?: number
 }
 
-export interface DashboardTopCategory {
-  category_id: string
-  category_name: string
-  total_amount: number
-  expense_count: number
-  percentage: number
-  project_ids?: string[]
-}
-
 export interface DashboardPaymentMethodSplit {
   payment_method_id: string
   payment_method_name: string
@@ -82,13 +73,6 @@ export interface DashboardMonthlyTrendResponse {
   trend_by_day: DashboardTrendDay[]
 }
 
-export interface DashboardMonthlyTopCategoriesResponse {
-  month: string
-  currency_code: string
-  project_id: string
-  top_categories: DashboardTopCategory[]
-}
-
 export interface DashboardMonthlyPaymentMethodsResponse {
   month: string
   currency_code: string
@@ -113,4 +97,73 @@ export interface DashboardProjectsPagedResponse {
   totalPages: number
   hasNextPage: boolean
   hasPreviousPage: boolean
+}
+
+export interface DashboardTopTransaction {
+  id: string
+  type: "expense" | "income"
+  description: string
+  amount: number
+  date: string
+  category_id: string
+  category_name: string
+  payment_method_id: string
+  payment_method_name: string
+}
+
+export interface DashboardMonthlyTopTransactionsResponse {
+  month: string
+  currency_code: string
+  project_id: string
+  transactions: DashboardTopTransaction[]
+}
+
+export interface DashboardComparisonHistoryItem {
+  month: string
+  summary: {
+    total_spent: number
+    total_income: number
+    net_balance: number
+  }
+}
+
+export interface DashboardLastYearComparison {
+  spent_delta: number
+  spent_delta_percentage: number
+}
+
+export interface DashboardLastYearMonth {
+  month: string
+  summary: {
+    total_spent: number
+    total_income: number
+    net_balance: number
+  }
+  comparison: DashboardLastYearComparison
+}
+
+export interface DashboardMonthlySummaryResponse {
+  month: string
+  currency_code: string
+  project_id: string
+  generated_at: string
+  navigation: DashboardNavigation
+  summary: DashboardSummary
+  comparison: DashboardComparison
+  alerts: DashboardAlert[]
+  days_elapsed?: number
+  days_total?: number
+  average_daily_spend?: number
+  comparison_history?: DashboardComparisonHistoryItem[]
+  last_year_month?: DashboardLastYearMonth | null
+}
+
+export interface DashboardMonthlyTrendResponse {
+  month: string
+  currency_code: string
+  project_id: string
+  trend_by_day: DashboardTrendDay[]
+  daily_budget_rate?: number | null
+  monthly_budget?: number | null
+  budget_alert_percentage?: number | null
 }

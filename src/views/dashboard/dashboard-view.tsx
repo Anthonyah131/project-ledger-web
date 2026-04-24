@@ -4,13 +4,13 @@ import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, FolderPlus, HandCoins, Link2, Loader2, PinIcon, Rocket, UserRoundPlus } from "lucide-react"
 
-import { DashboardMonthlyCategoriesChart } from "@/components/dashboard/monthly/dashboard-monthly-categories-chart"
 import { DashboardMonthlyErrorCard } from "@/components/dashboard/monthly/dashboard-monthly-error-card"
 import { DashboardMonthlyHeader } from "@/components/dashboard/monthly/dashboard-monthly-header"
 import { DashboardMonthlyInactiveWarning } from "@/components/dashboard/monthly/dashboard-monthly-inactive-warning"
 import { DashboardMonthlyLoading } from "@/components/dashboard/monthly/dashboard-monthly-loading"
 import { DashboardMonthlyPaymentMethodsChart } from "@/components/dashboard/monthly/dashboard-monthly-payment-methods-chart"
 import { DashboardMonthlySummaryCards } from "@/components/dashboard/monthly/dashboard-monthly-summary-cards"
+import { DashboardMonthlyTopTransactions } from "@/components/dashboard/monthly/dashboard-monthly-top-transactions"
 import { DashboardMonthlyTrendChart } from "@/components/dashboard/monthly/dashboard-monthly-trend-chart"
 import { DashboardMonthlyBudgetWidget } from "@/components/dashboard/monthly/dashboard-monthly-budget-widget"
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,11 @@ import { useAuth } from "@/context/auth-context"
 import { useLanguage } from "@/context/language-context"
 import { useOnboardingContext } from "@/context/onboarding-context"
 import { useMonthlyOverview } from "@/hooks/dashboard/use-monthly-overview"
+import {
+  DashboardDndProvider,
+  SortableSection,
+  useDashboardLayout,
+} from "@/hooks/dashboard/use-dashboard-layout"
 import type { DashboardAlert, DashboardTrendDay } from "@/types/dashboard"
 
 export function DashboardView() {
@@ -34,6 +39,14 @@ export function DashboardView() {
   const router = useRouter()
   const { user } = useAuth()
   const { openWizard } = useOnboardingContext()
+  const {
+    layout,
+    sensors,
+    activeId,
+    handleDragStart,
+    handleDragEnd,
+    isMobile,
+  } = useDashboardLayout()
 
   const {
     selectedMonth,
@@ -250,12 +263,6 @@ export function DashboardView() {
         </div>
       )}
 
-      {projects.length > 0 && !selectedProjectId && (
-        <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">
-          {t("dashboard.selectProjectDescription")}
-        </div>
-      )}
-
       {(loading || projectsLoading) && (
         <DashboardMonthlyLoading />
       )}
@@ -264,50 +271,32 @@ export function DashboardView() {
         <DashboardMonthlyErrorCard error={error} onRetry={reload} />
       )}
 
-      {!loading && !projectsLoading && data && (
-        <>
-          <section>
-            <DashboardMonthlySummaryCards
-              summary={data.summary}
-              comparison={data.comparison}
-              currencyCode={data.currency_code}
-            />
-          </section>
-
-          {selectedProjectId && (
-            <section>
-              <DashboardMonthlyBudgetWidget
-                budget={budget}
-                loading={budgetLoading}
-                currencyCode={data.currency_code}
-                projectId={selectedProjectId}
-              />
-            </section>
-          )}
-
-          <section>
-            <DashboardMonthlyPaymentMethodsChart
-              paymentMethodSplit={data.payment_method_split ?? []}
-              currencyCode={data.currency_code}
-              onOpenPaymentMethod={handleOpenPaymentMethod}
-            />
-          </section>
-
-          <section className="space-y-4">
-            <DashboardMonthlyTrendChart
-              trendByDay={data.trend_by_day ?? []}
-              currencyCode={data.currency_code}
-              scopeLabel={selectedProjectName}
-              onOpenDayDetail={handleOpenTrendDay}
-            />
-
-            <DashboardMonthlyCategoriesChart
-              topCategories={data.top_categories ?? []}
-              currencyCode={data.currency_code}
-              scopeLabel={selectedProjectName}
-            />
-          </section>
-        </>
+{!loading && !projectsLoading && data && (
+        (() => {
+          const rows: React.ReactNode[] = []
+          let i = 0
+          while (i < layout.length) {
+            const sectionId = layout[i]
+            if (sectionId === "summary-cards") {
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}><DashboardMonthlySummaryCards summary={data.summary} comparison={data.comparison} currencyCode={data.currency_code} /></SortableSection>)
+            } else if (sectionId === "budget-widget") {
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}>{selectedProjectId ? <DashboardMonthlyBudgetWidget budget={budget} loading={budgetLoading} currencyCode={data.currency_code} projectId={selectedProjectId} /> : <div className="rounded-2xl border border-border/70 bg-card/70 px-4 py-6 text-sm text-muted-foreground">{t("dashboard.selectProjectDescription")}</div>}</SortableSection>)
+            } else if (sectionId === "payment-top-row") {
+              rows.push(
+                <SortableSection key={sectionId} id={sectionId} isMobile={isMobile}>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+                    <DashboardMonthlyPaymentMethodsChart paymentMethodSplit={data.payment_method_split ?? []} currencyCode={data.currency_code} onOpenPaymentMethod={handleOpenPaymentMethod} />
+                    <DashboardMonthlyTopTransactions transactions={data.top_transactions ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} />
+                  </div>
+                </SortableSection>
+              )
+            } else if (sectionId === "trend-chart") {
+              rows.push(<SortableSection key={sectionId} id={sectionId} isMobile={isMobile}><DashboardMonthlyTrendChart trendByDay={data.trend_by_day ?? []} currencyCode={data.currency_code} scopeLabel={selectedProjectName} onOpenDayDetail={handleOpenTrendDay} dailyBudgetRate={data.daily_budget_rate} /></SortableSection>)
+            }
+            i++
+          }
+          return <DashboardDndProvider sensors={sensors} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} layout={layout} activeId={activeId}>{rows}</DashboardDndProvider>
+        })()
       )}
 
       {!user.isActive && <DashboardMonthlyInactiveWarning />}

@@ -19,7 +19,7 @@ function PartnersListComponent({ partners, onEdit, onDelete }: PartnersListProps
   const { t } = useLanguage()
 
   return (
-    <div role="list" aria-label="Partners">
+    <div role="list" aria-label={t("partners.title")}>
       {/* Header */}
       <div className="flex items-center px-5 py-2.5 text-[11px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent">
         <span className="flex-1">{t("partners.singular")}</span>

@@ -34,7 +34,7 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="flex flex-col items-center px-6 pb-24 pt-40 text-center"
+      className="flex flex-col items-center px-4 pb-16 pt-28 text-center sm:px-6 sm:pb-24 sm:pt-40"
       data-lm-section="hero"
     >
       {/* Badge */}
@@ -48,7 +48,7 @@ export function Hero() {
 
       {/* Headline */}
       <h1
-        className="mx-auto max-w-4xl text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+        className="mx-auto max-w-4xl text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl"
         data-lm-reveal="headline"
       >
         {t("landing.heroTitlePart1")}{" "}
@@ -92,7 +92,7 @@ export function Hero() {
       </p>
 
       {/* Mock dashboard */}
-      <div className="relative mt-20 w-full max-w-5xl" data-lm-reveal="dashboard-mock">
+      <div className="relative mt-16 w-full max-w-5xl sm:mt-20" data-lm-reveal="dashboard-mock">
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/20">
           {/* Window chrome */}
           <div className="flex h-10 items-center gap-2 border-b border-border bg-muted px-4">
@@ -103,7 +103,7 @@ export function Hero() {
           </div>
 
           {/* Dashboard mock */}
-          <div className="flex h-80 gap-0">
+          <div className="flex h-64 flex-col gap-0 sm:h-80 sm:flex-row">
             {/* Sidebar */}
             <div className="hidden w-48 flex-col gap-1.5 border-r border-border bg-sidebar p-4 sm:flex">
               {navItems.map((item, i) => (
@@ -121,16 +121,16 @@ export function Hero() {
             </div>
 
             {/* Main content */}
-            <div className="flex flex-1 flex-col gap-3 p-5">
+            <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
               {/* Stats row */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {stats.map((s) => (
                   <div
                     key={s.label}
-                    className={`rounded-lg border p-3 ${s.highlight ? "border-primary/30 bg-primary/10" : "border-border bg-background"}`}
+                    className={`rounded-lg border p-2 sm:p-3 ${s.highlight ? "border-primary/30 bg-primary/10" : "border-border bg-background"}`}
                   >
-                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                    <p className={`mt-1 text-lg font-bold ${s.highlight ? "text-primary" : "text-foreground"}`}>
+                    <p className="text-[9px] text-muted-foreground sm:text-[10px]">{s.label}</p>
+                    <p className={`mt-0.5 text-base font-bold sm:mt-1 sm:text-lg ${s.highlight ? "text-primary" : "text-foreground"}`}>
                       {s.val}
                     </p>
                   </div>
@@ -158,11 +158,11 @@ export function Hero() {
                 </div>
 
                 {/* Bar chart */}
-                <div className="hidden w-40 rounded-lg border border-border bg-background p-3 md:block">
+                <div className="hidden w-32 rounded-lg border border-border bg-background p-3 md:block lg:w-40">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("landing.mockDashboard.expensesChart")}
                   </p>
-                  <div className="flex h-20 items-end gap-1">
+                  <div className="flex h-16 items-end gap-1 sm:h-20">
                     {[50, 70, 45, 85, 60, 95].map((h, i) => (
                       <div
                         key={i}

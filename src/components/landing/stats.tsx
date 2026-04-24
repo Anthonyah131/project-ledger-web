@@ -15,11 +15,11 @@ export function Stats() {
 
   return (
     <section ref={containerRef} className="border-y border-border bg-muted/30" data-lm-section="stats">
-      <div className="mx-auto max-w-5xl px-6 py-14">
-        <div className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className="grid grid-cols-2 gap-6 text-center sm:gap-8 lg:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} data-lm-reveal="stat-item">
-              <p className="text-3xl font-bold tracking-tight text-primary">
+              <p className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
                 {s.value}
               </p>
               <p className="mt-1.5 text-sm text-muted-foreground">{s.label}</p>

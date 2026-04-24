@@ -37,6 +37,7 @@ interface DashboardMonthlyTrendChartProps {
   currencyCode: string
   scopeLabel: string
   onOpenDayDetail?: (day: DashboardTrendDay) => void
+  dailyBudgetRate?: number | null
 }
 
 interface TrendTooltipItem {
@@ -64,6 +65,7 @@ export function DashboardMonthlyTrendChart({
   currencyCode,
   scopeLabel,
   onOpenDayDetail,
+  dailyBudgetRate,
 }: DashboardMonthlyTrendChartProps) {
   const isMobile = useIsMobile()
   const { t } = useLanguage()
@@ -94,7 +96,7 @@ export function DashboardMonthlyTrendChart({
     const projectCount = day?.project_ids?.length ?? 0
 
     return (
-      <div className="grid min-w-44 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">
+      <div className="grid min-w-44 items-start gap-1.5 rounded-lg border px-2.5 py-2 text-xs shadow-xl" style={{ backgroundColor: "var(--popover)", borderColor: "var(--border)", color: "var(--popover-foreground)", backdropFilter: "none" }}>
         <div className="font-medium text-foreground">{t("dashboard.monthly.trendChart.dayLabel", { day: String(label ?? "") })}</div>
 
         <div className="grid gap-1.5">
@@ -239,6 +241,24 @@ export function DashboardMonthlyTrendChart({
                 tickFormatter={(value: number) => formatAxisCompactNumber(value)}
               />
               <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="4 4" />
+              {dailyBudgetRate && dailyBudgetRate > 0 ? (
+                <ReferenceLine
+                  y={dailyBudgetRate}
+                  stroke="var(--chart-4)"
+                  strokeDasharray="6 4"
+                  strokeOpacity={0.7}
+                  label={{
+                    value: t("dashboard.monthly.trendChart.budgetLineLabel", {
+                      amount: isMobile
+                        ? formatCompactCurrency(dailyBudgetRate, currencyCode)
+                        : formatCurrency(dailyBudgetRate, currencyCode),
+                    }),
+                    fill: "var(--chart-4)",
+                    fontSize: 10,
+                    position: "insideTopRight",
+                  }}
+                />
+              ) : null}
 
               <ChartTooltip
                 cursor={{ strokeDasharray: "3 3" }}

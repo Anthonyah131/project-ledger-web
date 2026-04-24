@@ -85,7 +85,7 @@ export function Pricing() {
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
             {t("nav.pricing")}
           </p>
-          <h2 className="text-balance text-4xl font-bold tracking-tight text-foreground">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {t("billing.pricingTitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">

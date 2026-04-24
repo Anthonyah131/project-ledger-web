@@ -46,6 +46,13 @@
         "categorySummary": "{count} categories with spending for the current selection.",
         "footerCategories": "{count} categories"
       },
+      "topTransactions": {
+        "title": "Top transactions",
+        "description": "Largest movements for {scope} this month.",
+        "empty": "No transactions recorded",
+        "emptyHint": "Add expenses or income to see the largest transactions.",
+        "footerTotal": "Showing {count} transactions"
+      },
       "paymentMethodsChart": {
         "title": "Payment methods",
         "description": "Distribution of total monthly spending by account, card, or registered method.",
@@ -73,7 +80,8 @@
         "netShort": "Net",
         "dayLabel": "Day {day}",
         "movements": "Movements: {total} ({expenses} expenses, {incomes} income)",
-        "projects": "Projects: {count}"
+        "projects": "Projects: {count}",
+        "budgetLineLabel": "Budget: {amount}/day"
       },
       "alertsIndicator": {
         "ariaLabelWithAlerts": "View monthly alerts ({count})",

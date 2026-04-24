@@ -8,12 +8,12 @@
         "description": "Los socios son entidades externas como clientes o proveedores con los que trabajas."
       },
       "paymentMethod": {
-        "title": "Agregar un método de pago",
+        "title": "Agregar una cuenta",
         "description": "Agrega una cuenta bancaria, tarjeta o método en efectivo para gestionar tus transacciones."
       },
       "linkPMToPartner": {
-        "title": "Vincular método de pago a socio",
-        "description": "Asocia tu método de pago a un socio para llevar un control de las cuentas por entidad."
+        "title": "Vincular cuenta a socio",
+        "description": "Asocia tu cuenta a un socio para llevar un control de las cuentas por entidad."
       },
       "project": {
         "title": "Crear tu primer proyecto",
@@ -24,8 +24,8 @@
         "description": "Asigna tu socio al proyecto desde la configuración del proyecto."
       },
       "linkPaymentMethod": {
-        "title": "Vincular método de pago al proyecto",
-        "description": "Vincula tu método de pago al proyecto para poder registrar transacciones."
+        "title": "Vincular cuenta al proyecto",
+        "description": "Vincula tu cuenta al proyecto para poder registrar transacciones."
       }
     }
   }

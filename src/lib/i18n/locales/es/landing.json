@@ -27,7 +27,7 @@
         "description": "Define porcentajes por partner, liquida saldos y cierra repartos sin cálculos manuales ni hojas externas."
       },
       "paymentMethods": {
-        "title": "Métodos de pago conectados al flujo real",
+        "title": "Cuentas conectadas al flujo real",
         "description": "Controla de dónde sale o entra cada movimiento por cuenta, tarjeta, transferencia o efectivo con trazabilidad completa."
       },
       "ocr": {
@@ -92,7 +92,7 @@
         "dashboard": "Dashboard",
         "projects": "Proyectos",
         "reports": "Reportes",
-        "paymentMethods": "Métodos de pago",
+        "paymentMethods": "Cuentas",
         "settings": "Configuración"
       },
       "stats": {

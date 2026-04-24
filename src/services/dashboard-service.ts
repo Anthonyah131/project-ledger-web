@@ -5,15 +5,21 @@ import { api } from "@/lib/api-client"
 import type {
   DashboardMonthlyPaymentMethodsResponse,
   DashboardMonthlySummaryResponse,
-  DashboardMonthlyTopCategoriesResponse,
+  DashboardMonthlyTopTransactionsResponse,
   DashboardMonthlyTrendResponse,
   DashboardProjectsPagedResponse,
 } from "@/types/dashboard"
 
-function buildDashboardQuery(month: string, projectId: string) {
+function buildDashboardQuery(month: string, projectId: string, extraParams?: Record<string, string | number | undefined>) {
   const query = new URLSearchParams({ month, project_id: projectId })
-  // Backward compatibility in case the backend still expects camelCase.
   query.set("projectId", projectId)
+  if (extraParams) {
+    for (const [key, value] of Object.entries(extraParams)) {
+      if (value !== undefined) {
+        query.set(key, String(value))
+      }
+    }
+  }
   return query.toString()
 }
 
@@ -21,8 +27,10 @@ export function getDashboardMonthlySummary(
   month: string,
   projectId: string,
   signal?: AbortSignal,
+  comparisonMonths?: number,
 ) {
-  return api.get<DashboardMonthlySummaryResponse>(`/dashboard/monthly-summary?${buildDashboardQuery(month, projectId)}`, {
+  const params = comparisonMonths !== undefined ? { comparison_months: comparisonMonths } : undefined
+  return api.get<DashboardMonthlySummaryResponse>(`/dashboard/monthly-summary?${buildDashboardQuery(month, projectId, params)}`, {
     signal,
   })
 }
@@ -37,22 +45,33 @@ export function getDashboardMonthlyTrend(
   })
 }
 
-export function getDashboardMonthlyTopCategories(
-  month: string,
-  projectId: string,
-  signal?: AbortSignal,
-) {
-  return api.get<DashboardMonthlyTopCategoriesResponse>(`/dashboard/monthly-top-categories?${buildDashboardQuery(month, projectId)}`, {
-    signal,
-  })
-}
-
 export function getDashboardMonthlyPaymentMethods(
   month: string,
   projectId: string,
   signal?: AbortSignal,
 ) {
   return api.get<DashboardMonthlyPaymentMethodsResponse>(`/dashboard/monthly-payment-methods?${buildDashboardQuery(month, projectId)}`, {
+    signal,
+  })
+}
+
+export interface GetDashboardTopTransactionsParams {
+  month: string
+  projectId: string
+  limit?: number
+  type?: "all" | "expense" | "income"
+  signal?: AbortSignal
+}
+
+export function getDashboardMonthlyTopTransactions({
+  month,
+  projectId,
+  limit = 5,
+  type = "all",
+  signal,
+}: GetDashboardTopTransactionsParams) {
+  const query = buildDashboardQuery(month, projectId, { limit, type })
+  return api.get<DashboardMonthlyTopTransactionsResponse>(`/dashboard/monthly-top-transactions?${query}`, {
     signal,
   })
 }
