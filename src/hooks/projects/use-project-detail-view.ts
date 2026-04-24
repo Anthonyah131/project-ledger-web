@@ -84,8 +84,10 @@ export function useProjectDetailView(projectId: string) {
 
   // Stable refs so expense/income callbacks don't recreate when these change
   const hasBudgetRef = useRef(hasBudget)
+  // eslint-disable-next-line react-hooks/refs -- intentional: stable ref for callback closure
   hasBudgetRef.current = hasBudget
   const partnersEnabledRef = useRef(partnersEnabled)
+  // eslint-disable-next-line react-hooks/refs -- intentional: stable ref for callback closure
   partnersEnabledRef.current = partnersEnabled
   const {
     mutateCreate: mutateIncomeCreateRaw,

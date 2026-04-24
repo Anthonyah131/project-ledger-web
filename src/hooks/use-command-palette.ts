@@ -39,8 +39,10 @@ export function useCommandPalette() {
   }, [])
 
   // Reset partner + search results when closed
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset state when palette closes
   useEffect(() => {
     if (!open) {
+      /* eslint-disable react-hooks/set-state-in-effect -- intentional */
       setQuery("")
       setPartners([])
       setSearchResults(null)
@@ -86,6 +88,7 @@ export function useCommandPalette() {
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
 
     if (query.trim().length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: clear stale results when query becomes too short
       setSearchResults(null)
       return
     }

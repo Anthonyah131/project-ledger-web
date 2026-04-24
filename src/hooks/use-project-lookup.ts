@@ -30,6 +30,7 @@ export function useProjectLookup(query: string, enabled: boolean): UseProjectLoo
   const abortRef = useRef<AbortController | null>(null)
   // Track current query for loadMore calls (avoids stale closure)
   const queryRef = useRef(query)
+  // eslint-disable-next-line react-hooks/refs -- intentional: stable ref for callback closure
   queryRef.current = query
 
   const fetchPage = useCallback((search: string, pg: number) => {

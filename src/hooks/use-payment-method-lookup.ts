@@ -26,6 +26,7 @@ export function usePaymentMethodLookup(query: string, enabled: boolean): UsePaym
 
   const abortRef = useRef<AbortController | null>(null)
   const queryRef = useRef(query)
+  // eslint-disable-next-line react-hooks/refs -- intentional: stable ref for callback closure
   queryRef.current = query
 
   const fetchPage = useCallback((search: string, pg: number) => {
