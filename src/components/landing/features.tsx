@@ -13,7 +13,7 @@ import {
 const gsap = ensureGsapPluginsRegistered();
 
 export function Features() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const features = getFeatures(t);
 
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -32,6 +32,10 @@ export function Features() {
       const reduceMotion = getPrefersReducedMotion();
       if (reduceMotion) return;
 
+      // Remove clones from previous runs (not managed by React) before re-cloning
+      track.querySelectorAll("[data-clone]").forEach((el) => el.remove());
+      gsap.set(track, { x: 0 });
+
       const cards = Array.from(
         track.querySelectorAll<HTMLElement>("[data-feature-card]"),
       );
@@ -43,10 +47,12 @@ export function Features() {
 
       const duration = totalWidth / 60;
 
-      const duplicates = cards.map((card) => card.cloneNode(true) as HTMLElement);
+      const duplicates = cards.map((card) => {
+        const dup = card.cloneNode(true) as HTMLElement;
+        dup.setAttribute("data-clone", "true");
+        return dup;
+      });
       duplicates.forEach((dup) => track.appendChild(dup));
-
-      gsap.set(track, { x: 0 });
 
       const tween = gsap.to(track, {
         x: -totalWidth,
@@ -58,10 +64,18 @@ export function Features() {
         },
       });
 
-      track.parentElement?.addEventListener("mouseenter", () => tween.pause());
-      track.parentElement?.addEventListener("mouseleave", () => tween.resume());
+      const parent = track.parentElement;
+      const pause = () => tween.pause();
+      const resume = () => tween.resume();
+      parent?.addEventListener("mouseenter", pause);
+      parent?.addEventListener("mouseleave", resume);
+
+      return () => {
+        parent?.removeEventListener("mouseenter", pause);
+        parent?.removeEventListener("mouseleave", resume);
+      };
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [locale] },
   );
 
   return (
