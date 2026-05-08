@@ -19,18 +19,73 @@
         "paymentMethods": "Cuentas",
         "settings": "Configuración"
       },
-    "stats": {
-      "plans": { "value": "Proyectos", "label": "crea y gestiona múltiples proyectos" },
-      "speed": { "value": "OCR con IA", "label": "registra gastos desde comprobantes" },
-      "currency": { "value": "Multi-moneda", "label": "soporte para múltiples divisas" },
-      "control": { "value": "IA integrada", "label": "asistente Aria para análisis" }
-    },
+      "stats": {
+        "income": "Ingresos",
+        "expenses": "Gastos",
+        "balance": "Balance"
+      },
       "recentMovements": "Últimos movimientos",
       "expensesChart": "Gastos / mes",
       "transactions": {
         "t1": { "name": "Servicios en la nube", "cat": "Tecnología" },
         "t2": { "name": "Pago cliente ACME", "cat": "Ingresos" },
         "t3": { "name": "Almuerzo equipo", "cat": "Operativo" }
+      }
+    },
+    "stats": {
+      "plans": { "value": "Multi-proyecto", "label": "Gestiona múltiples proyectos a la vez" },
+      "speed": { "value": "OCR con IA", "label": "Registra gastos desde fotos de comprobantes" },
+      "currency": { "value": "Multi-moneda", "label": "Opera con cualquier divisa del mundo" },
+      "control": { "value": "Aria IA", "label": "Asistente inteligente para análisis financiero" }
+    },
+    "featuresTitle": "Características",
+    "featuresSubtitle": "Todo lo que necesitas para gestionar proyectos financieros",
+    "featuresDescription": "Desde gastos con OCR hasta análisis con IA — en una sola plataforma.",
+    "features": {
+      "partners": {
+        "title": "Partners y splits",
+        "description": "Divide gastos e ingresos entre partners con porcentajes personalizados y liquidaciones automáticas."
+      },
+      "paymentMethods": {
+        "title": "Métodos de pago",
+        "description": "Organiza tus cuentas bancarias, tarjetas y billeteras digitales para rastrear cada movimiento."
+      },
+      "ocr": {
+        "title": "OCR con inteligencia artificial",
+        "description": "Fotografía un comprobante y deja que la IA extraiga monto, fecha y categoría automáticamente."
+      },
+      "multiCurrency": {
+        "title": "Multi-moneda",
+        "description": "Registra gastos en cualquier divisa y convierte automáticamente con tipos de cambio actualizados."
+      },
+      "reports": {
+        "title": "Reportes y análisis",
+        "description": "Visualiza tus finanzas con gráficas detalladas, exporta datos y toma decisiones informadas."
+      },
+      "chatbot": {
+        "title": "Aria — Asistente IA",
+        "description": "Consulta tu situación financiera en lenguaje natural y recibe recomendaciones personalizadas."
+      }
+    },
+    "howItWorks": {
+      "title": "En cuatro pasos simples",
+      "subtitle": "Configura tu espacio de trabajo y empieza a tomar control de tus finanzas de proyecto en minutos.",
+      "stepLabel": "Paso {number}",
+      "step1": {
+        "title": "Crea tu proyecto",
+        "description": "Define el proyecto, agrega partners y establece los porcentajes de participación de cada uno."
+      },
+      "step2": {
+        "title": "Registra gastos e ingresos",
+        "description": "Usa OCR para capturar comprobantes o ingresa manualmente. Categoriza y asigna a cada partner."
+      },
+      "step3": {
+        "title": "Opera en múltiples monedas",
+        "description": "Registra en cualquier divisa, configura tasas de cambio y visualiza todo unificado."
+      },
+      "step4": {
+        "title": "Analiza con Aria",
+        "description": "Consulta al asistente IA para obtener insights, detectar anomalías y planificar con datos reales."
       }
     },
     "pricing": {

@@ -19,18 +19,73 @@
         "paymentMethods": "Payment methods",
         "settings": "Settings"
       },
-    "stats": {
-      "plans": { "value": "Projects", "label": "create and manage multiple projects" },
-      "speed": { "value": "AI OCR", "label": "record expenses from receipts" },
-      "currency": { "value": "Multi-currency", "label": "support for multiple currencies" },
-      "control": { "value": "Integrated AI", "label": "Aria assistant for analysis" }
-    },
+      "stats": {
+        "income": "Revenue",
+        "expenses": "Expenses",
+        "balance": "Balance"
+      },
       "recentMovements": "Recent movements",
       "expensesChart": "Expenses / month",
       "transactions": {
         "t1": { "name": "Cloud services", "cat": "Technology" },
         "t2": { "name": "ACME client payment", "cat": "Income" },
         "t3": { "name": "Team lunch", "cat": "Operational" }
+      }
+    },
+    "stats": {
+      "plans": { "value": "Multi-project", "label": "Manage multiple projects at once" },
+      "speed": { "value": "AI OCR", "label": "Log expenses from receipt photos" },
+      "currency": { "value": "Multi-currency", "label": "Operate with any currency worldwide" },
+      "control": { "value": "Aria AI", "label": "Smart assistant for financial analysis" }
+    },
+    "featuresTitle": "Features",
+    "featuresSubtitle": "Everything you need to manage financial projects",
+    "featuresDescription": "From OCR-powered expense tracking to AI-driven insights — all in one platform.",
+    "features": {
+      "partners": {
+        "title": "Partners & splits",
+        "description": "Split expenses and income among partners with custom percentages and automatic settlements."
+      },
+      "paymentMethods": {
+        "title": "Payment methods",
+        "description": "Organize your bank accounts, cards, and digital wallets to track every transaction."
+      },
+      "ocr": {
+        "title": "AI-powered OCR",
+        "description": "Photograph a receipt and let the AI automatically extract the amount, date, and category."
+      },
+      "multiCurrency": {
+        "title": "Multi-currency",
+        "description": "Log expenses in any currency and automatically convert using up-to-date exchange rates."
+      },
+      "reports": {
+        "title": "Reports & analytics",
+        "description": "Visualize your finances with detailed charts, export data, and make informed decisions."
+      },
+      "chatbot": {
+        "title": "Aria — AI Assistant",
+        "description": "Ask about your financial situation in plain language and receive personalized recommendations."
+      }
+    },
+    "howItWorks": {
+      "title": "In four simple steps",
+      "subtitle": "Set up your workspace and start taking control of your project finances in minutes.",
+      "stepLabel": "Step {number}",
+      "step1": {
+        "title": "Create your project",
+        "description": "Define the project, add partners, and set each person's participation percentage."
+      },
+      "step2": {
+        "title": "Log expenses and income",
+        "description": "Use OCR to capture receipts or enter manually. Categorize and assign to each partner."
+      },
+      "step3": {
+        "title": "Operate in multiple currencies",
+        "description": "Log in any currency, set exchange rates, and view everything unified."
+      },
+      "step4": {
+        "title": "Analyze with Aria",
+        "description": "Ask the AI assistant for insights, detect anomalies, and plan using real financial data."
       }
     },
     "pricing": {
